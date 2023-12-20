@@ -1,0 +1,10 @@
+.pill-style{
+  --sds-c-pill-container-spacing-block-start: 0.300rem;
+  --sds-c-pill-container-spacing-inline-end: 0.300rem;
+  --sds-c-pill-container-spacing-block-end: 0.300rem;
+  --sds-c-pill-container-spacing-inline-start: 0.300rem;
+  --sds-c-pill-spacing-block-start: 0.300rem;
+  --sds-c-pill-spacing-inline-end: 0.300rem;
+  --sds-c-pill-spacing-block-end: 0.300rem;
+  --sds-c-pill-spacing-inline-start: 0.300rem;
+}

@@ -1,0 +1,17 @@
+.table-style {
+  background-color: rgb(250, 250, 249);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  direction: rtl;
+  max-height: 751px;
+}
+
+.footer-styling {
+  position: initial;
+}
+
+.icon-style {
+  --sds-c-icon-color-foreground-default: var(--lwc-brandAccessible);
+  cursor: pointer;
+}

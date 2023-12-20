@@ -1,0 +1,23 @@
+<template>
+    <article class="slds-card">
+        <div class="slds-card__header slds-grid slds-theme_shade">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate slds-m-bottom_x-small">
+                <div class="slds-media__figure">
+                    <lightning-icon icon-name="standard:metrics" size="medium"></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <h2 class="slds-card__header-title">
+                    <strong class="slds-truncate">Org Limits</strong>
+                  </h2>
+                </div>
+                <div class="slds-no-flex">
+                    <lightning-button-group>
+                    </lightning-button-group>
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner slds-scrollable" style="max-height:500px">
+            <c-org-limits></c-org-limits>
+        </div>
+    </article>
+</template>

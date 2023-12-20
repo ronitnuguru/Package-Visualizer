@@ -1,0 +1,100 @@
+<template>
+  <template if:true={displaySpinner}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="medium"
+      variant="brand"
+    ></lightning-spinner>
+  </template>
+  <template if:true={promptData}>
+    <section
+      aria-describedby="dialog-body-id-106"
+      aria-labelledby="dialog-heading-id-5"
+      class={promptPopoverStyle}
+      role="dialog"
+    >
+      <button
+        class="slds-button slds-button_icon slds-button_icon-small slds-float_right slds-popover__close"
+        title="Close"
+        onclick={handlePromptClose}
+      >
+        <lightning-icon
+          size="x-small"
+          icon-name="utility:close"
+          alternative-text="Close"
+          title="Close"
+        ></lightning-icon>
+        <span class="slds-assistive-text">Close</span>
+      </button>
+      <div class="slds-popover__body" id="dialog-body-id-106">
+        <div class="slds-media">
+          <div class="slds-media__body">
+            <div class="slds-media">
+              <div class="slds-media__figure">
+                <span class="slds-icon_container">
+                  <lightning-icon
+                    size="small"
+                    icon-name="utility:prompt"
+                    alternative-text="Prompt"
+                    title="Prompt"
+                    class="icon-style"
+                  ></lightning-icon>
+                  <span class="slds-assistive-text"></span>
+                </span>
+              </div>
+              <div class="slds-media__body">
+                <h2
+                  id="dialog-heading-id-5"
+                  class="slds-popover_prompt__heading"
+                >
+                  {promptData.pkgviz__Title__c}
+                </h2>
+                <br />
+                <div class="slds-text-heading_small">
+                  <p>
+                    {promptData.pkgviz__Description__c}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="slds-popover__footer">
+        <div class="slds-grid slds-grid_vertical-align-center">
+          <button
+            class="slds-button slds-button_neutral slds-col_bump-right"
+            onclick={handlePromptClose}
+          >
+            Dismiss
+          </button>
+          <template if:true={promptData.pkgviz__Learn_More_Link__c}>
+            <span class="slds-popover_prompt__action-link">
+              <a
+                href={promptData.pkgviz__Learn_More_Link__c}
+                target="_blank"
+                class="slds-button"
+                >Learn more</a
+              >
+            </span>
+          </template>
+          <template if:true={promptData.pkgviz__Brand_Button_Label__c}>
+            <lightning-button
+              label={promptData.pkgviz__Brand_Button_Label__c}
+              title={promptData.pkgviz__Brand_Button_Label__c}
+              variant="brand"
+              onclick={navigateToPromptBrandButton}
+            ></lightning-button>
+          </template>
+        </div>
+      </footer>
+    </section>
+  </template>
+  <template if:false={displaySpinner}>
+    <template if:true={displayEmptyContent}>
+      <c-empty-illustration-view
+        body={exceptionMessage}
+      ></c-empty-illustration-view>
+    </template>
+  </template>
+</template>

@@ -1,0 +1,30 @@
+<template>
+  <template if:true={icon}>
+      <lightning-icon
+      size="medium"
+      icon-name={iconStyle}
+      alternative-text="icon"
+      title="icon"
+    ></lightning-icon>
+  </template>
+  <template if:false={icon}>
+    <template if:false={namespacePrefix}>
+      <lightning-icon
+        size="medium"
+        icon-name="custom:custom42"
+        alternative-text="icon"
+        title={name}
+        class="unmanaged-style"
+      ></lightning-icon>
+    </template>
+    <template if:true={namespacePrefix}>
+      <lightning-icon
+        size="medium"
+        icon-name="custom:custom42"
+        alternative-text="icon"
+        title={name}
+        class="managed-style"
+      ></lightning-icon>
+    </template>
+  </template>
+</template>

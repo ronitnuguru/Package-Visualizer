@@ -1,0 +1,59 @@
+.node {
+  cursor: pointer;
+}
+
+.node circle {
+  fill: #fff;
+  stroke: var(--lwc-brandAccessible);
+  stroke-width: 3px;
+}
+
+.link {
+  fill: none;
+  stroke: #bbb;
+  stroke-width: 2px;
+}
+
+.node-accordion {
+  right: 10px;
+  bottom: 10px;
+  background-color: var(--lwc-brandAccessible);
+  --sds-c-accordion-heading-text-color: white;
+  --sds-c-accordion-heading-text-color-hover: white;
+}
+
+.card-style{
+  background-color: var(--lwc-brandAccessible);
+}
+
+.node-controls{
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.scroll-controls{
+  left: 10px;
+  bottom: 10px;
+}
+
+.icon-shadow{
+  -webkit-box-shadow: 0 10px 6px -6px #777;
+  -moz-box-shadow: 0 10px 6px -6px #777;
+  box-shadow: 0 10px 6px -6px #777;
+}
+
+.info-icon{
+  cursor: pointer;
+}
+
+.left-icon{
+  background-color: var(--lwc-brandAccessible);
+  cursor: pointer;
+}
+
+.right-icon{
+  background-color: var(--lwc-brandAccessible);
+  cursor: pointer;
+  transform: scaleX(-1);
+}

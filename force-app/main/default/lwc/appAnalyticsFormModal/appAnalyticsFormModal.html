@@ -1,0 +1,151 @@
+<template>
+  <div
+    class="slds-modal__content slds-var-p-around_large"
+    id="modal-content-id-1"
+  >
+    <div class="slds-scoped-notification slds-media slds-media_center slds-theme_warning" role="status">
+      <div class="slds-media__figure">
+        <span
+          class="slds-icon_container slds-icon-utility-warning"
+          title="Warning"
+        >
+          <lightning-icon
+            size="small"
+            icon-name="utility:warning"
+            alternative-text="warning"
+            title="warning"
+          ></lightning-icon>
+        </span>
+      </div>
+      <div class="slds-media__body">
+        <p>
+          AppAnalytics is available for packages that passed security review and
+          are registered to a License Management Org
+        </p>
+      </div>
+    </div>
+    <div class="slds-grid slds-wrap slds-gutters slds-var-p-top_xx-small">
+      <div class="slds-col slds-size_6-of-12">
+        <lightning-input
+          type="datetime"
+          name="StartTime"
+          label="Start Time"
+          onchange={handleStartTimeInputChange}
+          class="startTimeCmp"
+          required
+        ></lightning-input>
+        <lightning-combobox
+          name="FileType"
+          label="File Type"
+          value={fileType}
+          placeholder="Select File Type"
+          options={fileTypeOptions}
+          onchange={handleFileTypeChange}
+          dropdown-alignment="bottom-left"
+        ></lightning-combobox>
+      </div>
+      <div class="slds-col slds-size_6-of-12">
+        <lightning-input
+          type="datetime"
+          name="EndTime"
+          label="End Time"
+          onchange={handleEndTimeInputChange}
+        ></lightning-input>
+        <template if:true={displayFileComperssion}>
+          <template if:true={displayCSVFileCompression}>
+            <lightning-combobox
+              name="FileCompression"
+              label="File Compression"
+              value={fileCompression}
+              placeholder="Select File Compression"
+              options={csvFileCompressionOptions}
+              onchange={handleFileCompressionChange}
+              dropdown-alignment="bottom-left"
+            ></lightning-combobox>
+          </template>
+          <template if:true={displaySnappyFileCompression}>
+            <lightning-combobox
+              name="FileCompression"
+              label="File Compression"
+              value={fileCompression}
+              placeholder="Select File Compression"
+              options={snappyFileCompressionOptions}
+              onchange={handleFileCompressionChange}
+              dropdown-alignment="bottom-left"
+            ></lightning-combobox>
+          </template>
+        </template>
+      </div>
+    </div>
+    <template if:true={subscribers}>
+      <div class="slds-var-p-top_medium">
+        <legend class="slds-form-element__legend slds-form-element__label">
+          Subscribers&nbsp;
+          <lightning-helptext style="display:inline-flex" content="If don't choose any subscribers, the data is requested for all the orgs that the pacakge is installed in"></lightning-helptext>
+        </legend>
+        <div class="slds-form-element__control">
+          <lightning-pill-container
+            items={subscriberPills}
+            onitemremove={handleSubscriberRemove}
+            class="pill-style"
+          ></lightning-pill-container>
+        </div>
+      </div>
+    </template>
+  </div>
+  <footer class="slds-modal__footer slds-grid slds-grid_align-spread">
+    <lightning-button
+      variant="neutral"
+      type="previous"
+      name="previous"
+      label="Previous"
+      onclick={handlePrevious}
+    >
+    </lightning-button>
+    <template if:false={displayProgressIndicatorError}>
+      <lightning-progress-indicator
+        current-step="2"
+        type="base"
+        variant="base"
+        class="slds-progress slds-progress_shade"
+      >
+        <lightning-progress-step
+          label="Choose Data Type"
+          value="1"
+        ></lightning-progress-step>
+        <lightning-progress-step
+          label={progressStepLabel}
+          value="2"
+        ></lightning-progress-step>
+      </lightning-progress-indicator>
+    </template>
+    <template if:true={displayProgressIndicatorError}>
+      <lightning-progress-indicator
+        current-step="2"
+        type="base"
+        variant="base"
+        class="slds-progress slds-progress_shade"
+        has-error
+      >
+        <lightning-progress-step
+          label="Choose Data Type"
+          value="1"
+        ></lightning-progress-step>
+        <lightning-progress-step
+          label={progressStepLabel}
+          value="2"
+        ></lightning-progress-step>
+      </lightning-progress-indicator>
+    </template>
+    <lightning-button-group>
+      <lightning-button
+        variant="brand"
+        type="submit"
+        name="submit"
+        label="Submit"
+        onclick={handleSubmit}
+      >
+    </lightning-button>
+    </lightning-button-group>
+  </footer>
+</template>

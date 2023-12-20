@@ -1,0 +1,524 @@
+<template>
+  <template if:true={displaySpinner}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="medium"
+      variant="brand"
+    ></lightning-spinner>
+  </template>
+  <div class="slds-grid slds-var-p-around_small slds-wrap">
+    <template if:true={isPatchVersion}>
+      <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small" role="status">
+        <div class="slds-media__figure">
+          <lightning-icon
+            size="small"
+            icon-name="utility:info"
+            alternative-text="info"
+            title="info"
+            variant="inverse"
+          ></lightning-icon>
+        </div>
+        <div class="slds-media__body">
+          <p>
+            Non-zero patch numbers create special type of patch packages. They should only be used unless absolutely necessary. Review the <a target="_blank" href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp_create_patch_version.htm">guidelines</a> and <a target="_blank" href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp_config_upgrades.htm">ancestry</a> considerations for Patch Versions in Second-Generation Managed Packaging 
+          </p>
+        </div>
+      </div>
+    </template>
+    <div class="slds-col slds-col_padded slds-size_6-of-12">
+      <template if:false={editMode}>
+        <lightning-input
+          type="text"
+          label="Version Name"
+          value={packageName}
+          readonly
+        ></lightning-input>
+      </template>
+      <template if:true={editMode}>
+        <lightning-input
+          type="text"
+          label="Version Name"
+          value={packageName}
+          name="Name"
+          class="edit-field"
+        ></lightning-input>
+      </template>
+      <lightning-input
+        type="text"
+        label="Version Number"
+        value={packageVersionNumber}
+        readonly
+        field-level-help="major.minor.patch-build"
+      ></lightning-input>
+      <template if:true={packageAncestorId}>
+        <lightning-input
+          type="text"
+          label="Ancestor ID"
+          value={packageAncestorId}
+          readonly
+        ></lightning-input>
+      </template>
+      <lightning-input
+        type="text"
+        label="Package Subscriber Version ID"
+        value={packageSubscriberVersionId}
+        readonly
+      ></lightning-input>
+      <div class="slds-form-element">
+        <label
+          class="slds-form-element__label slds-var-p-bottom_xx-small"
+          for="text-input-id-1"
+        >
+          Package Install (URL)
+        </label>
+        <div
+          class="slds-form-element__control input-style-size slds-var-p-bottom_x-small slds-truncate"
+        >
+          <lightning-formatted-url
+            value={packageInstallUrl}
+            target="_blank"
+            class="install-url"
+          ></lightning-formatted-url>
+        </div>
+      </div>
+      <lightning-input
+        type="url"
+        label="Package Install (SFDX)"
+        value={sfdxPackageInstall}
+        readonly
+      ></lightning-input>
+      <template if:true={editMode}>
+        <lightning-input
+          type="text"
+          label="Branch"
+          value={packageBranch}
+          name="Branch"
+          class="edit-field"
+          field-level-help="The branch associated with this package version. Can be used to create a tree structure of inheritance"
+        ></lightning-input>
+      </template>
+      <template if:false={editMode}>
+        <template if:true={packageBranch}>
+          <lightning-input
+            type="text"
+            label="Branch"
+            value={packageBranch}
+            readonly
+            field-level-help="The branch associated with this package version. Can be used to create a tree structure of inheritance"
+          ></lightning-input>
+        </template>
+        <template if:false={packageBranch}>
+          <lightning-input
+            type="text"
+            label="Branch"
+            value={packageBranch}
+            disabled
+            field-level-help="The branch associated with this package version. Can be used to create a tree structure of inheritance"
+          ></lightning-input>
+        </template>
+      </template>
+      <template if:true={editMode}>
+        <lightning-input
+          type="text"
+          label="Tag"
+          value={packageTag}
+          name="Tag"
+          class="edit-field"
+        ></lightning-input>
+      </template>
+      <template if:false={editMode}>
+        <template if:true={packageTag}>
+          <lightning-input
+            type="text"
+            label="Tag"
+            value={packageTag}
+            readonly
+          ></lightning-input>
+        </template>
+        <template if:false={packageTag}>
+          <lightning-input
+            type="text"
+            label="Tag"
+            value={packageTag}
+            disabled
+          ></lightning-input>
+        </template>
+      </template>
+      <template if:false={editMode}>
+        <template if:true={packageDescription}>
+          <div class="slds-form-element">
+            <label
+              class="slds-form-element__label slds-var-p-bottom_xx-small"
+              for="text-input-id-1"
+            >
+              Description
+            </label>
+            <div
+              class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
+            >
+            <div class="slds-form-element__static">
+              {packageDescription}
+            </div>
+            </div>
+          </div>
+        </template>
+        <template if:false={packageDescription}>
+          <lightning-textarea
+            label="Description"
+            value={packageDescription}
+            disabled
+          ></lightning-textarea>
+        </template>
+      </template>
+      <template if:true={editMode}>
+        <lightning-textarea
+          label="Description"
+          value={packageDescription}
+          name="Description"
+          class="edit-field"
+        ></lightning-textarea>
+      </template>
+    </div>
+    <div class="slds-col slds-col_padded">
+      <template if:true={displayCodeCoverage}>
+        <div class="slds-var-p-bottom_small">
+          <lightning-input
+            type="number"
+            label="Code Coverage"
+            formatter="percent-fixed"
+            value={displayCodeCoverage}
+            field-level-help="A minimum 75% code coverage is required for package version promotion"
+            readonly
+          ></lightning-input>
+        </div>
+      </template>
+      <template if:true={subscribersCount}>
+        <div class="slds-var-p-bottom_small">
+          <lightning-input
+            type="number"
+            label={subscriberLabel}
+            value={subscribersCount}
+            readonly
+          ></lightning-input>
+        </div>
+      </template>
+      <template if:false={editMode}>
+        <lightning-input
+          type="checkbox"
+          label="Is Released"
+          checked={packageIsReleased}
+          disabled
+        ></lightning-input>
+      </template>
+      <template if:true={editMode}>
+        <lightning-input
+          type="checkbox"
+          label="Is Released"
+          checked={packageIsReleased}
+          disabled
+        ></lightning-input>
+      </template>
+      <lightning-input
+        type="checkbox"
+        label="Is Password Protected"
+        checked={packageIsPasswordProtected}
+        field-level-help="Specifies whether installation of this package version requires the user to provide an installation key"
+        disabled
+      ></lightning-input>
+      <lightning-input
+        type="checkbox"
+        label="Has Passed Code Coverage Check"
+        checked={packageHasPassedCodeCoverageCheck}
+        field-level-help="Code coverage tests were run when the package version was created, and the resulting code coverage percentage is 75% or greater"
+        disabled
+      ></lightning-input>
+      <lightning-input
+        type="checkbox"
+        label="Validation Skipped"
+        checked={packageValidationSkipped}
+        field-level-help="Skipping validation reduces the time it takes to create a new package version, but package versions created without validation can’t be promoted to the released state"
+        disabled
+      ></lightning-input>
+      <template if:true={isManaged}>
+        <lightning-input
+          type="checkbox"
+          label="Has Metadata Removed"
+          checked={packageMetadataRemoved}
+          field-level-help="To request access to this feature, log a case at Salesforce Partner Community. Check out the Announcements section for more information"
+          disabled
+        ></lightning-input>
+      </template>
+      <template if:true={displaySecurityReview}>
+        <lightning-input
+          type="checkbox"
+          label="Is Security Review Approved"
+          checked={isSecurityReviewApproved}
+          field-level-help="Specifies whether the package has passed the security review required for publishing on AppExchange"
+          disabled
+        ></lightning-input>
+      </template>
+      <div class="slds-var-p-top_small">
+        <template if:true={packageBuildDurationInSeconds}>
+          <lightning-input
+            type="text"
+            label="Build Duration In Seconds"
+            value={packageBuildDurationInSeconds}
+            readonly
+          ></lightning-input>
+        </template>
+        <template if:true={packageLanguage}>
+          <lightning-input
+            type="text"
+            label="Language"
+            value={packageLanguage}
+            readonly
+          ></lightning-input>
+        </template>
+        <template if:true={packageReleaseVersion}>
+          <lightning-input
+            type="text"
+            label="Salesforce Release Version"
+            value={packageReleaseVersion}
+            readonly
+          ></lightning-input>
+        </template>
+        <lightning-input
+          type="text"
+          label="Created By"
+          value={packageCreatedBy}
+          readonly
+        ></lightning-input>
+        <div class="slds-form-element">
+          <label
+            class="slds-form-element__label slds-var-p-bottom_xx-small"
+            for="text-input-id-1"
+          >
+            Created Date
+          </label>
+          <div
+            class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
+          >
+            <lightning-formatted-date-time
+              value={packageCreatedDate}
+              year="numeric"
+              month="numeric"
+              day="numeric"
+              hour="2-digit"
+              minute="2-digit"
+              time-zone-name="short"
+              hour12="true"
+            ></lightning-formatted-date-time>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="slds-modal__footer">
+    <template if:false={editMode}>
+      <div class="slds-grid slds-grid_align-end">
+        <div class="slds-show_large">
+          <template if:false={displayCodeCoveragePopover}>
+            <lightning-button
+              variant="brand"
+              label="Edit"
+              title="Edit"
+              onclick={handleEdit}
+              icon-name="utility:edit"
+              icon-position="right"
+              class="slds-var-m-right_x-small"
+            >
+            </lightning-button>
+            <template if:false={packageIsReleased}>
+              <lightning-button
+                variant="brand"
+                label="Promote"
+                title="Promote"
+                onclick={handlePromote}
+                icon-name="utility:forward_up"
+                icon-position="right"
+                class="slds-var-m-right_x-small"
+              >
+              </lightning-button>
+            </template>
+          </template>
+          <template if:true={displayCodeCoveragePopover}>
+            <lightning-icon
+              size="small"
+              icon-name="utility:warning"
+              alternative-text="warning"
+              title="Warning"
+              variant="warning"
+              class="slds-var-p-right_small slds-var-p-top_xx-small"
+            ></lightning-icon>
+          </template>
+          <lightning-button
+            variant="brand"
+            label="Get Code Coverage"
+            title="Code Coverage"
+            onclick={handleCodeCoverage}
+            icon-name="utility:apex"
+            icon-position="right"
+            class="slds-var-m-right_x-small"
+          >
+          </lightning-button>
+          <template if:false={displayCodeCoveragePopover}>
+            <template if:true={displaySecurityReviewButton}>
+              <lightning-button
+                variant="brand"
+                label="Security Review"
+                title="Security Review"
+                onclick={handleSecurityReview}
+                icon-name="utility:lock"
+                icon-position="right"
+                class="slds-var-m-right_x-small"
+              >
+              </lightning-button>
+            </template>
+          </template>
+          <template if:true={displayCodeCoveragePopover}>
+            <div class="slds-is-relative">
+              <section
+                aria-describedby="dialog-body-id-102"
+                aria-labelledby="dialog-heading-id-2"
+                class="slds-text-align_left slds-popover slds-popover_warning slds-nubbin_bottom popover-style slds-is-absolute"
+                role="dialog"
+              >
+                <button
+                  class="slds-button slds-button_icon slds-button_icon-small slds-float_right slds-popover__close"
+                  title="Close"
+                  onclick={handlePopoverClose}
+                >
+                  <lightning-icon
+                    size="x-small"
+                    icon-name="utility:close"
+                    alternative-text="Close"
+                    title="Close"
+                  ></lightning-icon>
+                  <span class="slds-assistive-text">Close</span>
+                </button>
+                <header class="slds-popover__header">
+                  <div
+                    class="slds-media slds-media_center slds-has-flexi-truncate "
+                  >
+                    <div class="slds-media__figure">
+                      <span class="slds-icon_container slds-icon-utility-warning">
+                        <lightning-icon
+                          size="small"
+                          icon-name="utility:warning"
+                          alternative-text="warning"
+                          title="warning"
+                        ></lightning-icon>
+                      </span>
+                    </div>
+                    <div class="slds-media__body">
+                      <h2
+                        class="slds-truncate slds-text-heading_medium"
+                        id="dialog-heading-id-2"
+                        title="Review warning"
+                      >
+                        Unable to Calculate
+                      </h2>
+                    </div>
+                  </div>
+                </header>
+                <div
+                  class="slds-popover__body slds-popover_warning__body"
+                  id="dialog-body-id-102"
+                >
+                  <p>
+                    Code Coverage could not be retrieved for this package
+                    version.&nbsp;
+                    <a href={codeCoverageLink} target="_blank" title="Learn More"
+                      >Learn More</a
+                    >
+                  </p>
+                </div>
+              </section>
+            </div>
+          </template>
+          <template if:false={displayCodeCoveragePopover}>
+            <lightning-button-group>
+              <lightning-button
+                variant="brand"
+                label="Subscribers"
+                title="Subscribers"
+                onclick={handleAllSubscribers}
+                icon-name="utility:number_input"
+                icon-position="right"
+              ></lightning-button>
+              <lightning-button-menu
+                alternative-text="Show menu"
+                variant="border-filled"
+                menu-alignment="auto"
+                onselect={handleSubscriberMenuSelect}
+              >
+                <lightning-menu-item
+                  label="Production Subscribers"
+                  value="Production"
+                ></lightning-menu-item>
+                <lightning-menu-item
+                  label="Sandbox Subscribers"
+                  value="Sandbox"
+                ></lightning-menu-item>
+              </lightning-button-menu>
+            </lightning-button-group>
+          </template>
+        </div>
+        <div class="slds-hide_large">
+          <lightning-button
+              variant="brand"
+              label="Edit"
+              title="Edit"
+              onclick={handleEdit}
+              icon-name="utility:edit"
+              icon-position="right"
+              class="slds-var-m-right_x-small"
+            >
+          </lightning-button>
+          <lightning-button-group>
+            <lightning-button
+              variant="brand"
+              label="Subscribers"
+              title="Subscribers"
+              onclick={handleAllSubscribers}
+              icon-name="utility:number_input"
+              icon-position="right"
+            ></lightning-button>
+            <lightning-button-menu
+              alternative-text="Show menu"
+              variant="border-filled"
+              menu-alignment="auto"
+              onselect={handleSubscriberMenuSelect}
+            >
+              <lightning-menu-item
+                label="Production Subscribers"
+                value="Production"
+              ></lightning-menu-item>
+              <lightning-menu-item
+                label="Sandbox Subscribers"
+                value="Sandbox"
+              ></lightning-menu-item>
+            </lightning-button-menu>
+          </lightning-button-group>
+        </div>
+      </div>
+    </template>
+    <template if:true={editMode}>
+      <div class="slds-align_absolute-center">
+        <lightning-button
+        label="Cancel"
+        title="Cancel"
+        onclick={handleEditCancel}
+        class="slds-var-m-left_x-small"
+        ></lightning-button>
+        <lightning-button
+          variant="brand"
+          label="Save"
+          title="Save"
+          onclick={handleEditSave}
+          class="slds-var-m-left_x-small"
+        ></lightning-button>
+      </div>
+    </template>
+  </footer>
+</template>

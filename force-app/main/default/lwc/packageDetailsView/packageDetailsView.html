@@ -1,0 +1,285 @@
+<template>
+  <template if:true={displaySpinner}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="medium"
+      variant="brand"
+    ></lightning-spinner>
+  </template>
+  <div class="slds-grid slds-var-p-around_small slds-wrap">
+    <div class="slds-col slds-col_padded slds-size_6-of-12">
+      <template if:false={editMode}>
+        <lightning-input
+          type="text"
+          label="Name"
+          value={name}
+          readonly
+        ></lightning-input>
+      </template>
+      <template if:true={editMode}>
+        <lightning-input
+          type="text"
+          label="Name"
+          value={name}
+          name="Name"
+          class="edit-field"
+        ></lightning-input>
+      </template>
+      <template if:true={namespacePrefix}>
+        <lightning-input
+          type="text"
+          label="Namespace Prefix"
+          value={namespacePrefix}
+          readonly
+        ></lightning-input>
+      </template>
+      <template if:false={namespacePrefix}>
+        <lightning-input
+          type="text"
+          label="Namespace Prefix"
+          value="None"
+          readonly
+        ></lightning-input>
+      </template>
+      <lightning-input
+        type="text"
+        label="Package ID"
+        value={packageId}
+        readonly
+      ></lightning-input>
+      <template if:true={packageType}>
+        <lightning-input
+          type="text"
+          label="Subscriber Package ID"
+          value={subscriberPackageId}
+          readonly
+        ></lightning-input>
+        <template if:false={editMode}>
+          <template if:true={description}>
+            <div class="slds-form-element">
+              <label
+                class="slds-form-element__label slds-var-p-bottom_xx-small"
+                for="text-input-id-1"
+              >
+                Description
+              </label>
+              <div
+                class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
+              >
+                {description}
+              </div>
+            </div>
+          </template>
+          <template if:false={description}>
+            <lightning-textarea
+              label="Description"
+              value={description}
+              disabled
+            ></lightning-textarea>
+          </template>
+        </template>
+        <template if:true={editMode}>
+          <lightning-textarea
+            label="Description"
+            value={description}
+            name="Description"
+            class="edit-field"
+          ></lightning-textarea>
+        </template>
+      </template>
+    </div>
+    <div class="slds-col slds-col_padded">
+      <template if:true={packageType}>
+        <template if:false={managedPackageView}>
+          <lightning-input
+            type="checkbox"
+            label="Is Org Dependent"
+            checked={isOrgDependent}
+            field-level-help="Indicates whether the package depends on unpackaged metadata in the Installation Org"
+            disabled
+          ></lightning-input>
+        </template>
+        <div class="slds-var-p-bottom_small">
+          <lightning-input
+            type="checkbox"
+            label="Was Transferred"
+            checked={wasTransferred}
+            disabled
+            field-level-help="Indicates whether the package was previously associated with a different Dev Hub Org"
+          ></lightning-input>
+        </div>
+        <div>
+          <template if:true={editMode}>
+            <lightning-input
+              type="text"
+              label="Package Error Username"
+              value={packageErrorUsername}
+              name="PackageErrorUsername"
+              class="edit-field"
+              field-level-help="The email address for an active user in the Dev Hub org you want to receive email notification regarding package-related errors"
+            ></lightning-input>
+          </template>
+          <template if:false={editMode}>
+            <template if:true={packageErrorUsername}>
+              <lightning-input
+                type="text"
+                label="Package Error Username"
+                value={packageErrorUsername}
+                readonly
+                field-level-help="The email address for an active user in the Dev Hub org you want to receive email notification regarding package-related errors"
+              ></lightning-input>
+            </template>
+            <template if:false={packageErrorUsername}>
+              <lightning-input
+                type="text"
+                label="Package Error Username"
+                value={packageErrorUsername}
+                disabled
+                field-level-help="The email address for an active user in the Dev Hub org you want to receive email notification regarding package-related errors"
+              ></lightning-input>
+            </template>
+          </template>
+          <lightning-input
+            type="text"
+            label="Created By"
+            value={packageCreatedBy}
+            readonly
+          ></lightning-input>
+          <div class="slds-form-element">
+            <label
+              class="slds-form-element__label slds-var-p-bottom_xx-small"
+              for="text-input-id-1"
+            >
+              Created Date
+            </label>
+            <div
+              class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
+            >
+              <lightning-formatted-date-time
+                value={packageCreatedDate}
+                year="numeric"
+                month="numeric"
+                day="numeric"
+                hour="2-digit"
+                minute="2-digit"
+                time-zone-name="short"
+                hour12="true"
+              ></lightning-formatted-date-time>
+            </div>
+          </div>
+        </div>
+      </template>
+      <template if:true={packageLastModifiedDate}>
+        <div class="slds-form-element">
+          <label
+            class="slds-form-element__label slds-var-p-bottom_xx-small"
+            for="text-input-id-1"
+          >
+            Last Modified Date
+          </label>
+          <div
+            class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
+          >
+            <lightning-formatted-date-time
+              value={packageLastModifiedDate}
+              year="numeric"
+              month="numeric"
+              day="numeric"
+              hour="2-digit"
+              minute="2-digit"
+              time-zone-name="short"
+              hour12="true"
+            ></lightning-formatted-date-time>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+  <template if:true={editMode}>
+    <footer class="slds-card__footer slds-modal__footer">
+      <div class="slds-align_absolute-center">
+        <template if:true={displayEditErrorPopover}>
+          <div class="slds-is-relative">
+            <section
+              aria-describedby="dialog-body-id-102"
+              aria-labelledby="dialog-heading-id-2"
+              class="slds-text-align_left slds-popover slds-popover_error slds-nubbin_bottom popover-style slds-is-absolute"
+              role="dialog"
+            >
+              <button
+                class="slds-text-align_left slds-button slds-button_icon slds-button_icon-small slds-float_right slds-popover__close slds-button_icon-inverse"
+                title="Close"
+                onclick={handlePopoverClose}
+              >
+                <lightning-icon
+                  size="x-small"
+                  icon-name="utility:close"
+                  alternative-text="Close"
+                  title="Close"
+                  variant="inverse"
+                ></lightning-icon>
+                <span class="slds-assistive-text">Close</span>
+              </button>
+              <header class="slds-popover__header">
+                <div
+                  class="slds-media slds-media_center slds-has-flexi-truncate "
+                >
+                  <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-utility-error">
+                      <lightning-icon
+                        size="small"
+                        icon-name="utility:error"
+                        alternative-text="error"
+                        title="error"
+                        variant="inverse"
+                      ></lightning-icon>
+                    </span>
+                  </div>
+                  <div class="slds-media__body">
+                    <h2
+                      class="slds-truncate slds-text-heading_medium"
+                      id="dialog-heading-id-1"
+                      title="Resolve error"
+                    >
+                      {popoverTitle}
+                    </h2>
+                  </div>
+                </div>
+              </header>
+              <div
+                class="slds-popover__body slds-popover_warning__body"
+                id="dialog-body-id-102"
+              >
+                <p>
+                  {popoverBody}
+                </p>
+              </div>
+            </section>
+          </div>
+        </template>
+        <template if:true={displayEditErrorPopover}>
+          <lightning-icon
+            size="small"
+            icon-name="utility:error"
+            alternative-text="error"
+            title="Error"
+            variant="error"
+          ></lightning-icon>
+        </template>
+        <lightning-button
+          label="Cancel"
+          title="Cancel"
+          onclick={handleCancel}
+          class="slds-var-m-left_x-small"
+        ></lightning-button>
+        <lightning-button
+          variant="brand"
+          label="Save"
+          title="Save"
+          onclick={handleSave}
+          class="slds-var-m-left_x-small"
+        ></lightning-button>
+      </div>
+    </footer>
+  </template>
+</template>

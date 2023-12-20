@@ -1,0 +1,150 @@
+<template>
+    <article class="slds-card">
+        <div class="slds-card__header slds-grid slds-theme_shade">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate slds-m-bottom_x-small">
+                <div class="slds-media__figure">
+                    <lightning-icon
+                        icon-name="utility:salesforce1"
+                        alternative-text="Trial"
+                        title="Trial"
+                        size="medium"
+                        class="card_header_icon"
+                    ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <h2 class="slds-card__header-title">
+                    <strong class="slds-truncate">Org Expiration Notifier</strong>
+                  </h2>
+                </div>
+                <div class="slds-no-flex">
+                    <lightning-button-group>
+                        <!-- <lightning-button label="Create Task"></lightning-button> -->
+                        <lightning-button-icon icon-name="utility:help_doc_ext" variant="border-filled" alternative-text="Org Extension" onclick={handleHelpDoc}></lightning-button-icon>
+                    </lightning-button-group>
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <template if:true={displaySpinner}>
+                <lightning-spinner
+                  alternative-text="Loading"
+                  size="medium"
+                  variant="brand"
+                ></lightning-spinner>
+            </template>
+            <template lwc:if={org}>
+                <template if:false={org.TrialExpirationDate}>
+                    <div class="slds-notify slds-notify_alert slds-m-bottom_xx-small" role="alert">
+                        <span class="slds-assistive-text">info</span>
+                        <span
+                            class="slds-icon_container slds-icon-utility-warning slds-var-m-right_x-small"
+                        >
+                          <lightning-icon
+                            size="small"
+                            icon-name="utility:info_alt"
+                            alternative-text="info"
+                            title="Info"
+                            variant="inverse"
+                          ></lightning-icon>
+                        </span>
+                        <h2>
+                          Trial Expiration Date for this org is not available. Navigate to the org's <a target="_blank" href="/lightning/setup/CompanyProfileInfo/home">Company Information</a> for more details
+                        </h2>
+                    </div>
+                </template>
+                <template if:true={org.TrialExpirationDate}>
+                    <div
+                        class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
+                        <span class="slds-assistive-text">warning</span>
+                        <span
+                            class="slds-icon_container slds-icon-utility-warning slds-var-m-right_x-small"
+                        >
+                        <lightning-icon
+                            size="small"
+                            icon-name="utility:warning"
+                            alternative-text="warning"
+                            title="warning"
+                        ></lightning-icon>
+                        </span>
+                        <h2>
+                            The org is set to expire <lightning-relative-date-time value={numOfDays}></lightning-relative-date-time>. You have until <lightning-formatted-date-time value={org.TrialExpirationDate} year="numeric" month="numeric" day="numeric" hour="2-digit"
+                            minute="2-digit" time-zone-name="short"></lightning-formatted-date-time> to log a case via Partner Community and request org extension
+                        </h2>
+                  </div>
+                </template>
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-col slds-size_7-of-12">
+                        <template lwc:if={org.Name}>
+                            <lightning-input
+                                type="text"
+                                label="Name"
+                                value={org.Name}
+                                readonly
+                                ></lightning-input>
+                        </template>
+                        <template lwc:if={org.PrimaryContact}>
+                            <lightning-input
+                                type="text"
+                                label="Primary Contact"
+                                value={org.PrimaryContact}
+                                readonly
+                                ></lightning-input>
+                        </template>
+                        <lightning-input
+                            type="checkbox"
+                            label="Is Sandbox"
+                            checked={org.IsSandbox}
+                            variant="label-stacked"
+                            disabled
+                        ></lightning-input>
+                    </div>
+                    <div class="slds-col">
+                        <template lwc:if={org.OrganizationType}>
+                            <lightning-input
+                                type="text"
+                                label="Organization Type"
+                                value={org.OrganizationType}
+                                readonly
+                                ></lightning-input>
+                        </template>
+                        <template lwc:if={org.Id}>
+                            <lightning-input
+                                type="text"
+                                label="Org Id"
+                                value={org.Id}
+                                readonly
+                                ></lightning-input>
+                        </template>
+                        <template lwc:if={org.InstanceName}>
+                            <div class="slds-form-element">
+                                <label
+                                  class="slds-form-element__label"
+                                  for="text-input-id-1"
+                                >
+                                  Instance
+                                </label>
+                                <div
+                                  class="slds-form-element__control slds-var-p-bottom_x-small"
+                                >
+                                <lightning-formatted-url 
+                                    value={trustUrl}
+                                    label={org.InstanceName}
+                                    target="_blank" >
+                                </lightning-formatted-url>
+                                </div>
+                              </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+            <template if:false={displaySpinner}>             
+                <template if:false={org}>
+                    <c-not-available-illustration
+                        body="We were unable to retrieve Organization details. Ask your admin to see if you have the appropriate permissions to view this data..."
+                    >
+                    </c-not-available-illustration>
+                </template>
+            </template>
+        </div>
+    </article>
+</template>

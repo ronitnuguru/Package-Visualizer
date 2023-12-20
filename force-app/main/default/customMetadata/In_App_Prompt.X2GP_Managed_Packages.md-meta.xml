@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>2GP Managed Packages</label>
+    <protected>true</protected>
+    <values>
+        <field>Brand_Button_Label__c</field>
+        <value xsi:type="xsd:string">Partner Community</value>
+    </values>
+    <values>
+        <field>Brand_Button_URL__c</field>
+        <value xsi:type="xsd:string">https://partners.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000HXAqSAO</value>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">Second-generation managed packaging (2GP) ushers in a new way for AppExchange partners to develop, distribute, and manage their apps and metadata. You can use 2GP to organize your source, build small modular packages, integrate with your version control system, and better utilize your custom Apex code. With version control being the source of truth, there are no packaging or patch orgs. You can execute all packaging operations via Salesforce CLI, or automate them using scripts</value>
+    </values>
+    <values>
+        <field>Learn_More_Link__c</field>
+        <value xsi:type="xsd:string">https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm</value>
+    </values>
+    <values>
+        <field>Prompt_Popover_Location__c</field>
+        <value xsi:type="xsd:string">slds-popover_prompt_bottom-right</value>
+    </values>
+    <values>
+        <field>Title__c</field>
+        <value xsi:type="xsd:string">Second-Generation Managed Packages</value>
+    </values>
+</CustomMetadata>

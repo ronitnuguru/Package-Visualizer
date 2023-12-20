@@ -1,0 +1,81 @@
+<template>
+  <div
+    class="slds-grid slds-gutters slds-var-p-around_xx-small slds-border_bottom slds-align_absolute-center"
+    key={key}
+  >
+    <template if:true={displaySpinner}>
+      <lightning-spinner
+        alternative-text="Loading"
+        size="medium"
+        variant="brand"
+      ></lightning-spinner>
+    </template>
+    <div class="">
+      <template if:true={displayLoadingIcon}>
+        <lightning-dynamic-icon
+          type="eq"
+          option="play"
+          alternative-text="Download in progress"
+        >
+        </lightning-dynamic-icon>
+      </template>
+      <template if:true={displaySuccessIcon}>
+        <lightning-icon
+          icon-name="utility:success"
+          alternative-text="Success!"
+          variant="success"
+          size="small"
+        ></lightning-icon>
+      </template>
+      <template if:true={displayWarningIcon}>
+        <lightning-icon
+          icon-name="utility:warning"
+          alternative-text="Warning!"
+          variant="warning"
+          title="Warning"
+          size="small"
+        ></lightning-icon>
+      </template>
+      <template if:true={displayErrorIcon}>
+        <lightning-icon
+          icon-name="utility:error"
+          alternative-text="Error!"
+          variant="error"
+          title="Error"
+          size="small"
+        ></lightning-icon>
+      </template>
+    </div>
+    <div class="slds-col slds-size_7-of-12 slds-truncate">
+      <span>
+        <strong class="slds-text-title_caps">{name}</strong>
+      </span>
+    </div>
+    <div class="slds-col_bump-left">
+      <lightning-button-group>
+        <lightning-button
+          label="View"
+          onclick={handleViewModal}
+        ></lightning-button>
+        <template if:true={downloadUrl}>
+          <lightning-button-icon
+            icon-name="utility:download"
+            variant="brand"
+            alternative-text="Download"
+            onclick={handleDownload}
+          >
+          </lightning-button-icon>
+        </template>
+        <template if:true={displayWarningIcon}>
+          <lightning-button-icon
+            icon-name="utility:refresh"
+            variant="brand"
+            alternative-text="Refresh"
+            onclick={handleRefresh}
+          >
+          </lightning-button-icon>
+        </template>
+      </lightning-button-group>
+    </div>
+  </div>
+</template>

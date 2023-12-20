@@ -1,0 +1,15 @@
+.input-style {
+  font-weight: var(--lwc-fontWeightBold, 700);
+}
+
+.card-style {
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 2px 0 rgb(0 0 0 / 10%);
+}
+
+.tile-style {
+  font-weight: 700;
+  pointer-events: none;
+  cursor: default;
+  color: var(--lwc-brandAccessible);
+}

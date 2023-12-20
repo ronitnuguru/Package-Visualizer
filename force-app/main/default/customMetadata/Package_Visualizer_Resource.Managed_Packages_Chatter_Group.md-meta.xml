@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>6. SECURITY REVIEW BEST PRACTICES</label>
+    <protected>true</protected>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">Security Review is the last big hurdle ISV Partners have to pass before listing their app on AppExchange. Review the scope, guidelines, potential stumbling blocks and best practices to help increase your chances in passing Security Review</value>
+    </values>
+    <values>
+        <field>Icon__c</field>
+        <value xsi:type="xsd:string">doctype:pdf</value>
+    </values>
+    <values>
+        <field>Link__c</field>
+        <value xsi:type="xsd:string">https://acrobat.adobe.com/id/urn:aaid:sc:US:5732f963-f529-4fb7-a3dd-7739702f1c82</value>
+    </values>
+    <values>
+        <field>Visibility__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

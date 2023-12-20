@@ -1,0 +1,23 @@
+.package-split-grid {
+  display: flex;
+  width: 25rem;
+}
+
+.list-style {
+  overflow: scroll;
+  max-height: 550px;
+}
+
+.split-style {
+  border-radius: 0;
+  border: var(--lwc-borderWidthThin, 1px) solid
+    var(--lwc-colorBorder, rgb(221, 219, 218));
+}
+
+.pane-height-closed{
+  height: 600px;
+}
+
+.pane-height-open{
+  max-height: -webkit-fill-available;
+}

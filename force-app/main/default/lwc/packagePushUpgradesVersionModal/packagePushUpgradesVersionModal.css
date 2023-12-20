@@ -1,0 +1,30 @@
+.popover-style {
+  top: 10px;
+  right: -250px;
+  text-align: left;
+}
+
+.content-style {
+  border-radius: 0.25px;
+}
+
+.decimal-style {
+  font-weight: 900;
+  color: #706E6B;
+}
+
+.table-style{
+  max-height: 300px;
+  overflow: scroll;
+}
+
+.pill-style{
+  --sds-c-pill-container-spacing-block-start: 0.300rem;
+  --sds-c-pill-container-spacing-inline-end: 0.300rem;
+  --sds-c-pill-container-spacing-block-end: 0.300rem;
+  --sds-c-pill-container-spacing-inline-start: 0.300rem;
+  --sds-c-pill-spacing-block-start: 0.300rem;
+  --sds-c-pill-spacing-inline-end: 0.300rem;
+  --sds-c-pill-spacing-block-end: 0.300rem;
+  --sds-c-pill-spacing-inline-start: 0.300rem;
+}

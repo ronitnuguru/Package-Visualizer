@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>This Message Channel contains Docked Utility Bar Controls</description>
+    <isExposed>true</isExposed>
+    <lightningMessageFields>
+        <fieldName>createOrgsOpen</fieldName>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>dockedBarControls</fieldName>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>limitsOpen</fieldName>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>resourcesOpen</fieldName>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>appAnalyticsRequestOpen</fieldName>
+    </lightningMessageFields>
+    <masterLabel>DockedUtilityBarMessageChannel</masterLabel>
+</LightningMessageChannel>

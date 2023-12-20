@@ -1,0 +1,201 @@
+<template>
+  <div
+    class="slds-modal__content slds-var-p-around_medium slds-card content-style"
+    id="modal-content-id-1"
+  >
+    <template if:true={displaySpinner}>
+      <lightning-spinner
+        alternative-text="Loading"
+        size="medium"
+        variant="brand"
+      ></lightning-spinner>
+    </template>
+    <template if:true={displayAlert}>
+      <div class="slds-notify slds-notify_alert" role="alert">
+        <span class="slds-assistive-text">info</span>
+        <span
+          class="slds-icon_container slds-icon-utility-warning slds-var-m-right_x-small"
+        >
+          <lightning-icon
+            size="x-small"
+            icon-name="utility:info"
+            alternative-text="info"
+            title="info"
+            variant="inverse"
+          ></lightning-icon>
+        </span>
+        <h2>
+          As a best practice, schedule pushes at off-peak hours like 1:00 AM
+          Saturday. If not, the push upgrade starts immediately
+        </h2>
+        <div class="slds-notify__close">
+          <button
+            class="slds-button slds-button_icon slds-button_icon-small"
+            title="Close"
+            onclick={handleCloseAlert}
+          >
+            <lightning-icon
+              size="x-small"
+              icon-name="utility:close"
+              alternative-text="Close"
+              title="Close"
+              variant="inverse"
+            ></lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+          </button>
+        </div>
+      </div>
+    </template>
+    <div
+      class="slds-modal__content slds-var-p-top_small slds-align_absolute-center"
+    >
+      <legend class="slds-form-element__legend slds-form-element__label">
+        {modalAlertTitle}
+      </legend>
+    </div>
+    <div class="slds-align_absolute-center slds-var-p-top_x-small">
+      <lightning-input
+        type="datetime"
+        label="Scheduled Start Time (Optional)"
+        value={scheduledStartTime}
+        min={nowDate}
+        class="scheduleStartInput"
+      ></lightning-input>
+    </div>
+  </div>
+  <footer class={footerClass}>
+    <template if:false={progressIndicator}>
+      <template if:true={displayInvalidSchedulePopover}>
+        <lightning-icon
+          size="small"
+          icon-name="utility:error"
+          alternative-text="Error"
+          title="Error"
+          variant="error"
+          class="slds-var-p-right_x-small"
+        ></lightning-icon>
+      </template>
+      <button
+        class="slds-button slds-button_neutral"
+        onclick={handleCancel}
+        disabled={displaySpinner}
+      >
+        Cancel
+      </button>
+      <button
+        class="slds-button slds-button_brand"
+        onclick={handleSchedule}
+        disabled={displaySpinner}
+      >
+        Schedule
+      </button>
+    </template>
+    <template if:true={progressIndicator}>
+      <lightning-button
+        variant="neutral"
+        type="previous"
+        name="previous"
+        label="Previous"
+        onclick={handlePrevious}
+      >
+      </lightning-button>
+      <template if:false={displayInvalidSchedulePopover}>
+        <lightning-progress-indicator
+          current-step="2"
+          type="base"
+          variant="base"
+          class="slds-progress slds-progress_shade"
+        >
+          <lightning-progress-step
+            label="Choose Package Version"
+            value="1"
+          ></lightning-progress-step>
+          <lightning-progress-step
+            label="Schedule Push Upgrade"
+            value="2"
+          ></lightning-progress-step>
+        </lightning-progress-indicator>
+      </template>
+      <template if:true={displayInvalidSchedulePopover}>
+        <lightning-progress-indicator
+          current-step="1"
+          type="base"
+          variant="base"
+          class="slds-progress slds-progress_shade"
+          has-error
+        >
+          <lightning-progress-step
+            label="Choose Package Version"
+            value="1"
+          ></lightning-progress-step>
+          <lightning-progress-step
+            label="Schedule Push Upgrade"
+            value="2"
+          ></lightning-progress-step>
+        </lightning-progress-indicator>
+      </template>
+      <button
+        class="slds-button slds-button_brand"
+        onclick={handleSchedule}
+        disabled={displaySpinner}
+      >
+        Schedule
+      </button>
+    </template>
+    <template if:true={displayInvalidSchedulePopover}>
+      <div class="slds-is-relative">
+        <section
+          aria-describedby="dialog-body-id-98"
+          aria-labelledby="dialog-heading-id-1"
+          class={popOverClass}
+          role="dialog"
+        >
+          <button
+            class="slds-text-align_left slds-button slds-button_icon slds-button_icon-small slds-float_right slds-popover__close slds-button_icon-inverse"
+            title="Close"
+            onclick={handlePopoverClose}
+          >
+            <lightning-icon
+              size="x-small"
+              icon-name="utility:close"
+              alternative-text="Close"
+              title="Close"
+              variant="inverse"
+              onclick={handlePopoverClose}
+            ></lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+          </button>
+          <header class="slds-popover__header">
+            <div class="slds-media slds-media_center slds-has-flexi-truncate ">
+              <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-utility-error">
+                  <lightning-icon
+                    size="x-small"
+                    icon-name="utility:error"
+                    alternative-text="error"
+                    title="error"
+                    variant="inverse"
+                  ></lightning-icon>
+                </span>
+              </div>
+              <div class="slds-media__body">
+                <h2
+                  class="slds-truncate slds-text-heading_medium"
+                  id="dialog-heading-id-1"
+                  title="Resolve error"
+                >
+                  Push Upgrades Error
+                </h2>
+              </div>
+            </div>
+          </header>
+          <div class="slds-popover__body" id="dialog-body-id-98">
+            <p>
+              {popoverBody}
+            </p>
+          </div>
+        </section>
+      </div>
+    </template>
+  </footer>
+</template>

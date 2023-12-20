@@ -1,0 +1,6 @@
+.tile-style {
+  pointer-events: none;
+  cursor: default;
+  font-weight: 700;
+  color: var(--lwc-brandAccessible);
+}

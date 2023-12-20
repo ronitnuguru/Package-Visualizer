@@ -1,0 +1,44 @@
+<template>
+    <div>
+        <lightning-combobox
+          value={chartValue}
+          options={chartOptions}
+          onchange={handleChartOptionsChange}
+          variant="label-hidden"
+        ></lightning-combobox>
+        <div>
+          <template if:true={displaySpinner}>
+            <lightning-spinner
+              alternative-text="Loading"
+              size="medium"
+              variant="brand"
+            ></lightning-spinner>
+          </template>
+          <div class="chart slds-var-p-top_x-large" lwc:dom="manual"></div>
+          <template if:true={chartData}>
+            <div class="slds-var-p-top_medium">
+              <div class="slds-border_top">
+                <div
+                  class="slds-grid slds-var-p-around_small slds-grid_align-spread slds-text-heading_small"
+                >
+                  <div class="slds-col">
+                    <template for:each={chartFields} for:item="field">
+                      <div key={field} class="slds-var-p-around_xx-small">
+                        {field}
+                      </div>
+                    </template>
+                  </div>
+                  <div class="slds-col">
+                    <template for:each={chartVals} for:item="value">
+                      <div key={value} class="slds-var-p-around_xx-small">
+                        {value}
+                      </div>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+    </div>
+</template>

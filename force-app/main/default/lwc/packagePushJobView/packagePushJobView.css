@@ -1,0 +1,23 @@
+.tile-style {
+  pointer-events: none;
+  cursor: default;
+  font-weight: 700;
+}
+
+.table-style {
+  background-color: rgb(250, 250, 249);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  direction: rtl;
+  max-height: 600px;
+}
+
+.footer-styling {
+  position: initial;
+}
+
+.card-style {
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 2px 0 rgb(0 0 0 / 10%);
+}

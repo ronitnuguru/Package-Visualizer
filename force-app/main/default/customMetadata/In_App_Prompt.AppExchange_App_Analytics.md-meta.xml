@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>AppExchange App Analytics</label>
+    <protected>true</protected>
+    <values>
+        <field>Brand_Button_Label__c</field>
+        <value xsi:type="xsd:string">Best Practices</value>
+    </values>
+    <values>
+        <field>Brand_Button_URL__c</field>
+        <value xsi:type="xsd:string">https://developer.salesforce.com/docs/atlas.en-us.packagingGuide.meta/packagingGuide/app_analytics_best_practices.htm</value>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">AppExchange App Analytics provides usage data about how subscribers interact with your AppExchange solutions. You can use these details to identify attrition risks, inform feature development decisions, and improve user experience</value>
+    </values>
+    <values>
+        <field>Learn_More_Link__c</field>
+        <value xsi:type="xsd:string">https://developer.salesforce.com/docs/atlas.en-us.packagingGuide.meta/packagingGuide/app_analytics_intro.htm</value>
+    </values>
+    <values>
+        <field>Prompt_Popover_Location__c</field>
+        <value xsi:type="xsd:string">slds-popover_prompt_top-left</value>
+    </values>
+    <values>
+        <field>Title__c</field>
+        <value xsi:type="xsd:string">AppExchange App Analytics</value>
+    </values>
+</CustomMetadata>

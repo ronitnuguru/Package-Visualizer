@@ -1,0 +1,9 @@
+.managed-style{
+    cursor: pointer;
+    --slds-c-icon-color-background: #ff5d2d;
+}
+
+.unmanaged-style{
+    cursor: pointer;
+    --slds-c-icon-color-background: #9050e9;
+}

@@ -1,0 +1,311 @@
+<template>
+    <section
+      role="dialog"
+      tabindex="-1"
+      aria-labelledby="modal-heading-01"
+      aria-modal="true"
+      aria-describedby="modal-content-id-1"
+      class="slds-modal slds-fade-in-open slds-modal_medium modal-style"
+    >
+      <div class="slds-modal__container">
+        <header class="slds-modal__header">
+            <button
+                class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse slds-current-color"
+                title="Close"
+                onclick={handleCancel}
+                >
+                <lightning-icon
+                size="small"
+                icon-name="utility:close"
+                alternative-text="Close"
+                title="Close"
+                variant="inverse"
+                ></lightning-icon>
+                <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+                {rowData.company}
+            </h2>
+        </header>
+        <div
+          class="slds-modal__content slds-var-p-around_medium slds-card content-style"
+          id="modal-content-id-1"
+        >
+            <template if:true={displaySpinner}>
+                <lightning-spinner
+                alternative-text="Loading"
+                size="medium"
+                variant="brand"
+                ></lightning-spinner>
+            </template>
+            <div class="slds-section slds-is-open">
+                <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small">Org Details</span>
+                </h3>
+                <div aria-hidden="false" class="slds-section__content">
+                    <template if:true={rowData.errorCode}>
+                        <div
+                            class="slds-notify slds-notify_alert slds-alert_error slds-var-m-bottom_xx-small"
+                            role="alert"
+                        >
+                            <span class="slds-assistive-text">error</span>
+                            <span
+                                class="slds-icon_container slds-icon-utility-error slds-var-m-right_x-small"
+                            >
+                            <lightning-icon
+                                size="small"
+                                icon-name="utility:error"
+                                alternative-text="error"
+                                title="error"
+                                class="slds-current-color"
+                            ></lightning-icon>
+                            </span>
+                            <h2>
+                                {rowData.errorCode}: {errorMessage}
+                            </h2>
+                        </div>
+                    </template>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input
+                                type="text"
+                                label="Company"
+                                value={rowData.company}
+                                class="input-style"
+                                readonly
+                            ></lightning-input>
+                            <template if:true={rowData.trialDays}>
+                                <lightning-input
+                                    type="text"
+                                    label="Trial Days"
+                                    value={rowData.trialDays}
+                                    class="input-style"
+                                    readonly
+                                ></lightning-input>
+                            </template>
+                            <template if:true={rowData.createdOrgId}>
+                                <lightning-input
+                                    type="text"
+                                    label="Org Id"
+                                    value={rowData.createdOrgId}
+                                    class="input-style"
+                                    readonly
+                                ></lightning-input>
+                            </template>
+                            <template if:true={rowData.resolvedTemplateId}>
+                                <lightning-input
+                                    type="text"
+                                    label="Template Id"
+                                    value={rowData.resolvedTemplateId}
+                                    class="input-style"
+                                    readonly
+                                ></lightning-input>
+                            </template>
+                            <template if:true={rowData.trialSourceOrgId}>
+                                <lightning-input
+                                    type="text"
+                                    label="Trial Source Org Id"
+                                    value={rowData.trialSourceOrgId}
+                                    class="input-style"
+                                    readonly
+                                ></lightning-input>
+                            </template>
+                            <template if:true={rowData.subdomain}>
+                                <lightning-input
+                                    type="text"
+                                    label="Subdomain"
+                                    value={rowData.subdomain}
+                                    class="input-style"
+                                    readonly
+                                ></lightning-input>
+                            </template>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <template if:true={rowData.status}>
+                                <lightning-input
+                                    type="text"
+                                    label="Status"
+                                    value={rowData.status}
+                                    class="input-style"
+                                    readonly
+                                ></lightning-input>
+                            </template>
+                            <template if:true={rowData.country}>
+                                <lightning-input
+                                    type="text"
+                                    label="Country"
+                                    value={rowData.country}
+                                    class="input-style"
+                                    readonly
+                                ></lightning-input>
+                            </template>
+                            <template if:true={rowData.edition}>
+                                <lightning-input
+                                    type="text"
+                                    label="Org Edition"
+                                    value={rowData.edition}
+                                    class="input-style"
+                                    readonly
+                                ></lightning-input>
+                            </template>
+                            <template if:true={rowData.preferredLanguage}>
+                                <lightning-input
+                                    type="text"
+                                    label="Preferred Language"
+                                    value={rowData.preferredLanguage}
+                                    class="input-style"
+                                    readonly
+                                ></lightning-input>
+                            </template>
+                            <template if:true={rowData.createdDate}>
+                                <div class="slds-form-element">
+                                  <label
+                                    class="slds-form-element__label input-style slds-var-p-bottom_xx-small"
+                                    for="text-input-id-1"
+                                  >
+                                    Created Date
+                                  </label>
+                                  <div
+                                    class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
+                                  >
+                                    <lightning-formatted-date-time
+                                      value={rowData.createdDate}
+                                      year="numeric"
+                                      month="numeric"
+                                      day="numeric"
+                                      hour="2-digit"
+                                      minute="2-digit"
+                                      time-zone-name="short"
+                                      hour12="true"
+                                    ></lightning-formatted-date-time>
+                                  </div>
+                                </div>
+                            </template>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning-input type="checkbox" label="Is TSO" name="input3" checked={rowData.isTSO} disabled></lightning-input>
+                            <lightning-input type="checkbox" label="Is Signup Email Suppressed" checked={rowData.isSignupEmailSuppressed} disabled></lightning-input>
+                            <lightning-input type="checkbox" label="Should Connect To Environment Hub" checked={rowData.shouldConnectToEnvHub} disabled></lightning-input>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-section slds-is-open slds-p-top_x-small">
+                <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small">Admin User Details</span>
+                </h3>
+                <div aria-hidden="false" class="slds-section__content">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <template if:true={rowData.firstName}>
+                                <lightning-input
+                                    type="text"
+                                    label="First Name"
+                                    value={rowData.firstName}
+                                    class="input-style"
+                                    readonly
+                                ></lightning-input>
+                            </template>
+                            <template if:true={rowData.signupEmail}>
+                                <lightning-input type="email" label="Signup Email" value={rowData.signupEmail} readonly class="input-style"></lightning-input>
+                            </template>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <template if:true={rowData.lastName}>
+                                <lightning-input
+                                    type="text"
+                                    label="Last Name"
+                                    value={rowData.lastName}
+                                    class="input-style"
+                                    readonly
+                                ></lightning-input>
+                            </template>
+                            <template if:true={rowData.username}>
+                                <lightning-input type="email" label="Username" value={rowData.username} readonly class="input-style"></lightning-input>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <template if:true={rowData.createdOrgInstance}>
+                <template if:true={instance}>
+                    <template if:true={displayInstance}>
+                        <div class="slds-section slds-is-open slds-p-top_x-small">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small">Instance Details</span>
+                            </h3>
+                            <div aria-hidden="false" class="slds-section__content">
+                                <div class="slds-var-m-top_x-small slds-card">
+                                    <c-trust-instance-detail
+                                      instance-key={instance.key}
+                                      location={instance.location}
+                                      maintenance-window={instance.maintenanceWindow}
+                                      release-number={instance.releaseNumber}
+                                      release-version={instance.releaseVersion}
+                                      status={instance.status}
+                                    ></c-trust-instance-detail>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+            </template>
+            <div class="slds-section slds-is-open slds-p-top_x-small">
+                <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small">Additional Information</span>
+                </h3>
+                <div aria-hidden="false" class="slds-section__content">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <template if:true={rowData.owner}>
+                                <lightning-input
+                                    type="text"
+                                    label="Created By"
+                                    value={rowData.owner}
+                                    readonly
+                                    class="input-style"
+                                ></lightning-input>
+                            </template>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <template if:true={rowData.systemModstamp}>
+                                <div class="slds-form-element">
+                                  <label
+                                    class="slds-form-element__label input-style slds-var-p-bottom_xx-small"
+                                    for="text-input-id-1"
+                                  >
+                                    SystemModstamp
+                                  </label>
+                                  <div
+                                    class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
+                                  >
+                                    <lightning-formatted-date-time
+                                      value={rowData.systemModstamp}
+                                      year="numeric"
+                                      month="numeric"
+                                      day="numeric"
+                                      hour="2-digit"
+                                      minute="2-digit"
+                                      time-zone-name="short"
+                                      hour12="true"
+                                    ></lightning-formatted-date-time>
+                                  </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="slds-modal__footer">
+            <lightning-button label="Close" title="Close" onclick={handleCancel} ></lightning-button>
+            <template if:false={rowData.errorCode}>
+                <template if:true={rowData.shouldConnectToEnvHub}>
+                    <lightning-button variant="brand" label="Environment Hub Member" title="Environment Hub Member" onclick={handleEnvHubMemberNavigate} class="slds-m-left_x-small"></lightning-button>
+                </template>
+            </template>
+        </footer>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

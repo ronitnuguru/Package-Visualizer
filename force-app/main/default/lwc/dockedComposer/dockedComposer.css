@@ -1,0 +1,20 @@
+.docked-style{
+    bottom: 40px;
+    z-index:10;
+}
+
+.icon{
+    --slds-c-icon-color-foreground-default: #0D9DDA;
+}
+
+.tf-popover{
+    text-align: left;
+    position: absolute;
+    bottom: 44px;
+    right: -87px;
+    transform: translateX(-50%);
+}
+
+.tf-popover_header{
+    color: white;
+}

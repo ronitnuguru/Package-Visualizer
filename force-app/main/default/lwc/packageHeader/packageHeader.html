@@ -1,0 +1,153 @@
+<template>
+  <div class="slds-page-header slds-var-m-bottom_small">
+    <div class="slds-page-header__row">
+      <div class="slds-page-header__col-title">
+        <div class="slds-media">
+          <div class="slds-media__figure">
+            <template if:true={type}>
+              <lightning-icon
+                icon-name={iconStyle}
+                alternative-text="icon"
+                title={name}
+                size="large"
+                style="cursor:pointer"
+                onclick={handleInAppPrompt}
+              ></lightning-icon>
+            </template>
+            <template if:false={type}>
+              <lightning-icon
+                icon-name="custom:custom42"
+                alternative-text="icon"
+                title={name}
+                size="large"
+                class={iconStyle1GP}
+                onclick={handleInAppPrompt}
+              ></lightning-icon>
+            </template>
+          </div>
+          <div class="slds-media__body">
+            <p class="slds-page-header__name-meta">
+              <template if:true={type}>
+                {type}
+              </template>
+              <template if:false={type}>
+                <template if:true={namespacePrefix}>
+                  Managed
+                </template>
+                <template if:false={namespacePrefix}>
+                  Unmanaged
+                </template>
+              </template>
+            </p>
+            <div class="slds-page-header__name">
+              <div class="slds-page-header__name-title">
+                <h1>
+                  <span class="slds-page-header__title slds-truncate"
+                    >{name}&nbsp;
+                    <span if:true={namespacePrefix}>
+                      ({namespacePrefix})
+                    </span>
+                  </span>
+                </h1>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slds-align_absolute-center">
+        <div class="slds-page-header__controls">
+          <div class="slds-page-header__control">
+            <lightning-button-group class="slds-show_large">
+              <template if:true={type}>
+                <lightning-button
+                  label="Edit"
+                  onclick={handleEdit}
+              ></lightning-button>
+              </template>
+              <template if:false={type}>
+                <lightning-button
+                  label="Package Manager"
+                  onclick={handlePackageManager}
+              ></lightning-button>
+              </template>
+              <template if:true={displayAppAnalyticsButton}>
+                <lightning-button
+                  label="Request AppAnalytics"
+                  onclick={handleAppAnalytics}
+                ></lightning-button>
+              </template>
+              <template if:true={type}>
+                <lightning-button-icon
+                  icon-name="utility:signpost"
+                  variant="border-filled"
+                  alternative-text="In App Assistant"
+                  onclick={handleInAppPrompt}
+                ></lightning-button-icon>
+              </template>
+            </lightning-button-group>
+            <lightning-button-group class="slds-hide_large">
+              <lightning-button-menu
+                alternative-text="Menu"
+                variant="border-filled"
+                menu-alignment="auto"
+              >
+                <template if:true={type}>
+                  <lightning-menu-item
+                    label="Edit"
+                    onclick={handleEdit}
+                  ></lightning-menu-item>
+                </template>
+                <template if:false={type}>
+                  <lightning-menu-item
+                    label="Package Manager"
+                    onclick={handlePackageManager}
+                  ></lightning-menu-item>
+                </template>
+                <template if:true={displayAppAnalyticsButton}>
+                  <lightning-menu-item
+                    label="Request AppAnalytics"
+                    onclick={handleAppAnalytics}
+                  ></lightning-menu-item>
+                </template>
+              </lightning-button-menu>
+            </lightning-button-group>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <template if:true={displayManagedInAppPrompt}>
+    <c-in-app-prompt
+      prompt="X2GP_Managed_Packages"
+      oncancel={handle2GPPromptCancel}
+    >
+    </c-in-app-prompt>
+  </template>
+
+  <template if:true={displayUnlockedInAppPrompt}>
+    <c-in-app-prompt
+      prompt="Unlocked_Packages"
+      oncancel={handleUnlockedPromptCancel}
+    >
+    </c-in-app-prompt>
+  </template>
+
+  <template if:true={displayAppAnalyticsAppPrompt}>
+    <c-in-app-prompt
+      prompt="AppExchange_App_Analytics"
+      oncancel={handleAppAnalyticsPromptCancel}
+    >
+    </c-in-app-prompt>
+  </template>
+
+  <template if:true={displayAppAnalyticsModal}>
+    <c-app-analytics-flow-modal
+      header="Request AppAnalytics"
+      subscriber-package-id={subscriberPackageId}
+      oncancel={handleAppAnalyticsCloseModal}
+      onprompt={handleAppAnalyticsPromptOpen}
+    ></c-app-analytics-flow-modal>
+  </template>
+</template>

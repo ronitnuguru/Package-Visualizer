@@ -1,0 +1,7 @@
+path,
+g,
+polyline,
+circle {
+  fill: var(--lwc-brandBackgroundPrimary);
+  stroke: var(--lwc-brandAccessible);
+}

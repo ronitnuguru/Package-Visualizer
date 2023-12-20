@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>License Management App (LMA)</label>
+    <protected>true</protected>
+    <values>
+        <field>Brand_Button_Label__c</field>
+        <value xsi:type="xsd:string">Best Practices</value>
+    </values>
+    <values>
+        <field>Brand_Button_URL__c</field>
+        <value xsi:type="xsd:string">https://developer.salesforce.com/docs/atlas.en-us.workbook_lma.meta/workbook_lma/lma_best_practices.htm</value>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">Use the License Management App (LMA) to manage leads and licenses for your AppExchange solutions. By integrating the LMA into your sales and marketing processes, you can better engage with prospects, retain existing customers, and grow your ISV business. The LMA is a managed package that is installed in all Partner Business Orgs (PBO) and includes custom objects that track details on packages, package versions, and licenses.</value>
+    </values>
+    <values>
+        <field>Learn_More_Link__c</field>
+        <value xsi:type="xsd:string">https://developer.salesforce.com/docs/atlas.en-us.workbook_lma.meta/workbook_lma/lma_intro.htm</value>
+    </values>
+    <values>
+        <field>Prompt_Popover_Location__c</field>
+        <value xsi:type="xsd:string">slds-popover_prompt_bottom-right</value>
+    </values>
+    <values>
+        <field>Title__c</field>
+        <value xsi:type="xsd:string">Push Upgrades</value>
+    </values>
+</CustomMetadata>

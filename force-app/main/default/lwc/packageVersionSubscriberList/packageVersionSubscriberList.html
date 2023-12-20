@@ -1,0 +1,373 @@
+<template>
+  <template if:true={displaySpinner}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="medium"
+      variant="brand"
+    ></lightning-spinner>
+  </template>
+  <template if:true={displayInstanceSpinner}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="medium"
+      variant="brand"
+    ></lightning-spinner>
+  </template>
+  <template if:false={displaySpinner}>
+    <template if:true={versionSubscribersData}>
+      <template if:true={displayEmptyView}>
+        <template if:true={displayFilterMeta}>
+          <div class="slds-var-p-around_small">
+            <c-empty-illustration-with-button
+              title="Hmm..."
+              body="We could not find any results based on your filters..."
+              button-label="Edit Filters"
+              onselect={handleFilterEdit}
+              size="large"
+            >
+            </c-empty-illustration-with-button>
+          </div>
+        </template>
+        <template if:false={displayFilterMeta}>
+          <template if:true={searchTerm}>
+            <div class="slds-var-p-around_small">
+              <c-empty-illustration-with-button
+                title="Hmm…"
+                body="We could not find any results based on your search..."
+                button-label="Refresh"
+                onselect={handleFilterReset}
+                size="large"
+              >
+              </c-empty-illustration-with-button>
+            </div>
+          </template>
+          <template if:false={searchTerm}>
+            <div class="slds-var-p-around_small">
+              <c-empty-large-illustration-view
+                title="Hmm…"
+                body="Looks like you do not have any subscribers for this package version..."
+              >
+              </c-empty-large-illustration-view>
+            </div>
+          </template>
+        </template>
+      </template>
+      <template if:false={displayEmptyView}>
+        <template if:true={versionSubscribersList}>
+          <div class="slds-var-p-around_small">
+            <div class="slds-grid slds-var-p-vertical_x-small slds-wrap">
+              <ul class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small">
+                <template if:true={subscribersLength}>
+                  <li class="slds-item">
+                    {subscribersLength} Subscribers
+                  </li>
+                </template>
+                <li class="slds-item">
+                  Sorted by {sortedByLabel}
+                </li>
+                <template if:true={displayFilterMeta}>
+                  <li class="slds-item">
+                    Filters Enabled
+                  </li>
+                </template>
+                <li class="slds-item">
+                    Updated&nbsp;<lightning-relative-date-time
+                    value={relativeDateTime}
+                  ></lightning-relative-date-time>
+                </li>
+              </ul>
+              <div class="slds-col_bump-left">
+                <div class="slds-grid slds-grid_align-end">
+                  <lightning-input
+                    autocomplete="off"
+                    variant="label-hidden"
+                    type="search"
+                    name="version-search"
+                    placeholder="Search by Org Name..."
+                    class="slds-var-p-right_x-small"
+                    value={searchTerm}
+                    onkeyup={handleSearchTermChange}
+                  ></lightning-input>
+                  <lightning-button-menu
+                    icon-name="utility:table_settings"
+                    menu-alignment="auto"
+                    variant="border-filled"
+                    alternative-text="Table Settings"
+                    class="slds-var-p-right_x-small"
+                  >
+                    <lightning-menu-subheader
+                      label="Table Controls"
+                      class="slds-text-title_caps"
+                    ></lightning-menu-subheader>
+                    <lightning-menu-item
+                      value="tableFields"
+                      label="Select Fields to Display"
+                      id="table-fields"
+                      onclick={handleFieldsToDisplay}
+                    ></lightning-menu-item>
+                  </lightning-button-menu>
+                  <template if:true={displayManagedPackageType}>
+                    <lightning-button-menu
+                      icon-name="utility:multi_select_checkbox"
+                      menu-alignment="auto"
+                      variant="border-filled"
+                      alternative-text="Multi Select Controls"
+                      class="slds-var-p-right_x-small"
+                    >
+                      <lightning-menu-subheader
+                        label="Multi Select Controls"
+                        class="slds-text-title_caps"
+                      ></lightning-menu-subheader>
+                      <lightning-menu-item
+                        value="appAnalyticsSubscribers"
+                        label="Request AppAnalytics"
+                        prefix-icon-name="utility:einstein"
+                        id="app-analytics-subscribers"
+                        onclick={handleAppAnalyticsSubscribers}
+                        disabled={displayAppAnalyticsMenuButton}
+                      ></lightning-menu-item>
+                      <!--
+                      <template if:true={isPushUpgradeEnabled}>
+                        <template if:true={packageIsReleased}>
+                          <lightning-menu-item
+                            value="schedulePushUpgrades"
+                            label="Schedule Push Upgrades"
+                            prefix-icon-name="utility:forward_up"
+                            id="schedule-push-upgrades"
+                            onclick={handleSchedulePushUpgrades}
+                            disabled={displayUpgradeMenuButton}
+                          ></lightning-menu-item>
+                        </template>
+                      </template>
+                      -->
+                    </lightning-button-menu>
+                  </template>
+                  <lightning-button-group>
+                    <lightning-button-icon-stateful
+                      icon-name="utility:chart"
+                      selected={chartState}
+                      onclick={handleChartPanel}
+                      alternative-text="Chart"
+                      variant="border-filled"
+                    ></lightning-button-icon-stateful>
+                    <lightning-button-icon-stateful
+                      icon-name="utility:filterList"
+                      selected={filterState}
+                      onclick={handleFilterPanel}
+                      alternative-text="Filter"
+                      variant="border-filled"
+                    ></lightning-button-icon-stateful>
+                  </lightning-button-group>
+                </div>
+              </div>
+            </div>
+            <div class="table-style">
+              <div
+                class={displayChartDockPanel}
+                style="direction:ltr;"
+                aria-hidden="false"
+              >
+                <div class="slds-panel__header">
+                  <h2
+                    class="slds-panel__header-title slds-text-heading_small slds-truncate"
+                  >
+                    Charts
+                  </h2>
+                  <button
+                    class="slds-button slds-button_icon slds-button_icon-small slds-panel__close"
+                    onclick={handleChartPanel}
+                  >
+                    <lightning-icon
+                      size="x-small"
+                      icon-name="utility:close"
+                      alternative-text="Close"
+                      title="Close"
+                    ></lightning-icon>
+                  </button>
+                </div>
+                <div class="slds-panel__body">
+                  <c-subscribers-charts-panel
+                    subscriber-package-id={subscriberPackageId}
+                    package-subscriber-version-id={packageSubscriberVersionId}
+                    selected-org-type-options-string={selectedOrgTypeOptionsString}
+                    selected-org-status-options-string={selectedOrgStatusOptionsString}
+                    selected-instances-string={selectedInstancesString}
+                    search-term={searchTerm}
+                    apply-filters={displayFilterMeta}
+                  >
+                  </c-subscribers-charts-panel>
+                </div>
+              </div>
+              <div
+                class={displayFilterDockPanel}
+                style="direction:ltr;"
+                aria-hidden="false"
+              >
+                <div class="slds-panel__header">
+                  <h2
+                    class="slds-panel__header-title slds-text-heading_small slds-truncate"
+                  >
+                    Filters
+                  </h2>
+                  <button
+                    class="slds-button slds-button_icon slds-button_icon-small slds-panel__close"
+                    onclick={handleFilterPanel}
+                  >
+                    <lightning-icon
+                      size="x-small"
+                      icon-name="utility:close"
+                      alternative-text="Close"
+                      title="Close"
+                    ></lightning-icon>
+                  </button>
+                </div>
+                <div class="slds-panel__body">
+                  <div class="slds-var-p-bottom_small">
+                    <lightning-dual-listbox
+                      label="Org Status"
+                      source-label="Available"
+                      selected-label="Selected"
+                      options={orgStatusOptions}
+                      value={selectedOrgStatusOptions}
+                      onchange={orgStatusFilterChange}
+                      size="5"
+                      disable-reordering
+                    ></lightning-dual-listbox>
+                  </div>
+                  <div class="">
+                    <lightning-dual-listbox
+                      label="Org Type"
+                      source-label="Available"
+                      selected-label="Selected"
+                      options={orgTypeOptions}
+                      value={selectedOrgTypeOptions}
+                      onchange={orgTypeFilterChange}
+                      size="2"
+                      disable-reordering
+                    ></lightning-dual-listbox>
+                  </div>
+                  <div>
+                    <fieldset class="slds-form-element slds-var-p-bottom_xx-small">
+                      <legend
+                        class="slds-form-element__legend slds-form-element__label"
+                      >
+                        Regions
+                      </legend>
+                      <lightning-helptext
+                        content="To filter by region, SalesforceTrust needs to be enabled in CSP Trusted Sites and Remote Site Settings. Check out the Package Visualizer Guide or the Setup Assistant for more details"
+                      ></lightning-helptext>
+                    </fieldset>
+                    <lightning-checkbox-group
+                      name="Regions"
+                      label="Regions"
+                      variant="label-hidden"
+                      options={regionsOptions}
+                      value={regionsValues}
+                      onchange={handleRegionsChange}
+                    ></lightning-checkbox-group>
+                  </div>
+                </div>
+                <div class="slds-align_absolute-center slds-modal__footer">
+                  <lightning-button
+                    label="Reset"
+                    title="Reset"
+                    onclick={handleFilterReset}
+                    class="slds-var-m-left_x-small"
+                  ></lightning-button>
+                  <lightning-button
+                    variant="brand"
+                    label="Submit"
+                    title="Submit"
+                    onclick={handleFilterSubmit}
+                    class="slds-var-m-left_x-small"
+                  ></lightning-button>
+                </div>
+              </div>
+              <div style={responsivePanelStyle}>
+                <lightning-datatable
+                  data={versionSubscribersData}
+                  columns={columns}
+                  key-field="OrgKey"
+                  sorted-by={sortedBy}
+                  sorted-direction={sortDirection}
+                  default-sort-direction="desc"
+                  onsort={handleSort}
+                  onrowaction={handleRowAction}
+                  onrowselection={getSelectedRows}
+                  enable-infinite-loading={disableInfiniteLoad}
+                  onloadmore={loadMoreData}
+                  load-more-offset="5"
+                  max-row-selection="16"
+                >
+                </lightning-datatable>
+                <template if:true={displayDatatableSpinner}>
+                  <lightning-spinner
+                    alternative-text="Loading"
+                    size="medium"
+                    variant="brand"
+                  ></lightning-spinner>
+                </template>
+              </div>
+            </div>
+          </div>
+          <!--
+          <template if:true={isPushUpgradeEnabled}>
+            <template if:true={packageIsReleased}>
+              <footer class="slds-modal__footer">
+                <lightning-button
+                  variant="brand"
+                  label="Upgrade"
+                  title="Upgrade"
+                  icon-name="utility:forward_up"
+                  icon-position="right"
+                  class="slds-var-m-left_x-small"
+                  onclick={handleSchedulePushUpgrades}
+                  disabled={displayUpgradeMenuButton}
+                ></lightning-button>
+              </footer>
+            </template>
+          </template>
+          -->
+        </template>
+      </template>
+    </template>
+    <template if:false={versionSubscribersData}>
+      <div class="slds-var-p-around_small">
+        <c-empty-large-illustration-view
+          title="Data not available..."
+          body="Looks like we were unable retrieve or you do not have access to any subscribers for this package..."
+          >
+        </c-empty-large-illustration-view>
+      </div>
+    </template>
+  </template>
+  <template if:true={fieldsToDisplayModal}>
+    <c-table-fields-to-display
+      label="Package Subscriber Columns"
+      table-options={tableOptions}
+      table-selected-options={tableSelectedOptions}
+      oncancel={handleFieldsToDisplayModalCancel}
+      onsave={handleFieldsToDisplayModalSave}
+    ></c-table-fields-to-display>
+  </template>
+  <template if:true={displayAppAnalyticsModal}>
+    <c-app-analytics-flow-modal
+      header="Request AppAnalytics"
+      subscriber-package-id={subscriberPackageId}
+      subscribers={selectedRows}
+      oncancel={handleAppAnalyticsCloseModal}
+    ></c-app-analytics-flow-modal>
+  </template>
+  <!--
+  <template if:true={displayPushUpgradesModal}>
+    <c-package-version-subscriber-push-upgrade
+      header="Schedule Push Upgrade"
+      package-version-number={packageVersionNumber}
+      subscriber-package-id={subscriberPackageId}
+      subscribers={selectedRows}
+      oncancel={handleSchedulePushUpgradesCloseModal}
+    >
+    </c-package-version-subscriber-push-upgrade>
+  </template>
+  -->
+</template>

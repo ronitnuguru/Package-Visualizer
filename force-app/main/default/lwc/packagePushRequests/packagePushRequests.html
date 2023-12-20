@@ -1,0 +1,35 @@
+<template>
+  <template if:true={displaySpinner}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="medium"
+      variant="brand"
+    ></lightning-spinner>
+  </template>
+  <template if:true={packageVersionList}>
+    <div class="slds-var-p-horizontal_medium slds-var-p-top_small">
+      <c-package-push-upgrades-history-view
+        package-version-list={packageVersionList}
+        version-limit={versionLimit}
+        onversionchange={handleVersionLimitChange}
+      >
+      </c-package-push-upgrades-history-view>
+    </div>
+  </template>
+  <template if:false={packageVersionList}>
+    <template if:true={displayError}>
+      <c-empty-large-illustration-view
+        title="Something went wrong..."
+        body="Looks like we were unable retrieve any push upgrade requests for this package..."
+      >
+      </c-empty-large-illustration-view>
+    </template>
+    <template if:true={displayEmpty}>
+      <c-empty-large-illustration-view
+        title="Hmm..."
+        body="Looks like you do not have any push upgrade requests for this package..."
+      >
+      </c-empty-large-illustration-view>
+    </template>
+  </template>
+</template>

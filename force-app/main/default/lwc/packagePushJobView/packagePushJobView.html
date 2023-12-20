@@ -1,0 +1,441 @@
+<template>
+  <div class="slds-var-p-around_medium slds-page-header">
+    <div class="slds-grid">
+        <article class="slds-tile slds-media">
+          <div class="slds-media__figure">
+            <template if:true={displayLoadingIcon}>
+              <lightning-dynamic-icon
+                type="eq"
+                option="play"
+                alternative-text="Request in progress"
+                slot="media"
+              >
+              </lightning-dynamic-icon>
+            </template>
+            <template if:true={displaySuccessIcon}>
+              <lightning-icon
+                icon-name="utility:success"
+                alternative-text="Success!"
+                variant="success"
+                size="medium"
+                slot="media"
+              ></lightning-icon>
+            </template>
+            <template if:true={displayErrorIcon}>
+              <lightning-icon
+                icon-name="utility:error"
+                alternative-text="Error!"
+                variant="error"
+                size="medium"
+                slot="media"
+              ></lightning-icon>
+            </template>
+            <template if:true={displayWarningIcon}>
+              <lightning-icon
+                icon-name="utility:warning"
+                alternative-text="Warning!"
+                variant="warning"
+                size="medium"
+                slot="media"
+              ></lightning-icon>
+            </template>
+          </div>
+          <div class="slds-media__body">
+            <div
+              class="slds-grid slds-grid_align-spread slds-has-flexi-truncate"
+            >
+              <h3 class="slds-tile__title slds-truncate slds-text-link tile-style">
+                <span>{pushId}</span>
+              </h3>
+              <div class="slds-shrink-none">
+                <template if:true={displayAbort}>
+                  <lightning-button-menu alternative-text="Show menu" menu-alignment="auto" variant="border-filled" icon-size="small">
+                    <lightning-menu-item value="Abort" label="Abort" onclick={handleAbort}></lightning-menu-item>
+                  </lightning-button-menu>
+                </template>
+              </div>
+            </div>
+            <div class="slds-tile__detail">
+              <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-col slds-size_4-of-12">
+                  <div>{status}</div>
+                  <template if:true={pushDurationSeconds}>
+                    <div>
+                      Completed in {pushDurationSeconds} seconds
+                    </div>
+                  </template>
+                  <template if:true={displayStatusProgress}>
+                    <div class="slds-grid">
+                      <div
+                        class="slds-col slds-align_absolute-center slds-p-horizontal_none slds-size_9-of-12"
+                      >
+                        <div
+                          class="slds-progress-bar slds-progress-bar_circular"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                          aria-valuenow={successPercentage}
+                          role="progressbar"
+                        >
+                          <span
+                            class="slds-progress-bar__value slds-progress-bar__value_success"
+                            style={progressStyle}
+                          >
+                          </span>
+                        </div>
+                      </div>
+                      <div class="slds-col">
+                        <span>{successProgress}/{totalProgress}</span>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+                <div class="slds-col">
+                  <dl class="slds-list_horizontal slds-wrap">
+                    <template if:true={pushScheduledStartTime}>
+                      <dt
+                        class="slds-item_label slds-text-color_weak slds-truncate"
+                      >
+                        Scheduled Start Time:
+                      </dt>
+                      <dd class="slds-item_detail slds-truncate">
+                        <lightning-formatted-date-time
+                          value={pushScheduledStartTime}
+                          year="numeric"
+                          month="numeric"
+                          day="numeric"
+                          hour="2-digit"
+                          minute="2-digit"
+                          time-zone-name="short"
+                          hour12="true"
+                        ></lightning-formatted-date-time>
+                      </dd>
+                    </template>
+                    <template if:true={pushStartTime}>
+                      <dt
+                        class="slds-item_label slds-text-color_weak slds-truncate"
+                      >
+                        Start Time:
+                      </dt>
+                      <dd class="slds-item_detail slds-truncate">
+                        <lightning-formatted-date-time
+                          value={pushStartTime}
+                          year="numeric"
+                          month="numeric"
+                          day="numeric"
+                          hour="2-digit"
+                          minute="2-digit"
+                          time-zone-name="short"
+                          hour12="true"
+                        ></lightning-formatted-date-time>
+                      </dd>
+                    </template>
+                    <template if:true={pushEndTime}>
+                      <dt
+                        class="slds-item_label slds-text-color_weak slds-truncate"
+                      >
+                        End Time:
+                      </dt>
+                      <dd class="slds-item_detail slds-truncate">
+                        <lightning-formatted-date-time
+                          value={pushEndTime}
+                          year="numeric"
+                          month="numeric"
+                          day="numeric"
+                          hour="2-digit"
+                          minute="2-digit"
+                          time-zone-name="short"
+                          hour12="true"
+                        ></lightning-formatted-date-time>
+                      </dd>
+                    </template>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+    </div>
+  </div>
+  <div class={packagePushJobsAccordionClass}>
+    <h3 class="slds-section__title">
+      <button
+        aria-controls="pushRequestsContent"
+        aria-expanded="true"
+        class="slds-button slds-section__title-action"
+        onclick={togglePackgePushJobsAccordion}
+      >
+        <template if:true={displayPackagePushJobs}>
+          <lightning-icon
+            size="x-small"
+            icon-name="utility:switch"
+            class="slds-var-p-right_xx-small"
+          ></lightning-icon>
+        </template>
+        <template if:false={displayPackagePushJobs}>
+          <lightning-icon
+            size="x-small"
+            icon-name="utility:chevronright"
+            class="slds-var-p-right_xx-small"
+          ></lightning-icon>
+        </template>
+        <span class="slds-truncate" title="All Apps">Package Push Jobs</span>
+      </button>
+    </h3>
+    <div
+      aria-hidden="false"
+      class="slds-section__content"
+      id="pushRequestsContent"
+    >
+      <div class="slds-card">
+        <template if:true={displaySpinner}>
+          <lightning-spinner
+            alternative-text="Loading"
+            size="medium"
+            variant="brand"
+          ></lightning-spinner>
+        </template>
+        <template if:false={displayPushJobView}>
+          <template if:false={displaySpinner}>
+            <div
+              class="card-style slds-card_boundary slds-var-m-around_small slds-var-p-top_xx-large"
+            >
+              <c-empty-large-illustration-view
+                title="Data not available..."
+                body="Looks like we were unable to retrieve any push job requests..."
+              >
+              </c-empty-large-illustration-view>
+            </div>
+          </template>
+        </template>
+        <template if:true={displayPushJobView}>
+          <template if:true={displayEmptyView}>
+            <template if:true={displayFilterMeta}>
+              <c-empty-illustration-with-button
+                title="Hmm..."
+                body="We could not find any results based on your filters..."
+                button-label="Edit Filters"
+                onselect={handleFilterEdit}
+                size="large"
+              >
+              </c-empty-illustration-with-button>
+            </template>
+            <template if:false={displayFilterMeta}>
+              <div
+                class="card-style slds-card_boundary slds-var-m-around_small slds-var-p-top_xx-large"
+              >
+                <c-empty-large-illustration-view
+                  title="Hmm..."
+                  body="Looks like we were unable to find any push job requests for this package..."
+                >
+                </c-empty-large-illustration-view>
+              </div>
+            </template>
+          </template>
+          <template if:false={displayEmptyView}>
+            <div class="slds-grid slds-var-p-bottom_x-small slds-wrap">
+              <ul class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small">
+                <template if:true={pushJobsLength}>
+                  <li class="slds-item">
+                    {pushJobsLength} Push Jobs
+                  </li>
+                </template>
+                <li class="slds-item">
+                  Sorted by {sortedByLabel}
+                </li>
+                <template if:true={displayFilterMeta}>
+                  <li class="slds-item">
+                    Filters Enabled
+                  </li>
+                </template>
+                  <li class="slds-item">
+                    Updated&nbsp;<lightning-relative-date-time
+                    value={relativeDateTime}
+                  ></lightning-relative-date-time>
+                </li>
+              </ul>
+              <div class="slds-col_bump-left">
+                <div class="slds-grid slds-grid_align-end">
+                  <lightning-button-menu
+                    icon-name="utility:table_settings"
+                    menu-alignment="auto"
+                    variant="border-filled"
+                    alternative-text="Table Settings"
+                    class="slds-var-p-left_x-small"
+                  >
+                    <lightning-menu-subheader
+                      label="Table Controls"
+                      class="slds-text-title_caps"
+                    ></lightning-menu-subheader>
+                    <lightning-menu-item
+                      value="tableFields"
+                      label="Select Fields to Display"
+                      id="table-fields"
+                      onclick={handleFieldsToDisplay}
+                    ></lightning-menu-item>
+                  </lightning-button-menu>
+                  <lightning-button-icon
+                    icon-name="utility:refresh"
+                    class="slds-var-p-left_x-small"
+                    variant="border-filled"
+                    alternative-text="Refresh"
+                    title="Refresh"
+                    onclick={handleRefresh}
+                  ></lightning-button-icon>
+                  <lightning-button-group class="slds-var-p-left_x-small">
+                    <lightning-button-icon-stateful
+                      icon-name="utility:chart"
+                      selected={chartState}
+                      onclick={handleChartPanel}
+                      alternative-text="Chart"
+                      variant="border-filled"
+                    ></lightning-button-icon-stateful>
+                    <lightning-button-icon-stateful
+                      icon-name="utility:filterList"
+                      selected={filterState}
+                      onclick={handleFilterPanel}
+                      alternative-text="Filter"
+                      variant="border-filled"
+                    ></lightning-button-icon-stateful>
+                  </lightning-button-group>
+                </div>
+              </div>
+            </div>
+            <div class="table-style">
+              <div if:true={chartInit}>
+                <div
+                  class={displayChartDockPanel}
+                  style="direction:ltr;"
+                  aria-hidden="false"
+                >
+                  <div class="slds-panel__header">
+                    <h2
+                      class="slds-panel__header-title slds-text-heading_small slds-truncate"
+                    >
+                      Charts
+                    </h2>
+                    <button
+                      class="slds-button slds-button_icon slds-button_icon-small slds-panel__close"
+                      onclick={handleChartPanel}
+                    >
+                      <lightning-icon
+                        size="x-small"
+                        icon-name="utility:close"
+                        alternative-text="Close"
+                        title="Close"
+                      ></lightning-icon>
+                    </button>
+                  </div>
+                  <div class="slds-panel__body">
+                    <c-package-push-job-charts-panel
+                      push-id={pushId}
+                      selected-status-options-string={selectedStatusOptionsString}
+                      apply-filters={displayFilterMeta}
+                    ></c-package-push-job-charts-panel>
+                  </div>
+                </div>
+              </div>
+              <div
+                class={displayFilterDockPanel}
+                style="direction:ltr;"
+                aria-hidden="false"
+              >
+                <div class="slds-panel__header">
+                  <h2
+                    class="slds-panel__header-title slds-text-heading_small slds-truncate"
+                  >
+                    Filters
+                  </h2>
+                  <button
+                    class="slds-button slds-button_icon slds-button_icon-small slds-panel__close"
+                    onclick={handleFilterPanel}
+                  >
+                    <lightning-icon
+                      size="x-small"
+                      icon-name="utility:close"
+                      alternative-text="Close"
+                      title="Close"
+                    ></lightning-icon>
+                  </button>
+                </div>
+                <div class="slds-panel__body">
+                  <div class="slds-var-p-bottom_small">
+                    <lightning-dual-listbox
+                      label="Status"
+                      source-label="Available"
+                      selected-label="Selected"
+                      options={statusOptions}
+                      value={selectedStatusOptions}
+                      onchange={statusFilterChange}
+                      size="6"
+                      disable-reordering
+                    ></lightning-dual-listbox>
+                  </div>
+                </div>
+                <div class="slds-align_absolute-center slds-modal__footer">
+                  <lightning-button
+                    label="Reset"
+                    title="Reset"
+                    onclick={handleFilterReset}
+                    class="slds-var-m-left_x-small"
+                  ></lightning-button>
+                  <lightning-button
+                    variant="brand"
+                    label="Submit"
+                    title="Submit"
+                    onclick={handleFilterSubmit}
+                    class="slds-var-m-left_x-small"
+                  ></lightning-button>
+                </div>
+              </div>
+              <div style={responsivePanelStyle}>
+                <lightning-datatable
+                  data={pushJobsData}
+                  columns={columns}
+                  key-field="subscriberOrganizationKey"
+                  sorted-by={sortedBy}
+                  sorted-direction={sortDirection}
+                  default-sort-direction="desc"
+                  onsort={handleSort}
+                  onrowaction={handleRowAction}
+                  enable-infinite-loading={disableInfiniteLoad}
+                  onloadmore={loadMoreData}
+                  load-more-offset="5"
+                  hide-checkbox-column
+                  show-row-number-column
+                >
+                </lightning-datatable>
+                <template if:true={displayDatatableSpinner}>
+                  <lightning-spinner
+                    alternative-text="Loading"
+                    size="medium"
+                    variant="brand"
+                  ></lightning-spinner>
+                </template>
+              </div>
+            </div>
+          </template>
+        </template>
+        <template if:true={fieldsToDisplayModal}>
+          <c-table-fields-to-display
+            label="Package Push Jobs Columns"
+            table-options={tableOptions}
+            table-selected-options={tableSelectedOptions}
+            oncancel={handleFieldsToDisplayModalCancel}
+            onsave={handleFieldsToDisplayModalSave}
+          ></c-table-fields-to-display>
+        </template>
+      </div>
+    </div>
+  </div>
+  <template if:true={displayAbortModal}>
+    <c-warning-modal
+      header="Abort Package Push Request?"
+      body={abortBody}
+      brand-button-label="Abort"
+      neutral-button-label="Cancel"
+      onbrandclick={onBrandClick}
+      onneutralclick={onNeutralClick}
+    >
+    </c-warning-modal>
+  </template>
+</template>

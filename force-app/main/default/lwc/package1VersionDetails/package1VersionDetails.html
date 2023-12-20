@@ -1,0 +1,149 @@
+<template>
+    <template if:true={displaySpinner}>
+      <lightning-spinner
+        alternative-text="Loading"
+        size="medium"
+        variant="brand"
+      ></lightning-spinner>
+    </template>
+    <div class="slds-grid slds-var-p-around_small slds-wrap slds-truncate">
+      <div class="slds-col slds-col_padded slds-size_6-of-12">
+        <template if:true={packageName}>
+          <lightning-input
+            type="text"
+            label="Version Name"
+            value={packageName}
+            readonly
+          ></lightning-input>
+        </template>
+        <template if:true={packageVersionNumber}>
+            <lightning-input
+            type="text"
+            label="Version Number"
+            value={packageVersionNumber}
+            readonly
+            field-level-help="major.minor.patch-build"
+          ></lightning-input>
+        </template>
+        <template if:true={versionId}>
+          <lightning-input
+            type="text"
+            label="Version Id"
+            value={versionId}
+            readonly
+          ></lightning-input>
+        </template>
+        <div class="slds-form-element">
+          <label
+            class="slds-form-element__label slds-var-p-bottom_xx-small"
+            for="text-input-id-1"
+          >
+            Package Install (URL)
+          </label>
+          <div
+            class="slds-form-element__control input-style-size slds-var-p-bottom_x-small slds-truncate"
+          >
+            <lightning-formatted-url
+              value={packageInstallUrl}
+              target="_blank"
+              class="install-url"
+            ></lightning-formatted-url>
+          </div>
+        </div>
+        <lightning-input
+          type="url"
+          label="Package Install (SFDX)"
+          value={sfdxPackageInstall}
+          readonly
+        ></lightning-input>
+      </div>
+      <div class="slds-col slds-col_padded">
+        <div class="slds-form-element">
+            <label
+              class="slds-form-element__label slds-var-p-bottom_xx-small"
+              for="text-input-id-1"
+            >
+              Release State
+            </label>
+            <div
+              class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
+            >
+             <lightning-badge icon-name={badgeIcon} label={packageReleaseState} class="slds-badge_inverse badgeStyle"></lightning-badge>
+            </div>
+          </div>
+          <template if:true={subscribersCount}>
+            <div class="slds-var-p-bottom_small">
+              <lightning-input
+                type="number"
+                label={subscriberLabel}
+                value={subscribersCount}
+                readonly
+              ></lightning-input>
+            </div>
+          </template>
+          <div class="slds-form-element">
+            <label
+              class="slds-form-element__label slds-var-p-bottom_xx-small"
+              for="text-input-id-1"
+            >
+              Last Modified Date
+            </label>
+            <div
+              class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
+            >
+              <lightning-formatted-date-time
+                value={packageLastModifiedDate}
+                year="numeric"
+                month="numeric"
+                day="numeric"
+                hour="2-digit"
+                minute="2-digit"
+                time-zone-name="short"
+                hour12="true"
+              ></lightning-formatted-date-time>
+            </div>
+          </div>
+      </div>
+    </div>
+    <footer class="slds-modal__footer footer-styling">
+      <div class="slds-grid slds-grid_align-end">
+        <lightning-button
+          variant="brand"
+          label="Version Manager"
+          title="Version Manager"
+          onclick={handleVersionManager}
+          icon-name="utility:setup"
+          icon-position="right"
+          class="slds-var-m-right_x-small"
+        >
+        </lightning-button>
+        <template if:true={namespacePrefix}>
+          <lightning-button-group>
+            <lightning-button
+              variant="brand"
+              label="Subscribers"
+              title="Subscribers"
+              onclick={handleAllSubscribers}
+              icon-name="utility:number_input"
+              icon-position="right"
+            ></lightning-button>
+            <lightning-button-menu
+              alternative-text="Show menu"
+              variant="border-filled"
+              menu-alignment="auto"
+              onselect={handleSubscriberMenuSelect}
+            >
+              <lightning-menu-item
+                label="Production Subscribers"
+                value="Production"
+              ></lightning-menu-item>
+              <lightning-menu-item
+                label="Sandbox Subscribers"
+                value="Sandbox"
+              ></lightning-menu-item>
+            </lightning-button-menu>
+          </lightning-button-group>
+        </template>
+      </div>
+    </footer>
+  </template>

@@ -1,0 +1,381 @@
+<template>
+  <div class="slds-var-p-around_small">
+    <template if:true={displaySpinner}>
+      <lightning-spinner
+        alternative-text="Loading"
+        size="medium"
+        variant="brand"
+      ></lightning-spinner>
+    </template>
+    <div class="slds-var-p-around_medium slds-page-header">
+      <article class="slds-tile slds-media">
+        <div class="slds-media__figure">
+          <lightning-icon
+            icon-name="custom:custom45"
+            size="medium"
+            slot="media"
+          ></lightning-icon>
+        </div>
+        <div class="slds-media__body">
+          <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+            <h3 class="slds-tile__title slds-truncate">
+              <a href={license.id} target="_blank" class="tile-style"
+                >{license.name}</a
+              >
+            </h3>
+            <div class="slds-shrink-none">
+              <lightning-button label="Send Email" variant="brand" onclick={handleSendEmailClick}></lightning-button>
+            </div>
+          </div>
+          <div class="slds-tile__detail">
+            <div class="slds-grid slds-gutters">
+              <div class="slds-col slds-truncate">
+                <dl class="slds-list_horizontal slds-wrap">
+                  <template if:true={license.leadName}>
+                    <dt
+                      class="slds-item_label slds-text-color_weak slds-truncate"
+                    >
+                      Lead:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      <a href={license.leadId} target="_blank"
+                        >{license.leadName}</a
+                      >
+                    </dd>
+                  </template>
+                  <template if:true={license.accountName}>
+                    <dt
+                      class="slds-item_label slds-text-color_weak slds-truncate"
+                    >
+                      Account:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      <a href={license.accountId} target="_blank"
+                        >{license.accountName}</a
+                      >
+                    </dd>
+                  </template>
+                  <template if:true={license.contactName}>
+                    <dt
+                      class="slds-item_label slds-text-color_weak slds-truncate"
+                    >
+                      Contact:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      <a href={license.contactId} target="_blank"
+                        >{license.contactName}</a
+                      >
+                    </dd>
+                  </template>
+                </dl>
+              </div>
+              <div class="slds-col">
+                <dl class="slds-list_horizontal slds-wrap">
+                  <template if:true={license.leadSource}>
+                    <dt
+                      class="slds-item_label slds-text-color_weak slds-truncate"
+                    >
+                      Lead Source:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      {license.leadSource}
+                    </dd>
+                  </template>
+                  <template if:true={license.licenseStatus}>
+                    <dt
+                      class="slds-item_label slds-text-color_weak slds-truncate"
+                    >
+                      Status:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      {license.licenseStatus}
+                    </dd>
+                  </template>
+                  <template if:true={license.installDate}>
+                    <dt
+                      class="slds-item_label slds-text-color_weak slds-truncate"
+                    >
+                      Install Date:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      <lightning-formatted-date-time
+                        value={license.installDate}
+                      ></lightning-formatted-date-time>
+                    </dd>
+                  </template>
+                  <template if:true={license.lmaExpirationDate}>
+                    <dt
+                      class="slds-item_label slds-text-color_weak slds-truncate"
+                    >
+                      Expiration Date:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      <lightning-formatted-date-time
+                        value={license.lmaExpirationDate}
+                      ></lightning-formatted-date-time>
+                    </dd>
+                  </template>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+    <div class="slds-grid slds-gutters">
+      <div class="slds-col slds-grow-none">
+        <lightning-vertical-navigation selected-item={selectedItem}>
+          <lightning-vertical-navigation-section label="">
+            <lightning-vertical-navigation-item-icon
+              label="Activity Timeline"
+              name="activity_timeline"
+              icon-name="utility:feed"
+              onclick={handleActivityTimelineClick}
+            >
+            </lightning-vertical-navigation-item-icon>
+            <template if:true={displayModifyLicenseNav}>
+              <lightning-vertical-navigation-item-icon
+                label="Modify License"
+                name="modify_license"
+                icon-name="utility:replace"
+                onclick={handleModifyLicenseClick}
+              >
+              </lightning-vertical-navigation-item-icon>
+            </template>
+          </lightning-vertical-navigation-section>
+        </lightning-vertical-navigation>
+      </div>
+      <div class="slds-col">
+        <template if:true={timelineDisplay}>
+          <template if:true={licenseTimelineData}>
+            <div
+              class="slds-border_left slds-border_bottom slds-border_right slds-border_top slds-var-m-top_medium timeline-card-style"
+            >
+              <lightning-card class="slds-m-bottom_none">
+                <div class="timeline-style">
+                  <ul class="slds-timeline">
+                    <template
+                      for:each={licenseTimelineData}
+                      for:item="step"
+                      for:index="index"
+                    >
+                      <c-package-lma-history
+                        key={step.Id}
+                        created-date={step.CreatedDate}
+                        field={step.Field}
+                        new-value={step.NewValue}
+                        old-value={step.OldValue}
+                      >
+                      </c-package-lma-history>
+                    </template>
+                  </ul>
+                </div>
+                <p slot="footer">
+                  <a href={viewMoreLink} target="_blank">View More</a>
+                </p>
+              </lightning-card>
+            </div>
+          </template>
+        </template>
+        <template if:true={modifyLicenseDisplay}>
+          <div
+            class="slds-border_left slds-border_bottom slds-border_right slds-border_top slds-var-m-top_medium timeline-card-style"
+          >
+            <lightning-card class="card-style">
+              <lightning-button-group slot="actions">
+                <lightning-button
+                  label="Edit"
+                  variant="brand"
+                  onclick={handleEdit}
+                  disabled={displayEditView}
+                ></lightning-button>
+                <lightning-button-icon icon-name="utility:help_doc_ext" variant="border-filled" alternative-text="Modify License Documentation" onclick={handleHelpDoc}></lightning-button-icon>
+              </lightning-button-group>
+              <div></div>
+              <div
+                class="slds-grid slds-gutters slds-wrap slds-var-p-around_medium"
+              >
+                <template if:false={displayEditView}>
+                  <div class="slds-col slds-var-p-around_small">
+                    <template if:false={expirationToggle}>
+                      <lightning-input
+                        type="toggle"
+                        label="Does not Expire"
+                        name="expire"
+                        disabled
+                        message-toggle-active=""
+                        message-toggle-inactive=""
+                      ></lightning-input>
+                    </template>
+                    <template if:true={expirationToggle}>
+                      <lightning-input
+                        type="toggle"
+                        label="Does not Expire"
+                        name="expire"
+                        checked
+                        disabled
+                        message-toggle-active=""
+                        message-toggle-inactive=""
+                      ></lightning-input>
+                    </template>
+                    <lightning-input
+                      type="date"
+                      class="expirationDate"
+                      label="Expiration Date"
+                      disabled
+                      value={modifyExpirationDate}
+                      min={nowDate}
+                    ></lightning-input>
+                    <lightning-combobox
+                      label="Status"
+                      value={license.licenseStatus}
+                      options={statusOptions}
+                      onchange={handleStatusChange}
+                      disabled
+                    ></lightning-combobox>
+                  </div>
+                  <div class="slds-col slds-var-p-around_small">
+                    <template if:true={isSiteLicense}>
+                      <lightning-input
+                        type="toggle"
+                        label="Site License"
+                        checked
+                        disabled
+                        message-toggle-active=""
+                        message-toggle-inactive=""
+                      ></lightning-input>
+                    </template>
+                    <template if:false={isSiteLicense}>
+                      <lightning-input
+                        type="toggle"
+                        label="Site License"
+                        disabled
+                        message-toggle-active=""
+                        message-toggle-inactive=""
+                      ></lightning-input>
+                    </template>
+                    <lightning-input
+                      type="number"
+                      disabled
+                      value={modifySeats}
+                      label="Seats"
+                      max="99000000"
+                      class="seats"
+                      min="0"
+                    ></lightning-input>
+                    <template if:true={license.usedLicenses}>
+                      <lightning-input
+                        type="number"
+                        value={license.usedLicenses}
+                        label="Used Licenses"
+                        disabled
+                      ></lightning-input>
+                    </template>
+                  </div>
+                </template>
+                <template if:true={displayEditView}>
+                  <div class="slds-col slds-var-p-around_small">
+                    <template if:false={expirationToggle}>
+                      <lightning-input
+                        type="toggle"
+                        label="Does not Expire"
+                        name="expire"
+                        onchange={handleExpirationToggle}
+                        message-toggle-active=""
+                        message-toggle-inactive=""
+                      ></lightning-input>
+                    </template>
+                    <template if:true={expirationToggle}>
+                      <lightning-input
+                        type="toggle"
+                        label="Does not Expire"
+                        name="expire"
+                        checked
+                        onchange={handleExpirationToggle}
+                        message-toggle-active=""
+                        message-toggle-inactive=""
+                      ></lightning-input>
+                    </template>
+                    <lightning-input
+                      type="date"
+                      class="expirationDate"
+                      label="Expiration Date"
+                      disabled={expirationToggle}
+                      value={modifyExpirationDate}
+                      onchange={handleExpirationChange}
+                      min={nowDate}
+                    ></lightning-input>
+                    <lightning-combobox
+                      label="Status"
+                      value={license.licenseStatus}
+                      options={statusOptions}
+                      onchange={handleStatusChange}
+                    ></lightning-combobox>
+                  </div>
+                  <div class="slds-col slds-var-p-around_small">
+                    <template if:true={isSiteLicense}>
+                      <lightning-input
+                        type="toggle"
+                        label="Site License"
+                        checked
+                        onchange={handleSeatsToggle}
+                        message-toggle-active=""
+                        message-toggle-inactive=""
+                      ></lightning-input>
+                    </template>
+                    <template if:false={isSiteLicense}>
+                      <lightning-input
+                        type="toggle"
+                        label="Site License"
+                        onchange={handleSeatsToggle}
+                        message-toggle-active=""
+                        message-toggle-inactive=""
+                      ></lightning-input>
+                    </template>
+                    <lightning-input
+                      type="number"
+                      disabled={seatsToggle}
+                      value={modifySeats}
+                      label="Seats"
+                      onchange={handleSeatsChange}
+                      max="99000000"
+                      min="0"
+                      class="seats"
+                    ></lightning-input>
+                    <template if:true={license.usedLicenses}>
+                      <lightning-input
+                        type="number"
+                        value={license.usedLicenses}
+                        label="Used Licenses"
+                        disabled
+                      ></lightning-input>
+                    </template>
+                  </div>
+                </template>
+              </div>
+              <template if:true={displayEditView}>
+                <div class="slds-modal__footer">
+                  <div class="slds-align_absolute-center">
+                    <lightning-button
+                      label="Cancel"
+                      title="Cancel"
+                      onclick={handleModifyLicenseCancel}
+                      class="slds-var-m-left_x-small"
+                    ></lightning-button>
+                    <lightning-button
+                      variant="brand"
+                      label="Save"
+                      title="Save"
+                      onclick={handleModifyLicenseSave}
+                      class="slds-var-m-left_x-small"
+                    ></lightning-button>
+                  </div>
+                </div>
+              </template>
+            </lightning-card>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</template>

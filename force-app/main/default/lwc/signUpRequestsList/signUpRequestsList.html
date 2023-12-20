@@ -1,0 +1,64 @@
+<template>
+    <template if:true={displaySpinner}>
+        <div class="slds-p-bottom_xx-large">
+            <lightning-spinner
+                alternative-text="Loading"
+                size="medium"
+                variant="brand"
+            ></lightning-spinner>
+        </div>
+  </template>
+  <template if:false={displaySpinner}>
+    <template if:true={data}>
+        <template if:true={displayEmptyView}>
+            <div class="slds-m-top_xx-large">
+                <c-empty-illustration-view
+                  title="Hmm..."
+                  body="Looks like we could retrieve any signup requests that were created from this org. Please try again later..."
+                >
+                </c-empty-illustration-view>
+            </div>
+        </template>
+        <template if:false={displayEmptyView}>
+            <div style="height: 400px">
+                <lightning-datatable
+                    key-field="createdOrgId"
+                    columns={gridColumns}
+                    data={data}
+                    sorted-by={sortedBy}
+                    sorted-direction={sortDirection}
+                    default-sort-direction="desc"
+                    onsort={handleSort}
+                    onrowaction={handleRowAction}
+                    enable-infinite-loading={disableInfiniteLoad}
+                    onloadmore={loadMoreData}
+                    load-more-offset="5"
+                    hide-checkbox-column
+                ></lightning-datatable>
+                <template if:true={displayDatatableSpinner}>
+                    <lightning-spinner
+                        alternative-text="Loading"
+                        size="medium"
+                        variant="brand"
+                    ></lightning-spinner>
+                </template>
+            </div>
+        </template>
+    </template>
+    <template if:false={data}>
+        <div class="slds-m-top_xx-large">
+            <c-empty-illustration-view
+              title="Hmm..."
+              body="Looks like we could retrieve any signup requests that were created from this org. Please try again later..."
+            >
+            </c-empty-illustration-view>
+        </div>
+    </template>
+  </template>
+  <template if:true={displaySignUpRequestModal}>
+    <c-sign-up-request-modal
+        row-data={rowData}
+        oncancel={handleModalDisplay}
+    ></c-sign-up-request-modal>
+  </template>
+</template>

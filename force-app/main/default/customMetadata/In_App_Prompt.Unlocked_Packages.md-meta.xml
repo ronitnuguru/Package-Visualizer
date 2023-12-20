@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Unlocked Packages</label>
+    <protected>true</protected>
+    <values>
+        <field>Brand_Button_Label__c</field>
+        <value xsi:type="xsd:string">Trailblazer Community</value>
+    </values>
+    <values>
+        <field>Brand_Button_URL__c</field>
+        <value xsi:type="xsd:string">https://trailblazers.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000Lg5U</value>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">Salesforce offers different types of packages, and unlocked packages are especially suited for internal business apps. Unless you plan to distribute an app on AppExchange, an unlocked package is the right package type for most use cases. You can use unlocked packages to organize your existing metadata, package an app, extend an app that you’ve purchased from AppExchange, or package new metadata</value>
+    </values>
+    <values>
+        <field>Learn_More_Link__c</field>
+        <value xsi:type="xsd:string">https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_unlocked_pkg_intro.htm</value>
+    </values>
+    <values>
+        <field>Prompt_Popover_Location__c</field>
+        <value xsi:type="xsd:string">slds-popover_prompt_bottom-right</value>
+    </values>
+    <values>
+        <field>Title__c</field>
+        <value xsi:type="xsd:string">Unlocked Packages</value>
+    </values>
+</CustomMetadata>

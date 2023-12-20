@@ -1,0 +1,311 @@
+<template>
+  <section
+    role="dialog"
+    tabindex="-1"
+    class="slds-modal slds-fade-in-open slds-modal_medium slds-app-launcher"
+    aria-labelledby="header43"
+    aria-modal="true"
+    aria-describedby="modal-content-id-1"
+  >
+    <div class="slds-modal__container">
+      <header
+        class="slds-modal__header slds-einstein-header slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-grid_align-center"
+      >
+        <button
+          class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse slds-current-color"
+          title="Close"
+          onclick={handleCancel}
+        >
+          <lightning-icon
+            size="small"
+            icon-name="utility:close"
+            alternative-text="Close"
+            title="Close"
+            variant="inverse"
+          ></lightning-icon>
+          <span class="slds-assistive-text">Close</span>
+        </button>
+        <h2 id="header43" class="slds-text-heading_medium slds-show_medium" style="font-weight: 400;">Package Launcher</h2>
+        <div class="slds-app-launcher__header-search slds-var-p-bottom_medium">
+          <lightning-input
+            placeholder="Find a Package"
+            type="search"
+            onchange={handleSearchInputChange}
+          ></lightning-input>
+        </div>
+        <lightning-button
+          label="Visit AppExchange"
+          title="AppExchange"
+          icon-name="utility:new_window"
+          icon-position="right"
+          class="slds-show_medium"
+          onclick={launchAppx}
+        ></lightning-button>
+      </header>
+      <div
+        class="slds-modal__content slds-app-launcher__content slds-var-p-around_medium"
+        id="modal-content-id-1"
+      >
+        <div class={allPackagesAccordionClass}>
+          <h3 class="slds-section__title">
+            <button
+              aria-controls="appsContent"
+              aria-expanded="true"
+              class="slds-button slds-section__title-action"
+              onclick={toggleAllPackagesAccordion}
+            >
+              <template if:true={displayAllPackages}>
+                <lightning-icon
+                  size="x-small"
+                  icon-name="utility:switch"
+                  class="slds-var-p-right_xx-small"
+                ></lightning-icon>
+              </template>
+              <template if:false={displayAllPackages}>
+                <lightning-icon
+                  size="x-small"
+                  icon-name="utility:chevronright"
+                  class="slds-var-p-right_xx-small"
+                ></lightning-icon>
+              </template>
+              <span class="slds-truncate" title="All Apps">All Packages</span>
+            </button>
+          </h3>
+          <div
+            aria-hidden="false"
+            class="slds-section__content slds-var-p-around_medium"
+            id="appsContent"
+          >
+            <template if:true={packageFilterList}>
+              <ul class="slds-grid slds-grid_pull-padded slds-wrap">
+                <template iterator:item={packageFilterList}>
+                  <template if:true={packageFilterList}>
+                    <li
+                      class="slds-var-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-3"
+                      key={item.value.id}
+                      data-id={item.index}
+                      data-name={item.value.name}
+                      onclick={handlePackageClick}
+                    >
+                      <div class="slds-app-launcher__tile slds-text-link_reset">
+                        <div
+                          class="slds-app-launcher__tile-figure slds-align_absolute-center"
+                        >
+                          <span class="slds-avatar slds-avatar_large">
+                            <c-package-icon icon={item.value.containerOptions} namespace-prefix={item.value.namespacePrefix}>
+                            </c-package-icon>
+                          </span>
+                        </div>
+                        <div
+                          class="slds-app-launcher__tile-body slds-truncate"
+                        >
+                          <template if:false={item.value.description}>
+                            <div class="slds-var-p-top_medium"></div>
+                          </template>
+                          <a
+                            href="#"
+                            class="slds-text-heading_small"
+                            >{item.value.name}</a
+                          >
+                          <p class="slds-line-clamp_x-small">
+                            {item.value.description}
+                          </p>
+                        </div>
+                      </div>
+                    </li>
+                  </template>
+                </template>
+              </ul>
+          </template>
+          <template if:false={packageFilterList}>
+              <div class="slds-align_absolute-center slds-text-heading_small">
+                <c-empty-illustration-view
+                  title="Hmm..."
+                  body="We were unable to retrieve any 2GP Packages associated with this org..."
+                >
+                </c-empty-illustration-view>
+              </div>
+            </template>
+          </div>
+        </div>
+        <hr></hr>
+        <div class={allDockedItemsAccordionClass}>
+          <h3 class="slds-section__title">
+            <button
+              aria-controls="dockedItemsContent"
+              aria-expanded="true"
+              class="slds-button slds-section__title-action"
+              onclick={toggleAllDockedItemsAccordion}
+            >
+              <template if:true={displayAllDockedItems}>
+                <lightning-icon
+                  size="x-small"
+                  icon-name="utility:switch"
+                  class="slds-var-p-right_xx-small"
+                ></lightning-icon>
+              </template>
+              <template if:false={displayAllDockedItems}>
+                <lightning-icon
+                  size="x-small"
+                  icon-name="utility:chevronright"
+                  class="slds-var-p-right_xx-small"
+                ></lightning-icon>
+              </template>
+              <span class="slds-truncate" title="All Apps">All Docked Utility Items</span>
+            </button>
+          </h3>
+          <div aria-hidden="false" class="slds-section__content slds-var-p-around_medium" id="dockedItemsContent">
+            <ul class="slds-grid slds-grid_pull-padded slds-wrap">
+                <li class="slds-var-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-3" onclick={handleDockedLimitsClick}>
+                  <div class="slds-app-launcher__tile slds-text-link_reset">
+                    <div
+                      class="slds-app-launcher__tile-figure slds-align_absolute-center"
+                    >
+                      <span class="slds-avatar slds-avatar_medium">
+                        <lightning-icon icon-name="standard:metrics"></lightning-icon>
+                      </span>
+                    </div>
+                    <div
+                      class="slds-app-launcher__tile-body slds-truncate"
+                    >
+                    <div class="slds-var-p-top_x-small"></div>
+                      <a
+                        href="#"
+                        class="slds-text-heading_small slds-var-p-top_medium"
+                        >Limits</a
+                      >
+                    </div>
+                  </div>
+                </li>
+                <li class="slds-var-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-3" onclick={handleDockedResourcesClick}>
+                  <div class="slds-app-launcher__tile slds-text-link_reset">
+                    <div
+                      class="slds-app-launcher__tile-figure slds-align_absolute-center"
+                    >
+                      <span class="slds-avatar slds-avatar_medium">
+                        <lightning-icon icon-name="standard:article"></lightning-icon>
+                      </span>
+                    </div>
+                    <div
+                      class="slds-app-launcher__tile-body slds-truncate"
+                    >
+                    <div class="slds-var-p-top_x-small"></div>
+                      <a
+                        href="#"
+                        class="slds-text-heading_small"
+                        >Resources</a
+                      >
+                    </div>
+                  </div>
+                </li>
+                <template if:true={is2GP}>
+                  <li class="slds-var-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-3" onclick={handleAppAnalyticsClick}>
+                    <div class="slds-app-launcher__tile slds-text-link_reset">
+                      <div
+                        class="slds-app-launcher__tile-figure slds-align_absolute-center"
+                      >
+                        <span class="slds-avatar slds-avatar_medium">
+                          <lightning-icon icon-name="standard:story"></lightning-icon>
+                        </span>
+                      </div>
+                      <div
+                        class="slds-app-launcher__tile-body slds-truncate"
+                      >
+                      <div class="slds-var-p-top_x-small"></div>
+                        <a
+                          href="#"
+                          class="slds-text-heading_small"
+                          >AppAnalytics Requests</a
+                        >
+                      </div>
+                    </div>
+                  </li>
+                </template>
+                <li class="slds-var-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-3" onclick={handleAnnouncementsClick}>
+                    <div class="slds-app-launcher__tile slds-text-link_reset">
+                      <div
+                        class="slds-app-launcher__tile-figure slds-align_absolute-center"
+                      >
+                        <span class="slds-avatar slds-avatar_medium">
+                          <lightning-icon icon-name="standard:announcement"></lightning-icon>
+                        </span>
+                      </div>
+                      <div
+                        class="slds-app-launcher__tile-body slds-truncate"
+                      >
+                      <div class="slds-var-p-top_x-small"></div>
+                        <a
+                          href="#"
+                          class="slds-text-heading_small"
+                          >Announcements</a
+                        >
+                      </div>
+                    </div>
+                  </li>
+                  <li class="slds-var-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-3" onclick={handleCreateOrgsClick}>
+                    <div class="slds-app-launcher__tile slds-text-link_reset">
+                      <div
+                        class="slds-app-launcher__tile-figure slds-align_absolute-center"
+                      >
+                        <span class="slds-avatar slds-avatar_medium">
+                          <lightning-icon icon-name="standard:default"></lightning-icon>
+                        </span>
+                      </div>
+                      <div
+                        class="slds-app-launcher__tile-body slds-truncate"
+                      >
+                      <div class="slds-var-p-top_x-small"></div>
+                        <a
+                          href="#"
+                          class="slds-text-heading_small slds-var-p-top_medium"
+                          >Create Orgs</a
+                        >
+                      </div>
+                    </div>
+                  </li>
+            </ul>
+          </div>
+        </div>
+        <hr></hr>
+        <template if:true={isSetupEnabled}>
+          <div class={allItemsAccordionClass}>
+            <h3 class="slds-section__title">
+              <button
+                aria-controls="itemsContent"
+                aria-expanded="true"
+                class="slds-button slds-section__title-action"
+                onclick={toggleAllItemsAccordion}
+              >
+                <template if:true={displayAllItems}>
+                  <lightning-icon
+                    size="x-small"
+                    icon-name="utility:switch"
+                    class="slds-var-p-right_xx-small"
+                  ></lightning-icon>
+                </template>
+                <template if:false={displayAllItems}>
+                  <lightning-icon
+                    size="x-small"
+                    icon-name="utility:chevronright"
+                    class="slds-var-p-right_xx-small"
+                  ></lightning-icon>
+                </template>
+                <span class="slds-truncate" title="All Apps">All Setup Items</span>
+              </button>
+            </h3>
+            <div aria-hidden="false" class="slds-section__content slds-var-p-around_medium" id="itemsContent">
+              <ul class="slds-grid slds-grid_pull-padded slds-wrap">
+                <template for:each={packageLauncherItems} for:item="item" for:index="index">
+                  <li class="slds-var-p-horizontal_small slds-size_1-of-2 slds-medium-size_1-of-4" key={item.label}>
+                    <a href={item.link} class="slds-truncate" title="item.label">{item.label}</a>
+                  </li>
+                </template>
+              </ul>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </section>
+  <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

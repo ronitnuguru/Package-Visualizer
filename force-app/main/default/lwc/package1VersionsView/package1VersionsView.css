@@ -1,0 +1,19 @@
+.table-style {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    direction: rtl;
+}
+
+.table-height {
+    max-height: 700px;
+}
+
+.footer-styling {
+    position: initial;
+}
+
+.decimal-style {
+    font-weight: 900;
+    color: #706E6B;
+}

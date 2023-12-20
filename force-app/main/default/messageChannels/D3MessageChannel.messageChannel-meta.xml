@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>This Message Channel contains D3 Chart Control Values</description>
+    <isExposed>true</isExposed>
+    <lightningMessageFields>
+        <fieldName>d3ChartControls</fieldName>
+    </lightningMessageFields>
+    <masterLabel>D3MessageChannel</masterLabel>
+</LightningMessageChannel>

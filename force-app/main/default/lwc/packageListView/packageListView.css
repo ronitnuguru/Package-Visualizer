@@ -1,0 +1,35 @@
+a:active {
+  box-shadow: inset 4px 0 0 var(--lwc-brandAccessible, rgb(0, 112, 210));
+}
+
+.font-style {
+  font-weight: 700;
+}
+
+.managed-badge {
+  --sds-c-badge-color-background: #3ba755;
+  --sds-c-badge-text-color: white;
+  --sds-c-badge-icon-color-foreground: white;
+  --sds-c-badge-radius-border: 4px;
+}
+
+.unlocked-badge {
+  --sds-c-badge-color-background: #db6d7a;
+  --sds-c-badge-text-color: white;
+  --sds-c-badge-icon-color-foreground: white;
+  --sds-c-badge-radius-border: 4px;
+}
+
+.first-managed-badge{
+  --sds-c-badge-color-background: #ff5d2d;
+  --sds-c-badge-text-color: white;
+  --sds-c-badge-icon-color-foreground: white;
+  --sds-c-badge-radius-border: 4px;
+}
+
+.first-unmanaged-badge{
+  --sds-c-badge-color-background: #9050e9;
+  --sds-c-badge-text-color: white;
+  --sds-c-badge-icon-color-foreground: white;
+  --sds-c-badge-radius-border: 4px;
+}

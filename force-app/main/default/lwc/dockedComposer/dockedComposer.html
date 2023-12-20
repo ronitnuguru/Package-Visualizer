@@ -1,0 +1,397 @@
+<template>
+  <template if:true={isDockedComposerOpen}>
+    <div class="slds-docked_container docked-style">
+      <section
+        class={dockedComposerView}
+        role="dialog"
+        aria-labelledby="dialog-heading-id-1"
+        aria-describedby="dialog-content-id-1"
+      >
+        <header
+          class="slds-docked-composer__header slds-grid slds-shrink-none"
+          aria-live="assertive"
+          style="cursor: pointer;"
+        >
+          <div
+            class="slds-media slds-media_center slds-has-flexi-truncate"
+            onclick={handleExpand}
+          >
+            <div class="slds-media__figure slds-var-m-right_x-small">
+              <span class="slds-icon_container">
+                <lightning-icon
+                  icon-name="utility:salesforce1"
+                  size="small"
+                  class="icon"
+                ></lightning-icon>
+              </span>
+            </div>
+            <div class="slds-media__body">
+              <h2
+                class="slds-truncate"
+                id="dialog-heading-id-1"
+                title="Create Orgs"
+              >
+                Create Orgs
+              </h2>
+            </div>
+          </div>
+          <div class="slds-col_bump-left slds-shrink-none">
+            <template if:true={isExpanded}>
+              <button
+                class="slds-button slds-button_icon slds-button_icon"
+                onclick={handleExpand}
+              >
+                <lightning-icon
+                  icon-name="utility:minimize_window"
+                  size="xx-small"
+                ></lightning-icon>
+                <span class="slds-assistive-text">Minimize Composer Panel</span>
+              </button>
+              <template if:false={displayFooter}>
+                <button
+                  class="slds-button slds-button_icon slds-button_icon"
+                  title="Refresh"
+                  onclick={handleRefresh}
+                >
+                  <lightning-icon
+                    icon-name="utility:sync"
+                    size="xx-small"
+                  ></lightning-icon>
+                  <span class="slds-assistive-text">Refresh</span>
+                </button>
+              </template>
+              <button
+                class="slds-button slds-button_icon slds-button_icon"
+                title="Trailhead"
+                onclick={handleTrialsTrailhead}
+              >
+                <lightning-icon
+                  icon-name="utility:trailhead_ext"
+                  size="x-small"
+                ></lightning-icon>
+                <span class="slds-assistive-text">Trailhead</span>
+              </button>
+              <button
+                class="slds-button slds-button_icon slds-button_icon"
+                title="Refresh"
+                onclick={handleTrialsHelpDoc}
+              >
+                <lightning-icon
+                  icon-name="utility:help_doc_ext"
+                  size="x-small"
+                ></lightning-icon>
+                <span class="slds-assistive-text">Documentation</span>
+              </button>
+            </template>
+            <button
+              class="slds-button slds-button_icon slds-button_icon"
+              onclick={handleClose}
+            >
+              <lightning-icon
+                icon-name="utility:close"
+                size="xx-small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Close Composer Panel</span>
+            </button>
+          </div>
+        </header>
+        <div class="slds-docked-composer__body slds-email-composer" id="dialog-content-id-1">
+          <lightning-tabset active-tab-value={selectedTab}>
+            <lightning-tab label="Sign-Up" value="sign-up-create" class="slds-p-horizontal_small" icon-name="standard:default" onactive={handleActive}>
+              <template if:true={isPackageVisualizerEnabled}>
+                <template if:true={displaySpinner}>
+                  <lightning-spinner
+                    alternative-text="Loading"
+                    size="medium"
+                    variant="brand"
+                  ></lightning-spinner>
+                </template>
+                <div class="slds-section slds-is-open">
+                  <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small">Admin User Details</span>
+                  </h3>
+                  <div aria-hidden="false" class="slds-section__content">
+                      <div class="slds-grid slds-wrap">
+                          <div class="slds-col">
+                              <lightning-input 
+                                  type="text" 
+                                  label="First Name"
+                                  class="firstName"
+                                  variant="label-stacked"
+                                  max-length=40
+                                  required
+                              ></lightning-input>
+                              <lightning-input 
+                                  type="text" 
+                                  label="Last Name"
+                                  class="lastName"
+                                  variant="label-stacked"
+                                  max-length=80
+                                  required
+                              ></lightning-input>
+                          </div>
+                          <div class="slds-col">
+                              <lightning-input 
+                                  type="email" 
+                                  label="Email"
+                                  class="email"
+                                  variant="label-stacked"
+                                  required
+                              ></lightning-input>
+                              <lightning-input 
+                                  type="email" 
+                                  label="User Name"
+                                  class="userName"
+                                  variant="label-stacked"
+                                  max-length=80
+                                  required
+                              ></lightning-input>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+                <div class="slds-section slds-is-open">
+                  <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small">Org Type</span>
+                  </h3>
+                  <div aria-hidden="false" class="slds-section__content">
+                      <div class="">
+                          <div class="">
+                              <lightning-combobox
+                                  name="purpose"
+                                  label="Purpose"
+                                  value={purposeValue}
+                                  placeholder="How will you use this org?"
+                                  options={purposeOptions}
+                                  onchange={purposeChange}
+                                  dropdown-alignment="auto"
+                                  required
+                              ></lightning-combobox>
+                              <template if:true={purposeValue}>
+                                  <template if:false={displayCreateUsingOptions}>
+                                      <lightning-radio-group name="createUsing"
+                                          label=""
+                                          options={createUsingOptions}
+                                          value="standard"
+                                          type="button"
+                                          variant="label-hidden"
+                                          class="slds-m-vertical_x-small"
+                                          required
+                                          disabled
+                                      ></lightning-radio-group>
+                                  </template>
+                                  <template if:true={displayCreateUsingOptions}>
+                                      <lightning-radio-group name="createUsing"
+                                          label=""
+                                          options={createUsingOptions}
+                                          value={createUsingValue}
+                                          onchange={handleCreateUsingChange}
+                                          variant="label-hidden"
+                                          class="slds-m-vertical_x-small"
+                                          type="button"
+                                          required
+                                      ></lightning-radio-group>
+                                  </template>
+                              </template>
+                          </div>
+                          <div class="">
+                              <template if:true={purposeValue}>
+                                  <template if:true={displayStandard}>
+                                      <template if:true={displayDevelopmentOptions}>
+                                          <lightning-combobox
+                                              name="edition"
+                                              label="Edition"
+                                              value={editionValue}
+                                              placeholder="How will you use this org?"
+                                              options={developmentOptions}
+                                              onchange={editionChange}
+                                              dropdown-alignment="auto"
+                                              required
+                                          ></lightning-combobox>
+                                      </template>
+                                      <template if:true={displayTestDemoOptions}>
+                                          <lightning-combobox
+                                              name="edition"
+                                              label="Edition"
+                                              value={editionValue}
+                                              placeholder="How will you use this org?"
+                                              options={testDemoOptions}
+                                              onchange={editionChange}
+                                              dropdown-alignment="auto"
+                                              required
+                                          ></lightning-combobox>
+                                      </template>
+                                      <template if:true={displayTsoOptions}>
+                                          <lightning-combobox
+                                              name="edition"
+                                              label="Edition"
+                                              value={editionValue}
+                                              placeholder="How will you use this org?"
+                                              options={tsoOptions}
+                                              onchange={editionChange}
+                                              dropdown-alignment="auto"
+                                              required
+                                          ></lightning-combobox>
+                                      </template>
+                                  </template>
+                                  <template if:false={displayStandard}>
+                                      <lightning-input 
+                                          type="text" 
+                                          label="Trialforce Template ID"
+                                          class="templateId"
+                                          variant="label-stacked"
+                                          max-length=15
+                                          value={templateId}
+                                          required
+                                      ></lightning-input>
+                                  </template>
+                              </template>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+                <div class="slds-section slds-is-open slds-p-top_x-small">
+                  <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small">Org Details</span>
+                  </h3>
+                  <div aria-hidden="false" class="slds-section__content">
+                      <div class="slds-grid slds-wrap">
+                          <div class="slds-col">
+                              <lightning-input 
+                                  type="text" 
+                                  label="Company"
+                                  class="company"
+                                  variant="label-stacked"
+                                  max-length=80
+                                  required
+                              ></lightning-input>
+                                <lightning-combobox
+                                  name="country"
+                                  label="Country"
+                                  value={country}
+                                  placeholder="Country"
+                                  options={countryOptions}
+                                  dropdown-alignment="auto"
+                                  class="slds-m-horizontal_xx-small"
+                                  onchange={handleCountryChange} 
+                                ></lightning-combobox>
+                          </div>
+                          <div class="slds-col">
+                              <lightning-input 
+                                  type="text" 
+                                  label="My Domain"
+                                  class="myDomain"
+                                  variant="label-stacked"
+                                  min-length=3
+                                  max-length=27
+                              ></lightning-input>
+                                <lightning-combobox
+                                  name="preferredLanguage"
+                                  label="Preferred Language"
+                                  value={preferredLanguage}
+                                  placeholder="Preferred Language"
+                                  options={preferredLanguageOptions}
+                                  dropdown-alignment="auto"
+                                  class="slds-m-horizontal_xx-small"
+                                  onchange={handlePreferredLanguageChange} 
+                                ></lightning-combobox>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+                <div class="slds-section slds-is-open slds-p-top_x-small">
+                  <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small">Org Configuration</span>
+                  </h3>
+                  <div aria-hidden="false" class="slds-section__content">
+                    <lightning-slider label="Trial Days" value={trialDays} min="1" max="365" onchange={handleTrialDaysChange}></lightning-slider>
+                    <lightning-input type="checkbox" value={isSignupEmailSuppressed} class="isSignupEmailSuppressed" label="Suppress Signup Email" onchange={handleSuppressEmailChange} field-level-help="When set to true, no sign-up emails are sent when the trial org is created. This field is used for the Proxy Signup feature"> </lightning-input>
+                    <lightning-input type="checkbox" value={shouldConnectToEnvHub} class="shouldConnectToEnvHub" label="Should Connect to Environment Hub" checked onchange={handleEnvHubChange} field-level-help="When set to true, the trial org is connected to the Environment Hub. The sign-up must take place in the hub main org or a spoke org"> </lightning-input>
+                  </div>
+                </div>
+                <div class="slds-section slds-is-open slds-p-top_x-small">
+                  <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small">Legal</span>
+                  </h3>
+                  <div aria-hidden="false" class="slds-section__content">
+                    <span class="slds-grid"><lightning-input type="checkbox" onchange={handleMasterSubscriptionAgreement} variant="label-hidden" required></lightning-input> I have read and agreed to the&nbsp;<a href="https://www.salesforce.com/assets/pdf/misc/salesforce_MSA.pdf" target="_blank">Master Subscription Agreement</a></span>
+                  </div>
+                </div>
+              </template>
+              <template if:false={isPackageVisualizerEnabled}>
+                <div class="slds-m-top_xx-large">
+                  <c-empty-illustration-view
+                    title="Hmm..."
+                    body="Looks like you do not have the appropriate permission set to create orgs. Please reach out to your Salesforce Admin..."
+                  >
+                  </c-empty-illustration-view>
+                </div>
+              </template>
+            </lightning-tab>
+            <lightning-tab label="Requests" value="sign-up-list" icon-name="standard:picklist_choice" onactive={handleActive} class="slds-p-around_none">
+                <c-sign-up-requests-list></c-sign-up-requests-list>
+            </lightning-tab>
+          </lightning-tabset>
+        </div>
+        <template if:true={isPackageVisualizerEnabled}>
+          <template if:true={displayFooter}>
+            <footer class="slds-docked-composer__footer slds-shrink-none">
+              <div class="slds-col_bump-left slds-text-align_right">
+                <template if:true={displayError}>
+                  <lightning-icon
+                      icon-name="utility:error" 
+                      alternative-text="Error!" 
+                      title="Error"
+                      variant="error"
+                      class="slds-m-right_x-small"
+                  ></lightning-icon>
+                </template>
+                <lightning-button
+                  variant="brand"
+                  label="Create"
+                  onclick={handleStartTrial}
+                  disabled={displaySpinner}
+                ></lightning-button>
+                <template if:true={displayError}>
+                  <div class="slds-is-relative">
+                      <section aria-describedby="dialog-body-id-5" aria-labelledby="dialog-heading-id-2" class="slds-popover slds-popover_error slds-nubbin_bottom-right tf-popover" role="dialog">
+                          <button class="slds-button slds-button_icon slds-button_icon-small slds-float_right slds-popover__close slds-button_icon-inverse" title="Close dialog" style="color:white">
+                              <lightning-icon
+                                  size="x-small"
+                                  icon-name="utility:close"
+                                  alternative-text="Close"
+                                  title="Close"
+                                  class="slds-current-color"
+                                  onclick={handlePopoverClose}
+                              ></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                          </button>
+                          <header class="slds-popover__header">
+                            <div class="slds-media slds-media_center slds-has-flexi-truncate ">
+                              <div class="slds-media__figure">
+                                  <lightning-icon
+                                      size="small"
+                                      icon-name="utility:error"
+                                      alternative-text="error"
+                                      class="slds-current-color"
+                                  ></lightning-icon>
+                              </div>
+                              <div class="slds-media__body">
+                                <h2 class="slds-truncate slds-text-heading_medium tf-popover_header" title="Resolve error">Resolve Error</h2>
+                              </div>
+                            </div>
+                          </header>
+                          <div class="slds-popover__body" id="dialog-body-id-5">
+                            <p>{errorText}</p>
+                          </div>
+                      </section>
+                  </div>
+                </template>
+              </div>
+            </footer>
+          </template>
+        </template>
+      </section>
+    </div>
+  </template>
+</template>

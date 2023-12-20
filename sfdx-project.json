@@ -1,0 +1,24 @@
+{
+  "packageDirectories": [
+    {
+      "path": "force-app",
+      "default": true,
+      "package": "Package Visualizer",
+      "versionName": "Version 4.29",
+      "versionNumber": "4.29.0.NEXT",
+      "ancestorVersion": "4.28.0"
+    }
+  ],
+  "name": "Package Visualizer",
+  "namespace": "pkgviz",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "58.0",
+  "packageAliases": {
+    "Package Visualizer": "0Ho5w000000KyxwCAC",
+    "Package Visualizer@4.24.0-1": "04tRh0000002JhhIAE",
+    "Package Visualizer@4.25.0-1": "04tRh0000002JjJIAU",
+    "Package Visualizer@4.26.0-1": "04tRh0000002KFZIA2",
+    "Package Visualizer@4.27.0-1": "04tRh0000002KKPIA2",
+    "Package Visualizer@4.28.0-1": "04tRh0000002KM1IAM"
+  }
+}

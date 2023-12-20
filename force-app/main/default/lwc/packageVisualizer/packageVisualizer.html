@@ -1,0 +1,22 @@
+<template>
+  <template if:true={displayFlexiWidth}>
+      <c-package-split-view
+        package-types={packageTypes}
+        oncreate={handleCreateOrgsDisplay}
+      ></c-package-split-view>
+      <c-docked-composer
+      ></c-docked-composer>
+      <c-docked-utility-bar
+        package-types={packageTypes}
+      ></c-docked-utility-bar>
+  </template>
+
+  <template if:false={displayFlexiWidth}>
+    <div class="slds-align_absolute-center slds-var-p-top_xx-large">
+      <c-empty-illustration-view
+        body="Package Visualizer is not available in Mobile Experience"
+      >
+      </c-empty-illustration-view>
+    </div>
+  </template>
+</template>

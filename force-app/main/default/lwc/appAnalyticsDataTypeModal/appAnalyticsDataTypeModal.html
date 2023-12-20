@@ -1,0 +1,189 @@
+<template>
+  <div
+    class="slds-modal__content slds-var-p-around_large"
+    id="modal-content-id-1"
+  >
+    <div class="">
+      <fieldset class="slds-form-element slds-var-p-bottom_xx-small">
+        <div class="slds-form-element__control slds-grid slds-grid_align-space">
+          <div class="slds-visual-picker slds-visual-picker_medium slds-col">
+            <input
+              type="radio"
+              id="visual-picker-97"
+              value="PackageUsageLog"
+              name="options"
+              onclick={handleChooseDataType}
+            />
+            <label for="visual-picker-97">
+              <span
+                class="slds-visual-picker__figure slds-visual-picker__text slds-align_absolute-center"
+                id="PackageUsageLog"
+              >
+                <span class="slds-icon_container">
+                  <lightning-icon
+                    icon-name="standard:customer_lifecycle_analytics"
+                    alternative-text="PackageUsageLog"
+                    title="PackageUsageLog"
+                    size="large"
+                  ></lightning-icon>
+                </span>
+              </span>
+              <span class="slds-visual-picker__body">
+                <span class="slds-text-heading_small">Package Usage Logs</span>
+                <span class="slds-text-title"
+                  >Analyze adoption and user behavior, then make informed
+                  feature development decisions based on data from package log
+                  files.</span
+                >
+              </span>
+              <span class="slds-icon_container slds-visual-picker__text-check">
+                <lightning-icon
+                  icon-name="utility:check"
+                  alternative-text="check"
+                  title="check"
+                  size="x-small"
+                  variant="bare"
+                ></lightning-icon>
+              </span>
+            </label>
+          </div>
+          <div class="slds-visual-picker slds-visual-picker_medium slds-col">
+            <input
+              type="radio"
+              id="visual-picker-99"
+              value="PackageUsageSummary"
+              name="options"
+              onclick={handleChooseDataType}
+            />
+            <label for="visual-picker-99">
+              <span
+                class="slds-visual-picker__figure slds-visual-picker__text slds-align_absolute-center"
+              >
+                <span class="slds-icon_container">
+                  <lightning-icon
+                    icon-name="standard:report"
+                    alternative-text="PackageUsageSummary"
+                    title="PackageUsageSummary"
+                    size="large"
+                  ></lightning-icon>
+                </span>
+              </span>
+              <span class="slds-visual-picker__body">
+                <span class="slds-text-heading_small"
+                  >Package Usage Summary</span
+                >
+                <span class="slds-text-title"
+                  >View high-level metrics by calendar month on how many users
+                  access your package and which operations they perform.</span
+                >
+              </span>
+              <span class="slds-icon_container slds-visual-picker__text-check">
+                <lightning-icon
+                  icon-name="utility:check"
+                  alternative-text="check"
+                  title="check"
+                  size="x-small"
+                  variant="bare"
+                ></lightning-icon>
+              </span>
+            </label>
+          </div>
+          <div class="slds-visual-picker slds-visual-picker_medium slds-col">
+            <input
+              type="radio"
+              id="visual-picker-100"
+              value="SubscriberSnapshot"
+              name="options"
+              onclick={handleChooseDataType}
+            />
+            <label for="visual-picker-100">
+              <span
+                class="slds-visual-picker__figure slds-visual-picker__text slds-align_absolute-center"
+              >
+                <span class="slds-icon_container">
+                  <lightning-icon
+                    icon-name="custom:custom38"
+                    alternative-text="SubscriberSnapshot"
+                    title="SubscriberSnapshot"
+                    size="large"
+                  ></lightning-icon>
+                </span>
+              </span>
+              <span class="slds-visual-picker__body">
+                <span class="slds-text-heading_small">Subscriber Snapshot</span>
+                <span class="slds-text-title"
+                  >Review a point-in-time summary of your subscribers' activity
+                  to see trends by org and package over time.</span
+                >
+              </span>
+              <span class="slds-icon_container slds-visual-picker__text-check">
+                <lightning-icon
+                  icon-name="utility:check"
+                  alternative-text="check"
+                  title="check"
+                  size="x-small"
+                  variant="bare"
+                ></lightning-icon>
+              </span>
+            </label>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+
+  <footer class="slds-modal__footer slds-grid slds-grid_align-spread">
+    <lightning-button
+      variant="neutral"
+      type="cancel"
+      name="cancel"
+      label="Cancel"
+      onclick={closeModal}
+    >
+    </lightning-button>
+    <lightning-progress-indicator
+      current-step="1"
+      type="base"
+      variant="base"
+      class="slds-progress slds-progress_shade"
+    >
+      <lightning-progress-step
+        label="Choose Data Type"
+        value="1"
+      ></lightning-progress-step>
+      <lightning-progress-step
+        label="Complete Request"
+        value="2"
+      ></lightning-progress-step>
+    </lightning-progress-indicator>
+    <lightning-button-group>
+      <template if:false={enableNext}>
+        <lightning-button
+          variant="brand"
+          type="next"
+          name="next"
+          label="Next"
+          disabled
+        >
+        </lightning-button>
+      </template>
+      <template if:true={enableNext}>
+        <lightning-button
+          variant="brand"
+          type="next"
+          name="next"
+          label="Next"
+          onclick={handleNext}
+        >
+        </lightning-button>
+      </template>
+      <lightning-button-menu icon-name="utility:help_doc_ext" menu-alignment="auto" alternative-text="AppAnalytics Help Docs" onselect={handleAppAnalyticsHelpDoc}>
+        <lightning-menu-item label="Package Usage Logs" value="Package Usage Logs"></lightning-menu-item>
+        <lightning-menu-item label="Package Usage Summary" value="Package Usage Summary"></lightning-menu-item>
+        <lightning-menu-item label="Subscriber Snapshots" value="Subscriber Snapshots"></lightning-menu-item>
+        <lightning-menu-divider></lightning-menu-divider>
+        <lightning-menu-item label="AppAnalytics Use Cases" value="AppAnalytics Use Cases"></lightning-menu-item>
+      </lightning-button-menu>
+    </lightning-button-group>
+  </footer>
+</template>

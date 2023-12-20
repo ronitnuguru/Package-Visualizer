@@ -1,0 +1,391 @@
+<template>
+  <template if:true={displaySpinner}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="medium"
+      variant="brand"
+    ></lightning-spinner>
+  </template>
+  <template if:false={displaySpinner}>
+    <template if:true={data}>
+      <template if:true={displayEmptyView}>
+        <template if:true={displayFilterMeta}>
+          <c-empty-illustration-with-button
+            title="No package versions to display..."
+            body="We could not find results based on your filters..."
+            button-label="Edit Filters"
+            onselect={handleFilterEdit}
+            size="large"
+          >
+          </c-empty-illustration-with-button>
+        </template>
+        <template if:false={displayFilterMeta}>
+          <template if:true={checkBoxFilterValues}>
+            <c-empty-illustration-with-button
+              title="No package versions to display..."
+              body="We could not find any results based on your search..."
+              button-label="Refresh"
+              onselect={handleFilterReset}
+              size="large"
+            >
+            </c-empty-illustration-with-button>
+          </template>
+          <template if:false={checkBoxFilterValues}>
+            <c-empty-large-illustration-view
+              title="Hmm…"
+              body="Looks like you do not have any versions for this package..."
+            >
+            </c-empty-large-illustration-view>
+          </template>
+        </template>
+      </template>
+      <template if:false={displayEmptyView}>
+        <div class="slds-grid slds-align_absolute-center">
+          <div class="slds-var-p-bottom_small">
+            <lightning-breadcrumbs
+              class="slds-var-p-horizontal_medium slds-var-p-top_small"
+              style="font-weight: 700;"
+            >
+              <lightning-breadcrumb
+                label="All Versions"
+                onclick={handleAllVersionsClick}
+              >
+              </lightning-breadcrumb>
+              <template if:true={displayPackageVersionBreadCrumb}>
+                <lightning-breadcrumb
+                  label={packageVersionNumber}
+                  onclick={handlePackageVersionClick}
+                >
+                </lightning-breadcrumb>
+                <template if:true={displayPackageSubscriberDetailBreadCrumb}>
+                  <lightning-breadcrumb label={orgName}> </lightning-breadcrumb>
+                </template>
+              </template>
+            </lightning-breadcrumbs>
+          </div>
+          <div class="slds-col_bump-left"></div>
+        </div>
+        <template if:false={displayPackageVersionBreadCrumb}>
+          <div
+            class="slds-grid slds-var-p-bottom_x-small slds-var-p-horizontal_medium slds-wrap"
+          >
+            <ul
+              class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small"
+            >
+              <template if:true={versionsLength}>
+                <li class="slds-item">{versionsLength} Versions</li>
+                <li class="slds-item">Sorted by {sortedByLabel}</li>
+                <template if:true={displayFilterMeta}>
+                  <li class="slds-item">Filters Enabled</li>
+                </template>
+                <li class="slds-item">
+                  Updated&nbsp;<lightning-relative-date-time
+                    value={relativeDateTime}
+                  ></lightning-relative-date-time>
+                </li>
+              </template>
+            </ul>
+            <div class="slds-col_bump-left">
+              <div class="slds-grid slds-grid_align-end">
+                <lightning-button-menu
+                  icon-name="utility:table_settings"
+                  menu-alignment="auto"
+                  variant="border-filled"
+                  alternative-text="Table Settings"
+                  class="slds-var-p-left_x-small"
+                >
+                  <lightning-menu-subheader
+                    label="Table Controls"
+                    class="slds-text-title_caps"
+                  ></lightning-menu-subheader>
+                  <lightning-menu-item
+                    value="tableFields"
+                    label="Select Fields to Display"
+                    id="table-fields"
+                    onclick={handleFieldsToDisplay}
+                  ></lightning-menu-item>
+                </lightning-button-menu>
+                <lightning-button-icon-stateful
+                  icon-name="utility:filterList"
+                  selected={filterState}
+                  onclick={handleFilterPanel}
+                  alternative-text="Filter"
+                  variant="border-filled"
+                  class="slds-var-p-left_x-small"
+                ></lightning-button-icon-stateful>
+              </div>
+            </div>
+          </div>
+          <div class={heightStyle}>
+            <div
+              class={displayFilterDockPanel}
+              style="direction:ltr;"
+              aria-hidden="false"
+            >
+              <div class="slds-panel__header">
+                <h2
+                  class="slds-panel__header-title slds-text-heading_small slds-truncate"
+                >
+                  Filters
+                </h2>
+                <button
+                  class="slds-button slds-button_icon slds-button_icon-small slds-panel__close"
+                  onclick={handleFilterPanel}
+                >
+                  <lightning-icon
+                    size="x-small"
+                    icon-name="utility:close"
+                    alternative-text="Close"
+                    title="Close"
+                  ></lightning-icon>
+                </button>
+              </div>
+              <div class="slds-panel__body">
+                <div>
+                  <div
+                    class="slds-var-p-vertical_xx-small slds-align_absolute-center slds-text-title_caps"
+                  >
+                    <lightning-icon
+                      icon-name="standard:number_input"
+                      size="small"
+                      class="slds-var-m-right_xx-small"
+                    ></lightning-icon>
+                    Version Range
+                    <lightning-helptext
+                      class="slds-var-p-left_xx-small"
+                      content="Major.Minor"
+                      style="display:inline-flex"
+                    ></lightning-helptext>
+                  </div>
+                  <div class="slds-grid">
+                    <div
+                      class="slds-col slds-size_6-of-12 slds-var-m-right_small"
+                    >
+                      <label class="slds-form-element__label slds-no-flex"
+                        >Min Version</label
+                      >
+                    </div>
+                    <div class="slds-col">
+                      <label class="slds-form-element__label slds-no-flex"
+                        >Max Version</label
+                      >
+                    </div>
+                  </div>
+                  <div class="slds-grid slds-grid_align-center">
+                    <div class="slds-col">
+                      <span>
+                        <lightning-input
+                          autocomplete="off"
+                          type="number"
+                          value={minMajorNumber}
+                          label=" "
+                          class="minMajorInput"
+                          variant="label-hidden"
+                          pattern="^[0-9]+$"
+                          message-when-pattern-mismatch="Enter a valid number"
+                        ></lightning-input
+                      ></span>
+                    </div>
+                    <div
+                      class="slds-col slds-var-p-top_xx-small slds-text-heading_large slds-text-color_weak decimal-style"
+                    >
+                      <p>.</p>
+                    </div>
+                    <div class="slds-col">
+                      <span>
+                        <lightning-input
+                          autocomplete="off"
+                          type="number"
+                          value={minMinorNumber}
+                          label="Min"
+                          class="minMinorInput"
+                          variant="label-hidden"
+                          pattern="^[0-9]+$"
+                          message-when-pattern-mismatch="Enter a valid number"
+                        ></lightning-input
+                      ></span>
+                    </div>
+                    <lightning-icon
+                      icon-name="utility:dash"
+                      size="x-small"
+                      class="slds-var-p-horizontal_xxx-small slds-var-p-top_x-small"
+                    ></lightning-icon>
+                    <div class="slds-col">
+                      <span>
+                        <lightning-input
+                          autocomplete="off"
+                          type="number"
+                          value={maxMajorNumber}
+                          label=" "
+                          class="maxMajorInput"
+                          variant="label-hidden"
+                          pattern="^[0-9]+$"
+                          message-when-pattern-mismatch="Enter a valid number"
+                        ></lightning-input
+                      ></span>
+                    </div>
+                    <div
+                      class="slds-col slds-var-p-top_xx-small slds-text-heading_large slds-text-color_weak decimal-style"
+                    >
+                      <p>.</p>
+                    </div>
+                    <div class="slds-col">
+                      <span>
+                        <lightning-input
+                          autocomplete="off"
+                          type="number"
+                          value={maxMinorNumber}
+                          label=" "
+                          class="maxMinorInput"
+                          variant="label-hidden"
+                          pattern="^[0-9]+$"
+                          message-when-pattern-mismatch="Enter a valid number"
+                        ></lightning-input
+                      ></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="slds-align_absolute-center slds-modal__footer">
+                <lightning-button
+                  label="Reset"
+                  title="Reset"
+                  onclick={handleFilterReset}
+                  class="slds-var-m-left_x-small"
+                ></lightning-button>
+                <lightning-button
+                  variant="brand"
+                  label="Submit"
+                  title="Submit"
+                  onclick={handleFilterSubmit}
+                  class="slds-var-m-left_x-small"
+                ></lightning-button>
+              </div>
+            </div>
+            <template if:false={treeState}>
+              <div style={responsivePanelStyle}>
+                <lightning-datatable
+                  key-field="subscriberPackageVersionId"
+                  columns={gridColumns}
+                  data={data}
+                  sorted-by={sortedBy}
+                  sorted-direction={sortDirection}
+                  default-sort-direction="desc"
+                  onsort={handleSort}
+                  onrowaction={handleRowAction}
+                  enable-infinite-loading={disableInfiniteLoad}
+                  onloadmore={loadMoreData}
+                  load-more-offset="5"
+                  hide-checkbox-column
+                ></lightning-datatable>
+                <template if:true={displayDatatableSpinner}>
+                  <lightning-spinner
+                    alternative-text="Loading"
+                    size="medium"
+                    variant="brand"
+                  ></lightning-spinner>
+                </template>
+              </div>
+            </template>
+          </div>
+        </template>
+        <template if:true={displayPackageVersionBreadCrumb}>
+          <template if:true={displayVersionDetails}>
+            <lightning-tabset variant="scoped" active-tab-value={selectedTab}>
+              <lightning-tab
+                label="Version Details"
+                icon-name="standard:form"
+                value="version-details"
+                onactive={handleActive}
+                class="slds-p-around_none"
+              >
+                <template if:true={displayVersionDetailsTab}>
+                    <c-package1-version-details
+                      version-id={versionId}
+                      package-id={packageId}
+                      package-name={packageName}
+                      package-version-number={packageVersionNumber}
+                      package-release-state={packageReleaseState}
+                      package-last-modified-date={packageLastModifiedAt}
+                      onsubscribersclick={handleSubscribersView}
+                      onpushupgradesclick={handlePushUpgrades}
+                      namespace-prefix={namespacePrefix}
+                      onedit={handleEdit}
+                    >
+                    </c-package1-version-details>
+                  </template>
+              </lightning-tab>
+              <template if:true={namespacePrefix}>
+                <lightning-tab
+                  label="Version Subscribers"
+                  icon-name="standard:queue"
+                  value="version-subscribers"
+                  onactive={handleActive}
+                  class="slds-p-around_none"
+                >
+                  <template if:true={displayVersionSubscribersTab}>
+                    <c-package-version-subscriber-list
+                      package-version-number={packageVersionNumber}
+                      subscriber-package-id={packageId}
+                      package-subscriber-version-id={versionId}
+                      package-type={packageType}
+                      package-is-released={packageIsReleased}
+                      onsubscribedetail={handleSubscriberDetailView}
+                    >
+                    </c-package-version-subscriber-list>
+                  </template>
+                </lightning-tab>          
+              </template>
+            </lightning-tabset>
+          </template>
+        </template>
+        <template if:true={displayPackageSubscribersBreadCrumb}>
+          <template if:true={displaySubscribersList}>
+            <c-package-version-subscriber-list
+              package-version-number={packageVersionNumber}
+              subscriber-package-id={pacakgeId}
+              package-subscriber-version-id={versionId}
+              package-type={packageType}
+              package-is-released={packageIsReleased}
+              onsubscribedetail={handleSubscriberDetailView}
+            >
+            </c-package-version-subscriber-list>
+          </template>
+        </template>
+        <template if:true={displayPackageSubscriberDetailBreadCrumb}>
+          <div class="slds-p-around_none">
+            <c-package-subscriber-detail
+              installed-status={installedStatus}
+              instance-name={instanceName}
+              metadata-package-id={metadataPackageId}
+              metadata-package-version-id={metadataPackageVersionId}
+              org-key={orgKey}
+              org-name={orgName}
+              org-status={orgStatus}
+              org-type={orgType}
+              package-type={packageType}
+            >
+            </c-package-subscriber-detail>
+          </div>
+        </template>
+      </template>
+    </template>
+    <template if:false={data}>
+      <c-empty-large-illustration-view
+        title="Data not available..."
+        body="Looks like we were unable retrieve any versions for this package..."
+      >
+      </c-empty-large-illustration-view>
+    </template>
+  </template>
+  <template if:true={fieldsToDisplayModal}>
+    <c-table-fields-to-display
+      label="Package Version Columns"
+      table-options={tableOptions}
+      required-options={tableRequiredOptions}
+      table-selected-options={tableSelectOptions}
+      oncancel={handleFieldsToDisplayModalCancel}
+      onsave={handleFieldsToDisplayModalSave}
+    ></c-table-fields-to-display>
+  </template>
+</template>

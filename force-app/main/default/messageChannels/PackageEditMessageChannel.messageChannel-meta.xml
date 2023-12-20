@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>This is a Lightning Message Channel that gets alerted on Package Edit</description>
+    <isExposed>true</isExposed>
+    <lightningMessageFields>
+        <fieldName>editMode</fieldName>
+    </lightningMessageFields>
+    <masterLabel>PackageEditMessageChannel</masterLabel>
+</LightningMessageChannel>

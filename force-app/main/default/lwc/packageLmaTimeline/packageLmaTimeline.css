@@ -1,0 +1,17 @@
+.tile-style {
+  font-weight: 700;
+}
+
+.timeline-style {
+  max-height: 500px;
+  overflow: scroll;
+}
+
+.timeline-card-style {
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.card-style{
+  --sds-c-card-body-spacing-block-end: 0;
+}

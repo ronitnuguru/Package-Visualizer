@@ -1,0 +1,512 @@
+<template>
+  <footer class="slds-utility-bar_container" aria-label="Utility Bar">
+    <h2 class="slds-assistive-text">Utility Bar</h2>
+    <ul class="slds-utility-bar">
+      <li class="slds-utility-bar__item">
+        <button
+          class="slds-button slds-utility-bar__action"
+          aria-pressed={showLimitsPanel}
+          onclick={handleLimitsUtilityPanel}
+        >
+          <lightning-icon
+            icon-name="standard:metrics"
+            alternative-text="metrics"
+            title="metrics"
+            size="small"
+          ></lightning-icon>
+          <span class="slds-utility-bar__text slds-var-p-left_xx-small"
+            >Limits</span
+          >
+        </button>
+      </li>
+      <li class="slds-utility-bar__item">
+        <button
+          class="slds-button slds-utility-bar__action"
+          aria-pressed={showResourcesPanel}
+          onclick={handleResourcesUtilityPanel}
+        >
+          <lightning-icon
+            icon-name="standard:article"
+            alternative-text="article"
+            title="article"
+            size="small"
+          ></lightning-icon>
+          <span class="slds-utility-bar__text slds-var-p-left_xx-small"
+            >Resources</span
+          >
+        </button>
+      </li>
+      <template if:true={is2GP}>
+        <li class="slds-utility-bar__item">
+          <button
+            class="slds-button slds-utility-bar__action"
+            aria-pressed={showAppAnalyticsPanel}
+            onclick={handleAppAnalyticsUtilityPanel}
+          >
+            <lightning-icon
+              icon-name="standard:story"
+              alternative-text="story"
+              title="story"
+              size="small"
+            ></lightning-icon>
+            <span class="slds-utility-bar__text slds-var-p-left_xx-small"
+              >AppAnalytics Requests</span
+            >
+          </button>
+        </li>
+      </template>
+      <li class="slds-utility-bar__item">
+        <button
+          class="slds-button slds-utility-bar__action"
+          aria-pressed={showAnnouncementsPanel}
+          onclick={handleAnnouncementsUtilityPanel}
+        >
+          <abbr
+            class="slds-indicator_unread"
+            title="Unread Item"
+            aria-label="Unread Item"
+          >
+            <span class="slds-assistive-text">●</span>
+          </abbr>
+          <lightning-icon
+            icon-name="standard:announcement"
+            alternative-text="announcement"
+            title="announcement"
+            size="small"
+          ></lightning-icon>
+          <span class="slds-utility-bar__text slds-var-p-left_xx-small"
+            >Announcements</span
+          >
+        </button>
+      </li>
+    </ul>
+
+    <div
+      class={dockedUtilityLimitsPanelBodyStyle}
+      role="dialog"
+      aria-labelledby="panel-heading-01"
+    >
+      <div class="slds-utility-panel__header slds-grid slds-shrink-none">
+        <div class="slds-media slds-media_center">
+          <div class="slds-media__figure slds-var-m-right_x-small">
+            <span class="slds-icon_container">
+              <lightning-icon
+                icon-name="standard:metrics"
+                alternative-text="metrics"
+                title="metrics"
+                size="small"
+              ></lightning-icon>
+            </span>
+          </div>
+          <div class="slds-media__body">
+            <span id="panel-heading-01">
+              Limits
+            </span>
+          </div>
+        </div>
+        <div class="slds-col_bump-left slds-shrink-none">
+          <button
+            class="slds-button slds-button_icon slds-button_icon"
+            onclick={handleLimitsUtilityPanel}
+          >
+            <lightning-icon
+              icon-name="utility:minimize_window"
+              size="xx-small"
+            ></lightning-icon>
+            <span class="slds-assistive-text">Close Panel</span>
+          </button>
+        </div>
+      </div>
+      <div class="slds-utility-panel__body">
+        <template if:true={showLimitsPanel}>
+          <c-org-limits></c-org-limits>
+        </template>
+      </div>
+    </div>
+
+    <div
+      class={dockedUtilityResourcesPanelBodyStyle}
+      role="dialog"
+      aria-labelledby="panel-heading-01"
+    >
+      <div class="slds-utility-panel__header slds-grid slds-shrink-none">
+        <div class="slds-media slds-media_center">
+          <div class="slds-media__figure slds-var-m-right_x-small">
+            <span class="slds-icon_container">
+              <lightning-icon
+                icon-name="standard:article"
+                alternative-text="article"
+                title="article"
+                size="small"
+              ></lightning-icon>
+            </span>
+          </div>
+          <div class="slds-media__body">
+            <span id="panel-heading-0">
+              Resources
+            </span>
+          </div>
+        </div>
+        <div class="slds-col_bump-left slds-shrink-none">
+          <button
+            class="slds-button slds-button_icon slds-button_icon"
+            title="Trailhead"
+            onclick={handleResourcesTrailhead}
+          >
+            <lightning-icon
+              icon-name="utility:trailhead_ext"
+              size="x-small"
+            ></lightning-icon>
+            <span class="slds-assistive-text">Trailhead</span>
+          </button>
+          <button
+            class="slds-button slds-button_icon slds-button_icon"
+            title="Refresh"
+            onclick={handleResourcesHelpDoc}
+          >
+            <lightning-icon
+              icon-name="utility:help_doc_ext"
+              size="x-small"
+            ></lightning-icon>
+            <span class="slds-assistive-text">Documentation</span>
+          </button>
+          <button
+            class="slds-button slds-button_icon slds-button_icon"
+            onclick={handleResourcesUtilityPanel}
+          >
+            <lightning-icon
+              icon-name="utility:minimize_window"
+              size="xx-small"
+            ></lightning-icon>
+            <span class="slds-assistive-text">Close Panel</span>
+          </button>
+        </div>
+      </div>
+      <div class="slds-utility-panel__body">
+        <template if:true={displaySpinner}>
+          <lightning-spinner
+            alternative-text="Loading"
+            size="medium"
+            variant="brand"
+          ></lightning-spinner>
+        </template>
+        <template if:true={resourcesNotAvailableView}>
+          <div class="slds-align_absolute-center">
+            <c-not-available-illustration
+              body="We were unable to retrieve any resources..."
+            >
+            </c-not-available-illustration>
+          </div>
+        </template>
+        <template if:true={resourcesData}>
+          <div class="slds-var-p-around_x-small">
+            <template
+              for:each={resourcesData}
+              for:item="resource"
+              for:index="index"
+            >
+              <div class="slds-var-p-bottom_x-small" key={resource.Label}>
+                <a
+                  target="_blank"
+                  href={resource.pkgviz__Link__c}
+                  class="slds-box slds-box_link slds-box_x-small slds-media"
+                >
+                  <div
+                    class="slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center slds-var-m-left_xx-small"
+                  >
+                    <lightning-icon
+                      icon-name={resource.pkgviz__Icon__c}
+                      alternative-text="Link"
+                      size="large"
+                    ></lightning-icon>
+                  </div>
+                  <div
+                    class="slds-media__body slds-border_left slds-var-p-around_x-small"
+                  >
+                    <strong class="slds-text-title_caps" title={resource.Label}
+                      >{resource.Label}</strong
+                    >
+                    <p class="slds-var-m-top_small slds-text-body_small">
+                      {resource.pkgviz__Description__c}
+                    </p>
+                  </div>
+                </a>
+              </div>
+            </template>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <template if:true={is2GP}>
+      <div
+        class={dockedUtilityAppAnalyticsBodyStyle}
+        role="dialog"
+        aria-labelledby="panel-heading-01"
+      >
+        <div class="slds-utility-panel__header slds-grid slds-shrink-none">
+          <div class="slds-media slds-media_center">
+            <div class="slds-media__figure slds-var-m-right_x-small">
+              <span class="slds-icon_container">
+                <lightning-icon
+                  icon-name="standard:story"
+                  alternative-text="story"
+                  title="story"
+                  size="small"
+                ></lightning-icon>
+              </span>
+            </div>
+            <div class="slds-media__body">
+              <span>
+                AppAnalytics Requests
+              </span>
+            </div>
+          </div>
+          <div class="slds-col_bump-left slds-shrink-none">
+            <button
+              class="slds-button slds-button_icon slds-button_icon"
+              title="Trailhead"
+              onclick={handleAppAnalyticsTrailhead}
+            >
+              <lightning-icon
+                icon-name="utility:trailhead_ext"
+                size="x-small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Trailhead</span>
+            </button>
+            <button
+              class="slds-button slds-button_icon slds-button_icon"
+              title="Documentation"
+              onclick={handleAppAnalyticsHelpDoc}
+            >
+              <lightning-icon
+                icon-name="utility:help_doc_ext"
+                size="x-small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Documentation</span>
+            </button>
+            <button
+              class="slds-button slds-button_icon slds-button_icon"
+              title="Analytics Studio"
+              onclick={handleLaunchAnalyticsStudio}
+            >
+              <lightning-icon
+                icon-name="utility:tableau"
+                size="x-small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Analytics Studio</span>
+            </button>
+            <button
+              class="slds-button slds-button_icon slds-button_icon"
+              title="Refresh"
+              onclick={handleAppAnalyticsRefresh}
+            >
+              <lightning-icon
+                icon-name="utility:sync"
+                size="xx-small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Refresh</span>
+            </button>
+            <button
+              class="slds-button slds-button_icon slds-button_icon"
+              onclick={handleAppAnalyticsUtilityPanel}
+            >
+              <lightning-icon
+                icon-name="utility:minimize_window"
+                size="xx-small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Close Panel</span>
+            </button>
+          </div>
+        </div>
+        <div class="slds-utility-panel__body">
+          <template if:true={displaySpinner}>
+            <lightning-spinner
+              alternative-text="Loading"
+              size="medium"
+              variant="brand"
+            ></lightning-spinner>
+          </template>
+          <template if:true={appAnalyticsNotAvailableView}>
+            <div class="slds-align_absolute-center">
+              <c-empty-illustration-with-button
+                body="We were unable to retrieve any AppAnalytics requests from the past 24 hours..."
+                button-label="Refresh"
+                onselect={handleAppAnalyticsRefresh}
+              >
+              </c-empty-illustration-with-button>
+            </div>
+          </template>
+          <div class="slds-var-p-vertical_x-small">
+            <template
+              for:each={appAnalyticsData}
+              for:item="app"
+              for:index="index"
+            >
+              <c-docked-app-analytics-bar
+                key={app.Id}
+                name={app.Name}
+                type={app.DataType}
+                request-state={app.RequestState}
+                app-data-type={app.DataType}
+                download-size={app.DownloadSize}
+                end-time={app.EndTime}
+                start-time={app.StartTime}
+                download-expiration-time={app.DownloadExpirationTime}
+                download-url={app.DownloadUrl}
+                error-message={app.ErrorMessage}
+                file-type={app.FileType}
+                file-compression={app.FileCompression}
+                query-submitted-time={app.QuerySubmittedTime}
+                organization-ids={app.OrganizationIds}
+                package-ids={app.PackageIds}
+                onexpand={handleAppAnalyticsExpand}
+              ></c-docked-app-analytics-bar>
+            </template>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <div
+      class={dockedUtilityAnnouncementsBodyStyle}
+      role="dialog"
+      aria-labelledby="panel-heading-01"
+    >
+      <div class="slds-utility-panel__header slds-grid slds-shrink-none">
+        <div class="slds-media slds-media_center">
+          <div class="slds-media__figure slds-var-m-right_x-small">
+            <span class="slds-icon_container">
+              <lightning-icon
+                icon-name="standard:announcement"
+                alternative-text="announcement"
+                title="announcement"
+                size="small"
+              ></lightning-icon>
+            </span>
+          </div>
+          <div class="slds-media__body">
+            <span id="panel-heading-04">
+              Announcements
+            </span>
+          </div>
+        </div>
+        <div class="slds-col_bump-left slds-shrink-none">
+          <button
+            class="slds-button slds-button_icon slds-button_icon"
+            title="Partner Alerts"
+            onclick={handlePartnerAlerts}
+          >
+            <lightning-icon
+              icon-name="utility:alert"
+              size="x-small"
+            ></lightning-icon>
+            <span class="slds-assistive-text">Partner Alerts</span>
+          </button>
+          <button
+            class="slds-button slds-button_icon slds-button_icon"
+            title="AppExchange Developer Center"
+            onclick={handleAppXDevCenterAlerts}
+          >
+            <lightning-icon
+              icon-name="utility:help_doc_ext"
+              size="x-small"
+            ></lightning-icon>
+            <span class="slds-assistive-text">AppExchange Developer Center</span>
+          </button>
+          <button
+            class="slds-button slds-button_icon slds-button_icon"
+            title="AppExchange &amp; ISV Technical Enablement Partner Community Group"
+            onclick={handlePartnerCommunityGroup}
+          >
+            <lightning-icon
+              icon-name="utility:trailblazer_ext"
+              size="x-small"
+            ></lightning-icon>
+          <span class="slds-assistive-text">AppExchange &amp; ISV Technical Enablement Partner Community Group</span>
+          </button>
+          <button
+            class="slds-button slds-button_icon slds-button_icon"
+            onclick={handleAnnouncementsUtilityPanel}
+          >
+            <lightning-icon
+              icon-name="utility:minimize_window"
+              size="xx-small"
+            ></lightning-icon>
+            <span class="slds-assistive-text">Close Panel</span>
+          </button>
+        </div>
+      </div>
+      <div class="slds-utility-panel__body">
+        <template if:true={displaySpinner}>
+          <lightning-spinner
+            alternative-text="Loading"
+            size="medium"
+            variant="brand"
+          ></lightning-spinner>
+        </template>
+        <template if:true={announcementsNotAvailableView}>
+          <div class="slds-align_absolute-center">
+            <c-not-available-illustration
+              body="We were unable to retrieve any announcements..."
+            >
+            </c-not-available-illustration>
+          </div>
+        </template>
+        <template if:true={announcementsData}>
+          <div class="slds-var-p-around_x-small">
+            <template
+              for:each={announcementsData}
+              for:item="announcement"
+              for:index="index"
+            >
+              <section
+                class="announcements-notification slds-var-m-bottom_x-small"
+                role="dialog"
+                aria-labelledby={announcement.Id}
+                aria-describedby={announcement.Id}
+                key={announcement.Id}
+              >
+                <div class="slds-notification__body" id={announcement.Id}>
+                  <a
+                    class="slds-notification__target slds-media"
+                    href={announcement.pkgviz__Link__c}
+                    target="_blank"
+                  >
+                    <span
+                      class="slds-icon_container slds-media__figure"
+                      title={announcement.pkgviz__Icon__c}
+                    >
+                      <lightning-icon
+                        icon-name={announcement.pkgviz__Icon__c}
+                        alternative-text={announcement.pkgviz__Icon__c}
+                        size="medium"
+                      ></lightning-icon>
+                    </span>
+                    <div class="slds-media__body">
+                      <h2
+                        class="slds-text-heading_small slds-var-m-bottom_xx-small"
+                        id={announcement.Id}
+                      >
+                        {announcement.Label}
+                      </h2>
+                      <p>{announcement.pkgviz__Description__c}</p>
+                    </div>
+                  </a>
+                </div>
+              </section>
+            </template>
+          </div>
+        </template>
+      </div>
+    </div>
+  </footer>
+  <template if:true={displayAppAnalyticsViewModal}>
+    <template if:true={appAnalyticsViewData}>
+      <c-app-analytics-request-modal
+        oncancel={handleViewCloseModal}
+        view-data={appAnalyticsViewData}
+      ></c-app-analytics-request-modal>
+    </template>
+  </template>
+</template>

@@ -1,0 +1,12 @@
+<template>
+  <div class="slds-grid slds-grid_align-spread slds-var-p-bottom_x-small">
+    <span class="slds-text-title_caps slds-var-p-right_x-small"
+      ><strong>{name}</strong></span
+    >
+    <span aria-hidden="true" class="slds-text-title_caps">
+      <strong>{remaining}/{max}</strong>
+    </span>
+  </div>
+  <lightning-progress-bar value={percentage} size="large">
+  </lightning-progress-bar>
+</template>

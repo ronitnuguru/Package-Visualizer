@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>AppExchange Listing</label>
+    <protected>true</protected>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">Check out our AppExchange Listing via Salesforce Labs!</value>
+    </values>
+    <values>
+        <field>Icon__c</field>
+        <value xsi:type="xsd:string">standard:default</value>
+    </values>
+    <values>
+        <field>Link__c</field>
+        <value xsi:type="xsd:string">https://appexchange.salesforce.com/appxListingDetail?listingId=a0N3u00000MSnbuEAD</value>
+    </values>
+    <values>
+        <field>Order__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>Visibility__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

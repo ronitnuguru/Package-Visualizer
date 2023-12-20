@@ -1,0 +1,16 @@
+.tile-style {
+  font-weight: 700;
+}
+
+.icon-style{
+  --sds-c-icon-color-foreground-default: var(--lwc-brandAccessible);
+}
+
+.table-style {
+  background-color: rgb(250, 250, 249);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  direction: rtl;
+  max-height: 600px;
+}

@@ -1,0 +1,444 @@
+<template>
+  <template if:false={displaySetupAssistant}>
+    <div class="slds-is-absolute slds-grid package-split-grid slds-var-p-bottom_xx-large">
+      <template if:true={packageList}>
+        <div class={containerStyle}>
+          <button
+            class="slds-button slds-button_icon slds-button_icon slds-split-view__toggle-button slds-is-open"
+            aria-controls="split-view-id"
+            aria-expanded="true"
+            onclick={handleClosedSplitView}
+          >
+            <template if:false={containerCollapsed}>
+              <lightning-icon
+                icon-name="utility:left"
+                alternative-text="Close Split View"
+                size="xx-small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Close Split View</span>
+            </template>
+            <template if:true={containerCollapsed}>
+              <lightning-icon
+                icon-name="utility:right"
+                alternative-text="Open Split View"
+                size="xx-small"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Open Split View</span>
+            </template>
+          </button>
+          <article
+            aria-hidden="false"
+            id="split-view-id"
+            class="slds-split-view slds-grid slds-grid_vertical slds-grow split-style"
+          >
+            <header class="slds-var-p-around_medium">
+              <div class="slds-grid slds-grid_vertical-align-center slds-var-m-bottom_xx-small">
+                <div class="slds-has-flexi-truncate">
+                  <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                      <lightning-dynamic-icon
+                        type="waffle"
+                        alternative-text="Application launcher"
+                        class="slds-align_absolute-center"
+                        onclick={handlePackageLauncher}
+                      ></lightning-dynamic-icon>
+                    </div>
+                    <div class="slds-media__body">
+                      <h1 class="slds-text-heading_small slds-text-color_default slds-var-p-right_x-small">
+                        <span class="slds-grid slds-has-flexi-truncate slds-grid_vertical-align-center">
+                          <span class="slds-truncate" title="Packages">
+                            Packages
+                          </span>
+                        </span>
+                      </h1>
+                    </div>
+                    <template if:true={packageList}>
+                      <div class="slds-no-flex slds-grid">
+                        <lightning-button-icon
+                          icon-name="utility:setup_assistant_guide"
+                          variant="border-filled"
+                          alternative-text="Setup Assistant"
+                          title="Setup Assistant"
+                          class="slds-var-m-right_x-small"
+                          onclick={handleSetupAssistantClick}
+                        ></lightning-button-icon>
+                        <lightning-button-icon
+                          icon-name="utility:salesforce1"
+                          variant="border-filled"
+                          alternative-text="Create Orgs"
+                          title="Create Orgs"
+                          class="slds-var-m-right_x-small"
+                          onclick={handleCreateOrgs}
+                        ></lightning-button-icon>
+                        <lightning-button-menu
+                          alternative-text="Show menu"
+                          variant="border-filled"
+                        >
+                          <lightning-menu-item
+                            value="About"
+                            label="About"
+                            prefix-icon-name="utility:info"
+                            onclick={handleAboutModal}
+                          ></lightning-menu-item>
+                          <lightning-menu-item
+                            value="Limits"
+                            label="Limits"
+                            prefix-icon-name="utility:metrics"
+                            onclick={handleDockedLimitsClick}
+                          ></lightning-menu-item>
+                          <lightning-menu-item
+                            value="Resources"
+                            label="Resources"
+                            prefix-icon-name="utility:knowledge_base"
+                            onclick={handleDockedResourcesClick}
+                          ></lightning-menu-item>
+                          <template if:true={is2GP}>
+                            <lightning-menu-item
+                              value="AppAnalytics"
+                              label="AppAnalytics Requests"
+                              prefix-icon-name="utility:einstein"
+                              onclick={handleAppAnalyticsClick}
+                            ></lightning-menu-item>
+                          </template>
+                          <lightning-menu-item
+                            value="Announcements"
+                            label="Announcements"
+                            prefix-icon-name="utility:announcement"
+                            onclick={handleAnnouncementsClick}
+                          ></lightning-menu-item>
+                        </lightning-button-menu>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+              </div>
+              <template if:true={packageList}>
+                <div class="slds-grid slds-grid_vertical-align-center slds-var-p-bottom_xx-small">
+                  <p class="slds-text-body_small slds-text-color_weak">
+                    {packageListSize} items • Sorted by Name
+                    <br />
+                    {filterLabel} • Updated&nbsp;
+                    <lightning-relative-date-time
+                      value={relativeDateTime}
+                    ></lightning-relative-date-time>
+                  </p>
+                  <div class="slds-no-flex slds-grid slds-col_bump-left">
+                    <lightning-button-menu
+                      alternative-text="Show menu"
+                      icon-name="utility:filterList"
+                      variant="container"
+                    >
+                      <template if:true={allPackageCheck}>
+                        <lightning-menu-item
+                          value="All"
+                          label="All Packages"
+                          onclick={handleAllPackageFilter}
+                          checked
+                        ></lightning-menu-item>
+                      </template>
+                      <template if:false={allPackageCheck}>
+                        <lightning-menu-item
+                          value="All"
+                          label="All Packages"
+                          onclick={handleAllPackageFilter}
+                        ></lightning-menu-item>
+                      </template>
+                      <template if:true={is2GP}>
+                        <template if:true={unlockedPackageCheck}>
+                          <lightning-menu-item
+                            value="Unlocked"
+                            label="Unlocked Packages"
+                            onclick={handleUnlockedPackageFilter}
+                            checked
+                          ></lightning-menu-item>
+                        </template>
+                        <template if:false={unlockedPackageCheck}>
+                          <lightning-menu-item
+                            value="Unlocked"
+                            label="Unlocked Packages"
+                            onclick={handleUnlockedPackageFilter}
+                          ></lightning-menu-item>
+                        </template>
+                        <template if:false={managedPackageCheck}>
+                          <lightning-menu-item
+                            value="Managed"
+                            label="2GP Managed Packages"
+                            onclick={handleManagedPackageFilter}
+                          ></lightning-menu-item>
+                        </template>
+                        <template if:true={managedPackageCheck}>
+                          <lightning-menu-item
+                            value="Managed"
+                            label="2GP Managed Packages"
+                            onclick={handleManagedPackageFilter}
+                            checked
+                          ></lightning-menu-item>
+                        </template>
+                      </template>
+                    </lightning-button-menu>
+
+                    <button
+                      class="slds-button slds-button_icon slds-button_icon slds-button_icon-container"
+                      title="Refresh List"
+                      onclick={handleRefreshList}
+                    >
+                      <lightning-icon
+                        icon-name="utility:refresh"
+                        size="xx-small"
+                      ></lightning-icon>
+                      <span class="slds-assistive-text">Refresh List</span>
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <lightning-input
+                    autocomplete="off"
+                    variant="label-hidden"
+                    type="search"
+                    name="package-search"
+                    onchange={handleSearchInputChange}
+                    placeholder="Search this list..."
+                    value={searchQuery}
+                  ></lightning-input>
+                </div>
+              </template>
+            </header>
+            <template if:true={displaySpinner}>
+              <lightning-spinner
+                alternative-text="Loading"
+                size="medium"
+                variant="brand"
+              ></lightning-spinner>
+            </template>
+            <template if:false={displaySpinner}>
+              <template if:true={packageList}>
+                <div class="slds-grid slds-grid_vertical">
+                  <div
+                    class="slds-split-view__list-header slds-grid"
+                    style="background-color: #ffffff;"
+                  >
+                    <span class="slds-assistive-text">Sorted by:</span>
+                    <span onclick={handleSort} style="cursor: pointer;">
+                      Name&nbsp;
+                      <template if:true={sortDirectionDisplay}>
+                        <lightning-icon
+                          icon-name="utility:arrowdown"
+                          size="xx-small"
+                        ></lightning-icon>
+                      </template>
+                      <template if:false={sortDirectionDisplay}>
+                        <lightning-icon
+                          icon-name="utility:arrowup"
+                          size="xx-small"
+                        ></lightning-icon>
+                      </template>
+                    </span>
+                    <span class="slds-assistive-text">Descending</span>
+                  </div>
+                  <ul
+                    aria-multiselectable="true"
+                    class="slds-scrollable_y list-style"
+                    role="listbox"
+                    aria-label="Select an item to open it in a new workspace tab."
+                  >
+                    <template iterator:item={packageFilterList}>
+                      <template if:true={packageFilterList}>
+                        <c-package-list-view
+                          key={item.value.id}
+                          id={item.value.id}
+                          index={item.index}
+                          current-index={currentPackageIndex}
+                          name={item.value.name}
+                          type={item.value.containerOptions}
+                          description={item.value.description}
+                          namespace-prefix={item.value.namespacePrefix}
+                          onpackagechange={handlePackageChange}
+                        ></c-package-list-view>
+                      </template>
+                    </template>
+                  </ul>
+                </div>
+              </template>
+              <template if:false={packageList}>
+                <div class="slds-align_absolute-center slds-text-heading_small slds-var-p-around_xx-small">
+                  <c-empty-illustration-view
+                    title="Hmm..."
+                    body="We were unable to retrieve any 2GP Packages associated with this org..."
+                  ></c-empty-illustration-view>
+                </div>
+              </template>
+            </template>
+          </article>
+        </div>
+      </template>
+    </div>
+    <div
+      style={detailsStyle}
+      class="slds-var-p-bottom_xx-large slds-show_medium"
+    >
+      <template if:true={packageList}>
+        <template if:true={currentPackage}>
+          <c-package-header
+            id={currentPackage.id}
+            subscriber-package-id={currentPackage.subscriberPackageID}
+            name={currentPackage.name}
+            type={currentPackage.containerOptions}
+            namespace-prefix={currentPackage.namespacePrefix}
+          ></c-package-header>
+          <article class="slds-card">
+            <lightning-tabset active-tab-value={selectedTab}>
+              <lightning-tab
+                icon-name="standard:display_text"
+                label="Details"
+                value="details"
+                onactive={handleActive}
+                class="slds-p-around_none"
+              >
+                <div class="slds-p-around_none">
+                  <template if:true={displayPackageTab}>
+                    <c-package-details-view
+                      id={currentPackage.id}
+                      name={currentPackage.name}
+                      subscriber-package-id={currentPackage.subscriberPackageID}
+                      namespace-prefix={currentPackage.namespacePrefix}
+                      description={currentPackage.description}
+                      is-deprecated={currentPackage.isDeprecated}
+                      is-org-dependent={currentPackage.isOrgDependent}
+                      was-transferred={currentPackage.wasTransferred}
+                      package-type={currentPackage.containerOptions}
+                      package-error-username={currentPackage.packageErrorUsername}
+                      package-created-by={currentPackage.owner}
+                      package-created-date={currentPackage.createdDate}
+                      package-last-modified-date={currentPackage.systemModstamp}
+                      edit-mode={displayEditView}
+                      onfieldupdate={packageUpdate}
+                    ></c-package-details-view>
+                  </template>
+                </div>
+              </lightning-tab>
+              <lightning-tab
+                icon-name="standard:drafts"
+                label="Versions"
+                value="versions"
+                onactive={handleActive}
+                class="slds-p-around_none"
+              >
+                <div class="slds-var-p-around_small">
+                  <template if:true={displayVersionsTab}>
+                    <template if:true={currentPackage.containerOptions}>
+                      <c-package-versions-view
+                        name={currentPackage.name}
+                        subscriber-package-id={currentPackage.subscriberPackageID}
+                        package-id={currentPackage.id}
+                        package-type={currentPackage.containerOptions}
+                        namespace-prefix={currentPackage.namespacePrefix}
+                        onedit={handleEdit}
+                      ></c-package-versions-view>
+                    </template>
+                    <template if:false={currentPackage.containerOptions}>
+                      <c-package1-versions-view
+                        id={currentPackage.id}
+                        package-type={currentPackage.containerOptions}
+                        namespace-prefix={currentPackage.namespacePrefix}
+                      > 
+                      </c-package1-versions-view>
+                  </template>
+                  </template>
+                </div>
+              </lightning-tab>
+              <template if:true={is2GP}>
+                <lightning-tab
+                  icon-name="standard:swarm_request"
+                  label="Subscribers"
+                  value="subscribers"
+                  onactive={handleActive}
+                  class="slds-p-around_none"
+                >
+                  <div class="slds-var-p-around_small">
+                    <template if:true={displaySubscribersTab}>
+                      <c-package-subscribers-view
+                        subscriber-package-id={currentPackage.subscriberPackageID}
+                        package-type={currentPackage.containerOptions}
+                      ></c-package-subscribers-view>
+                    </template>
+                  </div>
+                </lightning-tab>
+              </template>
+              <template if:false={is2GP}>
+                <template if:true={currentPackage.namespacePrefix}>
+                    <lightning-tab
+                    icon-name="standard:swarm_request"
+                    label="Subscribers"
+                    value="subscribers"
+                    onactive={handleActive}
+                    class="slds-p-around_none"
+                  >
+                    <div class="slds-var-p-around_small">
+                      <template if:true={displaySubscribersTab}>
+                        <c-package-subscribers-view
+                          subscriber-package-id={currentPackage.subscriberPackageID}
+                          package-type={currentPackage.containerOptions}
+                        ></c-package-subscribers-view>
+                      </template>
+                    </div>
+                  </lightning-tab>
+                </template>
+              </template>
+              <template if:true={isPushUpgradeEnabled}>
+                <template if:true={is2GP}>
+                  <lightning-tab
+                    icon-name="standard:business_hours"
+                    label="Push Upgrade Requests"
+                    value="push-requests"
+                    onactive={handleActive}
+                    class="slds-p-around_none"
+                  >
+                    <div class="slds-var-p-around_small">
+                      <template if:true={displayPushRequestsTab}>
+                        <c-package-push-requests
+                          package-id={currentPackage.id}
+                        ></c-package-push-requests>
+                      </template>
+                    </div>
+                  </lightning-tab>
+                </template>
+              </template>
+            </lightning-tabset>
+          </article>
+        </template>
+      </template>
+      <template if:false={displaySpinner}>
+        <template if:false={packageList}>
+          <c-setup-assistant package-types={packageTypes}></c-setup-assistant>
+        </template>
+      </template>
+    </div>
+    <div class="slds-hide_medium">
+      <c-setup-assistant
+        alert="The app is not available in smaller responsive designs"
+        package-types={packageTypes}
+      ></c-setup-assistant>
+    </div>
+    <template if:true={displayAboutModal}>
+      <c-about-welcome-mat
+        oncancel={handleAboutModalCancel}
+      ></c-about-welcome-mat>
+    </template>
+    <template if:true={displayPackageLauncher}>
+      <c-package-launcher
+        package-filter-list={packageFilterList}
+        oncancel={handlePackageLauncherCancel}
+        onpackagechange={handlePackageChange}
+        onsearch={handlePackageLauncherSearchChange}
+        package-types={packageTypes}
+      ></c-package-launcher>
+    </template>
+  </template>
+  <template if:true={displaySetupAssistant}>
+    <c-setup-assistant
+      package-types={packageTypes}
+      package-list-available="true"
+      onback={handleSetupAssistantClick}
+    ></c-setup-assistant>
+  </template>
+</template>

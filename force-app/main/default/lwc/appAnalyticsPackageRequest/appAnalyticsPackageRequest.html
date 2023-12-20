@@ -1,0 +1,99 @@
+<template>
+  <article class="slds-card">
+      <template if:true={displaySpinner}>
+          <lightning-spinner
+            alternative-text="Loading"
+            size="medium"
+            variant="brand"
+          ></lightning-spinner>
+      </template>
+      <div class="slds-card__header slds-grid slds-theme_shade">
+          <header class="slds-media slds-media_center slds-has-flexi-truncate slds-m-bottom_x-small">
+              <div class="slds-media__figure">
+                  <lightning-icon
+                      icon-name="standard:story"
+                      size="medium"
+                  ></lightning-icon>
+              </div>
+              <div class="slds-media__body">
+                <h2 class="slds-card__header-title slds-truncate_container_75">
+                  <strong class="slds-text-heading_small slds-truncate">AppAnalytics</strong>
+                </h2>
+              </div>
+              <div class="slds-no-flex">
+                  <lightning-button-group>
+                      <template if:true={packageData}>
+                        <template if:true={packageId}>
+                          <lightning-button label="Request" onclick={handleRequest} variant="brand"></lightning-button>
+                        </template>
+                        <lightning-button-icon icon-name="utility:sync" variant="border-filled" alternative-text="Refresh" onclick={handleRefresh}></lightning-button-icon>
+                        <lightning-button-icon icon-name="utility:tableau" variant="border-filled" alternative-text="CRM Analytics" onclick={handleCRMA}></lightning-button-icon>
+                        <lightning-button-icon icon-name="utility:help_doc_ext" variant="border-filled" alternative-text="AppAnalytics Documentation" onclick={handleHelpDoc}></lightning-button-icon>
+                      </template>
+                  </lightning-button-group>
+              </div>
+          </header>
+      </div>
+      <div class="slds-m-horizontal_small">
+          <template if:true={packageData}>
+              <template if:true={appAnalyticsData}>
+                  <div class="">
+                      <template
+                        for:each={appAnalyticsData}
+                        for:item="app"
+                        for:index="index"
+                      >
+                        <c-docked-app-analytics-bar
+                          key={app.Id}
+                          name={app.Name}
+                          type={app.DataType}
+                          request-state={app.RequestState}
+                          app-data-type={app.DataType}
+                          download-size={app.DownloadSize}
+                          end-time={app.EndTime}
+                          start-time={app.StartTime}
+                          download-expiration-time={app.DownloadExpirationTime}
+                          download-url={app.DownloadUrl}
+                          error-message={app.ErrorMessage}
+                          file-type={app.FileType}
+                          file-compression={app.FileCompression}
+                          query-submitted-time={app.QuerySubmittedTime}
+                          organization-ids={app.OrganizationIds}
+                          package-ids={app.PackageIds}
+                          onexpand={handleAppAnalyticsExpand}
+                        ></c-docked-app-analytics-bar>
+                      </template>
+                    </div>
+              </template>
+              <template if:true={appAnalyticsNotAvailableView}>
+                <div class="slds-align_absolute-center">
+                  <c-empty-illustration-with-button
+                    body="We were unable to retrieve any AppAnalytics requests from the past 24 hours..."
+                    button-label="Refresh"
+                    onselect={handleRefresh}
+                  >
+                  </c-empty-illustration-with-button>
+                </div>
+              </template>
+          </template>
+      </div>
+  </article>
+  <template if:true={displayAppAnalyticsModal}>
+      <c-app-analytics-flow-modal
+          header="Request AppAnalytics"
+          subscriber-package-id={packageId}
+          oncancel={handleAppAnalyticsCloseModal}
+          onrefresh={handleRefresh}
+      >
+      </c-app-analytics-flow-modal>
+  </template>
+  <template if:true={displayAppAnalyticsViewModal}>
+      <template if:true={appAnalyticsViewData}>
+        <c-app-analytics-request-modal
+          onrefresh={handleRefresh}
+          oncancel={handleViewCloseModal}
+          view-data={appAnalyticsViewData}
+        ></c-app-analytics-request-modal>
+      </template>
+    </template>
+</template>

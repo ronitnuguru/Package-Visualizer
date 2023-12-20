@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Package Upgraded</label>
+    <protected>true</protected>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">Your package has been upgraded to version 4.29</value>
+    </values>
+    <values>
+        <field>Icon__c</field>
+        <value xsi:type="xsd:string">standard:activation_target</value>
+    </values>
+    <values>
+        <field>Link__c</field>
+        <value xsi:type="xsd:string">https://salesforce.quip.com/f3SWA340YbFH</value>
+    </values>
+    <values>
+        <field>Order__c</field>
+        <value xsi:type="xsd:double">0.0</value>
+    </values>
+    <values>
+        <field>Visibility__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

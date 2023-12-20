@@ -1,0 +1,176 @@
+<template>
+  <div class="slds-var-p-around_medium slds-page-header">
+    <article class="slds-tile slds-media">
+      <div class="slds-media__figure">
+        <template if:true={displayLoadingIcon}>
+          <lightning-dynamic-icon
+            type="eq"
+            option="play"
+            alternative-text="Request in progress"
+            slot="media"
+          >
+          </lightning-dynamic-icon>
+        </template>
+        <template if:true={displaySuccessIcon}>
+          <lightning-icon
+            icon-name="utility:success"
+            alternative-text="Success!"
+            variant="success"
+            size="medium"
+            slot="media"
+          ></lightning-icon>
+        </template>
+        <template if:true={displayErrorIcon}>
+          <lightning-icon
+            icon-name="utility:error"
+            alternative-text="Error!"
+            variant="error"
+            size="medium"
+            slot="media"
+          ></lightning-icon>
+        </template>
+        <template if:true={displayWarningIcon}>
+          <lightning-icon
+            icon-name="utility:warning"
+            alternative-text="Warning!"
+            variant="warning"
+            size="medium"
+            slot="media"
+          ></lightning-icon>
+        </template>
+      </div>
+      <div class="slds-media__body">
+        <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+          <h3 class="slds-tile__title slds-truncate">
+            <span class="tile-style"
+              >{pushJobDetails.SubscriberOrganizationKey}</span
+            >
+          </h3>
+        </div>
+        <div class="slds-tile__detail">
+          <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+              <div>{pushJobDetails.Status}</div>
+              <template if:true={pushDurationSeconds}>
+                <div>
+                  Completed in {pushJobDetails.DurationSeconds} seconds
+                </div>
+              </template>
+              <template if:true={pushJobError}>
+                <div class="slds-text-color_destructive">
+                  {pushJobError}
+                </div>
+              </template>
+            </div>
+            <div class="slds-col">
+              <dl class="slds-list_horizontal slds-wrap">
+                <template if:true={pushJobDetails.StartTime}>
+                  <dt
+                    class="slds-item_label slds-text-color_weak slds-truncate"
+                  >
+                    Start Time:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    <lightning-formatted-date-time
+                      value={pushJobDetails.StartTime}
+                      year="numeric"
+                      month="numeric"
+                      day="numeric"
+                      hour="2-digit"
+                      minute="2-digit"
+                      time-zone-name="short"
+                      hour12="true"
+                    ></lightning-formatted-date-time>
+                  </dd>
+                </template>
+                <template if:true={pushJobDetails.EndTime}>
+                  <dt
+                    class="slds-item_label slds-text-color_weak slds-truncate"
+                  >
+                    End Time:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    <lightning-formatted-date-time
+                      value={pushJobDetails.EndTime}
+                      year="numeric"
+                      month="numeric"
+                      day="numeric"
+                      hour="2-digit"
+                      minute="2-digit"
+                      time-zone-name="short"
+                      hour12="true"
+                    ></lightning-formatted-date-time>
+                  </dd>
+                </template>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+  <div class={packageSubscriberAccordionClass}>
+    <h3 class="slds-section__title">
+      <button
+        aria-controls="subscriberContent"
+        aria-expanded="true"
+        class="slds-button slds-section__title-action"
+        onclick={togglePackageSubscriberAccordion}
+      >
+        <template if:true={displaySubscriber}>
+          <lightning-icon
+            size="x-small"
+            icon-name="utility:switch"
+            class="slds-var-p-right_xx-small"
+          ></lightning-icon>
+        </template>
+        <template if:false={displaySubscriber}>
+          <lightning-icon
+            size="x-small"
+            icon-name="utility:chevronright"
+            class="slds-var-p-right_xx-small"
+          ></lightning-icon>
+        </template>
+        <span class="slds-truncate" title="All Apps">Subscriber</span>
+      </button>
+    </h3>
+    <div
+      aria-hidden="false"
+      class="slds-section__content"
+      id="subscriberContent"
+    >
+      <div class="slds-card">
+        <template if:true={displaySpinner}>
+          <lightning-spinner
+            alternative-text="Loading"
+            size="medium"
+            variant="brand"
+          ></lightning-spinner>
+        </template>
+        <template if:true={displaySubscriberData}>
+          <c-package-subscriber-detail
+            installed-status={installedStatus}
+            instance-name={instanceName}
+            metadata-package-id={metadataPackageId}
+            metadata-package-version-id={metadataPackageVersionId}
+            org-key={orgKey}
+            org-name={orgName}
+            org-status={orgStatus}
+            org-type={orgType}
+            package-type={packageType}
+          >
+          </c-package-subscriber-detail>
+        </template>
+        <template if:false={displaySubscriberData}>
+          <template if:false={displaySpinner}>
+            <c-empty-illustration-view
+              title="Hmm..."
+              body="Looks like we were unable to retrieve any subscriber's details..."
+            >
+            </c-empty-illustration-view>
+          </template>
+        </template>
+      </div>
+    </div>
+  </div>
+</template>

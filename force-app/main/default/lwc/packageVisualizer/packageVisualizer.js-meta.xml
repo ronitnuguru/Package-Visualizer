@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Package Visualizer</masterLabel>
+    <targets>
+        <target>lightning__AppPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage">
+            <property name="packageTypes" label="Package Types" type="String" default="2GP and Unlocked Packages" datasource="2GP and Unlocked Packages, 1GP and Unmanaged Packages"></property>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

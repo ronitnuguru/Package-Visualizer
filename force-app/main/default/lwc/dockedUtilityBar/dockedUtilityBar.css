@@ -1,0 +1,10 @@
+footer {
+  z-index: 10;
+}
+
+.announcements-notification {
+  width: var(--lwc-sizeMedium);
+  border: 1px solid #ecebea;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 3px 0 rgb(0 0 0 / 20%);
+}

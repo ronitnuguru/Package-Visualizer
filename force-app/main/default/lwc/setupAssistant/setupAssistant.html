@@ -1,0 +1,480 @@
+<template>
+  <article class="slds-card slds-m-bottom_xx-large">
+    <div class="slds-grid slds-einstein-header slds-card__header">
+      <header class="slds-media slds-media_center slds-has-flexi-truncate">
+        <div
+          class="slds-grid slds-grid_vertical-align-center slds-size_3-of-4 slds-medium-size_2-of-3"
+        >
+          <div class="slds-media__figure">
+            <span class="slds-icon_container slds-icon-utility-salesforce1">
+              <lightning-icon icon-name="utility:salesforce1"></lightning-icon>
+            </span>
+          </div>
+          <div class="slds-media__body">
+            <h2
+              id="header43"
+              class="slds-text-heading_medium"
+              style="font-weight: 400;"
+            >
+              Setup Assistant ({packageTypes})
+            </h2>
+          </div>
+        </div>
+        <div
+          class="slds-einstein-header__figure slds-size_1-of-4 slds-medium-size_1-of-3"
+        ></div>
+      </header>
+      <template if:true={packageListAvailable}>
+        <lightning-button-group class="slds-align_absolute-center">
+          <lightning-button-icon
+            icon-name="utility:back"
+            variant="border-filled"
+            alternative-text="Back to Package Visualizer"
+            title="Back to Package Visualizer"
+            onclick={handleBackToPackageVisualizer}
+            class="slds-var-m-left_x-small"
+          ></lightning-button-icon>
+        </lightning-button-group>
+      </template>
+    </div>
+    <div class="slds-card__body slds-card__body_inner">
+      <template if:true={alert}>
+        <div class="slds-notify slds-notify_alert" role="alert">
+          <span class="slds-assistive-text">info</span>
+          <span
+            class="slds-icon_container slds-icon-utility-user slds-var-m-right_x-small"
+          >
+            <lightning-icon
+              icon-name="utility:screen"
+              size="x-small"
+              variant="inverse"
+            ></lightning-icon>
+          </span>
+          <h2>
+            {alert}
+          </h2>
+        </div>
+      </template>
+      <ol class="slds-setup-assistant">
+        <li class="slds-setup-assistant__item">
+          <div class="">
+            <article class="slds-setup-assistant__step">
+              <div class="slds-setup-assistant__step-summary">
+                <div class="slds-media">
+                  <div
+                    class="slds-setup-assistant__step-summary-content slds-media__body"
+                  >
+                    <h3
+                      class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                    >
+                      <lightning-icon
+                        icon-name="utility:component_customization"
+                        size="small"
+                        class="slds-var-p-right_small"
+                      ></lightning-icon>
+                      Component Setup and Customization
+                    </h3>
+                    <div
+                      class="slds-progress slds-progress_vertical slds-progress_success"
+                    >
+                      <ol
+                        class="slds-progress__list slds-progress__list-bordered border-bottom"
+                      >
+                        <li class="slds-progress__item">
+                          <template if:false={isPackageVisualizerEnabled}>
+                            <div class="slds-progress__marker">
+                              <span class="slds-assistive-text">Active</span>
+                            </div>
+                          </template>
+                          <template if:true={isPackageVisualizerEnabled}>
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker slds-progress__marker_icon slds-progress__marker_icon-success"
+                              title="Complete"
+                            >
+                              <lightning-icon
+                                icon-name="utility:success"
+                                alternative-text="Success!"
+                                variant="success"
+                                size="x-small"
+                              ></lightning-icon>
+                            </span>
+                          </template>
+                          <div
+                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                          >
+                            <div class="slds-size_3-of-4">
+                              <strong class="slds-text-title_caps">
+                                Package Visualizer Permission
+                              </strong>
+                              <p class="slds-var-m-top_xx-small">
+                                Gain access to the App! This permission allows
+                                the user to all of Package Visualizer's core
+                                functionalities
+                              </p>
+                            </div>
+                            <div
+                              class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                            >
+                              <lightning-button-icon
+                                icon-name="action:manage_perm_sets"
+                                variant="brand"
+                                onclick={navigateToPermissionSets}
+                                disabled={isSetupEnabled}
+                              ></lightning-button-icon>
+                            </div>
+                          </div>
+                        </li>
+                        <template if:true={is2GP}>
+                          <li class="slds-progress__item">
+                            <template if:false={isPushUpgradeEnabled}>
+                              <div class="slds-progress__marker">
+                                <span class="slds-assistive-text">Active</span>
+                              </div>
+                            </template>
+                            <template if:true={isPushUpgradeEnabled}>
+                              <span
+                                class="slds-icon_container slds-icon-utility-success slds-progress__marker slds-progress__marker_icon slds-progress__marker_icon-success"
+                                title="Complete"
+                              >
+                                <lightning-icon
+                                  icon-name="utility:success"
+                                  alternative-text="Success!"
+                                  variant="success"
+                                  size="x-small"
+                                ></lightning-icon>
+                              </span>
+                            </template>
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
+                              <div class="slds-size_3-of-4">
+                                <strong class="slds-text-title_caps">
+                                  Package Visualizer Push Upgrade Permission
+                                </strong>
+                                <p class="slds-var-m-top_xx-small">
+                                  With great power comes great responsibility.
+                                  This permission allows the user to view and
+                                  schedule push upgrades
+                                </p>
+                              </div>
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
+                                <lightning-button-icon
+                                  icon-name="action:manage_perm_sets"
+                                  variant="brand"
+                                  onclick={navigateToPermissionSets}
+                                  disabled={isSetupEnabled}
+                                ></lightning-button-icon>
+                              </div>
+                            </div>
+                          </li>
+                        </template>
+                      </ol>
+                      <ol
+                        class="list_ordered"
+                      >
+                        <li class="list_item">
+                          <div
+                            class="slds-progress__item_content slds-grid slds-grid_align-spread border-bottom"
+                          >
+                            <div class="slds-size_3-of-4">
+                              <strong class="slds-text-title_caps">
+                                Configure Remote Site Settings
+                              </strong>
+                              <p class="slds-var-m-top_xx-small">
+                                By turning on the Active field for
+                                SalesforceTrust, the app is able to leverage
+                                Salesforce's Trust APIs
+                              </p>
+                            </div>
+                            <div
+                              class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                            >
+                              <lightning-button-icon
+                                icon-name="utility:bundle_config"
+                                variant="brand"
+                                onclick={navigateToRemoteSiteSettings}
+                                disabled={isSetupEnabled}
+                              ></lightning-button-icon>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="list_item">
+                          <div
+                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                          >
+                            <div class="slds-size_3-of-4">
+                              <strong class="slds-text-title_caps">
+                                Configure CSP Trusted Sites
+                              </strong>
+                              <p class="slds-var-m-top_xx-small">
+                                By turning on the Active field for
+                                SalesforceTrust, the app can securely access the
+                                Content Security Policy (CSP) of Salesforce's
+                                Trust APIs
+                              </p>
+                            </div>
+                            <div
+                              class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                            >
+                              <lightning-button-icon
+                                icon-name="utility:bundle_config"
+                                variant="brand"
+                                onclick={navigateToCSPTrustedSites}
+                                disabled={isSetupEnabled}
+                              ></lightning-button-icon>
+                            </div>
+                          </div>
+                        </li>
+                      </ol>
+                    </div>
+                  </div>
+                  <div class="slds-media__figure slds-media__figure_reverse">
+                    <lightning-button
+                      variant="brand-outline"
+                      label="Guide"
+                      icon-name="utility:quip"
+                      icon-position="right"
+                      onclick={navigateToGuide}
+                    ></lightning-button>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </li>
+        <template if:true={is2GP}>
+          <li class="slds-setup-assistant__item">
+            <div class="">
+              <article class="slds-setup-assistant__step">
+                <div class="slds-setup-assistant__step-summary">
+                  <div class="slds-media">
+                    <div
+                      class="slds-setup-assistant__step-summary-content slds-media__body"
+                    >
+                      <h3
+                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                      >
+                        <lightning-icon
+                          icon-name="utility:toggle"
+                          size="small"
+                          class="slds-var-p-right_small"
+                        ></lightning-icon>
+                        Enable Dev Hub Features in Your Org
+                      </h3>
+                      <p>
+                        Enable Dev Hub features in your Salesforce org so you can
+                        create and manage scratch orgs, create and manage
+                        second-generation packages, and use Einstein features.
+                        Scratch orgs are disposable Salesforce orgs to support
+                        development and testing.&nbsp;
+                        <a
+                          href="https://help.salesforce.com/articleView?id=sf.sfdx_setup_enable_devhub.htm&type=5"
+                          target="_blank"
+                          title="Learn More"
+                          >Learn More</a
+                        >
+                      </p>
+                    </div>
+                    <div class="slds-media__figure slds-media__figure_reverse">
+                      <lightning-button
+                        variant="brand-outline"
+                        label="Setup"
+                        icon-name="utility:setup"
+                        icon-position="right"
+                        onclick={navigateToDevHub}
+                        disabled={isSetupEnabled}
+                      ></lightning-button>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </li>
+          <li class="slds-setup-assistant__item">
+            <div class="">
+              <article class="slds-setup-assistant__step">
+                <div class="slds-setup-assistant__step-summary">
+                  <div class="slds-media">
+                    <div
+                      class="slds-setup-assistant__step-summary-content slds-media__body"
+                    >
+                      <h3
+                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                      >
+                        <lightning-icon
+                          icon-name="utility:toggle"
+                          size="small"
+                          class="slds-var-p-right_small"
+                        ></lightning-icon>
+                        Enable Unlocked and 2GP Managed Packaging
+                      </h3>
+                      <p>
+                        Enable packaging in your org so you can develop unlocked
+                        packages or second-generation managed packages. You can
+                        work with the packages in scratch orgs, sandbox orgs, and
+                        target subscriber orgs.&nbsp;
+                        <a
+                          href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_enable_secondgen_pkg.htm"
+                          target="_blank"
+                          title="Learn More"
+                          >Learn More</a
+                        >
+                      </p>
+                    </div>
+                    <div class="slds-media__figure slds-media__figure_reverse">
+                      <lightning-button
+                        variant="brand-outline"
+                        label="Setup"
+                        icon-name="utility:setup"
+                        icon-position="right"
+                        onclick={navigateToDevHub}
+                        disabled={isSetupEnabled}
+                      ></lightning-button>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </li>
+        </template>
+        <li class="slds-setup-assistant__item">
+          <div class="">
+            <article class="slds-setup-assistant__step">
+              <div class="slds-setup-assistant__step-summary">
+                <div class="slds-media">
+                  <div
+                    class="slds-setup-assistant__step-summary-content slds-media__body"
+                  >
+                    <h3
+                      class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                    >
+                      <lightning-icon
+                        icon-name="utility:apex"
+                        size="small"
+                        class="slds-var-p-right_small"
+                      ></lightning-icon>
+                      Install the Salesforce CLI
+                    </h3>
+                    <p>
+                      Salesforce CLI is a command-line interface that simplifies
+                      development and build automation when working with your
+                      Salesforce org. Use it to create and manage orgs,
+                      synchronize source to and from orgs, create and install
+                      packages, and more.&nbsp;
+                      <a
+                        href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm"
+                        target="_blank"
+                        title="Learn More"
+                        >Learn More</a
+                      >
+                    </p>
+                  </div>
+                  <div class="slds-media__figure slds-media__figure_reverse">
+                    <lightning-button
+                      variant="brand-outline"
+                      label="Guide"
+                      icon-name="utility:apex"
+                      icon-position="right"
+                      onclick={navigateToCLI}
+                    ></lightning-button>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </li>
+        <template if:true={is2GP}>
+          <li class="slds-setup-assistant__item">
+            <div class="">
+              <article class="slds-setup-assistant__step">
+                <div class="slds-setup-assistant__step-summary">
+                  <div class="slds-media">
+                    <div
+                      class="slds-setup-assistant__step-summary-content slds-media__body"
+                    >
+                      <h3
+                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                      >
+                        <lightning-icon
+                          icon-name="utility:record_create"
+                          size="small"
+                          class="slds-var-p-right_small"
+                        ></lightning-icon>
+                        Create and Register Your Namespace
+                      </h3>
+                      <p>
+                        With 2GP, you can share a single namespace with multiple
+                        packages. Since sharing of code is much easier if your
+                        package shares the same namespace, we recommend that you
+                        use a single namespace for all of your 2GP packages.&nbsp;
+                        <a
+                          href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_reg_namespace.htm"
+                          target="_blank"
+                          title="Learn More"
+                          >Learn More</a
+                        >
+                      </p>
+                    </div>
+                    <div class="slds-media__figure slds-media__figure_reverse">
+                      <lightning-button
+                        variant="brand-outline"
+                        label="List View"
+                        icon-name="utility:salesforce_page"
+                        icon-position="right"
+                        onclick={navigateToNamespace}
+                      ></lightning-button>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </li>
+        </template>
+        <li class="slds-setup-assistant__item">
+          <div class="">
+            <article class="slds-setup-assistant__step">
+              <div class="slds-setup-assistant__step-summary">
+                <div class="slds-media">
+                  <div
+                    class="slds-setup-assistant__step-summary-content slds-media__body"
+                  >
+                    <h3
+                      class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                    >
+                      <lightning-icon
+                        icon-name="utility:alert"
+                        size="small"
+                        class="slds-var-p-right_small"
+                      ></lightning-icon>
+                      1GP -> 2GP Package Migration Developer Preview
+                    </h3>
+                    <p>
+                      Cannot find your pacakge? Was your package built using 1GP? Developer Preview for 1GP to 2GP is now open to all ISVs! All you need is a first-generation pacakge that you'd like to test drive migration for and a Partner Community Login.&nbsp;
+                      <a
+                        href="https://partners.salesforce.com/0694V000009xWAwQAM"
+                        target="_blank"
+                        title="Learn More"
+                        >Learn More</a
+                      >
+                    </p>
+                  </div>
+                  <div class="slds-media__figure slds-media__figure_reverse">
+                    <lightning-button
+                      variant="brand-outline"
+                      label="Partner Community Group"
+                      icon-name="utility:groups"
+                      icon-position="right"
+                      onclick={navigateToMigrationCommunity}
+                    ></lightning-button>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </article>
+</template>

@@ -1,0 +1,257 @@
+<template>
+  <div class="slds-var-p-around_small">
+    <template if:true={orgKey}>
+      <div
+        class="slds-grid slds-wrap slds-var-p-horizontal_medium slds-page-header"
+      >
+        <article class="slds-tile slds-media">
+          <div class="slds-media__figure">
+            <lightning-icon
+              icon-name="standard:employee_organization"
+              size="medium"
+              slot="media"
+            ></lightning-icon>
+          </div>
+          <div class="slds-media__body">
+            <div
+              class="slds-grid slds-grid_align-spread slds-has-flexi-truncate"
+            >
+              <h3 class="slds-tile__title">
+                <span class="tile-style">{orgName}</span>
+              </h3>
+              <template if:true={managedPackageType}>
+                <div class="slds-shrink-none">
+                  <lightning-button-menu alternative-text="Show menu" menu-alignment="auto" variant="border-filled" icon-size="small">
+                    <lightning-menu-item value="AppAnalytics" label="Request AppAnalytics" onclick={handleAppAnalyticsSubscribers}></lightning-menu-item>
+                  </lightning-button-menu>
+                </div>
+              </template>
+            </div>
+            <div class="slds-tile__detail">
+              <div class="slds-grid slds-gutters">
+                <div class="slds-col">
+                  <dl class="slds-list_horizontal slds-wrap">
+                    <dt
+                      class="slds-item_label slds-text-color_weak"
+                    >
+                      Type:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      {orgType}
+                    </dd>
+                    <dt
+                      class="slds-item_label slds-text-color_weak"
+                    >
+                      Status:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      {orgStatus}
+                    </dd>
+                  </dl>
+                </div>
+                <div class="slds-col">
+                  <dl class="slds-list_horizontal slds-wrap">
+                    <dt
+                      class="slds-item_label slds-text-color_weak"
+                    >
+                      Instance:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      <lightning-formatted-url
+                        value={trustUrl}
+                        label={instanceName}
+                        target="_blank"
+                      ></lightning-formatted-url>
+                    </dd>
+                    <dt
+                      class="slds-item_label slds-text-color_weak"
+                    >
+                      Org ID:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      {orgKey}
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+      <template if:true={displayLMA}>
+        <div class={licenseAccordionClass}>
+          <h3 class="slds-section__title">
+            <button
+              aria-controls="licenseContent"
+              aria-expanded="true"
+              class="slds-button slds-section__title-action"
+              onclick={toggleLicenseAccordion}
+            >
+              <template if:true={displaySubLicense}>
+                <lightning-icon
+                  size="x-small"
+                  icon-name="utility:switch"
+                  class="slds-var-p-right_xx-small"
+                ></lightning-icon>
+              </template>
+              <template if:false={displaySubLicense}>
+                <lightning-icon
+                  size="x-small"
+                  icon-name="utility:chevronright"
+                  class="slds-var-p-right_xx-small"
+                ></lightning-icon>
+              </template>
+              <span class="slds-truncate" title="All Apps">License</span>
+            </button>
+          </h3>
+          <template if:true={displaySubLicense}>
+            <div
+              aria-hidden="false"
+              class="slds-section__content slds-var-p-around_medium slds-card"
+              id="licenseContent"
+            >
+              <template if:true={displaySpinner}>
+                <lightning-spinner
+                  alternative-text="Loading"
+                  size="medium"
+                  variant="brand"
+                ></lightning-spinner>
+              </template>
+              <template if:true={license}>
+                <div
+                  class="slds-card_boundary slds-var-m-around_small card-style"
+                >
+                  <c-package-lma-timeline
+                    license={license}
+                    onrefresh={handleRefresh}
+                  >
+                  </c-package-lma-timeline>
+                </div>
+              </template>
+              <template if:true={displayEmptyLMA}>
+                <div
+                  class="card-style slds-card_boundary slds-var-m-around_small slds-var-p-top_xx-large"
+                >
+                  <c-empty-large-illustration-view
+                    title="Hmm…"
+                    body="Looks like we could not find the associated license for this subscriber..."
+                  >
+                  </c-empty-large-illustration-view>
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
+      <template if:true={isPushUpgradeEnabled}>
+        <template if:true={packageType}>
+          <div class={upgradeAccordionClass}>
+            <h3 class="slds-section__title">
+              <button
+                aria-controls="upgradeContent"
+                aria-expanded="true"
+                class="slds-button slds-section__title-action"
+                onclick={togglePushUpgradeAccordion}
+              >
+                <template if:true={displayPushUpgradeList}>
+                  <lightning-icon
+                    size="x-small"
+                    icon-name="utility:switch"
+                    class="slds-var-p-right_xx-small"
+                  ></lightning-icon>
+                </template>
+                <template if:false={displayPushUpgradeList}>
+                  <lightning-icon
+                    size="x-small"
+                    icon-name="utility:chevronright"
+                    class="slds-var-p-right_xx-small"
+                  ></lightning-icon>
+                </template>
+                <span class="slds-truncate" title="All Apps">Push Upgrade</span>
+              </button>
+            </h3>
+            <template if:true={displayPushUpgradeList}>
+              <div
+                aria-hidden="false"
+                class="slds-section__content slds-var-p-around_medium slds-card"
+                id="upgradeContent"
+              >
+                <template if:true={displayUpgradeSpinner}>
+                  <lightning-spinner
+                    alternative-text="Loading"
+                    size="medium"
+                    variant="brand"
+                  ></lightning-spinner>
+                </template>
+                <template if:true={instance}>
+                  <template if:true={displayInstance}>
+                    <div class="slds-var-m-around_small slds-var-p-bottom_small">
+                      <c-trust-instance-detail
+                        instance-key={instance.key}
+                        location={instance.location}
+                        maintenance-window={instance.maintenanceWindow}
+                        release-number={instance.releaseNumber}
+                        release-version={instance.releaseVersion}
+                        status={instance.status}
+                      ></c-trust-instance-detail>
+                    </div>
+                  </template>
+                </template>
+                <template if:true={displayPushUpgradeSection}>
+                  <div
+                    class="slds-var-m-around_small slds-var-p-bottom_small slds-card_boundary card-style"
+                  >
+                    <div class="slds-grid slds-var-p-around_small">
+                      <lightning-breadcrumbs class="" style="font-weight: 700;">
+                        <lightning-breadcrumb label={pushUpgradeBreadCrumbLabel}>
+                        </lightning-breadcrumb>
+                      </lightning-breadcrumbs>
+                    </div>
+                    <div>
+                      <c-package-push-upgrades-version-modal
+                        package-version-number={packageVersionNumber}
+                        subscriber-package-id={metadataPackageId}
+                        org-key={orgKey}
+                      ></c-package-push-upgrades-version-modal>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </template>
+          </div>
+        </template>
+      </template>
+    </template>
+    <template if:false={orgKey}>
+      <div
+        class="slds-notify slds-notify_alert slds-alert_warning"
+        role="alert"
+      >
+        <span class="slds-assistive-text">warning</span>
+        <span
+          class="slds-icon_container slds-icon-utility-warning slds-var-m-right_x-small"
+          title="Description of icon when needed"
+        >
+          <lightning-icon
+            size="small"
+            icon-name="utility:warning"
+            alternative-text="warning"
+            title="warning"
+
+          ></lightning-icon>
+        </span>
+        <h2>
+          Oh no! It looks like the subscriber has uninstalled your package!
+        </h2>
+      </div>
+    </template>
+  </div>
+  <template if:true={displayAppAnalyticsModal}>
+    <c-app-analytics-flow-modal
+      header="Request AppAnalytics"
+      subscriber-package-id={metadataPackageId}
+      subscribers={subscribers}
+      oncancel={handleAppAnalyticsCloseModal}
+    ></c-app-analytics-flow-modal>
+  </template>
+</template>

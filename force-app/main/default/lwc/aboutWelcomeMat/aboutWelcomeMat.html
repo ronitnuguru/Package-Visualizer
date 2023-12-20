@@ -1,0 +1,109 @@
+<template>
+  <section
+    role="dialog"
+    tabindex="-1"
+    class="slds-modal slds-fade-in-open slds-modal_medium"
+    aria-labelledby="modal-heading-01"
+    aria-modal="true"
+    aria-describedby="modal-content-id-1"
+  >
+    <div class="slds-modal__container">
+      <header class="slds-modal__header slds-modal__header_empty">
+        <button
+          class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse slds-current-color"
+          title="Close"
+          onclick={handleCancel}
+        >
+          <lightning-icon
+            size="small"
+            icon-name="utility:close"
+            alternative-text="Close"
+            title="Close"
+            variant="inverse"
+          ></lightning-icon>
+          <span class="slds-assistive-text">Close</span>
+        </button>
+      </header>
+      <div class="slds-modal__content" id="welcome-mat-100-content">
+        <div class="slds-welcome-mat">
+          <div class="slds-welcome-mat__content slds-grid">
+            <div class="slds-welcome-mat__info slds-size_1-of-2">
+              <div class="slds-welcome-mat__info-content">
+                <h2
+                  id="welcome-mat-100-label"
+                  class="slds-welcome-mat__info-title"
+                >
+                  Welcome to Package Visualizer
+                </h2>
+                <p
+                  class="slds-welcome-mat__info-description slds-text-longform"
+                >
+                  Second Generation Managed Packaging (2GP) ushers a new way for
+                  AppExchange partners to develop, distribute and manage their
+                  apps and metadata. Today, all of the packaging operations and
+                  automation work with the Salesforce CLI but a self-service
+                  user interface and experience is not available. <br /><br />
+                  Package Visualizer solves this problem by setting up a
+                  one-stop-shop where partners can visualize their packages and
+                  their respective version’s ancestry. Additionally, they can
+                  also get a 360° view of their subscribers with the help of
+                  AppAnalytics and LMA integration
+                </p>
+              </div>
+            </div>
+            <ul class="slds-welcome-mat__tiles slds-size_1-of-2">
+              <template if:true={displaySpinner}>
+                <lightning-spinner
+                  alternative-text="Loading"
+                  size="medium"
+                  variant="brand"
+                ></lightning-spinner>
+              </template>
+              <template if:true={stepsData}>
+                <template
+                  for:each={stepsData}
+                  for:item="step"
+                  for:index="index"
+                >
+                  <li class="slds-welcome-mat__tile" key={step.Id}>
+                    <a
+                      href={step.pkgviz__Link__c}
+                      class="slds-box slds-box_link slds-media"
+                      target="_blank"
+                    >
+                      <div
+                        class="slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center"
+                      >
+                        <div class="slds-welcome-mat__tile-figure">
+                          <div class="slds-welcome-mat__tile-icon-container">
+                            <span class="slds-icon_container">
+                              <lightning-icon
+                                size="medium"
+                                icon-name={step.pkgviz__Icon__c}
+                              ></lightning-icon>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="slds-media__body">
+                        <div class="slds-welcome-mat__tile-body">
+                          <h3 class="slds-welcome-mat__tile-title">
+                            {step.Label}
+                          </h3>
+                          <p class="slds-welcome-mat__tile-description">
+                            {step.pkgviz__Description__c}
+                          </p>
+                        </div>
+                      </div>
+                    </a>
+                  </li>
+                </template>
+              </template>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

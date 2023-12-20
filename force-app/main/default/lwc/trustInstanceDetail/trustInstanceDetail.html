@@ -1,0 +1,81 @@
+<template>
+  <div
+    class="slds-grid slds-wrap slds-var-p-horizontal_medium slds-page-header"
+  >
+    <article class="slds-tile slds-media">
+      <div class="slds-media__figure">
+        <lightning-icon
+          icon-name={sldsIcon}
+          size="medium"
+          slot="media"
+          variant={sldsIconVariant}
+        ></lightning-icon>
+      </div>
+      <div class="slds-media__body">
+        <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+          <h3 class="slds-tile__title slds-truncate slds-text-link">
+            <a href={trustUrl} target="_blank" class="tile-style"
+              >{instanceKey}</a
+            >
+          </h3>
+        </div>
+        <div class="slds-tile__detail">
+          <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-truncate">
+              <dl class="slds-list_horizontal slds-wrap">
+                <template if:true={statusTitle}>
+                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                    Status:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    {statusTitle}
+                  </dd>
+                </template>
+                <template if:true={region}>
+                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                    Region:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    {region}
+                  </dd>
+                </template>
+              </dl>
+            </div>
+            <div class="slds-col">
+              <dl class="slds-list_horizontal slds-wrap">
+                <template if:true={releaseVersion}>
+                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                    Release Version:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    {releaseVersion}
+                  </dd>
+                </template>
+                <template if:true={releaseNumber}>
+                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                    Release Number:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    {releaseNumber}
+                  </dd>
+                </template>
+                <template if:true={maintenanceWindow}>
+                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                    Maintenance Window:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    {maintenanceWindow}&nbsp;
+                    <lightning-helptext
+                      style="display:inline-flex"
+                      content="Whenever possible, and only as maintenance is necessary, Salesforce will schedule system maintenance the first and third weekends of the calendar month during the window listed. When a calendar month begins on a Sunday, we would hold system maintenance the first and third full weekends of the month."
+                    ></lightning-helptext>
+                  </dd>
+                </template>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</template>

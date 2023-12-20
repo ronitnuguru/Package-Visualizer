@@ -1,0 +1,51 @@
+<template>
+  <li>
+    <div class="slds-timeline__item_expandable">
+      <div class="slds-media">
+        <div class="slds-media__figure">
+          <button class="slds-button slds-button_icon">
+            <svg
+              class="slds-button__icon slds-timeline__details-action-icon"
+              aria-hidden="true"
+            >
+              <use
+                xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#switch"
+              ></use>
+            </svg>
+          </button>
+          <div
+            class="slds-icon_container slds-icon-standard-task slds-timeline__icon"
+          >
+            <lightning-icon
+              icon-name={activityIcon}
+              size="small"
+            ></lightning-icon>
+          </div>
+        </div>
+        <div class="slds-media__body">
+          <div class="slds-grid slds-grid_align-spread slds-timeline__trigger">
+            <div
+              class="slds-grid slds-grid_vertical-align-center slds-truncate_container_75 slds-no-space"
+            >
+              <h3 class="slds-truncate">
+                <strong>{activityTitle}</strong>
+              </h3>
+            </div>
+            <div class="slds-timeline__actions slds-timeline__actions_inline">
+              <p class="slds-timeline__date">
+                <lightning-formatted-date-time
+                  value={createdDate}
+                ></lightning-formatted-date-time>
+              </p>
+            </div>
+          </div>
+          <template if:true={activityDescription}>
+            <p class="slds-var-m-horizontal_xx-small">
+              {activityDescription}
+            </p>
+          </template>
+        </div>
+      </div>
+    </div>
+  </li>
+</template>

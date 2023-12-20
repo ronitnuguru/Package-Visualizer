@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>This is a Lightning Message Channel that contains information of the Signup Request</description>
+    <isExposed>false</isExposed>
+    <lightningMessageFields>
+        <fieldName>refresh</fieldName>
+    </lightningMessageFields>
+    <masterLabel>SignupListMessageChannel</masterLabel>
+</LightningMessageChannel>

@@ -1,0 +1,289 @@
+<template>
+  <template if:true={displaySpinner}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="medium"
+      variant="brand"
+    ></lightning-spinner>
+  </template>
+  <template if:false={displayPushHistoryView}>
+    <template if:false={displaySpinner}>
+      <c-empty-large-illustration-view
+        title="Hmm…"
+        body="Looks like we were unable retrieve any push upgrade requests for this package..."
+      >
+      </c-empty-large-illustration-view>
+    </template>
+  </template>
+  <template if:true={displayPushHistoryView}>
+    <template if:true={displayEmptyView}>
+      <template if:true={displayFilterMeta}>
+        <c-empty-illustration-with-button
+          title="Hmm..."
+          body="We could not find any results based on your filters..."
+          button-label="Edit Filters"
+          onselect={handleFilterEdit}
+          size="large"
+        >
+        </c-empty-illustration-with-button>
+      </template>
+      <template if:false={displayFilterMeta}>
+        <c-empty-large-illustration-view
+          title="Hmm…"
+          body="Looks like you have not scheduled any prior push upgrade requests for this package..."
+        >
+        </c-empty-large-illustration-view>
+      </template>
+    </template>
+    <template if:false={displayEmptyView}>
+      <div class="slds-var-p-bottom_x-small">
+        <lightning-breadcrumbs class="" style="font-weight: 700;">
+          <lightning-breadcrumb
+            label="All Push Requests"
+            onclick={handleAllPushRequests}
+          >
+          </lightning-breadcrumb>
+          <template if:true={displayPackagePushRequestBreadCrumb}>
+            <lightning-breadcrumb
+              label="Request Details"
+              onclick={handlePushRequests}
+            >
+            </lightning-breadcrumb>
+          </template>
+          <template if:true={displayPackagePushJobBreadCrumb}>
+            <lightning-breadcrumb label="Job Details"> </lightning-breadcrumb>
+          </template>
+        </lightning-breadcrumbs>
+      </div>
+      <template if:true={displayAllPushRequests}>
+        <div class="slds-grid slds-var-p-bottom_x-small slds-wrap">
+          <div class="slds-col">
+            <ul class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small">
+              <template if:true={pushRequestsLength}>
+                <li class="slds-item">
+                  {pushRequestsLength} Requests
+                </li>
+              </template>
+              <li class="slds-item">
+                Sorted by {sortedByLabel}
+              </li>
+              <template if:true={displayFilterMeta}>
+                <li class="slds-item">
+                  Filters Enabled
+                </li>
+              </template>
+              <li class="slds-item">
+                  Updated&nbsp;<lightning-relative-date-time
+                  value={relativeDateTime}
+                ></lightning-relative-date-time>
+              </li>
+            </ul>
+            <template if:true={packageVersionList}>
+              <ul class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak">
+                <li class="slds-item">
+                  {versionLimit} Package Versions
+                </li>
+                <li class="slds-item">
+                  Sorted by Created Date
+                </li>
+              </ul>
+            </template>
+          </div>
+          <div class="slds-col_bump-left">
+            <div class="slds-grid slds-grid_align-end">
+              <lightning-button-menu
+                icon-name="utility:table_settings"
+                menu-alignment="auto"
+                variant="border-filled"
+                alternative-text="Table Settings"
+                class="slds-var-p-left_x-small"
+              >
+                <lightning-menu-subheader
+                  label="Table Controls"
+                  class="slds-text-title_caps"
+                ></lightning-menu-subheader>
+                <lightning-menu-item
+                  value="tableFields"
+                  label="Select Fields to Display"
+                  id="table-fields"
+                  onclick={handleFieldsToDisplay}
+                ></lightning-menu-item>
+              </lightning-button-menu>
+              <lightning-button-icon
+                icon-name="utility:refresh"
+                class="slds-var-p-left_x-small"
+                variant="border-filled"
+                alternative-text="Refresh"
+                title="Refresh"
+                onclick={handleRefresh}
+              ></lightning-button-icon>
+              <lightning-button-group class="slds-var-p-left_x-small">
+                <lightning-button-icon-stateful
+                  icon-name="utility:chart"
+                  selected={chartState}
+                  onclick={handleChartPanel}
+                  alternative-text="Chart"
+                  variant="border-filled"
+                  disabled
+                ></lightning-button-icon-stateful>
+                <lightning-button-icon-stateful
+                  icon-name="utility:filterList"
+                  selected={filterState}
+                  onclick={handleFilterPanel}
+                  alternative-text="Filter"
+                  variant="border-filled"
+                ></lightning-button-icon-stateful>
+              </lightning-button-group>
+            </div>
+          </div>
+        </div>
+        <div class="table-style">
+          <div
+            class={displayChartDockPanel}
+            style="direction:ltr;"
+            aria-hidden="false"
+          >
+            <div class="slds-panel__header">
+              <h2
+                class="slds-panel__header-title slds-text-heading_small slds-truncate"
+              >
+                Charts
+              </h2>
+              <button
+                class="slds-button slds-button_icon slds-button_icon-small slds-panel__close"
+                onclick={handleChartPanel}
+              >
+                <lightning-icon
+                  size="x-small"
+                  icon-name="utility:close"
+                  alternative-text="Close"
+                  title="Close"
+                ></lightning-icon>
+              </button>
+            </div>
+            <div class="slds-panel__body">
+              <!--Chart Panel Body-->
+            </div>
+          </div>
+          <div
+            class={displayFilterDockPanel}
+            style="direction:ltr;"
+            aria-hidden="false"
+          >
+            <div class="slds-panel__header">
+              <h2
+                class="slds-panel__header-title slds-text-heading_small slds-truncate"
+              >
+                Filters
+              </h2>
+              <button
+                class="slds-button slds-button_icon slds-button_icon-small slds-panel__close"
+                onclick={handleFilterPanel}
+              >
+                <lightning-icon
+                  size="x-small"
+                  icon-name="utility:close"
+                  alternative-text="Close"
+                  title="Close"
+                ></lightning-icon>
+              </button>
+            </div>
+            <div class="slds-panel__body">
+              <template if:true={packageVersionList}>
+                <div class="slds-var-p-bottom_small">
+                  <lightning-slider
+                    label="Latest Package Versions Limit"
+                    value={versionLimit}
+                    max="500"
+                    min="1"
+                    step="1"
+                    onchange={handleSliderChange}
+                  ></lightning-slider>
+                </div>
+              </template>
+              <div class="">
+                <lightning-dual-listbox
+                  label="Status"
+                  source-label="Available"
+                  selected-label="Selected"
+                  options={statusOptions}
+                  value={selectedStatusOptions}
+                  onchange={statusFilterChange}
+                  size="6"
+                  disable-reordering
+                ></lightning-dual-listbox>
+              </div>
+            </div>
+            <div class="slds-align_absolute-center slds-modal__footer">
+              <lightning-button
+                label="Reset"
+                title="Reset"
+                onclick={handleFilterReset}
+                class="slds-var-m-left_x-small"
+              ></lightning-button>
+              <lightning-button
+                variant="brand"
+                label="Submit"
+                title="Submit"
+                onclick={handleFilterSubmit}
+                class="slds-var-m-left_x-small"
+              ></lightning-button>
+            </div>
+          </div>
+          <div style={responsivePanelStyle}>
+            <lightning-datatable
+              data={pushRequestsData}
+              columns={columns}
+              key-field="id"
+              sorted-by={sortedBy}
+              sorted-direction={sortDirection}
+              default-sort-direction="desc"
+              onsort={handleSort}
+              onrowaction={handleRowAction}
+              enable-infinite-loading={disableInfiniteLoad}
+              onloadmore={loadMoreData}
+              load-more-offset="5"
+              hide-checkbox-column
+              show-row-number-column
+            >
+            </lightning-datatable>
+            <template if:true={displayDatatableSpinner}>
+              <lightning-spinner
+                alternative-text="Loading"
+                size="medium"
+                variant="brand"
+              ></lightning-spinner>
+            </template>
+          </div>
+        </div>
+      </template>
+    </template>
+    <template if:true={displayPackagePushRequests}>
+      <c-package-push-job-view
+        push-id={pushId}
+        push-duration-seconds={pushDurationSeconds}
+        push-end-time={pushEndTime}
+        push-package-version-id={pushPackageVersionId}
+        push-scheduled-start-time={pushScheduledStartTime}
+        push-start-time={pushStartTime}
+        push-status={pushStatus}
+        push-system-mod-stamp={pushSystemModStamp}
+        onpushjobdetail={handlePushJobDetail}
+        onrefresh={handleRefresh}
+      ></c-package-push-job-view>
+    </template>
+    <template if:true={displayPackagePushJobRequests}>
+      <c-package-push-job-detail push-job-details={pushJobDetails}>
+      </c-package-push-job-detail>
+    </template>
+  </template>
+  <template if:true={fieldsToDisplayModal}>
+    <c-table-fields-to-display
+      label="Package Push Request Columns"
+      table-options={tableOptions}
+      table-selected-options={tableSelectedOptions}
+      oncancel={handleFieldsToDisplayModalCancel}
+      onsave={handleFieldsToDisplayModalSave}
+    ></c-table-fields-to-display>
+  </template>
+</template>

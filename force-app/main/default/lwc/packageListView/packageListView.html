@@ -1,0 +1,52 @@
+<template>
+  <li
+    class="slds-split-view__list-item"
+    role="presentation"
+    onclick={handlePackageChange}
+  >
+    <a
+      aria-selected={currentPackageDisplay}
+      role="option"
+      class="slds-split-view__list-item-action slds-grow slds-has-flexi-truncate"
+      tabindex="0"
+    >
+      <div class="slds-grid slds-gutters">
+        <span
+          class="slds-col slds-size_8-of-12 slds-truncate slds-text-body_regular slds-text-color_default font-style"
+          ><span class="slds-text-link">{name}</span></span
+        >
+        <span class="slds-col slds-size_4-of-12 slds-align_absolute-center">
+          <template if:true={type}>
+            <lightning-badge
+              label={type}
+              class={badgeStyle}
+              icon-name={iconName}
+              icon-position="start"
+            ></lightning-badge>
+          </template>
+          <template if:false={type}>
+            <template if:true={namespacePrefix}>
+              <lightning-badge
+                label="Managed"
+                class="first-managed-badge"
+                icon-name="utility:archive"
+                icon-position="start"
+              ></lightning-badge>
+            </template>
+            <template if:false={namespacePrefix}>
+              <lightning-badge
+                label="Unmanaged"
+                class="first-unmanaged-badge"
+                icon-name="utility:archive"
+                icon-position="start"
+              ></lightning-badge>
+            </template>
+          </template>
+        </span>
+      </div>
+      <div class="slds-grid slds-wrap">
+        <span class="slds-line-clamp_x-small">{description}</span>
+      </div>
+    </a>
+  </li>
+</template>

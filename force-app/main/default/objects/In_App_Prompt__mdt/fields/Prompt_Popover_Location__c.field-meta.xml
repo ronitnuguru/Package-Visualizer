@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prompt_Popover_Location__c</fullName>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Prompt Popover Location</label>
+    <required>true</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>slds-popover_prompt_top-left</fullName>
+                <default>true</default>
+                <label>slds-popover_prompt_top-left</label>
+            </value>
+            <value>
+                <fullName>slds-popover_prompt_top</fullName>
+                <default>false</default>
+                <label>slds-popover_prompt_top</label>
+            </value>
+            <value>
+                <fullName>slds-popover_prompt_top-right</fullName>
+                <default>false</default>
+                <label>slds-popover_prompt_top-right</label>
+            </value>
+            <value>
+                <fullName>slds-popover_prompt_bottom-right</fullName>
+                <default>false</default>
+                <label>slds-popover_prompt_bottom-right</label>
+            </value>
+            <value>
+                <fullName>slds-popover_prompt_bottom</fullName>
+                <default>false</default>
+                <label>slds-popover_prompt_bottom</label>
+            </value>
+            <value>
+                <fullName>slds-popover_prompt_bottom-left</fullName>
+                <default>false</default>
+                <label>slds-popover_prompt_bottom-left</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

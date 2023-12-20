@@ -1,0 +1,394 @@
+<template>
+  <template if:true={displaySpinner}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="medium"
+      variant="brand"
+    ></lightning-spinner>
+  </template>
+  <template if:true={lmaData}>
+    <div class="slds-var-p-around_medium slds-page-header">
+      <article class="slds-tile slds-media">
+        <div class="slds-media__figure">
+          <lightning-icon
+            icon-name={versionIcon}
+            size="medium"
+            slot="media"
+            class="icon-style"
+          ></lightning-icon>
+        </div>
+        <div class="slds-media__body">
+          <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+            <h3 class="slds-tile__title slds-truncate slds-text-link tile-style">
+              <a href={versionLink} target="_blank"
+                >{lmaData.name}</a
+              >
+            </h3>
+          </div>
+          <div class="slds-tile__detail">
+            <div class="slds-grid slds-gutters">
+              <div class="slds-col slds-truncate">
+                <dl class="slds-list_horizontal slds-wrap">
+                  <dt
+                    class="slds-item_label slds-text-color_weak slds-truncate"
+                  >
+                    Package:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate slds-text-link">
+                    <a href={packageLink} target="_blank"
+                      >{lmaData.lmaPackageName}</a
+                    >
+                  </dd>
+                </dl>
+              </div>
+              <div class="slds-col">
+                <dl class="slds-list_horizontal slds-wrap">
+                  <template if:true={lmaData.releaseDate}>
+                    <dt
+                      class="slds-item_label slds-text-color_weak slds-truncate"
+                    >
+                      Release Date:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      <lightning-formatted-date-time
+                        value={lmaData.releaseDate}
+                        year="numeric"
+                        month="numeric"
+                        day="numeric"
+                        hour="2-digit"
+                        minute="2-digit"
+                        time-zone-name="short"
+                        hour12="true"
+                      ></lightning-formatted-date-time>
+                    </dd>
+                  </template>
+                  <template if:true={lmaData.createdDate}>
+                    <dt
+                      class="slds-item_label slds-text-color_weak slds-truncate"
+                    >
+                      Created Date:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      <lightning-formatted-date-time
+                        value={lmaData.createdDate}
+                        year="numeric"
+                        month="numeric"
+                        day="numeric"
+                        hour="2-digit"
+                        minute="2-digit"
+                        time-zone-name="short"
+                        hour12="true"
+                      ></lightning-formatted-date-time>
+                    </dd>
+                  </template>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+    <div class={allLicensesAccordionClass}>
+      <h3 class="slds-section__title">
+        <button
+          aria-controls="licensesContent"
+          aria-expanded="false"
+          class="slds-button slds-section__title-action"
+          onclick={toggleAllLicensesAccordion}
+        >
+          <template if:true={displayAllLicenses}>
+            <lightning-icon
+              size="x-small"
+              icon-name="utility:switch"
+              class="slds-var-p-right_xx-small"
+            ></lightning-icon>
+          </template>
+          <template if:false={displayAllLicenses}>
+            <lightning-icon
+              size="x-small"
+              icon-name="utility:chevronright"
+              class="slds-var-p-right_xx-small"
+            ></lightning-icon>
+          </template>
+          <span class="slds-truncate" title="All Apps">Licenses</span>
+        </button>
+      </h3>
+      <template if:true={displayAllLicenses}>
+        <div
+          aria-hidden="true"
+          class="slds-section__content"
+          id="licensesContent"
+        >
+          <div class="slds-card slds-var-p-horizontal_medium">
+            <template if:false={displayLmaLicensesView}>
+              <template if:false={displaySpinner}>
+                <c-empty-large-illustration-view
+                  title="Hmm…"
+                  body="Looks like were unable to retrieve any associated LMA licenses for this package..."
+                >
+                </c-empty-large-illustration-view>
+              </template>
+            </template>
+            <template if:true={displayLmaLicensesView}>
+              <template if:true={displayEmptyView}>
+                <template if:true={displayFilterMeta}>
+                  <c-empty-illustration-with-button
+                    title="Hmm..."
+                    body="We could not find any results based on your filters..."
+                    button-label="Edit Filters"
+                    onselect={handleFilterEdit}
+                    size="large"
+                  >
+                  </c-empty-illustration-with-button>
+                </template>
+                <template if:false={displayFilterMeta}>
+                  <template if:false={displaySpinner}>
+                    <c-empty-large-illustration-view
+                      title="Hmm…"
+                      body="Looks like we could not find any LMA licenses for this package version..."
+                    >
+                    </c-empty-large-illustration-view>
+                  </template>
+                </template>
+              </template>
+              <template if:false={displayEmptyView}>
+                <div class="slds-grid slds-var-p-top_small">
+                  <lightning-breadcrumbs
+                    class="slds-var-p-top_x-small"
+                    style="font-weight: 700;"
+                  >
+                    <lightning-breadcrumb
+                      label="All Licenses"
+                      onclick={handleAllLicensesClick}
+                    >
+                    </lightning-breadcrumb>
+                    <template if:true={displayLicenseTimelineState}>
+                      <lightning-breadcrumb label="License Details">
+                      </lightning-breadcrumb>
+                    </template>
+                  </lightning-breadcrumbs>
+                </div>
+                <template if:false={displayLicenseTimelineState}>
+                  <div class="slds-grid slds-var-p-vertical_x-small slds-wrap">
+                    <ul class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small">
+                      <template if:true={lmaLicensesLength}>
+                        <li class="slds-item">
+                          {lmaLicensesLength} Licenses
+                        </li>
+                      </template>
+                      <li class="slds-item">
+                        Sorted by {sortedByLabel}
+                      </li>
+                      <template if:true={displayFilterMeta}>
+                        <li class="slds-item">
+                          Filters Enabled
+                        </li>
+                      </template>
+                      <li class="slds-item">
+                          Updated&nbsp;<lightning-relative-date-time
+                          value={relativeDateTime}
+                        ></lightning-relative-date-time>
+                      </li>
+                    </ul>
+                    <div class="slds-col_bump-left">
+                      <div class="slds-grid slds-grid_align-end">
+                        <lightning-button-icon
+                          icon-name="utility:signpost"
+                          variant="border-filled"
+                          alternative-text="In App Assistant"
+                          onclick={handleInAppPrompt}
+                        ></lightning-button-icon>
+                        <lightning-button-menu
+                          icon-name="utility:table_settings"
+                          menu-alignment="auto"
+                          variant="border-filled"
+                          alternative-text="Table Settings"
+                          class="slds-var-p-left_x-small"
+                        >
+                          <lightning-menu-subheader
+                            label="Table Controls"
+                            class="slds-text-title_caps"
+                          ></lightning-menu-subheader>
+                          <lightning-menu-item
+                            value="tableFields"
+                            label="Select Fields to Display"
+                            id="table-fields"
+                            onclick={handleFieldsToDisplay}
+                          ></lightning-menu-item>
+                        </lightning-button-menu>
+                        <lightning-button-group class="slds-var-p-left_x-small">
+                          <lightning-button-icon-stateful
+                            icon-name="utility:chart"
+                            selected={chartState}
+                            onclick={handleChartPanel}
+                            alternative-text="Chart"
+                            variant="border-filled"
+                          ></lightning-button-icon-stateful>
+                          <lightning-button-icon-stateful
+                            icon-name="utility:filterList"
+                            selected={filterState}
+                            onclick={handleFilterPanel}
+                            alternative-text="Filter"
+                            variant="border-filled"
+                          ></lightning-button-icon-stateful>
+                        </lightning-button-group>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="table-style">
+                    <div if:true={chartInit}>
+                      <div
+                        class={displayChartDockPanel}
+                        style="direction:ltr;"
+                        aria-hidden="false"
+                      >
+                        <div class="slds-panel__header">
+                          <h2
+                            class="slds-panel__header-title slds-text-heading_small slds-truncate"
+                          >
+                            Charts
+                          </h2>
+                          <button
+                            class="slds-button slds-button_icon slds-button_icon-small slds-panel__close"
+                            onclick={handleChartPanel}
+                          >
+                            <lightning-icon
+                              size="x-small"
+                              icon-name="utility:close"
+                              alternative-text="Close"
+                              title="Close"
+                            ></lightning-icon>
+                          </button>
+                        </div>
+                        <div class="slds-panel__body">
+                          <c-lma-charts-panel
+                            package-version-id={packageVersionId}
+                            selected-status-options-string={selectedStatusOptionsString}
+                            apply-filters={displayFilterMeta}
+                          >
+                          </c-lma-charts-panel>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class={displayFilterDockPanel}
+                      style="direction:ltr;"
+                      aria-hidden="false"
+                    >
+                      <div class="slds-panel__header">
+                        <h2
+                          class="slds-panel__header-title slds-text-heading_small slds-truncate"
+                        >
+                          Filters
+                        </h2>
+                        <button
+                          class="slds-button slds-button_icon slds-button_icon-small slds-panel__close"
+                          onclick={handleFilterPanel}
+                        >
+                          <lightning-icon
+                            size="x-small"
+                            icon-name="utility:close"
+                            alternative-text="Close"
+                            title="Close"
+                          ></lightning-icon>
+                        </button>
+                      </div>
+                      <div class="slds-panel__body">
+                        <div class="slds-var-p-bottom_small">
+                          <lightning-dual-listbox
+                            label="Status"
+                            source-label="Available"
+                            selected-label="Selected"
+                            options={statusOptions}
+                            value={selectedStatusOptions}
+                            onchange={statusFilterChange}
+                            size="4"
+                            disable-reordering
+                          ></lightning-dual-listbox>
+                        </div>
+                      </div>
+                      <div
+                        class="slds-align_absolute-center slds-modal__footer"
+                      >
+                        <lightning-button
+                          label="Reset"
+                          title="Reset"
+                          onclick={handleFilterReset}
+                          class="slds-var-m-left_x-small"
+                        ></lightning-button>
+                        <lightning-button
+                          variant="brand"
+                          label="Submit"
+                          title="Submit"
+                          onclick={handleFilterSubmit}
+                          class="slds-var-m-left_x-small"
+                        ></lightning-button>
+                      </div>
+                    </div>
+                    <div style={responsivePanelStyle}>
+                      <lightning-datatable
+                        data={lmaLicensesData}
+                        columns={columns}
+                        key-field="id"
+                        sorted-by={sortedBy}
+                        sorted-direction={sortDirection}
+                        default-sort-direction="asc"
+                        onsort={handleSort}
+                        onrowaction={handleRowAction}
+                        onloadmore={loadMoreData}
+                        load-more-offset="5"
+                        enable-infinite-loading={disableInfiniteLoad}
+                        hide-checkbox-column
+                        show-row-number-column
+                      >
+                      </lightning-datatable>
+                      <template if:true={displayDatatableSpinner}>
+                        <lightning-spinner
+                          alternative-text="Loading"
+                          size="medium"
+                          variant="brand"
+                        ></lightning-spinner>
+                      </template>
+                    </div>
+                  </div>
+                </template>
+                <template if:true={displayLicenseTimelineState}>
+                  <c-package-lma-timeline
+                    license={chosenLicenseRecord}
+                    onrefresh={handleRefresh}
+                  >
+                  </c-package-lma-timeline>
+                </template>
+              </template>
+            </template>
+            <template if:true={fieldsToDisplayModal}>
+              <c-table-fields-to-display
+                label="LMA Licenses Columns"
+                table-options={tableOptions}
+                table-selected-options={tableSelectedOptions}
+                oncancel={handleFieldsToDisplayModalCancel}
+                onsave={handleFieldsToDisplayModalSave}
+              ></c-table-fields-to-display>
+            </template>
+          </div>
+        </div>
+      </template>
+    </div>
+  </template>
+  <template if:true={displayEmptyLMA}>
+    <template if:false={displaySpinner}>
+      <c-empty-large-illustration-view
+        title="Hmm…"
+        body="Looks like you do not have a record associated with this LMA package version..."
+      >
+      </c-empty-large-illustration-view>
+    </template>
+  </template>
+  <template if:true={displayLMAInAppPrompt}>
+    <c-in-app-prompt
+      prompt="LMA"
+      oncancel={handleLMAPromptCancel}
+    >
+    </c-in-app-prompt>
+  </template>
+</template>

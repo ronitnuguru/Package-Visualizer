@@ -1,0 +1,42 @@
+<template>
+    <template if:true={displaySpinner}>
+        <lightning-spinner
+          alternative-text="Loading"
+          size="medium"
+          variant="brand"
+        ></lightning-spinner>
+    </template>
+    <template lwc:if={limits}>
+        <div class="slds-m-horizontal_x-small">
+            <div onkeyup={handleKeyUp} class="slds-m-top_small">
+                <lightning-input
+                    name="search-limits"
+                    placeholder="Search Limits"
+                    label="Search Limits"
+                    type="search"
+                    variant="label-hidden"
+                    onchange={handleSearchInputChange}
+                    value={searchQuery}
+                ></lightning-input>
+            </div>
+            <template for:each={limitsFilterList} for:item="limit">
+                <c-docked-limits-bar
+                    key={limit.label}
+                    name={limit.label}
+                    max={limit.max}
+                    remaining={limit.rem}
+                    percentage={limit.percentage}
+                    class="slds-p-around_x-small"
+                ></c-docked-limits-bar>
+            </template>
+        </div>
+    </template>
+    <template lwc:elseif={error}>
+        <div class="slds-align_absolute-center slds-var-p-around_x-small">
+            <c-not-available-illustration
+              body="We were unable to retrieve any limits for your org..."
+            >
+            </c-not-available-illustration>
+        </div>
+    </template>
+</template>

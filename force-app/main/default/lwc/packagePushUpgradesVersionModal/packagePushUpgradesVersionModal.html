@@ -1,0 +1,137 @@
+<template>
+  <template if:true={displaySpinner}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="medium"
+      variant="brand"
+    ></lightning-spinner>
+  </template>
+  <template if:true={packageVersionsData}>
+    <template if:false={displaySpinner}>
+      <template if:true={displayEmptyResults}>
+        <c-empty-large-illustration-view
+          title="Hmm..."
+          body="Looks like we could not find any eligible package versions for push upgrade..."
+        >
+        </c-empty-large-illustration-view>
+      </template>
+      <template if:false={displayEmptyResults}>
+        <div
+          class="slds-grid slds-var-p-bottom_x-small slds-wrap slds-var-p-horizontal_small"
+        >
+          <div class="slds-scoped-notification slds-media slds-media_center slds-theme_warning slds-m-bottom_small" role="status">
+            <div class="slds-media__figure">
+              <lightning-icon
+                size="small"
+                icon-name="utility:warning"
+                alternative-text="warning"
+                title="warning"
+              ></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+              <p>When you push an upgrade, you’re making changes to a subscriber’s organization without their explicit consent. Hence, it’s important to plan ahead and exercise due caution.&nbsp;
+                <a target="_blank" href="https://developer.salesforce.com/docs/atlas.en-us.packagingGuide.meta/packagingGuide/push_upgrade_best_practices.htm">Best Practices</a>
+              </p>
+            </div>
+          </div>
+          <template if:true={tableLength}>
+            <div
+              class="slds-text-body_small slds-text-color_weak slds-var-p-top_x-small"
+            >
+              {tableLength} items&nbsp;
+            </div>
+          </template>
+          <div
+            class="slds-text-body_small slds-text-color_weak slds-var-p-top_x-small"
+          >
+            <span>•&nbsp;</span>Sorted by {sortedByLabel}&nbsp;
+          </div>
+          <div
+            class="slds-text-body_small slds-text-color_weak slds-var-p-top_x-small"
+          >
+            <span>•&nbsp;</span>Updated&nbsp;
+            <lightning-relative-date-time
+              value={relativeDateTime}
+            ></lightning-relative-date-time
+            >&nbsp;
+          </div>
+          <div class="slds-col_bump-left">
+            <lightning-button-group>
+              <lightning-button
+                variant="brand"
+                label="Upgrade"
+                title="Upgrade"
+                onclick={handleUpgrade}
+                icon-name="utility:forward_up"
+                icon-position="right"
+                disabled={disableUpgradeButton}
+              ></lightning-button>
+              <lightning-button-icon icon-name="utility:help_doc_ext" variant="border-filled" alternative-text="Push Upgrades Documentation" onclick={handleHelpDoc}></lightning-button-icon>
+            </lightning-button-group>
+          </div>
+        </div>
+        <div class="table-style">
+          <lightning-datatable
+            key-field="Id"
+            data={packageVersions}
+            columns={columns}
+            onrowselection={getSelectedRows}
+            max-row-selection="1"
+            sorted-by={sortedBy}
+            sorted-direction={sortDirection}
+            default-sort-direction="desc"
+            onsort={handleSort}
+            resize-column-disabled
+          >
+          </lightning-datatable>
+        </div>
+      </template>
+    </template>
+    <template if:false={packageVersionsData}>
+      <c-empty-large-illustration-view
+        title="Hmm..."
+        body="Looks like we were unable to retrieve any package versions..."
+      >
+      </c-empty-large-illustration-view>
+    </template>
+  </template>
+  <template if:true={displayScheduleConfirmationModal}>
+    <section
+      role="dialog"
+      tabindex="-1"
+      class="slds-modal slds-fade-in-open slds-modal_small"
+      aria-labelledby="modal-heading-01"
+      aria-modal="true"
+      aria-describedby="modal-content-id-1"
+    >
+      <div class="slds-modal__container">
+        <header class="slds-modal__header">
+          <button
+            class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse slds-current-color"
+            title="Close"
+            onclick={handleCancelScheduleConfirmationModal}
+          >
+            <lightning-icon
+              size="small"
+              icon-name="utility:close"
+              alternative-text="Close"
+              title="Close"
+              variant="inverse"
+            ></lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+          </button>
+          <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+            Schedule Push Upgrade
+          </h2>
+        </header>
+        <c-package-push-upgrades-confirmation-modal
+          package-subscriber-version-id={selectedRows}
+          selected-subscribers={upgradeSubscribers}
+          oncancel={handleCancelScheduleConfirmationModal}
+        >
+        </c-package-push-upgrades-confirmation-modal>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </template>
+</template>
