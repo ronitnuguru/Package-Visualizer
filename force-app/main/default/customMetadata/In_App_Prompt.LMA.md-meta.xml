@@ -24,6 +24,6 @@
     </values>
     <values>
         <field>Title__c</field>
-        <value xsi:type="xsd:string">Push Upgrades</value>
+        <value xsi:type="xsd:string">LMA</value>
     </values>
 </CustomMetadata>
