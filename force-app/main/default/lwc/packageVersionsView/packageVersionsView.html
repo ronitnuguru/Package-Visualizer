@@ -143,6 +143,13 @@
                       onclick={handleFieldsToDisplay}
                     ></lightning-menu-item>
                   </lightning-button-menu>
+                  <lightning-button-icon
+                    icon-name="utility:signpost"
+                    variant="border-filled"
+                    alternative-text="In App Assistant"
+                    onclick={handleInAppPrompt}
+                    class="slds-var-p-left_x-small"
+                  ></lightning-button-icon>
                   <lightning-button-icon-stateful
                     icon-name="utility:filterList"
                     selected={filterState}
@@ -153,6 +160,13 @@
                   ></lightning-button-icon-stateful>
                 </template>
                 <template if:true={treeState}>
+                  <lightning-button-icon
+                    icon-name="utility:signpost"
+                    variant="border-filled"
+                    alternative-text="In App Assistant"
+                    onclick={handleInAppPrompt}
+                    class="slds-var-p-left_x-small"
+                  ></lightning-button-icon>
                   <lightning-button-menu
                     icon-name="utility:settings"
                     menu-alignment="auto"
@@ -221,7 +235,7 @@
                     Version Range
                     <lightning-helptext
                       class="slds-var-p-left_xx-small"
-                      content="major.inor"
+                      content="major.minor"
                     ></lightning-helptext>
                   </div>
                   <div class="slds-grid">
@@ -570,5 +584,12 @@
       oncancel={handleFieldsToDisplayModalCancel}
       onsave={handleFieldsToDisplayModalSave}
     ></c-table-fields-to-display>
+  </template>
+  <template if:true={displaySecurityReviewInAppPrompt}>
+    <c-in-app-prompt
+      prompt="Security_Review"
+      oncancel={handleSecurityReviewPromptCancel}
+    >
+    </c-in-app-prompt>
   </template>
 </template>

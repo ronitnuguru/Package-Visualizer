@@ -177,6 +177,7 @@ export default class PackageVersionsView extends LightningElement {
   versionOffset = 0;
   versionsLength;
   disableInfiniteLoad = true;
+  displaySecurityReviewInAppPrompt;
 
   @wire(isLMA)
   lma({ data, error }) {
@@ -824,5 +825,13 @@ export default class PackageVersionsView extends LightningElement {
     this.packageTag = event.detail.packageTag;
     this.packageDescription = event.detail.packageDescription;
     this.packageIsReleased = event.detail.packageIsReleased;
+  }
+
+  handleSecurityReviewPromptCancel() {
+    this.displaySecurityReviewInAppPrompt = false;
+  }
+
+  handleInAppPrompt() {
+    this.displaySecurityReviewInAppPrompt = true;
   }
 }
