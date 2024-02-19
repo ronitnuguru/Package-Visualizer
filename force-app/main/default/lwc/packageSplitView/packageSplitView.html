@@ -57,7 +57,7 @@
                         <lightning-button-icon
                           icon-name="utility:setup_assistant_guide"
                           variant="border-filled"
-                          alternative-text="Setup Assistant"
+                          tooltip="Setup Assistant"
                           title="Setup Assistant"
                           class="slds-var-m-right_x-small"
                           onclick={handleSetupAssistantClick}
@@ -65,7 +65,7 @@
                         <lightning-button-icon
                           icon-name="utility:salesforce1"
                           variant="border-filled"
-                          alternative-text="Create Orgs"
+                          tooltip="Create Orgs"
                           title="Create Orgs"
                           class="slds-var-m-right_x-small"
                           onclick={handleCreateOrgs}
@@ -162,14 +162,14 @@
                         <template if:false={managedPackageCheck}>
                           <lightning-menu-item
                             value="Managed"
-                            label="2GP Managed Packages"
+                            label="Managed Packages"
                             onclick={handleManagedPackageFilter}
                           ></lightning-menu-item>
                         </template>
                         <template if:true={managedPackageCheck}>
                           <lightning-menu-item
                             value="Managed"
-                            label="2GP Managed Packages"
+                            label="Managed Packages"
                             onclick={handleManagedPackageFilter}
                             checked
                           ></lightning-menu-item>

@@ -76,12 +76,20 @@
                   label="Request AppAnalytics"
                   onclick={handleAppAnalytics}
                 ></lightning-button>
+                <template if:true={displayLMA}>
+                  <lightning-button-icon
+                    icon-name="utility:record_lookup"
+                    variant="border-filled"
+                    tooltip="LMA Package Record"
+                    onclick={handleLMA}
+                  ></lightning-button-icon>
+                </template>
               </template>
               <template if:true={type}>
                 <lightning-button-icon
                   icon-name="utility:signpost"
                   variant="border-filled"
-                  alternative-text="In App Assistant"
+                  tooltip="In App Assistant"
                   onclick={handleInAppPrompt}
                 ></lightning-button-icon>
               </template>

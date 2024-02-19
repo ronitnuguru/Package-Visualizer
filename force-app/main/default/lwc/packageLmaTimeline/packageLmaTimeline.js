@@ -29,6 +29,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
 
   connectedCallback() {
     this.licenseId = /[^/]*$/.exec(this.license.id)[0];
+    console.log(this.orgKey);
     this.displayModifyLicenseNav =
       this.license.licenseStatus === "Uninstalled" ? false : true;
     this.getOriginalValues();

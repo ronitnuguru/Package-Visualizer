@@ -1,11 +1,12 @@
 import { LightningElement, api, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import isLMA from "@salesforce/apex/PackageVisualizerCtrl.isLMA";
+import { NavigationMixin } from "lightning/navigation";
 import hasPackageVisualizerPushUpgrade from "@salesforce/customPermission/Package_Visualizer_Push_Upgrade";
 import getPackageVersionLicenses from "@salesforce/apexContinuation/PackageVisualizerCtrl.getPackageVersionLicenses";
 import get2GPPackageVersionList from "@salesforce/apexContinuation/PackageVisualizerCtrl.get2GPPackageVersionList";
 
-export default class PackageSubscriberDetail extends LightningElement {
+export default class PackageSubscriberDetail extends NavigationMixin(LightningElement) {
   @api installedStatus;
   @api instanceName;
   @api metadataPackageId;
@@ -214,5 +215,14 @@ export default class PackageSubscriberDetail extends LightningElement {
 
   handleAppAnalyticsCloseModal() {
     this.displayAppAnalyticsModal = false;
+  }
+
+  handleLogIntoSubscriberConsole(){
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: `https://pkgvisualizerlwc2020--sflma.vf.force.com/partnerbt/lmo/subOrgLogin.apexp?directLoginOrgId=${this.orgKey}`
+      }
+    });
   }
 }

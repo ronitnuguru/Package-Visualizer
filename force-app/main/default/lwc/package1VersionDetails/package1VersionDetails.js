@@ -22,7 +22,7 @@ export default class Package1VersionDetails extends LightningElement {
     }
 
     connectedCallback() {
-        this.sfdxPackageInstall = `sfdx force:package:install -p ${this.versionId} -w 20`;
+        this.sfdxPackageInstall = `sf force:package:install -p ${this.versionId} -w 20`;
         this.packageInstallUrl = `https://login.salesforce.com/packaging/installPackage.apexp?p0=${this.versionId}`;
     }
 

@@ -1,4 +1,5 @@
 import { LightningElement, api, wire } from "lwc";
+import isSignupRequest from "@salesforce/apex/PackageVisualizerCtrl.isSignupRequest";
 import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import {
@@ -17,6 +18,16 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
 
   @wire(MessageContext) messageContext;
   @api displayOrgs;
+
+  displaySignUpRequest;
+  @wire(isSignupRequest)
+  signupRequest({ data }) {
+    if(data === true){
+      this.displaySignUpRequest = true;
+    } else {
+      this.displaySignUpRequest = false;
+    }
+  }
 
   isDockedComposerOpen = true;
   dockedComposerView = `slds-docked-composer slds-grid slds-grid_vertical slds-is-closed`;

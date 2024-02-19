@@ -107,6 +107,29 @@
                   ></lightning-spinner>
                 </template>
                 <div class="slds-section slds-is-open">
+                  <template if:false={displaySignUpRequest}>
+                    <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small" role="status">
+                      <div class="slds-media__figure">
+                        <lightning-icon
+                          size="small"
+                          icon-name="utility:info"
+                          alternative-text="info"
+                          title="info"
+                          variant="inverse"
+                        ></lightning-icon>
+                      </div>
+                      <div class="slds-media__body">
+                        <p>Log a case to enable the SignupRequest API.&nbsp;
+                        <a
+                          href="https://developer.salesforce.com/docs/atlas.en-us.packagingGuide.meta/packagingGuide/trialforce_enable_signuprequest_api.htm"
+                          target="_blank"
+                          title="Learn More"
+                          >Learn More</a>
+                        </p>
+                      </div>
+                    </div>
+
+                  </template>
                   <h3 class="slds-section__title slds-theme_shade">
                     <span class="slds-truncate slds-p-horizontal_small">Admin User Details</span>
                   </h3>

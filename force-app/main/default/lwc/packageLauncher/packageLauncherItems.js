@@ -27,6 +27,10 @@ export default {
         {
             link: "/analytics/home",
             label: "Analytics Studio"
+        },
+        {
+            link: "/lightning/o/ActiveScratchOrg/list?filterName=Recent",
+            label: "Active Scratch Orgs"
         }
     ]
 }

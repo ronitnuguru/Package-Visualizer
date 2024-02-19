@@ -11,10 +11,7 @@ public with sharing class PushUpgradesCtrl {
         List<String> versionSplit = packageVersionNumber.split('\\.');
         List<String> patchBuildSplit = versionSplit[2].split('\\-');
         
-        Integer majorVersion = Integer.valueOf(versionSplit[0]);
-        Integer minorVersion = Integer.valueOf(versionSplit[1]);
-        Integer patchVersion = Integer.valueOf(patchBuildSplit[0]);
-        String releasedState = 'Released';
+        Integer majorVersion = Integer.valueOf(versionSplit[0]);Integer minorVersion = Integer.valueOf(versionSplit[1]);Integer patchVersion = Integer.valueOf(patchBuildSplit[0]);String releasedState = 'Released';
 
         String packageVersionQuery = 'Select Id FROM MetadataPackageVersion WHERE MetadataPackageId = :subscriberPackageId AND IsDeprecated = false AND ReleaseState = :releasedState AND (MajorVersion < :majorVersion OR (MajorVersion = :majorVersion AND MinorVersion < :minorVersion) OR (MajorVersion = :majorVersion AND MinorVersion = :minorVersion AND PatchVersion < :patchVersion)) ORDER by SystemModstamp DESC LIMIT 1000';
         List<ObjectWrappers.MetadataPackageVersionWrapper> packageVersionsList = new List<ObjectWrappers.MetadataPackageVersionWrapper>();

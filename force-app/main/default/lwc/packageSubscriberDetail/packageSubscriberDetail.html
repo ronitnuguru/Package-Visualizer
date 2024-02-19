@@ -21,9 +21,19 @@
               </h3>
               <template if:true={managedPackageType}>
                 <div class="slds-shrink-none">
+                  <!--
                   <lightning-button-menu alternative-text="Show menu" menu-alignment="auto" variant="border-filled" icon-size="small">
                     <lightning-menu-item value="AppAnalytics" label="Request AppAnalytics" onclick={handleAppAnalyticsSubscribers}></lightning-menu-item>
                   </lightning-button-menu>
+                  -->
+                    <lightning-button-group>
+                      <lightning-button-icon variant="border-filled" icon-name="utility:einstein" tooltip="Request AppAnalytics" onclick={handleAppAnalyticsSubscribers}></lightning-button-icon>
+                      <template if:true={displayLMA}>
+                        <template if:true={orgKey}>
+                          <lightning-button-icon variant="border-filled" icon-name="utility:questions_and_answers" tooltip="Log Into Subscriber Console" onclick={handleLogIntoSubscriberConsole}></lightning-button-icon>
+                        </template>
+                      </template>
+                    </lightning-button-group>
                 </div>
               </template>
             </div>
@@ -241,7 +251,7 @@
           ></lightning-icon>
         </span>
         <h2>
-          Oh no! It looks like the subscriber has uninstalled your package!
+          Oh no! It looks like the org does not exist or the subscriber has uninstalled your package!
         </h2>
       </div>
     </template>

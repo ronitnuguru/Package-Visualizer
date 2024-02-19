@@ -47,7 +47,7 @@ export default class PackageVersionDetails extends LightningElement {
   editMode;
 
   connectedCallback() {
-    this.sfdxPackageInstall = `sfdx force:package:install -p ${this.packageSubscriberVersionId} -w 20`;
+    this.sfdxPackageInstall = `sf force:package:install -p ${this.packageSubscriberVersionId} -w 20`;
     this.displaySecurityReviewButton = this.packageType === "Managed" && this.packageIsReleased ? true : false;
     this.codeCoverageLink =
       this.packageType === "Managed"

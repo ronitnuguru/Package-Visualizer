@@ -152,11 +152,9 @@ public with sharing class PackageVisualizerCtrl {
     public static List<AppAnalyticsQueryRequest> getAppAnalyticsRequests(String packageIds){
         if(!String.isBlank(packageIds)){
             packageIds = packageIds.substring(0,15);
-            List<AppAnalyticsQueryRequest> appAnalyticsRequests = [ SELECT Id, DataType, DownloadExpirationTime, DownloadSize, DownloadUrl, EndTime, ErrorMessage, QuerySubmittedTime, Name, RequestState, StartTime, OrganizationIds, PackageIds, FileType, FileCompression FROM AppAnalyticsQueryRequest WHERE CreatedDate >= LAST_N_DAYS:1 AND PackageIds = :packageIds ORDER BY CreatedDate DESC LIMIT 50 ];
-            return appAnalyticsRequests;
+            List<AppAnalyticsQueryRequest> appAnalyticsRequests = [ SELECT Id, DataType, DownloadExpirationTime, DownloadSize, DownloadUrl, EndTime, ErrorMessage, QuerySubmittedTime, Name, RequestState, StartTime, OrganizationIds, PackageIds, FileType, FileCompression FROM AppAnalyticsQueryRequest WHERE CreatedDate >= LAST_N_DAYS:1 AND PackageIds = :packageIds ORDER BY CreatedDate DESC LIMIT 50 ];return appAnalyticsRequests;
         } else {
-            List<AppAnalyticsQueryRequest> appAnalyticsRequests = [ SELECT Id, DataType, DownloadExpirationTime, DownloadSize, DownloadUrl, EndTime, ErrorMessage, QuerySubmittedTime, Name, RequestState, StartTime, OrganizationIds, PackageIds, FileType, FileCompression FROM AppAnalyticsQueryRequest WHERE CreatedDate >= LAST_N_DAYS:1 ORDER BY CreatedDate DESC LIMIT 50 ];
-            return appAnalyticsRequests;
+            List<AppAnalyticsQueryRequest> appAnalyticsRequests = [ SELECT Id, DataType, DownloadExpirationTime, DownloadSize, DownloadUrl, EndTime, ErrorMessage, QuerySubmittedTime, Name, RequestState, StartTime, OrganizationIds, PackageIds, FileType, FileCompression FROM AppAnalyticsQueryRequest WHERE CreatedDate >= LAST_N_DAYS:1 ORDER BY CreatedDate DESC LIMIT 50 ];return appAnalyticsRequests;
         }
     }
 
@@ -180,10 +178,20 @@ public with sharing class PackageVisualizerCtrl {
         try {
             String queryString = ' SELECT CreatedDate, Id, Name, sfLma__Is_Beta__c, sfLma__Package__c, sfLma__Package__r.Name, sfLma__Release_Date__c, sfLma__Version_ID__c, sfLma__Version__c FROM sfLma__Package_Version__c WHERE sfLma__Version_ID__c = :subscriberPackageVersionId LIMIT 1 ';
             if(Type.forName('sfLma__Package_Version__c') != null){
-                sObject result = Database.query(queryString);
-                ObjectWrappers.LMAVersionWrapper lmaVersion = new ObjectWrappers.LMAVersionWrapper();
-                lmaVersion.createdDate = result.get('CreatedDate');lmaVersion.id = result.get('Id');lmaVersion.name = result.get('Name');lmaVersion.isBeta = result.get('sfLma__Is_Beta__c');lmaVersion.lmaPackageId = result.get('sfLma__Package__c');lmaVersion.lmaPackageName = result.getSObject('sfLma__Package__r').get('Name');lmaVersion.releaseDate = result.get('sfLma__Release_Date__c');lmaVersion.packageVersionId = result.get('sfLma__Version_ID__c');lmaVersion.lmaVersionName = result.get('sfLma__Version__c');
+                sObject result = Database.query(queryString);ObjectWrappers.LMAVersionWrapper lmaVersion = new ObjectWrappers.LMAVersionWrapper();lmaVersion.createdDate = result.get('CreatedDate');lmaVersion.id = result.get('Id');lmaVersion.name = result.get('Name');lmaVersion.isBeta = result.get('sfLma__Is_Beta__c');lmaVersion.lmaPackageId = result.get('sfLma__Package__c');lmaVersion.lmaPackageName = result.getSObject('sfLma__Package__r').get('Name');lmaVersion.releaseDate = result.get('sfLma__Release_Date__c');lmaVersion.packageVersionId = result.get('sfLma__Version_ID__c');lmaVersion.lmaVersionName = result.get('sfLma__Version__c');
                 return lmaVersion;
+            }
+            return null;
+        } catch(Exception e){throw new AuraHandledException('Could not find a LMA record associated with this version'); }
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static ObjectWrappers.LMAPackageWrapper getLmaPackage(String subscriberPackageId){
+        try {
+            String queryString = ' SELECT Id, sfLma__Package_ID__c FROM sfLma__Package__c WHERE sfLma__Package_ID__c = :subscriberPackageId LIMIT 1 ';
+            if(Type.forName('sfLma__Package__c') != null){
+                sObject result = Database.query(queryString);ObjectWrappers.LMAPackageWrapper lmaPackage = new ObjectWrappers.LMAPackageWrapper();lmaPackage.id = result.get('Id');
+                return lmaPackage;
             }
             return null;
         } catch(Exception e){throw new AuraHandledException('Could not find a LMA record associated with this version'); }
@@ -192,18 +200,14 @@ public with sharing class PackageVisualizerCtrl {
     @AuraEnabled(continuation=true)
     public static List<ObjectWrappers.LMALicenseWrapper> getPackageVersionLicenses (List<ObjectWrappers.FilterWrapper> filterWrapper, String sortedBy, String sortDirection, String lmaLicensesLimit, String lmaLicensesOffset) {
         try {
-            String queryString = ' SELECT Id, LastModifiedDate, Name, sfLma__Account__c, sfLma__Account__r.Name, sfLma__Contact__c ,sfLma__Contact__r.Name, sfLma__Install_Date__c, sfLma__Lead__c ,sfLma__Lead__r.Name, sfLma__Lead__r.LeadSource, sfLma__Lead__r.Email, sfLma__Licensed_Seats__c, sfLma__Seats__c ,sfLma__License_Status__c, sfLma__License_Type__c, sfLma__Expiration__c, sfLma__Used_Licenses__c FROM sfLma__License__c ';
-             String whereClause = '';
+            String queryString = ' SELECT Id, LastModifiedDate, Name, sfLma__Account__c, sfLma__Account__r.Name, sfLma__Contact__c ,sfLma__Contact__r.Name, sfLma__Install_Date__c, sfLma__Lead__c ,sfLma__Lead__r.Name, sfLma__Lead__r.LeadSource, sfLma__Lead__r.Email, sfLma__Licensed_Seats__c, sfLma__Seats__c ,sfLma__License_Status__c, sfLma__License_Type__c, sfLma__Expiration__c, sfLma__Used_Licenses__c FROM sfLma__License__c ';String whereClause = '';
             if(!filterWrapper.isEmpty()){
                 whereClause = Package2Interface.getWhereClause(filterWrapper);
                 if(!String.isBlank(whereClause)){
                     queryString = queryString + ' WHERE ' + whereClause;
                 }
             }
-            queryString = queryString + 'ORDER BY ' + String.escapeSingleQuotes(sortedBy) + ' ' + String.escapeSingleQuotes(sortDirection);
-            queryString = queryString + ' LIMIT ' + String.escapeSingleQuotes(lmaLicensesLimit) + ' OFFSET ' + String.escapeSingleQuotes(lmaLicensesOffset);
-            system.debug(queryString);
-            system.debug(whereClause);
+            queryString = queryString + 'ORDER BY ' + String.escapeSingleQuotes(sortedBy) + ' ' + String.escapeSingleQuotes(sortDirection);queryString = queryString + ' LIMIT ' + String.escapeSingleQuotes(lmaLicensesLimit) + ' OFFSET ' + String.escapeSingleQuotes(lmaLicensesOffset);
             if(Type.forName('sfLma__Package_Version__c') != null){
                 SObjectAccessDecision  decision = Security.stripInaccessible(AccessType.READABLE, Database.query(queryString));
                 List<ObjectWrappers.LMALicenseWrapper> licensesList = new List<ObjectWrappers.LMALicenseWrapper>();
@@ -216,14 +220,10 @@ public with sharing class PackageVisualizerCtrl {
                     if(o.get('sfLma__Contact__c') != null){license.contactId = URL.getSalesforceBaseUrl().toExternalForm() + '/' + o.get('sfLma__Contact__c');license.contactName = o.getSObject('sfLma__Contact__r').get('Name');}
                     license.installDate = o.get('sfLma__Install_Date__c');
                     if(o.get('sfLma__Lead__c') != null){
-                        license.leadId = URL.getSalesforceBaseUrl().toExternalForm() + '/' + o.get('sfLma__Lead__c');
-                        license.leadName = o.getSObject('sfLma__Lead__r').get('Name');
-                        license.leadSource = o.getSObject('sfLma__Lead__r').get('LeadSource');
+                        license.leadId = URL.getSalesforceBaseUrl().toExternalForm() + '/' + o.get('sfLma__Lead__c');license.leadName = o.getSObject('sfLma__Lead__r').get('Name');license.leadSource = o.getSObject('sfLma__Lead__r').get('LeadSource');
                         if(o.getSObject('sfLma__Lead__r').get('Email') != null){license.leadEmail = o.getSObject('sfLma__Lead__r').get('Email');}
                     }
-                    if(o.get('sfLma__Expiration__c') != null){license.lmaExpirationDate = o.get('sfLma__Expiration__c');}
-                    if(o.get('sfLma__Seats__c') != null){license.seats = o.get('sfLma__Seats__c');}
-                    if(o.get('sfLma__Used_Licenses__c') != null){license.usedLicenses = o.get('sfLma__Used_Licenses__c');}
+                    if(o.get('sfLma__Expiration__c') != null){license.lmaExpirationDate = o.get('sfLma__Expiration__c');}if(o.get('sfLma__Seats__c') != null){license.seats = o.get('sfLma__Seats__c');}if(o.get('sfLma__Used_Licenses__c') != null){license.usedLicenses = o.get('sfLma__Used_Licenses__c');}
                     license.licensedSeats = o.get('sfLma__Licensed_Seats__c');license.licenseStatus = o.get('sfLma__License_Status__c');license.licenseType = o.get('sfLma__License_Type__c');licensesList.add(license);
                 }
                 return licensesList;
@@ -244,11 +244,7 @@ public with sharing class PackageVisualizerCtrl {
 
             for (sObject o : history) {
                 ObjectWrappers.LMALicenseHistoryWrapper item = new ObjectWrappers.LMALicenseHistoryWrapper();
-                item.Id = o.get('Id');
-                item.Field = o.get('Field');
-                item.NewValue = o.get('NewValue');
-                item.OldValue = o.get('OldValue');
-                item.CreatedDate = o.get('CreatedDate');
+                item.Id = o.get('Id');item.Field = o.get('Field');item.NewValue = o.get('NewValue');item.OldValue = o.get('OldValue');item.CreatedDate = o.get('CreatedDate');
                 historyList.add(item);
             }
             return historyList;
@@ -311,6 +307,7 @@ public with sharing class PackageVisualizerCtrl {
         } else {return 'Error';}
     }
 
+    @AuraEnabled(cacheable=true)
     public static boolean isSignupRequest() {
         return (Type.forName('SignupRequest') != null);
     }

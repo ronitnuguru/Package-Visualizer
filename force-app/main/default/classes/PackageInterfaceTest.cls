@@ -301,7 +301,11 @@ private class PackageInterfaceTest {
         llw.licenseStatus = (Object) 'TEST';
         llw.licenseType = (Object) 'TEST';
         llw.leadSource = (Object) 'TEST';
-        
+
+        ObjectWrappers.LMAPackageWrapper lmapw= new ObjectWrappers.LMAPackageWrapper();
+        lmapw.id = (Object) 'TEST';
+        lmapw.packageSubsriberId = (Object) 'TEST';
+
         ObjectWrappers.LMALicenseHistoryWrapper llhw = new ObjectWrappers.LMALicenseHistoryWrapper();
         llhw.Id = (Object) 'TEST';
         llhw.Field = (Object) 'TEST';

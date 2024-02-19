@@ -181,6 +181,11 @@ public with sharing class ObjectWrappers{
         @AuraEnabled public Object usedLicenses;
     }
 
+    public class LMAPackageWrapper{
+        @AuraEnabled public Object id;
+        @AuraEnabled public Object packageSubsriberId;
+    }
+
     public class LMALicenseHistoryWrapper{
         @AuraEnabled public Object Id;
         @AuraEnabled public Object Field;
