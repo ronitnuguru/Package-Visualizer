@@ -1,0 +1,29 @@
+<template>
+    <lightning-tile label={campaign.Campaign.Name} type="media"  class="slds-page-header slds-m-bottom_x-small" href={campaignLink} target="_blank">
+        <lightning-icon slot="media" icon-name="standard:campaign" size="small"></lightning-icon>
+        <dl class="slds-dl_horizontal">
+            <dt class="slds-dl_horizontal__label">
+                <p class="slds-truncate">Start Date:</p>
+            </dt>
+            <dd class="slds-dl_horizontal__detail slds-tile__meta">
+                <p class="slds-truncate">{campaign.Campaign.StartDate}</p>
+            </dd>
+            <dt class="slds-dl_horizontal__label">
+                <p class="slds-truncate">Type:</p>
+            </dt>
+            <dd class="slds-dl_horizontal__detail slds-tile__meta">
+                <p class="slds-truncate">
+                    {campaign.Campaign.Type}
+                </p>
+            </dd>
+            <dt class="slds-dl_horizontal__label">
+                <p class="slds-truncate">Status:</p>
+            </dt>
+            <dd class="slds-dl_horizontal__detail slds-tile__meta">
+                <p class="slds-truncate">
+                    {campaign.Status}
+                </p>
+            </dd>
+        </dl>
+    </lightning-tile>
+</template>

@@ -75,6 +75,7 @@ export default class AppAnalyticsPackageRequest extends NavigationMixin(Lightnin
             }
         });
     }
+    
     handleCRMA() {
         this[NavigationMixin.Navigate]({
             type: "standard__webPage",

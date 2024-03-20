@@ -18,9 +18,15 @@
               >{instanceKey}</a
             >
           </h3>
+          <div class="slds-shrink-none">
+            <lightning-button-group>
+              <lightning-button-icon variant="border-filled" icon-name="utility:real_time" tooltip="Instance History" onclick={handleInstanceHistory}></lightning-button-icon>
+              <lightning-button-icon variant="border-filled" icon-name="utility:maintenance_plan" tooltip="Instance Maintenance" onclick={handleInstanceMaintenancePlan}></lightning-button-icon>
+            </lightning-button-group>
+          </div>
         </div>
         <div class="slds-tile__detail">
-          <div class="slds-grid slds-gutters">
+          <div class="slds-grid slds-gutters slds-wrap">
             <div class="slds-col slds-truncate">
               <dl class="slds-list_horizontal slds-wrap">
                 <template if:true={statusTitle}>
@@ -41,7 +47,7 @@
                 </template>
               </dl>
             </div>
-            <div class="slds-col">
+            <div class="slds-col slds-size_8-of-12">
               <dl class="slds-list_horizontal slds-wrap">
                 <template if:true={releaseVersion}>
                   <dt class="slds-item_label slds-text-color_weak slds-truncate">

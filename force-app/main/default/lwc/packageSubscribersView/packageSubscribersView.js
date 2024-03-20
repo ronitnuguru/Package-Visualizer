@@ -7,12 +7,13 @@ const actions = [
   {
     label: "Show Details",
     name: "show_details",
-    iconName: "utility:display_text"
+    iconName: "utility:display_text",
+    iconPosition:"left"
   },
   {
     label: "Trust Status",
     name: "trust_status",
-    iconName: "utility:salesforce1"
+    iconName: "utility:salesforce1",
   }
 ];
 

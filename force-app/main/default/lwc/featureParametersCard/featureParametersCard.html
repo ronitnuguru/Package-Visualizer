@@ -1,0 +1,49 @@
+<template>
+    <lightning-card class="slds-m-bottom_none" hide-header>
+        <div class="slds-grid">
+            <div class="slds-col slds-size_10-of-12 slds-m-left_small slds-p-left_none">
+                <span>
+                    <lightning-radio-group name="radioGroup"
+                        label="Data Flow Direction"
+                        options={dataFlowOptions}
+                        value={dataFlowValue}
+                        type="button"
+                        variant="label-hidden"
+                    ></lightning-radio-group>
+                </span>
+            </div>
+            <div class="slds-col slds-size_2-of-12 slds-p-right_none slds-m-left_xxx-small">
+                <span>
+                    <lightning-button-group>
+                        <lightning-button-icon icon-name="utility:trailhead_ext" variant="border-filled" tooltip="Trailhead - Placeholder" onclick={handleHelpDoc}></lightning-button-icon>
+                        <lightning-button-icon
+                              icon-name="utility:prompt"
+                              variant="border-filled"
+                              tooltip="In App Guidance"
+                              onclick={handleInAppPrompt}
+                        ></lightning-button-icon>
+                    </lightning-button-group>
+                </span>
+            </div>
+        </div>
+        <div class="slds-card__body_inner slds-m-top_small">
+        
+            <lightning-tabset>
+                <lightning-tab label="Booleans" icon-name="standard:toggle">
+                    One Content !
+                </lightning-tab>
+                <lightning-tab label="Integers" icon-name="standard:indicator_result">
+                    Two Content !
+                </lightning-tab>
+                <lightning-tab label="Dates" icon-name="standard:key_dates">
+                    Three Content !
+                </lightning-tab>
+            </lightning-tabset>
+        </div>
+        <div slot="footer">
+            <lightning-badge label="Tag1"></lightning-badge>
+            <lightning-badge label="Tag2"></lightning-badge>
+            <lightning-badge label="Tag3"></lightning-badge>
+        </div>
+    </lightning-card>
+</template>

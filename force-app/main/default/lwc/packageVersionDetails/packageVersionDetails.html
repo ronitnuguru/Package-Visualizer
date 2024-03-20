@@ -31,6 +31,7 @@
           type="text"
           label="Version Name"
           value={packageName}
+          class="slds-border_bottom"
           readonly
         ></lightning-input>
       </template>
@@ -47,6 +48,7 @@
         type="text"
         label="Version Number"
         value={packageVersionNumber}
+        class="slds-border_bottom"
         readonly
         field-level-help="major.minor.patch-build"
       ></lightning-input>
@@ -55,6 +57,7 @@
           type="text"
           label="Ancestor ID"
           value={packageAncestorId}
+          class="slds-border_bottom"
           readonly
         ></lightning-input>
       </template>
@@ -62,9 +65,10 @@
         type="text"
         label="Package Subscriber Version ID"
         value={packageSubscriberVersionId}
+        class="slds-border_bottom"
         readonly
       ></lightning-input>
-      <div class="slds-form-element">
+      <div class="slds-form-element slds-border_bottom">
         <label
           class="slds-form-element__label slds-var-p-bottom_xx-small"
           for="text-input-id-1"
@@ -85,6 +89,7 @@
         type="url"
         label="Package Install (SFDX)"
         value={sfdxPackageInstall}
+        class="slds-border_bottom"
         readonly
       ></lightning-input>
       <template if:true={editMode}>
@@ -103,6 +108,7 @@
             type="text"
             label="Branch"
             value={packageBranch}
+            class="slds-border_bottom"
             readonly
             field-level-help="The branch associated with this package version. Can be used to create a tree structure of inheritance"
           ></lightning-input>
@@ -131,6 +137,7 @@
           <lightning-input
             type="text"
             label="Tag"
+            class="slds-border_bottom"
             value={packageTag}
             readonly
           ></lightning-input>
@@ -187,6 +194,7 @@
             label="Code Coverage"
             formatter="percent-fixed"
             value={displayCodeCoverage}
+            class="slds-border_bottom"
             field-level-help="A minimum 75% code coverage is required for package version promotion"
             readonly
           ></lightning-input>
@@ -198,6 +206,7 @@
             type="number"
             label={subscriberLabel}
             value={subscribersCount}
+            class="slds-border_bottom"
             readonly
           ></lightning-input>
         </div>
@@ -263,6 +272,7 @@
             type="text"
             label="Build Duration In Seconds"
             value={packageBuildDurationInSeconds}
+            class="slds-border_bottom"
             readonly
           ></lightning-input>
         </template>
@@ -271,6 +281,7 @@
             type="text"
             label="Language"
             value={packageLanguage}
+            class="slds-border_bottom"
             readonly
           ></lightning-input>
         </template>
@@ -279,6 +290,7 @@
             type="text"
             label="Salesforce Release Version"
             value={packageReleaseVersion}
+            class="slds-border_bottom"
             readonly
           ></lightning-input>
         </template>
@@ -286,9 +298,10 @@
           type="text"
           label="Created By"
           value={packageCreatedBy}
+          class="slds-border_bottom"
           readonly
         ></lightning-input>
-        <div class="slds-form-element">
+        <div class="slds-form-element slds-border_bottom">
           <label
             class="slds-form-element__label slds-var-p-bottom_xx-small"
             for="text-input-id-1"

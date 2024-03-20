@@ -45,7 +45,6 @@
                   icon-name="utility:minimize_window"
                   size="xx-small"
                 ></lightning-icon>
-                <span class="slds-assistive-text">Minimize Composer Panel</span>
               </button>
               <template if:false={displayFooter}>
                 <button
@@ -368,6 +367,11 @@
                       variant="error"
                       class="slds-m-right_x-small"
                   ></lightning-icon>
+                </template>
+                <template if:false={displayError}>
+                  <!--
+                  <lightning-button label="Industries Templates" title="Templates" onclick={handleTemplates} class="slds-m-right_x-small"></lightning-button>
+                  -->
                 </template>
                 <lightning-button
                   variant="brand"

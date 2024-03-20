@@ -6,7 +6,6 @@
                     <lightning-icon
                         icon-name="utility:salesforce1"
                         alternative-text="Trial"
-                        title="Trial"
                         size="medium"
                         class="card_header_icon"
                     ></lightning-icon>
@@ -18,8 +17,8 @@
                 </div>
                 <div class="slds-no-flex">
                     <lightning-button-group>
-                        <!-- <lightning-button label="Create Task"></lightning-button> -->
-                        <lightning-button-icon icon-name="utility:help_doc_ext" variant="border-filled" alternative-text="Org Extension" onclick={handleHelpDoc}></lightning-button-icon>
+                        <lightning-button-icon icon-name="utility:salesforce1" variant="border-filled" tooltip="Trust Instance" onclick={handleTrustInstance}></lightning-button-icon>
+                        <lightning-button-icon icon-name="utility:help_doc_ext" variant="border-filled" tooltip="Extend Trial Orgs" onclick={handleHelpDoc}></lightning-button-icon>
                     </lightning-button-group>
                 </div>
             </header>
@@ -72,13 +71,14 @@
                         </h2>
                   </div>
                 </template>
-                <div class="slds-grid slds-wrap">
-                    <div class="slds-col slds-size_7-of-12">
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="slds-col">
                         <template lwc:if={org.Name}>
                             <lightning-input
                                 type="text"
                                 label="Name"
                                 value={org.Name}
+                                class="slds-border_bottom"
                                 readonly
                                 ></lightning-input>
                         </template>
@@ -87,16 +87,28 @@
                                 type="text"
                                 label="Primary Contact"
                                 value={org.PrimaryContact}
+                                class="slds-border_bottom"
                                 readonly
-                                ></lightning-input>
+                            ></lightning-input>
                         </template>
-                        <lightning-input
-                            type="checkbox"
-                            label="Is Sandbox"
-                            checked={org.IsSandbox}
-                            variant="label-stacked"
-                            disabled
-                        ></lightning-input>
+                        <template if:true={org.IsSandbox}>
+                            <lightning-input
+                                type="text"
+                                label="Org Type"
+                                value="Sandbox"
+                                class="slds-border_bottom"
+                                readonly
+                            ></lightning-input>
+                        </template>
+                        <template if:false={org.IsSandbox}>
+                            <lightning-input
+                                type="text"
+                                label="Org Type"
+                                value="Production"
+                                class="slds-border_bottom"
+                                readonly
+                            ></lightning-input>
+                        </template>
                     </div>
                     <div class="slds-col">
                         <template lwc:if={org.OrganizationType}>
@@ -104,6 +116,7 @@
                                 type="text"
                                 label="Organization Type"
                                 value={org.OrganizationType}
+                                class="slds-border_bottom"
                                 readonly
                                 ></lightning-input>
                         </template>
@@ -112,27 +125,18 @@
                                 type="text"
                                 label="Org Id"
                                 value={org.Id}
+                                class="slds-border_bottom"
                                 readonly
-                                ></lightning-input>
+                            ></lightning-input>
                         </template>
                         <template lwc:if={org.InstanceName}>
-                            <div class="slds-form-element">
-                                <label
-                                  class="slds-form-element__label"
-                                  for="text-input-id-1"
-                                >
-                                  Instance
-                                </label>
-                                <div
-                                  class="slds-form-element__control slds-var-p-bottom_x-small"
-                                >
-                                <lightning-formatted-url 
-                                    value={trustUrl}
-                                    label={org.InstanceName}
-                                    target="_blank" >
-                                </lightning-formatted-url>
-                                </div>
-                              </div>
+                            <lightning-input
+                                type="text"
+                                label="Instance"
+                                value={org.InstanceName}
+                                class="slds-border_bottom"
+                                readonly
+                            ></lightning-input>
                         </template>
                     </div>
                 </div>

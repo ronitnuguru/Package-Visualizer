@@ -73,20 +73,20 @@
             </div>
           </div>
         </template>
-        <div class="slds-grid slds-gutters slds-var-p-bottom_x-small slds-border_bottom">
+        <div class="slds-grid slds-gutters slds-var-p-bottom_x-small">
           <div class="slds-col slds-size_1-of-2">
             <lightning-input
               type="text"
               label="Data Type"
               value={viewData.appDataType}
-              class="input-style"
+              class="input-style slds-border_bottom"
               readonly
             ></lightning-input>
             <lightning-input
               type="text"
               label="Request State"
               value={viewData.requestState}
-              class="input-style"
+              class="input-style slds-border_bottom"
               readonly
             ></lightning-input>
             <template if:true={viewData.fileType}>
@@ -94,7 +94,7 @@
                 type="text"
                 label="File Type"
                 value={viewData.fileType}
-                class="input-style"
+                class="input-style slds-border_bottom"
                 readonly
               ></lightning-input>
             </template>
@@ -103,7 +103,7 @@
                 type="text"
                 label="File Compression"
                 value={viewData.fileCompression}
-                class="input-style"
+                class="input-style slds-border_bottom"
                 readonly
               ></lightning-input>
             </template>
@@ -112,14 +112,14 @@
                 type="number"
                 value={viewData.downloadSize}
                 label="Download Size (bytes)"
-                class="input-style"
+                class="input-style slds-border_bottom"
                 disabled
               ></lightning-input>
             </template>
           </div>
           <div class="slds-col slds-size_1-of-2">
             <template if:true={viewData.startTime}>
-              <div class="slds-form-element">
+              <div class="slds-form-element slds-border_bottom">
                 <label
                   class="slds-form-element__label input-style slds-var-p-bottom_xx-small"
                   for="text-input-id-1"
@@ -143,7 +143,7 @@
               </div>
             </template>
             <template if:true={viewData.endTime}>
-              <div class="slds-form-element">
+              <div class="slds-form-element slds-border_bottom">
                 <label
                   class="slds-form-element__label input-style slds-var-p-bottom_xx-small"
                   for="text-input-id-1"
@@ -167,7 +167,7 @@
               </div>
             </template>
             <template if:true={viewData.downloadExpirationTime}>
-              <div class="slds-form-element">
+              <div class="slds-form-element slds-border_bottom">
                 <label
                   class="slds-form-element__label input-style slds-var-p-bottom_xx-small"
                   for="text-input-id-1"
@@ -191,7 +191,7 @@
               </div>
             </template>
             <template if:true={viewData.querySubmittedTime}>
-              <div class="slds-form-element">
+              <div class="slds-form-element slds-border_bottom">
                 <label
                   class="slds-form-element__label input-style slds-var-p-bottom_xx-small"
                   for="text-input-id-1"

@@ -13,6 +13,7 @@
           type="text"
           label="Name"
           value={name}
+          class="slds-border_bottom"
           readonly
         ></lightning-input>
       </template>
@@ -30,6 +31,7 @@
           type="text"
           label="Namespace Prefix"
           value={namespacePrefix}
+          class="slds-border_bottom"
           readonly
         ></lightning-input>
       </template>
@@ -38,6 +40,7 @@
           type="text"
           label="Namespace Prefix"
           value="None"
+          class="slds-border_bottom"
           readonly
         ></lightning-input>
       </template>
@@ -45,6 +48,7 @@
         type="text"
         label="Package ID"
         value={packageId}
+        class="slds-border_bottom"
         readonly
       ></lightning-input>
       <template if:true={packageType}>
@@ -52,6 +56,7 @@
           type="text"
           label="Subscriber Package ID"
           value={subscriberPackageId}
+          class="slds-border_bottom"
           readonly
         ></lightning-input>
         <template if:false={editMode}>
@@ -74,6 +79,7 @@
             <lightning-textarea
               label="Description"
               value={description}
+              class="slds-border_bottom"
               disabled
             ></lightning-textarea>
           </template>
@@ -126,6 +132,7 @@
                 label="Package Error Username"
                 value={packageErrorUsername}
                 readonly
+                class="slds-border_bottom"
                 field-level-help="The email address for an active user in the Dev Hub org you want to receive email notification regarding package-related errors"
               ></lightning-input>
             </template>
@@ -143,9 +150,10 @@
             type="text"
             label="Created By"
             value={packageCreatedBy}
+            class="slds-border_bottom"
             readonly
           ></lightning-input>
-          <div class="slds-form-element">
+          <div class="slds-form-element slds-border_bottom">
             <label
               class="slds-form-element__label slds-var-p-bottom_xx-small"
               for="text-input-id-1"

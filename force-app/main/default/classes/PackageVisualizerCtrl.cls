@@ -108,6 +108,19 @@ public with sharing class PackageVisualizerCtrl {
     }
 
     @AuraEnabled(cacheable=true)
+    public static boolean isFmaParameter(){
+        return (Type.forName('sfFma__FeatureParameter__c') != null);
+    }
+
+    /*
+    @AuraEnabled(cacheable=true)
+    public static List<CampaignMember> getCampaignHistory(String leadOrContactId){
+        List<CampaignMember> campaignMembers = [ SELECT Campaign.Name, City, CampaignId, Campaign.StartDate, Campaign.EndDate, Status, CreatedDate, Campaign.Type FROM CampaignMember WHERE LeadOrContactId = :leadOrContactId ORDER BY CreatedDate DESC LIMIT 5];
+        return campaignMembers;
+    }
+    */
+
+    @AuraEnabled(cacheable=true)
     public static List<Package_Visualizer_Resource__mdt> getResourcesMetadata(){
         List<Package_Visualizer_Resource__mdt> resources = [ SELECT Label, Icon__c, Link__c, Description__c FROM Package_Visualizer_Resource__mdt WHERE Visibility__c = true ORDER BY Label LIMIT 50 ];
         return resources;
@@ -290,19 +303,10 @@ public with sharing class PackageVisualizerCtrl {
         SObject signupRequest = sObjectType.newSObject();
         
         if(objectCrudCheck == true){
-            if(fieldsMap.get('FirstName').getDescribe().isCreateable()){signupRequest.put('FirstName', String.escapeSingleQuotes(firstName));}
-            if(fieldsMap.get('LastName').getDescribe().isCreateable()){signupRequest.put('LastName', String.escapeSingleQuotes(lastName));}
-            if(fieldsMap.get('SignupEmail').getDescribe().isCreateable()){signupRequest.put('SignupEmail', String.escapeSingleQuotes(email));}
-            if(fieldsMap.get('Username').getDescribe().isCreateable()){signupRequest.put('Username', String.escapeSingleQuotes(userName));}
-            if(fieldsMap.get('Company').getDescribe().isCreateable()){signupRequest.put('Company', String.escapeSingleQuotes(company));}
-            if(fieldsMap.get('Subdomain').getDescribe().isCreateable() && myDomain != null){signupRequest.put('Subdomain', String.escapeSingleQuotes(myDomain));}
-            if(fieldsMap.get('Country').getDescribe().isCreateable() && country != null){signupRequest.put('Country', String.escapeSingleQuotes(country));}
-            if(fieldsMap.get('PreferredLanguage').getDescribe().isCreateable() && preferredLanguage != null){signupRequest.put('PreferredLanguage', String.escapeSingleQuotes(preferredLanguage));}
-            if(fieldsMap.get('TemplateId').getDescribe().isCreateable()){if(String.isNotBlank(templateId)){signupRequest.put('TemplateId', String.escapeSingleQuotes(templateId));}}
-            if(fieldsMap.get('Edition').getDescribe().isCreateable()){if(String.isNotBlank(edition)){signupRequest.put('Edition', String.escapeSingleQuotes(edition));}}
-            if(fieldsMap.get('TrialDays').getDescribe().isCreateable() && trialDays != null){signupRequest.put('TrialDays', Integer.valueOf(trialDays));}
-            if(fieldsMap.get('IsSignupEmailSuppressed').getDescribe().isCreateable()){signupRequest.put('IsSignupEmailSuppressed', Boolean.valueOf(isSignupEmailSuppressed));}
-            if(fieldsMap.get('ShouldConnectToEnvHub').getDescribe().isCreateable()){signupRequest.put('ShouldConnectToEnvHub', Boolean.valueOf(shouldConnectToEnvHub));}
+            if(fieldsMap.get('FirstName').getDescribe().isCreateable()){signupRequest.put('FirstName', String.escapeSingleQuotes(firstName));}if(fieldsMap.get('LastName').getDescribe().isCreateable()){signupRequest.put('LastName', String.escapeSingleQuotes(lastName));}if(fieldsMap.get('SignupEmail').getDescribe().isCreateable()){signupRequest.put('SignupEmail', String.escapeSingleQuotes(email));}if(fieldsMap.get('Username').getDescribe().isCreateable()){signupRequest.put('Username', String.escapeSingleQuotes(userName));}
+            if(fieldsMap.get('Company').getDescribe().isCreateable()){signupRequest.put('Company', String.escapeSingleQuotes(company));}if(fieldsMap.get('Subdomain').getDescribe().isCreateable() && myDomain != null){signupRequest.put('Subdomain', String.escapeSingleQuotes(myDomain));}
+            if(fieldsMap.get('Country').getDescribe().isCreateable() && country != null){signupRequest.put('Country', String.escapeSingleQuotes(country));}if(fieldsMap.get('PreferredLanguage').getDescribe().isCreateable() && preferredLanguage != null){signupRequest.put('PreferredLanguage', String.escapeSingleQuotes(preferredLanguage));}if(fieldsMap.get('TemplateId').getDescribe().isCreateable()){if(String.isNotBlank(templateId)){signupRequest.put('TemplateId', String.escapeSingleQuotes(templateId));}}if(fieldsMap.get('Edition').getDescribe().isCreateable()){if(String.isNotBlank(edition)){signupRequest.put('Edition', String.escapeSingleQuotes(edition));}}
+            if(fieldsMap.get('TrialDays').getDescribe().isCreateable() && trialDays != null){signupRequest.put('TrialDays', Integer.valueOf(trialDays));}if(fieldsMap.get('IsSignupEmailSuppressed').getDescribe().isCreateable()){signupRequest.put('IsSignupEmailSuppressed', Boolean.valueOf(isSignupEmailSuppressed));}if(fieldsMap.get('ShouldConnectToEnvHub').getDescribe().isCreateable()){signupRequest.put('ShouldConnectToEnvHub', Boolean.valueOf(shouldConnectToEnvHub));}
             insert signupRequest; return String.valueOf(signupRequest);
         } else {return 'Error';}
     }
@@ -310,5 +314,10 @@ public with sharing class PackageVisualizerCtrl {
     @AuraEnabled(cacheable=true)
     public static boolean isSignupRequest() {
         return (Type.forName('SignupRequest') != null);
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static boolean checkPackageSubscriberEnabled(){
+        return System.FeatureManagement.checkPackageBooleanValue('pkgviz__PackageSubscriber');
     }
 }

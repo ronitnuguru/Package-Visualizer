@@ -30,7 +30,7 @@
             </div>
           </div>
           <div class="slds-tile__detail">
-            <div class="slds-grid slds-gutters">
+            <div class="slds-grid slds-gutters slds-wrap">
               <div class="slds-col slds-truncate">
                 <dl class="slds-list_horizontal slds-wrap">
                   <template if:true={license.leadName}>
@@ -139,11 +139,29 @@
               <lightning-vertical-navigation-item-icon
                 label="Modify License"
                 name="modify_license"
-                icon-name="utility:replace"
+                icon-name="utility:record_update"
                 onclick={handleModifyLicenseClick}
               >
               </lightning-vertical-navigation-item-icon>
             </template>
+            <!--
+            <template if:true={displayFMA}>
+              <lightning-vertical-navigation-item-icon
+                label="Feature Parameters"
+                name="feature_parameters"
+                icon-name="utility:slider"
+                onclick={handleFeatureParameters}
+              >
+              </lightning-vertical-navigation-item-icon>
+            </template>
+            <lightning-vertical-navigation-item-icon
+              label="Campaigns"
+              name="campaign_history"
+              icon-name="utility:campaign"
+              onclick={handleCampaignHistory}
+            >
+            </lightning-vertical-navigation-item-icon>
+            -->
           </lightning-vertical-navigation-section>
         </lightning-vertical-navigation>
       </div>
@@ -377,6 +395,25 @@
             </lightning-card>
           </div>
         </template>
+        <!--
+        <template if:true={featureParametersDisplay}>
+          <div
+            class="slds-border_left slds-border_bottom slds-border_right slds-border_top slds-var-m-top_medium timeline-card-style"
+          >
+            <c-feature-parameters-card></c-feature-parameters-card>
+          </div>
+        </template>
+        <template if:true={campaignDisplay}>
+          <div
+            class="slds-border_left slds-border_bottom slds-border_right slds-border_top slds-var-m-top_medium timeline-card-style"
+          >
+            <c-campaign-history-list
+            license={license}
+            >
+            </c-campaign-history-list>
+          </div>
+        </template>
+        -->
       </div>
     </div>
   </div>

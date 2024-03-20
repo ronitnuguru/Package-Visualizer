@@ -430,10 +430,8 @@ export default class PackageLmaView extends NavigationMixin(LightningElement) {
 
     if (this.chosenLicenseRecord.leadId) {
       _sendToId = this.extractIdFromUrl(this.chosenLicenseRecord.leadId);
-      _licencseId = null;
     } else if (this.chosenLicenseRecord.contactId) {
       _sendToId = this.extractIdFromUrl(this.chosenLicenseRecord.contactId);
-      _licencseId = this.extractIdFromUrl(this.chosenLicenseRecord.id);
     } else {
       _sendToId = null;
     }

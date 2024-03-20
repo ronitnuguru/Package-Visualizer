@@ -1,6 +1,7 @@
 import { LightningElement, api } from "lwc";
+import { NavigationMixin } from "lightning/navigation";
 
-export default class TrustInstanceDetail extends LightningElement {
+export default class TrustInstanceDetail extends NavigationMixin(LightningElement) {
   @api instanceKey;
   @api location;
   @api maintenanceWindow;
@@ -55,4 +56,24 @@ export default class TrustInstanceDetail extends LightningElement {
         return "";
     }
   }
+
+  handleInstanceHistory() {
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: `${this.trustUrl}/history`
+      }
+    });
+  }
+
+  handleInstanceMaintenancePlan() {
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: `${this.trustUrl}/maintenances`
+      }
+    });
+  }
+
+
 }

@@ -222,6 +222,7 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
     this.trialDays = 30;
     this.shouldConnectToEnvHub = true;
     this.isSignupEmailSuppressed = false;
+    this.masterSubscriptionAgreement = false;
 
     this.dispatchEvent(
       new ShowToastEvent({

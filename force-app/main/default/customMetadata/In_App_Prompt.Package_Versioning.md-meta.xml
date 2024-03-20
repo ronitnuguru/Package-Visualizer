@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Package Versioning</label>
+    <protected>true</protected>
+    <values>
+        <field>Brand_Button_Label__c</field>
+        <value xsi:type="xsd:string">CLI Command Reference</value>
+    </values>
+    <values>
+        <field>Brand_Button_URL__c</field>
+        <value xsi:type="xsd:string">https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_package_commands_unified.htm#cli_reference_package_version_create_unified</value>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">A package version is a fixed snapshot of the package contents and related metadata. The package version is an installable, immutable artifact that lets you manage changes and track what’s different each time you release or deploy a specific set of changes. Before you create a package version, first verify package details, such as the package name, dependencies, and major, minor, and patch version numbers, in the sfdx-project.json file. Verify that the metadata you want to change or add in the new package version is in the package’s main directory.</value>
+    </values>
+    <values>
+        <field>Learn_More_Link__c</field>
+        <value xsi:type="xsd:string">https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_pkg_ver.htm</value>
+    </values>
+    <values>
+        <field>Prompt_Popover_Location__c</field>
+        <value xsi:type="xsd:string">slds-popover_prompt_bottom-right</value>
+    </values>
+    <values>
+        <field>Title__c</field>
+        <value xsi:type="xsd:string">Package Versioning</value>
+    </values>
+</CustomMetadata>

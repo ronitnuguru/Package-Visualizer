@@ -1,0 +1,51 @@
+<template>
+    <lightning-card class="slds-m-bottom_none" title="Campaign History" icon-name="standard:campaign_members" heading-level="4">
+        <lightning-button-group slot="actions">
+            <template if:false={displayViewMoreLink}>
+                <lightning-button-icon icon-name="utility:advertising" variant="border-filled" tooltip="View More" onclick={handleHelpDoc}></lightning-button-icon>
+            </template>
+            <lightning-button-icon icon-name="utility:trailhead_ext" variant="border-filled" tooltip="Trailhead - Grow your Business" onclick={handleHelpDoc}></lightning-button-icon>
+            <lightning-button-icon
+                  icon-name="utility:prompt"
+                  variant="border-filled"
+                  tooltip="In App Guidance"
+                  onclick={handleInAppPrompt}
+            ></lightning-button-icon>
+        </lightning-button-group>
+        <div class="slds-card__body slds-card__body_inner">
+            <template if:true={displaySpinner}>
+                <lightning-spinner
+                  alternative-text="Loading"
+                  size="medium"
+                  variant="brand"
+                ></lightning-spinner>
+            </template>
+            <template if:false={displaySpinner}>
+                <template for:each={campaignData} for:item="campaign">
+                    <c-campaign-tile
+                        key={campaign.id}
+                        campaign={campaign}
+                    ></c-campaign-tile>
+                </template>
+                <template if:false={campaignData}>
+                    <c-empty-illustration-view 
+                        title="Hmm..."
+                        body="Looks like we were unable to retrieve any campaigns associated with this lead or contact..."
+                    ></c-empty-illustration-view>
+                </template>
+                <template if:false={displayViewMoreLink}>
+                    <c-empty-illustration-view 
+                        title="Hmm..."
+                        body="Looks like there are no campaigns associated with this lead or contact..."
+                    ></c-empty-illustration-view>
+                </template>
+            </template>
+
+        </div>
+        <template if:true={displayViewMoreLink}>
+            <p slot="footer">
+                <a href={viewMoreLink} target="_blank">View More</a>
+            </p>
+        </template>
+      </lightning-card>
+</template>

@@ -171,6 +171,7 @@ public with sharing class ObjectWrappers{
         @AuraEnabled public Object installDate;
         @AuraEnabled public Object leadId;
         @AuraEnabled public Object leadName;
+        @AuraEnabled public Object packageVersionNumber;
         @AuraEnabled public Object licensedSeats;
         @AuraEnabled public Object seats;
         @AuraEnabled public Object licenseStatus;

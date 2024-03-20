@@ -1,9 +1,10 @@
-import { LightningElement, api } from "lwc";
+import { LightningElement, api, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { NavigationMixin } from "lightning/navigation";
 import { encodeDefaultFieldValues } from 'lightning/pageReferenceUtils';
 import getLmaTimeline from "@salesforce/apexContinuation/PackageVisualizerCtrl.getLmaTimeline";
 import modifyLicense from "@salesforce/apexContinuation/PackageVisualizerCtrl.modifyLicense";
+import isFmaParameter from "@salesforce/apex/PackageVisualizerCtrl.isFmaParameter";
 
 export default class PackageLmaTimeline extends NavigationMixin(LightningElement) {
   @api license;
@@ -16,7 +17,9 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
   selectedItem = `activity_timeline`;
   timelineDisplay;
   modifyLicenseDisplay;
+  featureParametersDisplay;
   displayModifyLicenseNav;
+  campaignDisplay;
   displayEditView;
 
   expirationToggle;
@@ -27,9 +30,22 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
 
   editorValue;
 
+  @wire(isFmaParameter)
+  fma({ data, error }) {
+    if (data) {
+      if (data === true) {
+        this.displayFMA = true;
+      } else {
+        this.displayFMA = false;
+      }
+    } else if (error) {
+      this.displayFMA = undefined;
+      console.error(error);
+    }
+  }
+
   connectedCallback() {
     this.licenseId = /[^/]*$/.exec(this.license.id)[0];
-    console.log(this.orgKey);
     this.displayModifyLicenseNav =
       this.license.licenseStatus === "Uninstalled" ? false : true;
     this.getOriginalValues();
@@ -89,7 +105,8 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
     this.selectedItem = `activity_timeline`;
     this.timelineDisplay = true;
     this.modifyLicenseDisplay = false;
-    this.emailLeadDisplay = false;
+    this.featureParametersDisplay = false;
+    this.campaignDisplay = false;
     this.getTimeline();
   }
 
@@ -97,14 +114,24 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
     this.selectedItem = `modify_license`;
     this.timelineDisplay = false;
     this.modifyLicenseDisplay = true;
-    this.emailLeadDisplay = false;
+    this.featureParametersDisplay = false;
+    this.campaignDisplay = false;
   }
 
-  handleEmailLeadClick() {
-    this.selectedItem = `email_lead`;
+  handleFeatureParameters() {
+    this.selectedItem = `feature_parameters`;
     this.timelineDisplay = false;
     this.modifyLicenseDisplay = false;
-    this.emailLeadDisplay = true;
+    this.featureParametersDisplay = true;
+    this.campaignDisplay = false;
+  }
+
+  handleCampaignHistory() {
+    this.selectedItem = `campaign_history`;
+    this.timelineDisplay = false;
+    this.modifyLicenseDisplay = false;
+    this.featureParametersDisplay = false;
+    this.campaignDisplay = true;
   }
 
   handleEdit() {
@@ -202,15 +229,13 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
   }
 
   handleSendEmailClick() {
-    let _licencseId;
+    let _licencseId = this.extractIdFromUrl(this.license.id);
     let _sendToId;
 
     if (this.license.leadId) {
       _sendToId = this.extractIdFromUrl(this.license.leadId);
-      _licencseId = null;
     } else if (this.license.contactId) {
       _sendToId = this.extractIdFromUrl(this.license.contactId);
-      _licencseId = this.extractIdFromUrl(this.license.id);
     } else {
       _sendToId = null;
     }

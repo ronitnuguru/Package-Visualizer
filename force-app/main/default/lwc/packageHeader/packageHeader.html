@@ -78,18 +78,26 @@
                 ></lightning-button>
                 <template if:true={displayLMA}>
                   <lightning-button-icon
-                    icon-name="utility:record_lookup"
+                    icon-name="utility:package"
                     variant="border-filled"
-                    tooltip="LMA Package Record"
+                    tooltip="License Management Package"
                     onclick={handleLMA}
+                  ></lightning-button-icon>
+                </template>
+                <template if:true={displayFMA}>
+                  <lightning-button-icon
+                    icon-name="utility:slider"
+                    variant="border-filled"
+                    tooltip="Feature Parameters"
+                    onclick={handleFMA}
                   ></lightning-button-icon>
                 </template>
               </template>
               <template if:true={type}>
                 <lightning-button-icon
-                  icon-name="utility:signpost"
+                  icon-name="utility:prompt"
                   variant="border-filled"
-                  tooltip="In App Assistant"
+                  tooltip="In App Guidance"
                   onclick={handleInAppPrompt}
                 ></lightning-button-icon>
               </template>

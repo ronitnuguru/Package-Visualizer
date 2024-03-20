@@ -178,6 +178,7 @@ export default class PackageVersionsView extends LightningElement {
   versionsLength;
   disableInfiniteLoad = true;
   displaySecurityReviewInAppPrompt;
+  displayPackageVersioningInAppPrompt;
 
   @wire(isLMA)
   lma({ data, error }) {
@@ -831,7 +832,15 @@ export default class PackageVersionsView extends LightningElement {
     this.displaySecurityReviewInAppPrompt = false;
   }
 
-  handleInAppPrompt() {
-    this.displaySecurityReviewInAppPrompt = true;
+  handlePackageVersioningCancel(){
+    this.displayPackageVersioningInAppPrompt = false;
+  }
+
+  handleInAppPrompt(event) {
+    if(event.detail.value === 'in-app-guidance-security-review'){
+      this.displaySecurityReviewInAppPrompt = true;
+    } else if (event.detail.value === 'in-app-guidance-package-versions'){
+      this.displayPackageVersioningInAppPrompt = true;
+    }
   }
 }

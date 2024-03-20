@@ -6,7 +6,6 @@ export default class OrgExpirationCard extends NavigationMixin(LightningElement)
 
     org;
     error;
-    trustUrl;
 
     displaySpinner = true;
     numOfDays;
@@ -17,7 +16,6 @@ export default class OrgExpirationCard extends NavigationMixin(LightningElement)
     wiredOrg({ error, data }) {
         if (data) {
             this.org = data;
-            this.trustUrl = `https://status.salesforce.com/instances/${this.org.InstanceName}`;
             if (this.org.TrialExpirationDate) {
                 this.numOfDays = new Date(this.org.TrialExpirationDate);
             }
@@ -40,7 +38,12 @@ export default class OrgExpirationCard extends NavigationMixin(LightningElement)
         });
     }
 
-    handleCreateTask() {
-        this.displayTaskModal = true;
+    handleTrustInstance(){
+        this[NavigationMixin.Navigate]({
+            type: "standard__webPage",
+            attributes: {
+              url: `https://status.salesforce.com/instances/${this.org.InstanceName}/`
+            }
+        });
     }
 }

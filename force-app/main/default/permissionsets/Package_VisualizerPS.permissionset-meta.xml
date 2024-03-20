@@ -51,4 +51,8 @@
         <tab>X2GP_Visualizer</tab>
         <visibility>Visible</visibility>
     </tabSettings>
+    <tabSettings>
+        <tab>Platform_Tools</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
 </PermissionSet>

@@ -1,5 +1,6 @@
 import { LightningElement, api, wire } from "lwc";
 import isLMA from "@salesforce/apex/PackageVisualizerCtrl.isLMA";
+import isFmaParameter from "@salesforce/apex/PackageVisualizerCtrl.isFmaParameter";
 import getLmaPackage from "@salesforce/apex/PackageVisualizerCtrl.getLmaPackage";
 import { publish, MessageContext } from "lightning/messageService";
 import { NavigationMixin } from "lightning/navigation";
@@ -14,6 +15,7 @@ export default class PackageHeader extends NavigationMixin(LightningElement) {
   @api subscriberPackageId;
 
   displayLMA;
+  displayFMA;
   displayAppAnalyticsModal;
   displayManagedInAppPrompt;
   displayUnlockedInAppPrompt;
@@ -31,6 +33,20 @@ export default class PackageHeader extends NavigationMixin(LightningElement) {
       }
     } else if (error) {
       this.displayLMA = undefined;
+      console.error(error);
+    }
+  }
+
+  @wire(isFmaParameter)
+  fma({ data, error }) {
+    if (data) {
+      if (data === true) {
+        this.displayFMA = true;
+      } else {
+        this.displayFMA = false;
+      }
+    } else if (error) {
+      this.displayFMA = undefined;
       console.error(error);
     }
   }
@@ -97,8 +113,29 @@ export default class PackageHeader extends NavigationMixin(LightningElement) {
     }
   }
 
-  handleLMA() {
+  handleLmaNavigate(id){
+    this[NavigationMixin.Navigate]({
+      type: 'standard__recordPage',
+      attributes: {
+        recordId: id,
+        actionName: 'view'
+      }
+    });
+  }
 
+  handleFmaNavigate(id){
+    this[NavigationMixin.Navigate]({
+      type: "standard__recordRelationshipPage",
+      attributes: {
+        recordId: id,
+        objectApiName: "sfLma__Package__c",
+        relationshipApiName: "sfFma__Feature_Parameters__r",
+        actionName: "view",
+      },
+    });
+  }
+
+  getLmaPackage(navigateType){
     (async () => {
       this.displaySpinner = true;
       await getLmaPackage({
@@ -106,13 +143,11 @@ export default class PackageHeader extends NavigationMixin(LightningElement) {
       })
         .then(result => {
           this.displaySpinner = false;
-          this[NavigationMixin.Navigate]({
-            type: 'standard__recordPage',
-            attributes: {
-              recordId: result.id,
-              actionName: 'view'
-            }
-          });
+          if(navigateType === 'License Management Package'){
+            this.handleLmaNavigate(result.id);
+          } else if (navigateType === 'Feature Parameters'){
+            this.handleFmaNavigate(result.id);
+          }
         })
         .catch(error => {
           console.error(error);
@@ -121,11 +156,19 @@ export default class PackageHeader extends NavigationMixin(LightningElement) {
           this.dispatchEvent(
             new ShowToastEvent({
               title: "Error",
-              message: "We were unable to navigate to LMA package record",
+              message: `We were unable to navigate to ${this.name}'s ${navigateType}`,
               variant: "error"
             })
           );
         });
     })();
+  }
+
+  handleLMA() {
+    this.getLmaPackage('License Management Package');
+  }
+
+  handleFMA(){
+    this.getLmaPackage('Feature Parameters');
   }
 }
