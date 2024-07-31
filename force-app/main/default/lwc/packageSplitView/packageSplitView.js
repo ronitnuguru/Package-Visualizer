@@ -1,19 +1,15 @@
 import { LightningElement, wire, api } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import { NavigationMixin } from "lightning/navigation";
 import hasPackageVisualizerPushUpgrade from "@salesforce/customPermission/Package_Visualizer_Push_Upgrade";
-import {
-  publish,
-  subscribe,
-  unsubscribe,
-  MessageContext
-} from "lightning/messageService";
+import { publish, subscribe, unsubscribe, MessageContext } from "lightning/messageService";
 import PACAKGEEDITMESSAGECHANNEL from "@salesforce/messageChannel/PackageEditMessageChannel__c";
 import DOCKEDUTILITYBARMESSAGECHANNEL from "@salesforce/messageChannel/DockedUtilityBarMessageChannel__c";
 import get2GPPackageList from "@salesforce/apexContinuation/PackageVisualizerCtrl.get2GPPackageList";
 import get1GPPackageList from "@salesforce/apexContinuation/PackageVisualizerCtrl.get1GPPackageList";
 import hasPackageVisualizerCore from "@salesforce/customPermission/Package_Visualizer_Core";
 
-export default class PackageSplitView extends LightningElement {
+export default class PackageSplitView extends NavigationMixin(LightningElement) {
   containerStyle = `slds-split-view_container slds-is-open slds-show_medium`;
   containerCollapsed = false;
   displaySpinner = true;
@@ -55,7 +51,7 @@ export default class PackageSplitView extends LightningElement {
 
   get is2GP() {
     return (this.packageTypes === '2GP and Unlocked Packages') ? true : false;
-  }  
+  }
 
   connectedCallback() {
     if (this.packageTypes === undefined) {
@@ -284,7 +280,7 @@ export default class PackageSplitView extends LightningElement {
     this.packageFilterList = this.packageList.filter(
       packageType => packageType.containerOptions === "Managed"
     );
-    this.filterLabel = `2GP Managed Packages`;
+    this.filterLabel = `Managed Packages`;
     this.searchQuery = "";
     this.packageListSize = this.packageFilterList.length;
     this.filterChecks(this.filterLabel);
@@ -419,5 +415,23 @@ export default class PackageSplitView extends LightningElement {
 
   handlePackageLauncherCancel() {
     this.displayPackageLauncher = false;
+  }
+
+  handlePlatformTools(){
+    this[NavigationMixin.Navigate]({
+      type: "standard__navItemPage",
+      attributes: {
+        apiName: "pkgviz__Platform_Tools",
+      },
+    });
+  }
+
+  navigateScratchOrgBuild(){
+    this[NavigationMixin.Navigate]({
+      type: "standard__component",
+      attributes: {
+        componentName: "pkgviz__scratchDefFileBuildCard",
+      }
+    });
   }
 }

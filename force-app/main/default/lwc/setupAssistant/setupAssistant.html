@@ -261,67 +261,22 @@
                           size="small"
                           class="slds-var-p-right_small"
                         ></lightning-icon>
-                        Enable Dev Hub Features in Your Org
+                        Enable Dev Hub Features
                       </h3>
                       <p>
-                        Enable Dev Hub features in your Salesforce org so you can
-                        create and manage scratch orgs, create and manage
-                        second-generation packages, and use Einstein features.
-                        Scratch orgs are disposable Salesforce orgs to support
-                        development and testing.&nbsp;
+                        Dev Hub allows you to create and manage Namespaces, Scratch Orgs, Unlocked Packages, and Second-Generation Managed Packages (2GP).&nbsp;
                         <a
-                          href="https://help.salesforce.com/articleView?id=sf.sfdx_setup_enable_devhub.htm&type=5"
+                          href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_enable_devhub.htm"
                           target="_blank"
                           title="Learn More"
                           >Learn More</a
                         >
                       </p>
-                    </div>
-                    <div class="slds-media__figure slds-media__figure_reverse">
-                      <lightning-button
-                        variant="brand-outline"
-                        label="Setup"
-                        icon-name="utility:setup"
-                        icon-position="right"
-                        onclick={navigateToDevHub}
-                        disabled={isSetupEnabled}
-                      ></lightning-button>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </li>
-          <li class="slds-setup-assistant__item">
-            <div class="">
-              <article class="slds-setup-assistant__step">
-                <div class="slds-setup-assistant__step-summary">
-                  <div class="slds-media">
-                    <div
-                      class="slds-setup-assistant__step-summary-content slds-media__body"
-                    >
-                      <h3
-                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
-                      >
-                        <lightning-icon
-                          icon-name="utility:toggle"
-                          size="small"
-                          class="slds-var-p-right_small"
-                        ></lightning-icon>
-                        Enable Unlocked and 2GP Managed Packaging
-                      </h3>
-                      <p>
-                        Enable packaging in your org so you can develop unlocked
-                        packages or second-generation managed packages. You can
-                        work with the packages in scratch orgs, sandbox orgs, and
-                        target subscriber orgs.&nbsp;
-                        <a
-                          href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_enable_secondgen_pkg.htm"
-                          target="_blank"
-                          title="Learn More"
-                          >Learn More</a
-                        >
-                      </p>
+                        Required Feature Toggles:
+                        <ul class="slds-list_dotted">
+                          <li>Enable Dev Hub</li>
+                          <li>Enable Unlocked Packages and Second-Generation Managed Packages</li>
+                        </ul>
                     </div>
                     <div class="slds-media__figure slds-media__figure_reverse">
                       <lightning-button
@@ -358,24 +313,163 @@
                       </h3>
                       <p>
                         With 2GP, you can share a single namespace with multiple
-                        packages. Since sharing of code is much easier if your
-                        package shares the same namespace, we recommend that you
-                        use a single namespace for all of your 2GP packages.&nbsp;
+                        packages. This makes sharing and maintenance of code much easier. We recommend that you
+                        use a single namespace for all of your 2GP packages
+                      </p>
+                      <div class="slds-progress slds-progress_vertical slds-progress_success">
+                        <ol class="slds-progress__list slds-progress__list-bordered">
+                          <li class="slds-progress__item">
+                            <div class="slds-progress__marker"></div>
+                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                              <div class="slds-size_3-of-4">
+                                Create a Developer Editon Org for the sole purpose of registering your package's namespace. It may take a little while for org creation. Check your email once the org is provisioned. Then go to this newly provisioned org's Setup -> Package Manager to register the namespace.&nbsp;
+                                <a
+                                  href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_namespace.htm"
+                                  target="_blank"
+                                  title="Learn More"
+                                  >Learn More</a
+                                >
+                              </div>
+                              
+                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                                <lightning-button-icon
+                                  tooltip="Create Org"
+                                  icon-name="utility:salesforce1"
+                                  variant="brand"
+                                  onclick={handleCreateOrgs}
+                                >
+                                </lightning-button-icon>
+                              </div>
+                              
+                            </div>
+                          </li>
+                          <li class="slds-progress__item">
+                            <div class="slds-progress__marker"></div>
+                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                              <div class="slds-size_3-of-4">
+                                Link your registered namespace by authenticating into the Developer Edition Org you created in the previous step. Once linked, we can create 2GPs with that namespace. This allows you to organize, and distribute your code and metadata in a scalable manner.&nbsp;
+                                <a
+                                  href="https://developer.salesforce.com/docs/atlas.en-us.248.0.sfdx_dev.meta/sfdx_dev/sfdx_dev_reg_namespace.htm"
+                                  target="_blank"
+                                  title="Learn More"
+                                  >Learn More</a
+                                >
+                              </div>
+                              
+                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                                <lightning-button-icon
+                                  tooltip="Namespace Registries"
+                                  icon-name="utility:salesforce_page"
+                                  variant="brand"
+                                  onclick={navigateToNamespace}
+                                >
+                                </lightning-button-icon>
+                              </div>
+                            </div>
+                          </li>
+                        </ol>
+                      </div>
+                    </div>
+                    <div class="slds-media__figure slds-media__figure_reverse">
+                      <lightning-button
+                        variant="brand-outline"
+                        label="Guide"
+                        icon-name="utility:apex"
+                        icon-position="right"
+                        onclick={navigateUnderstandingNamespaces}
+                        disabled={isSetupEnabled}
+                      ></lightning-button>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </li>
+          <li class="slds-setup-assistant__item">
+            <div class="">
+              <article class="slds-setup-assistant__step">
+                <div class="slds-setup-assistant__step-summary">
+                  <div class="slds-media">
+                    <div
+                      class="slds-setup-assistant__step-summary-content slds-media__body"
+                    >
+                      <h3
+                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                      >
+                        <lightning-icon
+                          icon-name="utility:user_role"
+                          size="small"
+                          class="slds-var-p-right_small"
+                        ></lightning-icon>
+                        Provision Access to Developers
+                      </h3>
+                      <p>
+                        The Limited Access User Profile is designed for users whose role is to build customizations or applications. These 100 licenses restrict access to standard and custom objects but provide essential access to dev hub, development tools, scratch org environments, and packaging related functionalities&nbsp;
                         <a
-                          href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_reg_namespace.htm"
+                          href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_pkg_slalf_pkg_dev.htm"
                           target="_blank"
                           title="Learn More"
                           >Learn More</a
                         >
                       </p>
+                      <div class="slds-progress slds-progress_vertical slds-progress_success">
+                        <ol class="slds-progress__list slds-progress__list-bordered">
+                          <li class="slds-progress__item">
+                            <div class="slds-progress__marker"></div>
+                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                              <div class="slds-size_3-of-4">
+                                Create New Users and Select Salesforce Limited Access - Free for User License, and then Limited Access User for Profile
+                              </div>
+                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                                <lightning-button-icon
+                                  icon-name="utility:help_doc_ext"
+                                  variant="brand"
+                                  onclick={navigateProvUsers1}
+                                ></lightning-button-icon>
+                              </div>
+                            </div>
+                          </li>
+                          <li class="slds-progress__item">
+                            <div class="slds-progress__marker"></div>
+                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                              <div class="slds-size_3-of-4">
+                                Create a Permission Set for developer to access the required Dev Hub Objects
+                              </div>
+                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                                <lightning-button-icon
+                                  icon-name="utility:help_doc_ext"
+                                  variant="brand"
+                                  onclick={navigateProvUsers2}
+                                ></lightning-button-icon>
+                              </div>
+                            </div>
+                          </li>
+                          <li class="slds-progress__item">
+                            <div class="slds-progress__marker"></div>
+                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                              <div class="slds-size_3-of-4">
+                                Assign System Permissions for the ability to create Second-Generation Managed Packages and Package Versions
+                              </div>
+                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                                <lightning-button-icon
+                                  icon-name="utility:help_doc_ext"
+                                  variant="brand"
+                                  onclick={navigateProvUsers3}
+                                ></lightning-button-icon>
+                              </div>
+                            </div>
+                          </li>
+                        </ol>
+                      </div>
                     </div>
                     <div class="slds-media__figure slds-media__figure_reverse">
                       <lightning-button
                         variant="brand-outline"
-                        label="List View"
-                        icon-name="utility:salesforce_page"
+                        label="Setup"
+                        icon-name="utility:setup"
                         icon-position="right"
-                        onclick={navigateToNamespace}
+                        onclick={navigateLimitedAccessUserProfiile}
+                        disabled={isSetupEnabled}
                       ></lightning-button>
                     </div>
                   </div>
@@ -449,6 +543,66 @@
                             </div>
                           </div>
                         </li>
+                        <li class="slds-progress__item">
+                          <div class="slds-progress__marker"></div>
+                          <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div class="slds-size_3-of-4">
+                              Lay the foundation of your package by setting up your app's Project Structure
+                            </div>
+                            <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <lightning-button-icon
+                                icon-name="utility:help_doc_ext"
+                                variant="brand"
+                                onclick={navigateToDXProjectStructure}
+                              ></lightning-button-icon>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="slds-progress__item">
+                          <div class="slds-progress__marker"></div>
+                          <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div class="slds-size_3-of-4">
+                              Create an Application by following the basic workflow when you are starting from scratch to develop an app that runs on the Salesforce Platform
+                            </div>
+                            <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <lightning-button-icon
+                                icon-name="utility:help_doc_ext"
+                                variant="brand"
+                                onclick={navigateToDXCreateApplication}
+                              ></lightning-button-icon>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="slds-progress__item">
+                          <div class="slds-progress__marker"></div>
+                          <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div class="slds-size_3-of-4">
+                              Build a sample Scratch Org Definition File to mimic the shape of an org towards your development lifecycle, such as sandbox, packaging, or production. These source-driven and fully configurable scratch orgs allow developers to emulate different Salesforce editions with different features and settings
+                            </div>
+                            <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <lightning-button-icon
+                                icon-name="utility:insert_tag_field"
+                                variant="brand"
+                                onclick={navigateScratchOrgBuild}
+                              ></lightning-button-icon>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="slds-progress__item">
+                          <div class="slds-progress__marker"></div>
+                          <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div class="slds-size_3-of-4">
+                              Keep your code secure by incorporating Salesforce Code Analyzer's GitHub Action in your CI/CD workflow
+                            </div>
+                            <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <lightning-button-icon
+                                icon-name="utility:help_doc_ext"
+                                variant="brand"
+                                onclick={navigateToCodeAnalyzerGitHubAction}
+                              ></lightning-button-icon>
+                            </div>
+                          </div>
+                        </li>
                       </ol>
                     </div>
                   </div>
@@ -513,7 +667,7 @@
                           <div class="slds-progress__marker"></div>
                           <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                             <div class="slds-size_3-of-4">
-                              To <a href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_pkg_ver.htm" target="_blank">create a package version</a>: <code>sf package version create --package "Package Name" --wait 20 --installation-key-bypass --code-coverage --definition-file config/project-scratch-def.json --target-dev-hub "DevHubOrgAlias"</code>
+                              To <a href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_pkg_ver.htm" target="_blank">create a package version</a>: <code>sf package version create --package "Package Name" --wait 20 --installation-key-bypass --code-coverage --async-validation --definition-file config/project-scratch-def.json --target-dev-hub "DevHubOrgAlias"</code>
                             </div>
                             <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
                               <lightning-button-icon

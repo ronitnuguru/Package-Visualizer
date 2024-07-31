@@ -1,13 +1,18 @@
-import { LightningElement, api } from "lwc";
+import { LightningElement, api, wire } from "lwc";
 import { NavigationMixin } from "lightning/navigation";
 import hasPackageVisualizerCore from "@salesforce/customPermission/Package_Visualizer_Core";
 import hasPackageVisualizerPushUpgrade from "@salesforce/customPermission/Package_Visualizer_Push_Upgrade";
 import hasViewSetup from "@salesforce/userPermission/ViewSetup";
+import CREATEORGMESSAGECHANNEL from "@salesforce/messageChannel/CreateOrgMessageChannel__c";
+import DOCKEDUTILITYBARMESSAGECHANNEL from "@salesforce/messageChannel/DockedUtilityBarMessageChannel__c";
+import { publish, subscribe, unsubscribe, MessageContext } from "lightning/messageService";
 
 export default class SetupAssistant extends NavigationMixin(LightningElement) {
   @api alert;
   @api packageListAvailable;
   @api packageTypes;
+
+  @wire(MessageContext) messageContext;
 
   get isPushUpgradeEnabled() {
     return hasPackageVisualizerPushUpgrade;
@@ -23,6 +28,21 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
 
   get is2GP() {
     return this.packageTypes === '2GP and Unlocked Packages' ? true : false;
+  }
+
+  handleCreateOrgs(){
+    publish(this.messageContext, DOCKEDUTILITYBARMESSAGECHANNEL, {
+      dockedBarControls: "CreateOrgs",
+      createOrgsOpen: true
+    });
+
+    publish(this.messageContext, CREATEORGMESSAGECHANNEL, {
+      orgType: {
+        purposeValue: 'development',
+        createUsingValue: 'standard',
+        editionValue: 'Partner Developer'
+      }
+    });
   }
 
   handleBackToPackageVisualizer(){
@@ -45,6 +65,33 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
       "/lightning/o/NamespaceRegistry/list?filterName=Recent",
       "_blank"
     );
+  }
+  
+  navigateToEnvHub() {
+    window.open(
+      "/lightning/o/EnvironmentHubMember/list?filterName=Recent",
+      "_blank"
+    );
+  }
+
+  navigateLimitedAccessUserProfiile(){
+    window.open("/lightning/setup/EnhancedProfiles/home", "_blank");
+  }
+
+  navigateProvUsers1(){
+    window.open("https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_pkg_add_free_license_user.htm", "_blank");
+  }
+
+  navigateProvUsers2(){
+    window.open("https://developer.salesforce.com/docs/atlas.en-us.248.0.sfdx_dev.meta/sfdx_dev/sfdx_setup_permission_set.htm", "_blank");
+  }
+
+  navigateProvUsers3(){
+    window.open("https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_pkg_user_permission.htm", "_blank");
+  }
+
+  navigateUnderstandingNamespaces(){
+    window.open("https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_unlocked_pkg_plan_namespaces.htm", "_blank");
   }
 
   navigateToGuide() {
@@ -100,7 +147,7 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   }
 
   navigateToDXDevCenter(){
-    window.open("https://developer.salesforce.com/developer-centers/developer-experience", "_blank")
+    window.open("https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm", "_blank")
   }
 
   navigateToVSCodeTrailhead(){
@@ -109,5 +156,26 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
 
   navigateToCLITrailhead(){
     window.open("https://trailhead.salesforce.com/content/learn/trails/set-up-your-workspace-and-install-developer-tools", "_blank");
+  }
+
+  navigateToDXCreateApplication(){
+    window.open("https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro_create_new_app.htm", "_blank");
+  }
+
+  navigateToDXProjectStructure(){
+    window.open("https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_workspace_setup.htm", "_blank");
+  }
+
+  navigateToCodeAnalyzerGitHubAction(){
+    window.open('https://github.com/marketplace/actions/run-salesforce-code-analyzer');
+  }
+
+  navigateScratchOrgBuild(){
+    this[NavigationMixin.Navigate]({
+      type: "standard__component",
+      attributes: {
+        componentName: "pkgviz__scratchDefFileBuildCard",
+      }
+    });
   }
 }

@@ -1,20 +1,59 @@
 import { LightningElement, api, wire } from "lwc";
+import { getRecord } from 'lightning/uiRecordApi';
 import isSignupRequest from "@salesforce/apex/PackageVisualizerCtrl.isSignupRequest";
+import Id from '@salesforce/user/Id';
 import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
-import {
-  publish,
-  subscribe,
-  unsubscribe,
-  MessageContext
-} from "lightning/messageService";
-
+import { publish, subscribe, unsubscribe, MessageContext } from "lightning/messageService";
 import createSignupTrial from "@salesforce/apexContinuation/PackageVisualizerCtrl.createSignupTrial";
 import hasPackageVisualizerCore from "@salesforce/customPermission/Package_Visualizer_Core";
 import DOCKEDUTILITYBARMESSAGECHANNEL from "@salesforce/messageChannel/DockedUtilityBarMessageChannel__c";
 import SIGNUPLISTMESSAGECHANNEL from "@salesforce/messageChannel/SignupListMessageChannel__c";
+import CREATEORGMESSAGECHANNEL from "@salesforce/messageChannel/CreateOrgMessageChannel__c";
+import FirstName from '@salesforce/schema/User.FirstName'; 
+import LastName from '@salesforce/schema/User.LastName'; 
+import Email from '@salesforce/schema/User.Email'; 
+
+import PLATFORM_ICON from "@salesforce/contentAssetUrl/PlatformIcon";
+import INDUSTRIES_ICON from "@salesforce/contentAssetUrl/IndustriesIcon";
+import FINANCIAL_SERVICES_CLOUD_ICON from "@salesforce/contentAssetUrl/FinancialServicesIcon";
+import HEALTH_CLOUD_ICON from "@salesforce/contentAssetUrl/HealthcareCloudIcon";
+import LIFE_SCIENCES_CLOUD_ICON from "@salesforce/contentAssetUrl/LifeSciencesCloudIcon";
+import CONSUMER_GOODS_CLOUD_ICON from "@salesforce/contentAssetUrl/ConsumerGoodsIcon";
+import ENERGY_AND_UTILITIES_CLOUD_ICON from "@salesforce/contentAssetUrl/EnergyAndUtilitiesCloudIcon";
+import AUTOMOTIVE_CLOUD_ICON from "@salesforce/contentAssetUrl/AutomotiveCloudIcon";
+import SUSTAINABILITY_CLOUD_ICON from "@salesforce/contentAssetUrl/SustainabilityCloud";
+import MANUFACTURING_CLOUD_ICON from "@salesforce/contentAssetUrl/ManufacturingCloudIcon";
 
 export default class DockedComposer extends NavigationMixin(LightningElement) {
+
+  userId = Id;
+  currentUserFirstName;
+  currentUserLastName;
+  currentUserEmail;
+  currentUserAutofillError;
+
+  platformIconUrl = PLATFORM_ICON;
+  industriesIconUrl = INDUSTRIES_ICON;
+  financialServicesIconUrl = FINANCIAL_SERVICES_CLOUD_ICON;
+  healthCloudIconUrl = HEALTH_CLOUD_ICON;
+  consumerGoodsCloudIconUrl = CONSUMER_GOODS_CLOUD_ICON;
+  energyAndUtilitiesCloudIconUrl = ENERGY_AND_UTILITIES_CLOUD_ICON;
+  sustainabilityCloudIconUrl = SUSTAINABILITY_CLOUD_ICON;
+  automotiveCloudIconUrl = AUTOMOTIVE_CLOUD_ICON;
+  manufacturingCloudIconUrl = MANUFACTURING_CLOUD_ICON;
+  lifeSciencesCloudIconUrl = LIFE_SCIENCES_CLOUD_ICON;
+
+  @wire(getRecord, { recordId: Id, fields: [ FirstName, LastName, Email ] })
+    userDetails({ error, data }) {
+        if (error) {
+            this.currentUserAutofillError = true;
+        } else if (data) {
+            this.currentUserFirstName = data.fields.FirstName.value;
+            this.currentUserLastName = data.fields.LastName.value;
+            this.currentUserEmail = data.fields.Email.value;
+        }
+  }
 
   @wire(MessageContext) messageContext;
   @api displayOrgs;
@@ -39,14 +78,17 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
   isSignupEmailSuppressed = false;
   shouldConnectToEnvHub = true;
   masterSubscriptionAgreement;
+  partnerPocketGuideLink;
 
   displayError;
   errorText;
   displaySpinner;
 
   purposeValue;
+  industryTemplateValue;
   createUsingValue = "standard";
   displayCreateUsingOptions;
+  displayIndustryOptions;
   displayStandard = true;
 
   editionValue;
@@ -59,6 +101,12 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
   displayFooter = true;
 
   subscription = null;
+
+  handleAutofill(){
+    this.template.querySelector('.firstName').value = this.currentUserFirstName;
+    this.template.querySelector('.lastName').value = this.currentUserLastName;
+    this.template.querySelector('.email').value = this.currentUserEmail;
+  }
 
   get developmentOptions() {
     return [
@@ -89,9 +137,22 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
 
   get purposeOptions() {
     return [
-      { label: 'Development', value: 'development' },
-      { label: 'Test/Demo', value: 'test/demo' }
-      //{ label: 'Trialforce Source Organization (TSO)', value: 'tso' },
+        { label: 'Development', value: 'development' },
+        { label: 'Test/Demo', value: 'test/demo' },
+        { label: 'Industry Development', value: 'industry-templates' }
+    ];
+  }
+
+  get industryTemplateOptions(){
+    return [
+        { label: 'Financial Services Cloud' , value: '0TTWs0000009Y2T' },
+        { label: 'Health Cloud' , value: '0TTWs0000009Xw1' },
+        { label: 'Life Sciences Cloud' , value: '0TTWs000000AVfF' },
+        { label: 'Consumer Goods Cloud', value: '0TTWs0000009Yor'},
+        { label: 'Manufacturing Cloud', value: '0TTWs0000009Y8v'},
+        { label: 'Automotive Cloud', value: '0TTWs0000009YJV'},
+        { label: 'Energy and Utilities Cloud', value: '0TTWs0000009ZwD'},
+        { label: 'Net Zero Cloud', value: '0TTWs0000009YiP'}
     ];
   }
 
@@ -113,6 +174,24 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
             this.isDockedComposerOpen = true;
             this.dockedComposerView = `slds-docked-composer slds-grid slds-grid_vertical slds-is-open`;
           }
+        }
+      }
+    );
+    this.subscription = subscribe(
+      this.messageContext, 
+      CREATEORGMESSAGECHANNEL, 
+      message => {
+        if(message) {
+          this.handleAutofill();
+
+          this.purposeValue = message.orgType.purposeValue;
+          this.createUsingValue = message.orgType.createUsingValue;
+          this.editionValue = message.orgType.editionValue;
+          this.displayDevelopmentOptions = true;
+          this.displayTestDemoOptions = false;
+          this.displayTsoOptions = false;
+          this.displayIndustryOptions = false;
+          
         }
       }
     );
@@ -160,25 +239,81 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
     this.displayFooter = this.selectedTab === 'sign-up-create' ? true : false;
   }
 
+  industryTemplateChange(event) {
+    this.industryTemplateValue = event.detail.value;
+            
+    let selectedLabel = event.target.options.find(opt => opt.value === event.detail.value).label;
+    
+    switch (selectedLabel) {
+        case "Financial Services Cloud":
+            this.partnerPocketGuideLink = 'https://salesforce.quip.com/4UUtAVZlDZWB';
+            this.industryTypeIcon = this.financialServicesIconUrl;
+        break;
+        case "Health Cloud":
+            this.partnerPocketGuideLink = 'https://salesforce.quip.com/KndcASmayUg4';
+            this.industryTypeIcon = this.healthCloudIconUrl;
+        break;
+        case "Consumer Goods Cloud":
+            this.partnerPocketGuideLink = 'https://salesforce.quip.com/sfz0Atx4JASz';
+            this.industryTypeIcon = this.consumerGoodsCloudIconUrl;
+        break;
+        case "Manufacturing Cloud":
+            this.partnerPocketGuideLink = 'https://salesforce.quip.com/7FvdANrb3HIC';
+            this.industryTypeIcon = this.manufacturingCloudIconUrl;
+        break;
+        case "Automotive Cloud":
+            this.partnerPocketGuideLink = 'https://salesforce.quip.com/3rbkAtiEDqrh';
+            this.industryTypeIcon = this.automotiveCloudIconUrl;
+        break;
+        case "Energy and Utilities Cloud":
+            this.partnerPocketGuideLink = 'https://salesforce.quip.com/gspfAFdJHzzB';
+            this.industryTypeIcon = this.energyAndUtilitiesCloudIconUrl;
+        break;
+        case "Net Zero Cloud":
+            this.partnerPocketGuideLink = null;
+            this.industryTypeIcon = this.sustainabilityCloudIconUrl;
+        break;
+        case "Life Sciences Cloud":
+            this.partnerPocketGuideLink = null;
+            this.industryTypeIcon = this.lifeSciencesCloudIconUrl;
+        break;
+        default:
+            this.partnerPocketGuideLink = null;
+            this.industryTypeIcon = null;
+    }
+  }
+
   purposeChange(event) {
     this.purposeValue = event.detail.value;
     if (this.purposeValue === 'development' || this.purposeValue === 'tso') {
-      this.displayCreateUsingOptions = false;
-      this.createUsingValue = 'standard'
-      if (this.purposeValue === 'development') {
-        this.displayDevelopmentOptions = true;
+        this.displayCreateUsingOptions = false;
+        this.createUsingValue = 'standard';
+        if (this.purposeValue === 'development') {
+            this.displayDevelopmentOptions = true;
+            this.displayTestDemoOptions = false;
+            this.displayTsoOptions = false;
+            this.displayIndustryOptions = false;
+            this.purposeIcon = this.platformIconUrl;
+        } else {
+            this.displayTsoOptions = true;
+            this.displayTestDemoOptions = false;
+            this.displayDevelopmentOptions = false;
+            this.displayIndustryOptions = false;
+        }
+    } else if (this.purposeValue === 'test/demo') {
+        this.displayCreateUsingOptions = true;
+        this.displayTestDemoOptions = true;
+        this.displayDevelopmentOptions = false;
+        this.displayTsoOptions = false;
+        this.displayIndustryOptions = false;
+        this.purposeIcon = this.platformIconUrl;
+    } else if (this.purposeValue === 'industry-templates'){
+        this.displayCreateUsingOptions = false;
+        this.displayDevelopmentOptions = false;
         this.displayTestDemoOptions = false;
         this.displayTsoOptions = false;
-      } else {
-        this.displayTsoOptions = true;
-        this.displayTestDemoOptions = false;
-        this.displayDevelopmentOptions = false;
-      }
-    } else if (this.purposeValue === 'test/demo') {
-      this.displayCreateUsingOptions = true;
-      this.displayTestDemoOptions = true;
-      this.displayDevelopmentOptions = false;
-      this.displayTsoOptions = false;
+        this.displayIndustryOptions = true;
+        this.purposeIcon = this.industriesIconUrl;
     }
     this.displayStandard = this.createUsingValue === 'trialforce' ? false : true;
   }
@@ -203,7 +338,7 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
       this.createSignupTrial();
     } else {
       this.displayError = true;
-      this.errorText = 'Please update all the fields correctly and try again.'
+      this.errorText = 'Please update all the required fields correctly and try again.'
       this.displaySpinner = false;
     }
   }
@@ -224,6 +359,10 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
     this.isSignupEmailSuppressed = false;
     this.masterSubscriptionAgreement = false;
 
+    this.partnerPocketGuideLink = null;
+    this.industryTypeIcon = null;
+    this.purposeIcon = null;
+
     this.dispatchEvent(
       new ShowToastEvent({
         title: `Trial for ${company} has been queued`,
@@ -240,8 +379,11 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
 
     if (!this.displayStandard) {
       this.templateId = this.template.querySelector('.templateId').value
+    } else if(this.purposeValue === 'industry-templates'){
+        this.templateId = this.industryTemplateValue;
+        this.editionValue = null;
     } else {
-      this.templateId = '';
+        this.templateId = '';
     }
 
     (async () => {
@@ -272,7 +414,8 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
             this.errorText = error.body.message;
             this.dispatchEvent(
               new ShowToastEvent({
-                title: `Can't create trial for ${company}`,
+                title: `Error`,
+                message: `Can't create trial for ${company}`,
                 variant: "error"
               })
             );
@@ -280,7 +423,8 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
             this.errorText = `${Object.entries(error.body.fieldErrors)[0][1][0].statusCode}: ${Object.entries(error.body.fieldErrors)[0][1][0].message}`;
             this.dispatchEvent(
               new ShowToastEvent({
-                title: `Can't create trial for ${company}`,
+                title: `Error`,
+                message: `Can't create trial for ${company}`,
                 variant: "error"
               })
             );
@@ -307,12 +451,21 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
     });
   }
 
-  handleTrialsHelpDoc() {
+  handleHelpDoc() {
     this[NavigationMixin.Navigate]({
       type: "standard__webPage",
       attributes: {
-        url: `https://developer.salesforce.com/docs/atlas.en-us.packagingGuide.meta/packagingGuide/trialforce_signup_api_introduction.htm`
+        url: `https://salesforce.quip.com/f3SWA340YbFH#temp:C:OUN0313da3cd7494be9a6d27e23e`
       }
+    });
+  }
+
+  handlePartnerPocketGuide(){
+    this[NavigationMixin.Navigate]({
+        type: "standard__webPage",
+        attributes: {
+            url: this.partnerPocketGuideLink
+        }
     });
   }
 

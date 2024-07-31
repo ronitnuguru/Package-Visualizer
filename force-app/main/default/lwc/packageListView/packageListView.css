@@ -7,29 +7,29 @@ a:active {
 }
 
 .managed-badge {
-  --sds-c-badge-color-background: #3ba755;
-  --sds-c-badge-text-color: white;
-  --sds-c-badge-icon-color-foreground: white;
-  --sds-c-badge-radius-border: 4px;
+  --slds-c-badge-color-background: #3ba755;
+  --slds-c-badge-text-color: white;
+  --slds-c-badge-icon-color-foreground: white;
+  --slds-c-badge-radius-border: 4px;
 }
 
 .unlocked-badge {
-  --sds-c-badge-color-background: #db6d7a;
-  --sds-c-badge-text-color: white;
-  --sds-c-badge-icon-color-foreground: white;
-  --sds-c-badge-radius-border: 4px;
+  --slds-c-badge-color-background: #db6d7a;
+  --slds-c-badge-text-color: white;
+  --slds-c-badge-icon-color-foreground: white;
+  --slds-c-badge-radius-border: 4px;
 }
 
 .first-managed-badge{
-  --sds-c-badge-color-background: #ff5d2d;
-  --sds-c-badge-text-color: white;
-  --sds-c-badge-icon-color-foreground: white;
-  --sds-c-badge-radius-border: 4px;
+  --slds-c-badge-color-background: #ff5d2d;
+  --slds-c-badge-text-color: white;
+  --slds-c-badge-icon-color-foreground: white;
+  --slds-c-badge-radius-border: 4px;
 }
 
 .first-unmanaged-badge{
-  --sds-c-badge-color-background: #9050e9;
-  --sds-c-badge-text-color: white;
-  --sds-c-badge-icon-color-foreground: white;
-  --sds-c-badge-radius-border: 4px;
+  --slds-c-badge-color-background: #9050e9;
+  --slds-c-badge-text-color: white;
+  --slds-c-badge-icon-color-foreground: white;
+  --slds-c-badge-radius-border: 4px;
 }

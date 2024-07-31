@@ -25,6 +25,13 @@ public with sharing class ToolingAPICalloutMock implements HttpCalloutMock {
                 res.setStatus('Authorization Failed');
             }
             return res;
-        }
+    }
+
+    public HTTPResponse cmsRespond(HTTPRequest req) {
+        HttpResponse res = new HttpResponse();
+        res.setStatusCode(500);
+        res.setBody('{"message":"Mock exception"}');
+        return res;
+    }
 
 }

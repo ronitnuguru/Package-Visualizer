@@ -1,10 +1,12 @@
 <template>
   <template if:true={displaySpinner}>
-    <lightning-spinner
-      alternative-text="Loading"
-      size="medium"
-      variant="brand"
-    ></lightning-spinner>
+    <div class="slds-p-bottom_xx-large slds-p-around_x-large">
+      <lightning-spinner
+        alternative-text="Loading"
+        size="medium"
+        variant="brand"
+      ></lightning-spinner>
+    </div>
   </template>
   <template if:false={displaySpinner}>
     <template if:true={data}>

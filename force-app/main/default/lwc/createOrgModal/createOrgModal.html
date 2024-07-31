@@ -1,0 +1,179 @@
+<template>
+    <lightning-modal-header label={label}></lightning-modal-header>
+    <lightning-modal-body class="slds-card" style="position: relative;">
+        <div style="position: relative;">
+            <template if:true={displaySpinner}>
+                <lightning-spinner
+                  alternative-text="Loading"
+                  size="medium"
+                  variant="brand"
+                ></lightning-spinner>
+            </template>
+            <div class="slds-section slds-is-open">
+                <template if:false={displaySignUpRequest}>
+                    <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small" role="status">
+                      <div class="slds-media__figure">
+                        <lightning-icon
+                          size="small"
+                          icon-name="utility:info"
+                          alternative-text="info"
+                          title="info"
+                          variant="inverse"
+                        ></lightning-icon>
+                      </div>
+                      <div class="slds-media__body">
+                        <p>Log a case to enable the SignupRequest API in your Partner Business Org (PBO).&nbsp;
+                        <a
+                          href="https://developer.salesforce.com/docs/atlas.en-us.packagingGuide.meta/packagingGuide/trialforce_enable_signuprequest_api.htm"
+                          target="_blank"
+                          title="Learn More"
+                          >Learn More</a>
+                        </p>
+                      </div>
+                    </div>
+                </template>
+                <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small">Admin User Details</span>
+                </h3>
+                <div aria-hidden="false" class="slds-section__content">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col">
+                            <lightning-input 
+                                type="text" 
+                                label="First Name"
+                                class="firstName"
+                                variant="label-stacked"
+                                max-length=40
+                                required
+                            ></lightning-input>
+                            <lightning-input 
+                                type="text" 
+                                label="Last Name"
+                                class="lastName"
+                                variant="label-stacked"
+                                max-length=80
+                                required
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col">
+                            <lightning-input 
+                                type="email" 
+                                label="Email"
+                                class="email"
+                                variant="label-stacked"
+                                required
+                            ></lightning-input>
+                            <lightning-input 
+                                type="email" 
+                                label="User Name"
+                                class="userName"
+                                variant="label-stacked"
+                                max-length=80
+                                required
+                            ></lightning-input>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-section slds-is-open slds-p-top_x-small">
+                <h3 class="slds-section__title slds-theme_shade">
+                  <span class="slds-truncate slds-p-horizontal_small">Org Details</span>
+                </h3>
+                <div aria-hidden="false" class="slds-section__content">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col">
+                            <lightning-input 
+                                type="text" 
+                                label="Company"
+                                class="company"
+                                variant="label-stacked"
+                                max-length=80
+                                required
+                            ></lightning-input>
+                              <lightning-combobox
+                                name="country"
+                                label="Country"
+                                value={country}
+                                placeholder="Country"
+                                options={countryOptions}
+                                dropdown-alignment="auto"
+                                class="slds-m-horizontal_xx-small"
+                                onchange={handleCountryChange} 
+                              ></lightning-combobox>
+                        </div>
+                        <div class="slds-col">
+                            <lightning-input 
+                                type="text" 
+                                label="My Domain"
+                                class="myDomain"
+                                variant="label-stacked"
+                                min-length=3
+                                max-length=27
+                                field-level-help="The My Domain name for the new trial org used in the org’s login and application URLs. In Developer Edition orgs, your name must contain at least 3 characters and no more than 27 characters. In all other editions, it must be at least 3 characters and no more than 34 characters. It can include letters, numbers, and hyphens, but you can’t start the name with a hyphen. If you don’t choose a My Domain during sign-up, Salesforce assigns one for you based on your company name. If you don’t like the one we set, you can change it"
+                            ></lightning-input>
+                              <lightning-combobox
+                                name="preferredLanguage"
+                                label="Preferred Language"
+                                value={preferredLanguage}
+                                placeholder="Preferred Language"
+                                options={preferredLanguageOptions}
+                                dropdown-alignment="auto"
+                                class="slds-m-horizontal_xx-small"
+                                onchange={handlePreferredLanguageChange}
+                                field-level-help="The language of the trial org being created. The value you select overrides the language set by the locale. If you specify an invalid language, the org defaults to the default language of the country. Likewise, if you specify a language that isn’t supported by the Salesforce edition associated with your trial template, the trial org defaults to the default language of the country"
+                              ></lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </lightning-modal-body>
+    <lightning-modal-footer class="gtp-footer">
+        <template if:true={displayError}>
+            <lightning-icon
+                icon-name="utility:error" 
+                alternative-text="Error!" 
+                title="Error"
+                variant="error"
+                class="slds-m-right_x-small"
+            ></lightning-icon>
+        </template>
+        <lightning-button label="Cancel" onclick={handleNeutralButtonClick} class="slds-m-right_x-small"></lightning-button>
+        <lightning-button label="Sign Up" onclick={handleBrandButtonClick} variant="brand" disabled={displaySpinner}></lightning-button>
+        <template if:true={displayError}>
+            <div class="slds-is-relative">
+                <section aria-describedby="dialog-body-id-5" aria-labelledby="dialog-heading-id-2" class="slds-popover slds-popover_error slds-nubbin_bottom-right tf-popover" role="dialog">
+                    <button class="slds-button slds-button_icon slds-button_icon-small slds-float_right slds-popover__close slds-button_icon-inverse" title="Close dialog" style="color:white">
+                        <lightning-icon
+                            size="x-small"
+                            icon-name="utility:close"
+                            alternative-text="Close"
+                            title="Close"
+                            class="slds-current-color"
+                            onclick={handlePopoverClose}
+                        ></lightning-icon>
+                      <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <header class="slds-popover__header">
+                      <div class="slds-media slds-media_center slds-has-flexi-truncate ">
+                        <div class="slds-media__figure">
+                            <lightning-icon
+                                size="small"
+                                icon-name="utility:error"
+                                alternative-text="error"
+                                class="slds-current-color"
+                            ></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                          <h2 class="slds-truncate slds-text-heading_medium tf-popover_header" title="Resolve error">Resolve Error</h2>
+                        </div>
+                      </div>
+                    </header>
+                    <div class="slds-popover__body" id="dialog-body-id-5">
+                      <p>{errorText}</p>
+                    </div>
+                </section>
+            </div>
+        </template>
+    </lightning-modal-footer>
+</template>

@@ -12,6 +12,6 @@
 }
 
 .icon-style {
-  --sds-c-icon-color-foreground-default: var(--lwc-brandAccessible);
+  --slds-c-icon-color-foreground-default: var(--lwc-brandAccessible);
   cursor: pointer;
 }

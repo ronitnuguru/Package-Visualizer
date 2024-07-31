@@ -58,18 +58,20 @@
                           icon-name="utility:setup_assistant_guide"
                           variant="border-filled"
                           tooltip="Setup Assistant"
-                          title="Setup Assistant"
                           class="slds-var-m-right_x-small"
                           onclick={handleSetupAssistantClick}
                         ></lightning-button-icon>
                         <lightning-button-icon
-                          icon-name="utility:salesforce1"
+                          icon-name="utility:connected_apps"
                           variant="border-filled"
-                          tooltip="Create Orgs"
-                          title="Create Orgs"
+                          tooltip="Platform Tools"
                           class="slds-var-m-right_x-small"
-                          onclick={handleCreateOrgs}
+                          onclick={handlePlatformTools}
                         ></lightning-button-icon>
+                        <lightning-button-menu alternative-text="Show menu" icon-name="utility:salesforce1" menu-alignment="auto" class="slds-var-m-right_x-small">
+                          <lightning-menu-item label="Create Orgs" onclick={handleCreateOrgs}></lightning-menu-item>
+                          <lightning-menu-item label="Build Scratch Org Definition File" onclick={navigateScratchOrgBuild}></lightning-menu-item>
+                      </lightning-button-menu>
                         <lightning-button-menu
                           alternative-text="Show menu"
                           variant="border-filled"

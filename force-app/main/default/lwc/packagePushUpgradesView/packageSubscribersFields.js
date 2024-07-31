@@ -32,7 +32,8 @@ export default {
         fieldName: "orgName",
         label: "Organization Name",
         sortable: true,
-        iconName: "standard:employee_organization"
+        iconName: "standard:employee_organization",
+        wrapText: true,
       },
     orgStatus: {
       type: "text",

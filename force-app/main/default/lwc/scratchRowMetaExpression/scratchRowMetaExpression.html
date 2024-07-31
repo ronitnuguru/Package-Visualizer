@@ -1,0 +1,99 @@
+<template>
+    <li class="slds-expression__row">
+        <template iterator:it={fieldSettings}>
+            <div key={it.value.autoNumber}>
+                <div class="slds-grid slds-gutters_xx-small slds-grid_vertical-align-end">
+                    <div class="slds-col">
+                        <lightning-input
+                            data-index={it.index}
+                            label="Field Name"
+                            placeholder="Enter Metadata Field Name"
+                            value={it.value.fieldName}
+                            onchange={handleMetadataFieldChange}
+                            disabled={confirmSelected}
+                            pattern="^\S+$"
+                            message-when-pattern-mismatch="Field Name must contain non-whitespace characters"
+                        ></lightning-input>
+                    </div>
+                    <div class="slds-col">
+                        <lightning-combobox
+                            data-index={it.index}
+                            name="operator"
+                            label="Operator"
+                            value={operatorValue}
+                            placeholder="Select Field Type"
+                            options={operatorOptions}
+                            onchange={handleOperatorChange}
+                            dropdown-alignment="auto"
+                            disabled={confirmSelected}
+                        ></lightning-combobox>
+                    </div>
+                    <div class="slds-col">
+                        <template lwc:if={it.value.displayBoolean}>
+                            <lightning-combobox
+                                data-index={it.index}
+                                label="Value"
+                                value={it.value.fieldValue}
+                                placeholder="Select Boolean Value"
+                                options={booleanOptions}
+                                onchange={handleMetadataValueChange}
+                                dropdown-alignment="auto"
+                                disabled={confirmSelected}
+                            ></lightning-combobox>
+                        </template>
+                        <template lwc:elseif={it.value.displayString}>
+                            <lightning-input
+                                data-index={it.index}
+                                type="text"
+                                label="Value"
+                                value={it.value.fieldValue}
+                                placeholder="Enter String Metadata Value"
+                                onchange={handleMetadataValueChange}
+                                disabled={confirmSelected}
+                            ></lightning-input>
+                        </template>
+                        <template lwc:elseif={it.value.displayInteger}>
+                            <lightning-input
+                                data-index={it.index}
+                                type="number"
+                                label="Value"
+                                value={it.value.fieldValue}
+                                placeholder="Enter Number Metadata Value"
+                                onchange={handleMetadataValueChange}
+                                disabled={confirmSelected}
+                            ></lightning-input>
+                        </template>
+                    </div>
+                    <div class="slds-col">
+                        <lightning-button-group>
+                            <template if:false={it.value.recordId}>
+                                <lightning-button-icon
+                                    data-index={it.index}
+                                    if:false={it.first}
+                                    icon-name="utility:delete"  
+                                    variant="border-filled"
+                                    alternative-text="delete" 
+                                    tooltip="Delete Field"
+                                    onclick={handleDeleteMetaSetting}
+                                    disabled={confirmSelected}
+                                ></lightning-button-icon>
+                            </template>
+                            <template if:false={it.value.recordId}>
+                                <lightning-button-icon 
+                                    data-index={it.index}
+                                    if:true={it.last}
+                                    icon-name="utility:add"  
+                                    variant="border-filled"
+                                    alternative-text="add" 
+                                    tooltip="Add New Field"
+                                    onclick={handleAddMetaSetting}
+                                    disabled={confirmSelected}
+                                ></lightning-button-icon>
+                            </template>
+                        </lightning-button-group>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </li>
+</template>

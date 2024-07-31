@@ -1,11 +1,12 @@
 import { LightningElement, api, wire } from "lwc";
 import { publish, MessageContext } from "lightning/messageService";
+import { NavigationMixin } from "lightning/navigation";
 import PackageLauncherItems from "./packageLauncherItems";
 import PACKAGEMESSAGECHANNEL from "@salesforce/messageChannel/PackageMessageChannel__c";
 import DOCKEDUTILITYBARMESSAGECHANNEL from "@salesforce/messageChannel/DockedUtilityBarMessageChannel__c";
 import hasViewSetup from "@salesforce/userPermission/ViewSetup";
 
-export default class PackageLauncher extends LightningElement {
+export default class PackageLauncher extends NavigationMixin(LightningElement) {
   @api packageFilterList;
   @api packageTypes;
 
@@ -33,7 +34,12 @@ export default class PackageLauncher extends LightningElement {
   }
 
   launchAppx() {
-    window.open("https://appexchange.salesforce.com/", "_blank");
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+          url: "https://appexchange.salesforce.com/"
+      }
+    });
   }
 
   handleDockedLimitsClick() {

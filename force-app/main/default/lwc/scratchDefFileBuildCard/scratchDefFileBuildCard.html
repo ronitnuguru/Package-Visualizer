@@ -1,0 +1,300 @@
+<template>
+    <lightning-card>
+        <h3 slot="title" class="slds-truncate">
+            <lightning-icon 
+                icon-name="standard:code_playground" 
+                size="medium" 
+                class="slds-m-right_small"
+            ></lightning-icon>
+            Build Sample Scratch Org Definition File
+        </h3>
+        <lightning-button-group slot="actions">
+            <!--
+            <lightning-button-menu alternative-text="Show menu" icon-name="utility:edit_gpt" menu-alignment="auto">
+                <lightning-menu-subheader label="Industries"></lightning-menu-subheader>
+                <lightning-menu-item label="Financial Services Cloud" value="Menu Item One"></lightning-menu-item>
+                <lightning-menu-item label="Health Cloud" value="Menu Item Two"></lightning-menu-item>
+                <lightning-menu-item label="Net Zero Cloud" value="Menu Item Three"></lightning-menu-item>
+                <lightning-menu-item label="Consumer Goods Cloud" value="Menu Item Four"></lightning-menu-item>
+                <lightning-menu-item label="Energy and Utilities Cloud" value="Menu Item Four"></lightning-menu-item>
+            </lightning-button-menu>
+            -->
+            <template if:true={displayScratchOrgActions}>
+                <lightning-button
+                    variant="neutral"
+                    label="Scratch Org Infos"
+                    onclick={navigateToScratchOrgInfo}
+                    class="slds-show_medium"
+                ></lightning-button>
+                <lightning-button
+                    variant="neutral"
+                    label="Active Scratch Orgs"
+                    onclick={navigateToActiveScratchOrgs}
+                    class="slds-show_medium"
+                ></lightning-button>
+            </template>
+            <lightning-button-icon
+                icon-name="utility:help_doc_ext"
+                onclick={navigateToScratchHelpDefFile}
+                tooltip="Help - Build Your Own Scratch Org Definition File"
+            ></lightning-button-icon>
+        </lightning-button-group>
+        <div class="slds-card__body slds-card__body_inner slds-scrollable" style="max-height: 600px;">
+            <div class="slds-section slds-is-open">
+                <h3 class="slds-section__title slds-theme_shade">
+                  <span class="slds-truncate slds-p-horizontal_small" title="Org Details">Org Details</span>
+                </h3>
+                <div class="slds-section__content slds-card__body slds-card__body_inner">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col">
+                            <lightning-input 
+                                type="text" 
+                                label="Org Name" 
+                                onchange={handleOrgNameChange} 
+                                field-level-help="The name of the scratch org. This name appears as the Organization Name in the Company Information Setup page"
+                                maxlength="240"
+                                value={orgValue}
+                                required
+                            ></lightning-input>
+                            <lightning-textarea 
+                                name="description" 
+                                label="Description" 
+                                max-length="2000"
+                                onchange={handleDescriptionChange}
+                            ></lightning-textarea>
+                            <lightning-input 
+                                    type="toggle" 
+                                    label="Has Sample Data" 
+                                    name="hasSampleData"
+                                    onchange={handleHasSampleDataChange}
+                                    checked={hasSamepleData}
+                                    message-toggle-active="Has Sample Data"
+                                    message-toggle-inactive="Does Not Have Sample Data"
+                                    class="slds-m-top_x-small"
+                                    variant="label-hidden"
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col">
+                            <div class="slds-grid slds-grid_vertical-align-end slds-grid_pull-padded-small">
+                                <lightning-combobox
+                                    name="release"
+                                    label="Release"
+                                    placeholder="Select Release"
+                                    options={releaseOptions}
+                                    onchange={handleReleaseChange} 
+                                    value={releaseValue}
+                                    field-level-help="The release of the scratch org. During Salesforce's major release transitions, this field allows you to select the Salesforce release version, based on the version of your Dev Hub"
+                                    dropdown-alignment="auto"
+                                    class="slds-col"
+                                ></lightning-combobox>
+                                <lightning-button-icon
+                                    icon-name="utility:help_doc_ext"
+                                    onclick={navigateToScratchOrgRelease}
+                                    tooltip="Help - Select the Salesforce Release for a Scratch Org"
+                                ></lightning-button-icon>
+                            </div>
+                            <lightning-radio-group
+                                label=""
+                                options={createUsingOptions}
+                                value={createUsingValue}
+                                onchange={handleCreateUsingChange}
+                                variant="label-hidden"
+                                class="slds-m-top_x-small"
+                                type="button"
+                                required
+                            ></lightning-radio-group>
+                            <template if:true={displayEdition}>
+                                <lightning-combobox
+                                    name="edition"
+                                    label="Edition"
+                                    placeholder="Select Edition"
+                                    options={editionOptions}
+                                    onchange={handleEditionChange}
+                                    value={editionValue}
+                                    field-level-help="The org edition of this scratch org"
+                                    dropdown-alignment="auto"
+                                    required
+                                ></lightning-combobox>
+                            </template> 
+                            <template if:false={displayEdition}>
+                                <div class="slds-grid slds-grid_vertical-align-end slds-grid_pull-padded-small">
+                                    <lightning-input 
+                                        type="text" 
+                                        label="Source Org Id" 
+                                        onchange={handleSourceOrgChange} 
+                                        field-level-help="Org Id of your Dev Hub where Org Shape is enabled"
+                                        maxlength="15"
+                                        value={sourceOrgId}
+                                        required
+                                        class="slds-col"
+                                        pattern="^00D.{12}$"
+                                        placeholder="00D..."
+                                        message-when-pattern-mismatch="The Source Org Id is the org ID for the org whose shape you created. Use only the first 15 characters rather than the full 18-character org Id"
+                                    ></lightning-input>
+                                    <lightning-button-icon
+                                        icon-name="utility:help_doc_ext"
+                                        onclick={navigateToOrgShape}
+                                        tooltip="Help - Create a Scratch Org Based on an Org Shape"
+                                    ></lightning-button-icon>
+                                </div>
+                            </template>
+                            <lightning-combobox
+                                name="country"
+                                label="Country"
+                                value={country}
+                                placeholder="Country"
+                                options={countryOptions}
+                                dropdown-alignment="auto"
+                                onchange={handleCountryChange} 
+                            ></lightning-combobox>
+                            <lightning-combobox
+                                name="preferredLanguage"
+                                label="Preferred Language"
+                                value={preferredLanguage}
+                                placeholder="Preferred Language"
+                                options={preferredLanguageOptions}
+                                dropdown-alignment="auto"
+                                onchange={handlePreferredLanguageChange}
+                                field-level-help="The language of the trial org being created. The value you select overrides the language set by the locale. If you specify an invalid language, the org defaults to the default language of the country. Likewise, if you specify a language that isn’t supported by the Salesforce edition associated with your trial template, the trial org defaults to the default language of the country"
+                            ></lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-section slds-is-open">
+                <h3 class="slds-section__title slds-theme_shade">
+                  <span class="slds-truncate slds-p-horizontal_small" title="Features">Features</span>
+                </h3>
+                <div class="slds-section__content slds-card__body slds-card__body_inner">
+                    <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small" role="status">
+                        <div class="slds-media__figure">
+                          <lightning-icon
+                            size="small"
+                            icon-name="utility:info"
+                            alternative-text="info"
+                            title="info"
+                            variant="inverse"
+                          ></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                          <p>Review the list of available features to determine the shape of your Scratch Org.&nbsp;
+                          <a
+                            href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file_config_values.htm"
+                            target="_blank"
+                            title="Learn More"
+                            >Learn More</a>
+                          </p>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-grid_vertical-align-end">
+                        <div class="slds-col">
+                            <lightning-input 
+                                type="text" 
+                                label="Feature" 
+                                placeholder="Add Feature"
+                                value={featureValue}
+                                onchange={handleFeatureValueChange} 
+                                onkeydown={handeFeatureValueChangeOnKeyDown}
+                                field-level-help="The list of configuration features that determine the shape of the scratch org"
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-m-left_x-small">
+                            <lightning-button-group>
+                                <lightning-button variant="neutral" label="Add" title="Add Feature" onclick={handleAddFeature} ></lightning-button>
+                            </lightning-button-group>
+                            
+                        </div>
+                    </div>
+                    <template if:true={featuresList}>
+                        <div class="slds-m-top_xx-small">
+                            <lightning-pill-container items={featuresList} onitemremove={handleFeatureRemove}></lightning-pill-container>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <div class="slds-section slds-is-open">
+                <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small" title="Settings">Settings</span>
+                </h3>
+                <div class="slds-section__content slds-card__body slds-card__body_inner">
+                    <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small" role="status">
+                        <div class="slds-media__figure">
+                          <lightning-icon
+                            size="small"
+                            icon-name="utility:info"
+                            alternative-text="info"
+                            title="info"
+                            variant="inverse"
+                          ></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                          <p>Settings are the most comprehensive way to configure a Scratch Orgs. You gain fine-grained control to define values for a setting, rather than enabling to disabling it.&nbsp;
+                          <a
+                            href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_settings.htm"
+                            target="_blank"
+                            title="Learn More"
+                            >Learn More</a>
+                          </p>
+                        </div>
+                    </div>
+                    <c-scratch-settings-expression
+                        onreturn={handleMetadataSettings}
+                        onconfirm={handleConfirmSelected}
+                    >
+                    </c-scratch-settings-expression>
+                </div>
+            </div>
+        </div>
+        <div slot="footer">
+            <div class="slds-clearfix">
+                <div class="slds-float_right">
+                    <template if:true={displayError}>
+                        <lightning-icon
+                            icon-name="utility:error" 
+                            alternative-text="Error!" 
+                            title="Error"
+                            variant="error"
+                            class="slds-m-right_x-small"
+                        ></lightning-icon>
+                    </template>
+                    <lightning-button variant="brand" label="Build" title="Create Sample Scratch Org Build File" onclick={handleScratchOrgBuildFile}></lightning-button>
+                    <template if:true={displayError}>
+                        <div class="slds-is-relative">
+                            <section aria-describedby="dialog-body-id-5" aria-labelledby="dialog-heading-id-2" class="slds-popover slds-popover_error slds-nubbin_bottom-right tf-popover" role="dialog">
+                                <button class="slds-button slds-button_icon slds-button_icon-small slds-float_right slds-popover__close slds-button_icon-inverse" title="Close dialog" style="color:white">
+                                    <lightning-icon
+                                        size="x-small"
+                                        icon-name="utility:close"
+                                        alternative-text="Close"
+                                        title="Close"
+                                        class="slds-current-color"
+                                        onclick={handlePopoverClose}
+                                    ></lightning-icon>
+                                  <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <header class="slds-popover__header">
+                                  <div class="slds-media slds-media_center slds-has-flexi-truncate ">
+                                    <div class="slds-media__figure">
+                                        <lightning-icon
+                                            size="small"
+                                            icon-name="utility:error"
+                                            alternative-text="error"
+                                            class="slds-current-color"
+                                        ></lightning-icon>
+                                    </div>
+                                    <div class="slds-media__body">
+                                      <h2 class="slds-truncate slds-text-heading_medium tf-popover_header" title="Resolve error">Resolve Error</h2>
+                                    </div>
+                                  </div>
+                                </header>
+                                <div class="slds-popover__body" id="dialog-body-id-5">
+                                  <p>{errorText}</p>
+                                </div>
+                            </section>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </lightning-card>
+</template>

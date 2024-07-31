@@ -1,0 +1,15 @@
+.gtp-footer{
+    --slds-c-modal-footer-color-background:  #f3f3f3;
+}
+
+.tf-popover{
+    text-align: left;
+    position: absolute;
+    bottom: 48px;
+    right: 23px;
+    transform: translateX(-50%);
+}
+
+.tf-popover_header{
+    color: white;
+}

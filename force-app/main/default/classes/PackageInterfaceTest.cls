@@ -392,7 +392,22 @@ private class PackageInterfaceTest {
         system.assertNotEquals(null, appRequest);
         TEST.stopTest(); 
     }
-    
+
+    /*
+    @isTest public static void testgetUser(){
+    	TEST.startTest(); 
+        User user1 = PackageVisualizerCtrl.getUser('test@test.com');
+        system.assertNotEquals(null, user1);
+        TEST.stopTest(); 
+    }
+
+    @isTest public static void testgetUserName(){
+    	TEST.startTest(); 
+        User user1 = PackageVisualizerCtrl.getUser('0Ho000000000000AAA');        
+        system.assertNotEquals(null, user1);
+        TEST.stopTest(); 
+    }
+    */
 	/**************************************************************************************
 	* @Description  Test class for PackageVisualizerCtrl getAppAnalyticsRequests method
 	**************************************************************************************/      
@@ -447,10 +462,20 @@ private class PackageInterfaceTest {
 	/**************************************************************************************
 	* @Description  Test class for getPrompt
 	**************************************************************************************/      
-    @isTest public static void testGetPrompt(){
+    @isTest public static void testGetPrompt1(){
     	TEST.startTest(); 
         try{
      		PackageVisualizerCtrl.getPrompt('Test');
+        }catch(Exception e){
+            System.debug(e);
+        }
+        TEST.stopTest(); 
+    }
+
+    @isTest public static void testGetWalkthroughSteps(){
+    	TEST.startTest(); 
+        try{
+     		PackageVisualizerCtrl.getWalkthroughSteps();
         }catch(Exception e){
             System.debug(e);
         }
@@ -529,6 +554,13 @@ private class PackageInterfaceTest {
     @isTest public static void testIsSignupRequest(){
         TEST.startTest(); 
         Boolean isSignUpReq = PackageVisualizerCtrl.isSignupRequest();
+        system.assertNotEquals(null, isSignUpReq);
+        TEST.stopTest(); 
+    }
+
+    @isTest public static void testIsSignupRequestDemoTrials(){
+        TEST.startTest(); 
+        Boolean isSignUpReq = DemoTrialsController.isSignupRequest();
         system.assertNotEquals(null, isSignUpReq);
         TEST.stopTest(); 
     }
@@ -712,6 +744,13 @@ private class PackageInterfaceTest {
         TEST.stopTest(); 
     }
 
+    @isTest public static void testisFma(){
+        TEST.startTest(); 
+        Boolean isFmaParameter = PackageVisualizerCtrl.isFmaParameter();
+        system.assertNotEquals(null, isFmaParameter);
+        TEST.stopTest(); 
+    }
+
     @isTest public static void testisActiveScratchOrg(){
         TEST.startTest(); 
         Boolean isActiveScratchOrg = Package2Interface.isActiveScratchOrg();
@@ -768,6 +807,19 @@ private class PackageInterfaceTest {
     }
 
     @isTest
+    public static void testCreateSignupTrialDemoTrials() {
+        // Test case 1: Successful signup request
+        Test.startTest();
+        try{
+            String result = DemoTrialsController.createSignupTrial('John', 'Doe', 'john.doe@example.com', 'john.doe@example.com', 'ACME', null, 'US', 'en_US', '0TT000000000000AAA', 30, false, true, 'Enterprise');
+            System.assertNotEquals('Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)', result, 'Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)');
+        } catch(Exception e){
+            System.debug(e);
+        }
+        Test.stopTest();
+    }
+
+    @isTest
     public static void testCreateSignupTrialWithTrialforce() {
         // Test case 1: Successful signup request
         Test.startTest();
@@ -778,5 +830,45 @@ private class PackageInterfaceTest {
             System.debug(e);
         }
         Test.stopTest();
+    }
+
+    @isTest
+    public static void testCreateSignupTrialWithTrialforceDemoTrials() {
+        // Test case 1: Successful signup request
+        Test.startTest();
+        try{
+            String result = DemoTrialsController.createSignupTrial('John', 'Doe', 'john.doe@example.com', 'john.doe@example.com', 'ACME', null, 'US', 'en_US', '0TT000000000000AAA', 30, false, true, 'Enterprise');
+            System.assertNotEquals('Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)', result, 'Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)');
+        } catch(Exception e){
+            System.debug(e);
+        }
+        Test.stopTest();
+    }
+
+    @IsTest(SeeAllData=true)
+    static void testGetContent() {
+        Test.startTest();
+        // Set up the test request
+        RestRequest request = new RestRequest();
+        request.requestURI = '/services/apexrest/ecommerce/getContent';
+        request.httpMethod = 'GET';
+        request.addParameter('contentId', 'testContentId');
+        request.addParameter('page', '0');
+        request.addParameter('pageSize', '1');
+        request.addParameter('language', 'testLanguage');
+        request.addParameter('filterby', 'testFilter');
+        RestContext.request = request;
+        // Call the method to test
+        Map<String, ConnectApi.ManagedContentNodeValue> contentNodes = DemoTrialsController.getContent('testContentId', 0, 1, 'testLanguage', 'testFilter');
+        Test.stopTest();
+        // Assert the results
+        System.assertEquals(0, contentNodes.size(), 'Content nodes size should be 1');
+    }
+
+    @isTest public static void testisEnvironmentHubMember(){
+        TEST.startTest(); 
+        Boolean isEnvironmentHubMember = Package2Interface.isEnvironmentHubMember();
+        system.assertNotEquals(null, isEnvironmentHubMember);
+        TEST.stopTest(); 
     }
 }

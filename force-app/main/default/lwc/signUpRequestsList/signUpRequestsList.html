@@ -1,6 +1,6 @@
 <template>
     <template if:true={displaySpinner}>
-        <div class="slds-p-bottom_xx-large">
+        <div class="slds-p-bottom_xx-large slds-p-around_x-large">
             <lightning-spinner
                 alternative-text="Loading"
                 size="medium"
@@ -33,6 +33,7 @@
                     enable-infinite-loading={disableInfiniteLoad}
                     onloadmore={loadMoreData}
                     load-more-offset="5"
+                    show-row-number-column
                     hide-checkbox-column
                 ></lightning-datatable>
                 <template if:true={displayDatatableSpinner}>

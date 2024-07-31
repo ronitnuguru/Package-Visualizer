@@ -7,6 +7,12 @@
                 <identifier>c_createSignupOrg</identifier>
             </componentInstance>
         </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>scratchDefFileBuildCard</componentName>
+                <identifier>c_scratchDefFileBuildCard</identifier>
+            </componentInstance>
+        </itemInstances>
         <name>region1</name>
         <type>Region</type>
     </flexiPageRegions>
@@ -25,6 +31,12 @@
             <componentInstance>
                 <componentName>orgExpirationCard</componentName>
                 <identifier>c_orgExpirationCard</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>inAppGuidanceCard</componentName>
+                <identifier>c_inAppGuidanceCard</identifier>
             </componentInstance>
         </itemInstances>
         <name>region3</name>

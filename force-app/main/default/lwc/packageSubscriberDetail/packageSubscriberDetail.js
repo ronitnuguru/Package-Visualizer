@@ -225,4 +225,13 @@ export default class PackageSubscriberDetail extends NavigationMixin(LightningEl
       }
     });
   }
+
+  navigateToHelpLma(){
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: `https://developer.salesforce.com/docs/atlas.en-us.workbook_lma.meta/workbook_lma/lma_associate_package.htm`
+      }
+    });
+  }
 }

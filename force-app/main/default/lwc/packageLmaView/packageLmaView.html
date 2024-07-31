@@ -376,11 +376,13 @@
   </template>
   <template if:true={displayEmptyLMA}>
     <template if:false={displaySpinner}>
-      <c-empty-large-illustration-view
-        title="Hmm…"
-        body="Looks like you do not have a record associated with this LMA package version..."
-      >
-      </c-empty-large-illustration-view>
+      <c-empty-illustration-with-button
+        title="Hmm..."
+        body="Looks like we could not find the associated license for this subscriber or the package is not connected to the LMA..."
+        button-label="Associate Package with LMA"
+        size="large"
+        onselect={navigateToHelpLma}
+      ></c-empty-illustration-with-button>
     </template>
   </template>
   <template if:true={displayLMAInAppPrompt}>

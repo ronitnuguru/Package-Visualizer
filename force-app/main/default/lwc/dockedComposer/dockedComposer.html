@@ -46,6 +46,21 @@
                   size="xx-small"
                 ></lightning-icon>
               </button>
+              <template if:true={displayFooter}>
+                <template if:false={currentUserAutofillError}>
+                  <button
+                    class="slds-button slds-button_icon slds-button_icon"
+                    title="Autofill Current User Details"
+                    onclick={handleAutofill}
+                  >
+                    <lightning-icon
+                      icon-name="utility:edit_gpt"
+                      size="xx-small"
+                    ></lightning-icon>
+                    <span class="slds-assistive-text">Autofill Current User Details</span>
+                  </button>
+                </template>
+              </template>
               <template if:false={displayFooter}>
                 <button
                   class="slds-button slds-button_icon slds-button_icon"
@@ -73,7 +88,7 @@
               <button
                 class="slds-button slds-button_icon slds-button_icon"
                 title="Refresh"
-                onclick={handleTrialsHelpDoc}
+                onclick={handleHelpDoc}
               >
                 <lightning-icon
                   icon-name="utility:help_doc_ext"
@@ -179,7 +194,14 @@
                   <div aria-hidden="false" class="slds-section__content">
                       <div class="">
                           <div class="">
-                              <lightning-combobox
+                            <div class="slds-grid slds-grid_vertical-align-center">
+                              <template lwc:if={purposeIcon}>
+                                <div class="slds-align_absolute-center slds-m-top_medium">
+                                  <img src={purposeIcon} width="35" height="35" class="slds-m-right_x-small "/>
+                                </div>
+                              </template>
+                              <div class="slds-col">
+                                <lightning-combobox
                                   name="purpose"
                                   label="Purpose"
                                   value={purposeValue}
@@ -188,7 +210,9 @@
                                   onchange={purposeChange}
                                   dropdown-alignment="auto"
                                   required
-                              ></lightning-combobox>
+                                ></lightning-combobox>
+                              </div>
+                            </div>
                               <template if:true={purposeValue}>
                                   <template if:false={displayCreateUsingOptions}>
                                       <lightning-radio-group name="createUsing"
@@ -213,6 +237,40 @@
                                           type="button"
                                           required
                                       ></lightning-radio-group>
+                                  </template>
+                                  <template if:true={displayIndustryOptions}>
+                                    <div class="slds-grid slds-grid_vertical-align-center">
+                                      <template lwc:if={industryTypeIcon}>
+                                        <div class="slds-align_absolute-center">
+                                          <img src={industryTypeIcon} width="35" height="35" class="slds-m-right_x-small "/>
+                                        </div>
+                                      </template>
+                                      <div class="slds-col">
+                                        <lightning-combobox
+                                          name="industryTemplates"
+                                          label="Industry Cloud"
+                                          value={industryTemplateValue}
+                                          placeholder="Choose your Industry Cloud"
+                                          options={industryTemplateOptions}
+                                          onchange={industryTemplateChange}
+                                          dropdown-alignment="auto"
+                                          variant="label-hidden"
+                                          class="industryCloud slds-m-right_x-small "
+                                          required
+                                        ></lightning-combobox>
+                                      </div>
+                                      <template lwc:if={industryTemplateValue}>
+                                        <template lwc:if={partnerPocketGuideLink}>
+                                          <div class="slds-col">
+                                            <lightning-button
+                                              label="Partner Pocket Guide"
+                                              variant="neutral"
+                                              onclick={handlePartnerPocketGuide}
+                                            ></lightning-button>
+                                          </div>
+                                        </template>
+                                      </template>
+                                    </div>
                                   </template>
                               </template>
                           </div>
@@ -257,16 +315,18 @@
                                       </template>
                                   </template>
                                   <template if:false={displayStandard}>
+                                    <template if:true={displayCreateUsingOptions}>
                                       <lightning-input 
-                                          type="text" 
-                                          label="Trialforce Template ID"
-                                          class="templateId"
-                                          variant="label-stacked"
-                                          max-length=15
-                                          value={templateId}
-                                          required
+                                        type="text" 
+                                        label="Trialforce Template ID"
+                                        class="templateId"
+                                        variant="label-stacked"
+                                        max-length=15
+                                        value={templateId}
+                                        required
                                       ></lightning-input>
-                                  </template>
+                                    </template>
+                                </template>
                               </template>
                           </div>
                       </div>
@@ -306,6 +366,7 @@
                                   variant="label-stacked"
                                   min-length=3
                                   max-length=27
+                                  field-level-help="The My Domain name for the new trial org used in the org’s login and application URLs. In Developer Edition orgs, your name must contain at least 3 characters and no more than 27 characters. In all other editions, it must be at least 3 characters and no more than 34 characters. It can include letters, numbers, and hyphens, but you can’t start the name with a hyphen. If you don’t choose a My Domain during sign-up, Salesforce assigns one for you based on your company name. If you don’t like the one we set, you can change it"
                               ></lightning-input>
                                 <lightning-combobox
                                   name="preferredLanguage"
@@ -315,7 +376,8 @@
                                   options={preferredLanguageOptions}
                                   dropdown-alignment="auto"
                                   class="slds-m-horizontal_xx-small"
-                                  onchange={handlePreferredLanguageChange} 
+                                  onchange={handlePreferredLanguageChange}
+                                  field-level-help="The language of the trial org being created. The value you select overrides the language set by the locale. If you specify an invalid language, the org defaults to the default language of the country. Likewise, if you specify a language that isn’t supported by the Salesforce edition associated with your trial template, the trial org defaults to the default language of the country"
                                 ></lightning-combobox>
                           </div>
                       </div>
@@ -336,7 +398,7 @@
                     <span class="slds-truncate slds-p-horizontal_small">Legal</span>
                   </h3>
                   <div aria-hidden="false" class="slds-section__content">
-                    <span class="slds-grid"><lightning-input type="checkbox" onchange={handleMasterSubscriptionAgreement} variant="label-hidden" required></lightning-input> I have read and agreed to the&nbsp;<a href="https://www.salesforce.com/assets/pdf/misc/salesforce_MSA.pdf" target="_blank">Master Subscription Agreement</a></span>
+                    <span class="slds-grid"><lightning-input type="checkbox" onchange={handleMasterSubscriptionAgreement} checked={masterSubscriptionAgreement} value={masterSubscriptionAgreement} variant="label-hidden" required></lightning-input> I have read and agreed to the&nbsp;<a href="https://www.salesforce.com/assets/pdf/misc/salesforce_MSA.pdf" target="_blank">Master Subscription Agreement</a></span>
                   </div>
                 </div>
               </template>
@@ -367,11 +429,6 @@
                       variant="error"
                       class="slds-m-right_x-small"
                   ></lightning-icon>
-                </template>
-                <template if:false={displayError}>
-                  <!--
-                  <lightning-button label="Industries Templates" title="Templates" onclick={handleTemplates} class="slds-m-right_x-small"></lightning-button>
-                  -->
                 </template>
                 <lightning-button
                   variant="brand"

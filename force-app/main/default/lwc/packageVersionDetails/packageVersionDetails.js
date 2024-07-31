@@ -46,6 +46,8 @@ export default class PackageVersionDetails extends LightningElement {
 
   editMode;
 
+  displayPromoteWarningModal;
+
   connectedCallback() {
     this.sfdxPackageInstall = `sf force:package:install -p ${this.packageSubscriberVersionId} -w 20`;
     this.displaySecurityReviewButton = this.packageType === "Managed" && this.packageIsReleased ? true : false;
@@ -89,6 +91,22 @@ export default class PackageVersionDetails extends LightningElement {
     this.editMode = false;
   }
 
+  get warningPromoteBody() {
+    return `Are you sure you want to promote package version "${this.packageVersionNumber}"`;
+  }
+
+  onBrandClick(){
+    this.handlePromote();
+  }
+
+  onNeutralClick(){
+    this.displayPromoteWarningModal = false;
+  }
+
+  handlePromoteWarning(){
+    this.displayPromoteWarningModal = true;
+  }
+
   handlePromote() {
     let wrapper = [
       {
@@ -130,6 +148,7 @@ export default class PackageVersionDetails extends LightningElement {
               );
             }
           }
+          this.displayPromoteWarningModal = false;
         })
         .catch(error => {
           console.error(error);
@@ -142,9 +161,9 @@ export default class PackageVersionDetails extends LightningElement {
               variant: "error"
             })
           );
+          this.displayPromoteWarningModal = false;
         });
     })();
-
   }
 
   handleEditSave() {

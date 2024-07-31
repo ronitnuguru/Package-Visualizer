@@ -32,6 +32,14 @@
         <enabled>true</enabled>
         <name>Package_Visualizer_Resource__mdt</name>
     </customMetadataTypeAccesses>
+    <customMetadataTypeAccesses>
+        <enabled>true</enabled>
+        <name>In_App_Guidance_Walkthrough__mdt</name>
+    </customMetadataTypeAccesses>
+    <customMetadataTypeAccesses>
+        <enabled>true</enabled>
+        <name>In_App_Prompt__mdt</name>
+    </customMetadataTypeAccesses>
     <customPermissions>
         <enabled>true</enabled>
         <name>Package_Visualizer_Core</name>

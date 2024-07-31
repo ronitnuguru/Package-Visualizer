@@ -1,0 +1,71 @@
+<template>
+    <div id="settings-component" class={expressionClass}>
+        <template iterator:it={metadataSettings}>
+            <div key={it.value.autoNumber}>
+                <div class="slds-grid slds-grid_vertical-align-end slds-expression__options">
+                    <lightning-combobox
+                        data-index={it.index}
+                        name="metadataSettings"
+                        label="Setting"
+                        value={it.value.setting}
+                        placeholder="Select Metadata Setting"
+                        options={settingOptions}
+                        onchange={handleMetadataSettingsChange}
+                        dropdown-alignment="auto"
+                        class="slds-col slds-size_1-of-1 setting-combobox"
+                        required
+                        disabled={confirmSelected}
+                    ></lightning-combobox>
+                    <lightning-button-icon
+                        icon-name="utility:help_doc_ext"
+                        class="slds-m-left_x-small"
+                        alternative-text="Settings"
+                        variant="border-filled"
+                        data-index={it.index}
+                        onclick={navigateMetaHelpDoc}
+                        tooltip="Setting Documentation"
+                    ></lightning-button-icon>
+                    <template if:false={it.value.recordId}>
+                        <lightning-button-icon
+                            icon-name="utility:delete"
+                            class="slds-m-left_x-small setting-button"
+                            alternative-text="Remove"
+                            variant="border-filled"
+                            onclick={onRemoveSetting}
+                            data-index={it.index}
+                            if:false={it.first}
+                            tooltip="Remove Setting"
+                            disabled={confirmSelected}
+                        ></lightning-button-icon>
+                    </template>
+                </div>
+                <ul class="slds-card__body slds-card__body_inner">
+                    <c-scratch-row-meta-expression
+                        row-index={it.index}
+                        setting-value={it.value.setting}
+                        confirm-selected={confirmSelected}
+                    ></c-scratch-row-meta-expression>
+                </ul>
+            </div>
+        </template>
+        <div class="slds-expression__buttons">
+            <lightning-button 
+                label="Add New Metadata Setting" 
+                icon-name="utility:add" 
+                onclick={instantiateMetadataSettingExpression}
+                class="setting-button"
+                disabled={confirmSelected}
+            ></lightning-button>
+            <lightning-button-stateful
+                label-when-off="Confirm Settings"
+                label-when-on="Edit Settings"
+                icon-name-when-off="utility:check"
+                icon-name-when-on="utility:edit"
+                selected={confirmSelected}
+                onclick={confirmSettings}
+                class="slds-m-left_x-small"
+                variant="brand"
+            ></lightning-button-stateful>
+        </div>
+    </div>
+</template>

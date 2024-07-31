@@ -7,7 +7,7 @@
     ></lightning-spinner>
   </template>
   <div class="slds-grid slds-var-p-around_small slds-wrap">
-    <div class="slds-col slds-col_padded slds-size_6-of-12">
+    <div class="slds-col slds-col_padded slds-large-size_6-of-12">
       <template if:false={editMode}>
         <lightning-input
           type="text"
@@ -61,7 +61,7 @@
         ></lightning-input>
         <template if:false={editMode}>
           <template if:true={description}>
-            <div class="slds-form-element">
+            <div class="slds-form-element slds-border_bottom">
               <label
                 class="slds-form-element__label slds-var-p-bottom_xx-small"
                 for="text-input-id-1"
@@ -105,16 +105,69 @@
             disabled
           ></lightning-input>
         </template>
-        <div class="slds-var-p-bottom_small">
-          <lightning-input
-            type="checkbox"
-            label="Was Transferred"
-            checked={wasTransferred}
-            disabled
-            field-level-help="Indicates whether the package was previously associated with a different Dev Hub Org"
-          ></lightning-input>
+        <lightning-input
+          type="checkbox"
+          label="Was Transferred"
+          checked={wasTransferred}
+          disabled
+          field-level-help="Indicates whether the package was previously associated with a different Dev Hub Org"
+        ></lightning-input>
+        <div class="slds-var-p-vertical_xx-small">
+          <template if:false={editMode}>
+            <template lwc:if={packageUserId}>
+              <lightning-record-picker
+                label="Package Error Username"
+                placeholder="Search Users..."
+                object-api-name="User"
+                value={packageUserId}
+                disabled
+                field-level-help="Active user in the Dev Hub org you want to receive email notification regarding package-related errors"
+              >
+              </lightning-record-picker>
+            </template>
+            <template lwc:else>
+              <lightning-record-picker
+                label="Package Error Username"
+                placeholder="Search Users..."
+                object-api-name="User"
+                disabled
+                field-level-help="Active user in the Dev Hub org you want to receive email notification regarding package-related errors"
+              >
+              </lightning-record-picker>
+            </template>
+          </template>
+          <template if:true={editMode}>
+            <template if:true={packageUserId}>
+              <lightning-record-picker
+                label="Package Error Username"
+                placeholder="Search Users..."
+                object-api-name="User"
+                value={packageUserId}
+                filter={userFilter}
+                onchange={handlePackageUserChange}
+                matching-info={userMatchingInfo}
+                display-info={userDisplayInfo}
+                field-level-help="Active user in the Dev Hub org you want to receive email notification regarding package-related errors"
+              >
+              </lightning-record-picker>
+            </template>
+            <template if:false={packageUserId}>
+              <lightning-record-picker
+                label="Package Error Username"
+                placeholder="Search Users..."
+                object-api-name="User"
+                filter={userFilter}
+                onchange={handlePackageUserChange}
+                matching-info={userMatchingInfo}
+                display-info={userDisplayInfo}
+                field-level-help="Active user in the Dev Hub org you want to receive email notification regarding package-related errors"
+              >
+              </lightning-record-picker>
+            </template>
+          </template>
         </div>
         <div>
+          <!--
           <template if:true={editMode}>
             <lightning-input
               type="text"
@@ -125,6 +178,7 @@
               field-level-help="The email address for an active user in the Dev Hub org you want to receive email notification regarding package-related errors"
             ></lightning-input>
           </template>
+
           <template if:false={editMode}>
             <template if:true={packageErrorUsername}>
               <lightning-input
@@ -146,6 +200,7 @@
               ></lightning-input>
             </template>
           </template>
+          -->
           <lightning-input
             type="text"
             label="Created By"

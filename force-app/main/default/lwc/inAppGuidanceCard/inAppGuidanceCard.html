@@ -1,0 +1,76 @@
+<template>
+  <lightning-card>
+      <h3 slot="title" class="slds-truncate">
+          <lightning-icon 
+              icon-name="standard:walkthroughs"
+              alternative-text="Walkthroughs"
+              size="medium"
+              class="slds-m-right_small"
+          ></lightning-icon>
+          In-App Guidance
+      </h3>
+      <lightning-button-group slot="actions">
+          <template if:true={steps}>
+            <lightning-button-icon icon-name="utility:target_mode" tooltip="Upgrade to the Latest Unlocked Package" variant="border-filled" onclick={navigateUnlockedPackageInstall}></lightning-button-icon>
+          </template>
+          <lightning-button-icon icon-name="utility:help_doc_ext" tooltip="Help - In App Guidance Setup" variant="border-filled" onclick={handleHelpDoc}></lightning-button-icon>
+      </lightning-button-group>
+      <div class="slds-card__body slds-card__body_inner">
+          <template if:true={displaySpinner}>
+              <lightning-spinner
+                alternative-text="Loading"
+                size="medium"
+                variant="brand"
+              ></lightning-spinner>
+          </template>
+          <template if:false={displaySpinner}>
+              <template if:true={installUnlockedPackageIllustration}>
+                  <c-empty-illustration-with-button
+                      title="Hmm..."
+                      body="Looks like you have not installed the dependent ISV Tooling Prompts Unlocked Package to view In-App Guidance walkthroughs..."
+                      button-label="Install Unlocked Package"
+                      size="medium"
+                      onselect={navigateUnlockedPackageInstall}
+                ></c-empty-illustration-with-button>
+              </template>
+              <template if:true={steps}>
+                  <div class="">
+                    <template
+                      for:each={steps}
+                      for:item="step"
+                      for:index="index"
+                    >
+                      <div class="slds-var-p-bottom_x-small" key={step.pkgviz__Title__c}>
+                        <a
+                          target="_blank"
+                          href={step.pkgviz__Link__c}
+                          class="slds-box slds-box_link slds-box_x-small slds-media"
+                        >
+                          <div
+                            class="slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center slds-var-m-left_xx-small"
+                          >
+                            <lightning-icon
+                              icon-name="standard:prompt"
+                              alternative-text="Link"
+                              size="medium"
+                            ></lightning-icon>
+                          </div>
+                          <div
+                            class="slds-media__body slds-border_left slds-var-p-around_x-small"
+                          >
+                            <strong class="slds-text-title_caps" title={step.pkgviz__Title__c}
+                              >{step.pkgviz__Title__c}</strong
+                            >
+                            <p class="slds-text-body_small">
+                              {step.pkgviz__Description__c}
+                            </p>
+                          </div>
+                        </a>
+                      </div>
+                    </template>
+                  </div>
+                </template>
+          </template>
+      </div>
+  </lightning-card>
+</template>

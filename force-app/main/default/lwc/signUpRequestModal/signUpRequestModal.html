@@ -5,7 +5,7 @@
       aria-labelledby="modal-heading-01"
       aria-modal="true"
       aria-describedby="modal-content-id-1"
-      class="slds-modal slds-fade-in-open slds-modal_medium modal-style"
+      class="slds-modal slds-fade-in-open slds-modal_medium"
     >
       <div class="slds-modal__container">
         <header class="slds-modal__header">
@@ -71,7 +71,7 @@
                                 type="text"
                                 label="Company"
                                 value={rowData.company}
-                                class="input-style"
+                                class="input-style slds-border_bottom"
                                 readonly
                             ></lightning-input>
                             <template if:true={rowData.trialDays}>
@@ -79,7 +79,7 @@
                                     type="text"
                                     label="Trial Days"
                                     value={rowData.trialDays}
-                                    class="input-style"
+                                    class="input-style slds-border_bottom"
                                     readonly
                                 ></lightning-input>
                             </template>
@@ -88,7 +88,7 @@
                                     type="text"
                                     label="Org Id"
                                     value={rowData.createdOrgId}
-                                    class="input-style"
+                                    class="input-style slds-border_bottom"
                                     readonly
                                 ></lightning-input>
                             </template>
@@ -97,7 +97,7 @@
                                     type="text"
                                     label="Template Id"
                                     value={rowData.resolvedTemplateId}
-                                    class="input-style"
+                                    class="input-style slds-border_bottom"
                                     readonly
                                 ></lightning-input>
                             </template>
@@ -106,7 +106,7 @@
                                     type="text"
                                     label="Trial Source Org Id"
                                     value={rowData.trialSourceOrgId}
-                                    class="input-style"
+                                    class="input-style slds-border_bottom"
                                     readonly
                                 ></lightning-input>
                             </template>
@@ -115,7 +115,7 @@
                                     type="text"
                                     label="Subdomain"
                                     value={rowData.subdomain}
-                                    class="input-style"
+                                    class="input-style slds-border_bottom"
                                     readonly
                                 ></lightning-input>
                             </template>
@@ -126,7 +126,7 @@
                                     type="text"
                                     label="Status"
                                     value={rowData.status}
-                                    class="input-style"
+                                    class="input-style slds-border_bottom"
                                     readonly
                                 ></lightning-input>
                             </template>
@@ -135,7 +135,7 @@
                                     type="text"
                                     label="Country"
                                     value={rowData.country}
-                                    class="input-style"
+                                    class="input-style slds-border_bottom"
                                     readonly
                                 ></lightning-input>
                             </template>
@@ -144,7 +144,7 @@
                                     type="text"
                                     label="Org Edition"
                                     value={rowData.edition}
-                                    class="input-style"
+                                    class="input-style slds-border_bottom"
                                     readonly
                                 ></lightning-input>
                             </template>
@@ -153,12 +153,21 @@
                                     type="text"
                                     label="Preferred Language"
                                     value={rowData.preferredLanguage}
-                                    class="input-style"
+                                    class="input-style slds-border_bottom"
+                                    readonly
+                                ></lightning-input>
+                            </template>
+                            <template if:true={rowData.signupSource}>
+                                <lightning-input
+                                    type="text"
+                                    label="Signup Source"
+                                    value={rowData.signupSource}
+                                    class="input-style slds-border_bottom"
                                     readonly
                                 ></lightning-input>
                             </template>
                             <template if:true={rowData.createdDate}>
-                                <div class="slds-form-element">
+                                <div class="slds-form-element slds-border_bottom">
                                   <label
                                     class="slds-form-element__label input-style slds-var-p-bottom_xx-small"
                                     for="text-input-id-1"
@@ -202,12 +211,12 @@
                                     type="text"
                                     label="First Name"
                                     value={rowData.firstName}
-                                    class="input-style"
+                                    class="input-style slds-border_bottom"
                                     readonly
                                 ></lightning-input>
                             </template>
                             <template if:true={rowData.signupEmail}>
-                                <lightning-input type="email" label="Signup Email" value={rowData.signupEmail} readonly class="input-style"></lightning-input>
+                                <lightning-input type="email" label="Signup Email" value={rowData.signupEmail} readonly class="input-style slds-border_bottom"></lightning-input>
                             </template>
                         </div>
                         <div class="slds-col slds-size_1-of-2">
@@ -216,12 +225,12 @@
                                     type="text"
                                     label="Last Name"
                                     value={rowData.lastName}
-                                    class="input-style"
+                                    class="input-style slds-border_bottom"
                                     readonly
                                 ></lightning-input>
                             </template>
                             <template if:true={rowData.username}>
-                                <lightning-input type="email" label="Username" value={rowData.username} readonly class="input-style"></lightning-input>
+                                <lightning-input type="email" label="Username" value={rowData.username} readonly class="input-style slds-border_bottom"></lightning-input>
                             </template>
                         </div>
                     </div>
@@ -263,13 +272,13 @@
                                     label="Created By"
                                     value={rowData.owner}
                                     readonly
-                                    class="input-style"
+                                    class="input-style slds-border_bottom"
                                 ></lightning-input>
                             </template>
                         </div>
                         <div class="slds-col slds-size_1-of-2">
                             <template if:true={rowData.systemModstamp}>
-                                <div class="slds-form-element">
+                                <div class="slds-form-element slds-border_bottom">
                                   <label
                                     class="slds-form-element__label input-style slds-var-p-bottom_xx-small"
                                     for="text-input-id-1"

@@ -153,7 +153,7 @@
       </template>
       <template if:false={editMode}>
         <template if:true={packageDescription}>
-          <div class="slds-form-element">
+          <div class="slds-form-element slds-border_bottom">
             <label
               class="slds-form-element__label slds-var-p-bottom_xx-small"
               for="text-input-id-1"
@@ -291,6 +291,7 @@
             label="Salesforce Release Version"
             value={packageReleaseVersion}
             class="slds-border_bottom"
+            field-level-help="Salesforce release version used to create the package version"
             readonly
           ></lightning-input>
         </template>
@@ -346,7 +347,7 @@
                 variant="brand"
                 label="Promote"
                 title="Promote"
-                onclick={handlePromote}
+                onclick={handlePromoteWarning}
                 icon-name="utility:forward_up"
                 icon-position="right"
                 class="slds-var-m-right_x-small"
@@ -534,4 +535,17 @@
       </div>
     </template>
   </footer>
+  <template if:true={displayPromoteWarningModal}>
+    <c-warning-modal
+      header="Promote Package Version?"
+      body={warningPromoteBody}
+      brand-button-label="Promote"
+      learn-more-button-label="Learn More"
+      learn-more-url="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_get_ready_promote.htm"
+      neutral-button-label="Cancel"
+      onbrandclick={onBrandClick}
+      onneutralclick={onNeutralClick}
+    >
+    </c-warning-modal>
+  </template>
 </template>

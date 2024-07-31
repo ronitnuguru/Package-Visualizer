@@ -33,7 +33,8 @@ export default {
           fieldName: "orgName",
           label: "Organization Name",
           sortable: true,
-          iconName: "standard:employee_organization"
+          iconName: "standard:employee_organization",
+          wrapText: true
         },
       orgStatus: {
         type: "text",
@@ -60,6 +61,7 @@ export default {
         label: "Last Modified At",
         iconName: "standard:date_time",
         sortable: true,
+        wrapText: true,
         typeAttributes: {
           year: "numeric",
           month: "long",

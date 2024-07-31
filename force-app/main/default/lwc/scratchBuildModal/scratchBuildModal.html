@@ -1,0 +1,15 @@
+<template>
+    <lightning-modal-header label={label}></lightning-modal-header>
+    <lightning-modal-body>
+        <code>
+            <pre>{content}</pre>
+        </code>
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <lightning-button
+            label="Download JSON" 
+            onclick={handleDownloadJson} 
+            variant="brand"
+        ></lightning-button>
+    </lightning-modal-footer>
+</template>

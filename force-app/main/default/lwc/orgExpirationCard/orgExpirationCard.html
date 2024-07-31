@@ -1,28 +1,21 @@
 <template>
-    <article class="slds-card">
-        <div class="slds-card__header slds-grid slds-theme_shade">
-            <header class="slds-media slds-media_center slds-has-flexi-truncate slds-m-bottom_x-small">
-                <div class="slds-media__figure">
-                    <lightning-icon
-                        icon-name="utility:salesforce1"
-                        alternative-text="Trial"
-                        size="medium"
-                        class="card_header_icon"
-                    ></lightning-icon>
-                </div>
-                <div class="slds-media__body">
-                  <h2 class="slds-card__header-title">
-                    <strong class="slds-truncate">Org Expiration Notifier</strong>
-                  </h2>
-                </div>
-                <div class="slds-no-flex">
-                    <lightning-button-group>
-                        <lightning-button-icon icon-name="utility:salesforce1" variant="border-filled" tooltip="Trust Instance" onclick={handleTrustInstance}></lightning-button-icon>
-                        <lightning-button-icon icon-name="utility:help_doc_ext" variant="border-filled" tooltip="Extend Trial Orgs" onclick={handleHelpDoc}></lightning-button-icon>
-                    </lightning-button-group>
-                </div>
-            </header>
-        </div>
+    <lightning-card>
+        <h3 slot="title" class="slds-truncate">
+            <lightning-icon 
+                icon-name="utility:salesforce1"
+                size="medium"
+                class="card_header_icon slds-m-right_small"
+            ></lightning-icon>
+            Org Details
+        </h3>
+        <lightning-button-group slot="actions">
+            <lightning-button-icon icon-name="utility:salesforce1" variant="border-filled" tooltip="Trust Instance" onclick={handleTrustInstance}></lightning-button-icon>
+            <template lwc:if={org}>
+                <template if:true={org.TrialExpirationDate}>
+                    <lightning-button-icon icon-name="utility:help_doc_ext" variant="border-filled" tooltip="Extend Trial Orgs" onclick={handleHelpDoc}></lightning-button-icon>
+                </template>
+            </template>
+        </lightning-button-group>
         <div class="slds-card__body slds-card__body_inner">
             <template if:true={displaySpinner}>
                 <lightning-spinner
@@ -150,5 +143,5 @@
                 </template>
             </template>
         </div>
-    </article>
+    </lightning-card>
 </template>

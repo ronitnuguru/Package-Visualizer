@@ -18,8 +18,8 @@
   right: 10px;
   bottom: 10px;
   background-color: var(--lwc-brandAccessible);
-  --sds-c-accordion-heading-text-color: white;
-  --sds-c-accordion-heading-text-color-hover: white;
+  --slds-c-accordion-heading-text-color: white;
+  --slds-c-accordion-heading-text-color-hover: white;
 }
 
 .card-style{

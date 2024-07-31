@@ -42,6 +42,14 @@
         >
           {neutralButtonLabel}
         </button>
+        <template if:true={learnMoreButtonLabel}>
+          <button
+            class="slds-button slds-button_neutral"
+            onclick={handleLearnMore}
+          >
+            {learnMoreButtonLabel}
+          </button>
+        </template>
         <button
           class="slds-button slds-button_brand"
           onclick={handleBrandClick}

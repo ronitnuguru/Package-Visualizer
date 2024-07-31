@@ -23,7 +23,8 @@ const columns = [
     fieldName: "orgName",
     label: "Organization Name",
     sortable: true,
-    iconName: "standard:employee_organization"
+    iconName: "standard:employee_organization",
+    wrapText: true
   },
   {
     type: "text",
@@ -50,6 +51,7 @@ const columns = [
     label: "Last Modified At",
     iconName: "standard:date_time",
     sortable: true,
+    wrapText: true,
     typeAttributes: {
       year: "numeric",
       month: "long",

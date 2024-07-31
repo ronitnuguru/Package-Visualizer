@@ -1,0 +1,33 @@
+<template>
+    <lightning-card class="gtp-card slds-tabs_card">
+        <h3 slot="title" class="dxp-text-heading-medium --dxp-g-brand slds-truncate">
+            <template lwc:if={displaySLDS}>
+                <lightning-icon icon-name={sldsIconReference} size="medium" class="slds-m-right_x-small"></lightning-icon>
+            </template>
+            <template lwc:if={displayCMS}>
+                <img src={cmsUrl} width="32" height="32" class="slds-m-right_x-small "/>
+            </template>
+            {title}
+        </h3>
+        <div class="">
+            <p>
+                <lightning-formatted-rich-text value={description}></lightning-formatted-rich-text>
+            </p>
+            <template lwc:if={trialDays}>
+                <lightning-badge label={trial} class="slds-badge_inverse slds-m-top_x-small"></lightning-badge>
+            </template>
+            <div class="slds-grid slds-gutters slds-m-vertical_medium">
+                <template lwc:if={brandButtonLabel}>
+                    <div class="slds-col">
+                        <lightning-button label={brandButtonLabel} variant="brand" stretch onclick={handleBrandClick} disabled={dontAllowExternalSignups}></lightning-button>
+                    </div>
+                </template>
+                <template lwc:if={neutralButtonLabel}>
+                    <div class="slds-col">
+                        <lightning-button label={neutralButtonLabel} variant="brand-outline" stretch onclick={handleNeutralClick}></lightning-button>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </lightning-card>
+</template>

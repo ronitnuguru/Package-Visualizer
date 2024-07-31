@@ -1,0 +1,11 @@
+.tf-popover{
+    text-align: left;
+    position: absolute;
+    bottom: 44px;
+    right: -97px;
+    transform: translateX(-50%);
+}
+
+.tf-popover_header{
+    color: white;
+}

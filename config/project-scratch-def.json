@@ -1,6 +1,7 @@
 {
-  "orgName": "rnuguru company",
+  "orgName": "Ronit Nuguru Development",
   "edition": "Developer",
+  "hasSampleData": false,
   "features": ["EnableSetPasswordInApi"],
   "settings": {
     "lightningExperienceSettings": {
@@ -8,6 +9,9 @@
     },
     "mobileSettings": {
       "enableS1EncryptedStoragePref2": false
+    },
+    "communitiesSettings": {
+      "enableNetworksEnabled": true
     }
   }
 }

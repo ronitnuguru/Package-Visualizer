@@ -1,0 +1,12 @@
+.gtp-card{
+    display: block;
+    --slds-c-card-footer-spacing-block-end: 0px;
+    --slds-c-card-shadow: 0 8px 12px -2px rgba(24, 24, 24, 0.16);
+    --slds-c-card-radius-border: 16px;
+    --slds-c-card-spacing-block-end: 10px;
+    --slds-c-card-spacing-block-start: 10px;
+}
+
+.gtp-card:hover{
+    --slds-c-card-shadow: 0px 12px 24px -4px rgba(24, 24, 24, 0.08), 0px 16px 32px -4px rgba(24, 24, 24, 0.16);
+}

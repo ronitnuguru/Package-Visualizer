@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Demo Trials Card</masterLabel>
+    <targets>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property label="Title" name="title" type="lightning__textType" required="true" default="Title..."></property>
+            <property label="Description" name="description" type="lightning__richTextType" required="true" default="Description..."></property>
+            <property label="Trial Days" name="trialDays" type="Integer" ></property>
+            <property label="Icon" name="icon" type="String" editor="c/iconCheckBox"></property>
+            <property label="SLDS Icon Reference" name="sldsIconReference" type="lightning__textType"></property>
+            <property label="CMS Icon Reference" name="cmsIconReference" type="ContentReference" filter="cms_image"></property>
+            <property label="Trial Template Id" name="trialTemplateId" type="String" placeholder="0TT..."></property>
+            <property label="Sign Up Brand Button Label" name="brandButtonLabel" type="String" placeholder="Sign Up"></property>
+            <property label="View Details Neutral Button Label" name="neutralButtonLabel" type="String" placeholder="View Details"></property>
+            <property label="View Details" name="viewDetails" type="lightning__richTextType"></property>
+            <property label="Sign Up Source" name="signupSource" type="lightning__textType"></property>
+            <property label="Should Connect to Environment Hub" name="shouldConnectToEnvHub" type="Boolean" default="true"></property>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
