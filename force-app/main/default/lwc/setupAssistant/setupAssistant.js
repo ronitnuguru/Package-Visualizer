@@ -163,7 +163,7 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   }
 
   navigateToDXProjectStructure(){
-    window.open("https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_workspace_setup.htm", "_blank");
+    window.open("https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm", "_blank");
   }
 
   navigateToCodeAnalyzerGitHubAction(){

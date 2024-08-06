@@ -50,7 +50,7 @@ export default class ScratchRowMetaExperession extends LightningElement {
                     displayString: false,
                     displayInteger: false,
                     fieldOperator: 'boolean',
-                    fieldValue: 'true'
+                    fieldValue: 'false'
                 }
             ];
         }
