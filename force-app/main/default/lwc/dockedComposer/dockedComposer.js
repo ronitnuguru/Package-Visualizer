@@ -318,6 +318,15 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
     this.displayStandard = this.createUsingValue === 'trialforce' ? false : true;
   }
 
+  navigateToDemoDevStation(){
+    this[NavigationMixin.Navigate]({
+        type: "standard__webPage",
+        attributes: {
+            url: `https://partners.salesforce.com/pdx/s/learn/article/demo-station-for-partners-MCUTYORCVUVNCJTIVCKP6VHUKF3M?language=en_US`
+        }
+    }); 
+  }
+
   handleCreateUsingChange(event) {
     this.createUsingValue = event.detail.value;
     this.displayStandard = this.createUsingValue === 'trialforce' ? false : true;

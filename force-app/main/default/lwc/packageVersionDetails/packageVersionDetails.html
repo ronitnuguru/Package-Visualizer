@@ -243,6 +243,13 @@
       ></lightning-input>
       <lightning-input
         type="checkbox"
+        label="Validated Async"
+        checked={packageValidatedAsync}
+        field-level-help="The package version is created before package validations are completed"
+        disabled
+      ></lightning-input>
+      <lightning-input
+        type="checkbox"
         label="Validation Skipped"
         checked={packageValidationSkipped}
         field-level-help="Skipping validation reduces the time it takes to create a new package version, but package versions created without validation can’t be promoted to the released state"

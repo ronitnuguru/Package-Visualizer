@@ -194,7 +194,7 @@
                   <div aria-hidden="false" class="slds-section__content">
                       <div class="">
                           <div class="">
-                            <div class="slds-grid slds-grid_vertical-align-center">
+                            <div class="slds-grid slds-grid_vertical-align-center slds-grid_vertical-align-end">
                               <template lwc:if={purposeIcon}>
                                 <div class="slds-align_absolute-center slds-m-top_medium">
                                   <img src={purposeIcon} width="35" height="35" class="slds-m-right_x-small "/>
@@ -212,6 +212,12 @@
                                   required
                                 ></lightning-combobox>
                               </div>
+                              <lightning-button-icon 
+                                tooltip='Demo &amp; Dev Station'
+                                class="slds-m-left_small" 
+                                icon-name="utility:help_doc_ext"
+                                onclick={navigateToDemoDevStation}
+                              ></lightning-button-icon>
                             </div>
                               <template if:true={purposeValue}>
                                   <template if:false={displayCreateUsingOptions}>

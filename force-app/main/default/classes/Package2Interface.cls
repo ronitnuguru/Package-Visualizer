@@ -71,7 +71,7 @@ public with sharing class Package2Interface { // NOPMD
 	**************************************************************************************/     
     public static List<ObjectWrappers.PackageVersionWrapper> getPackage2Versions(list<ObjectWrappers.FilterWrapper> filterWrapperList, String minMajorVersion, String maxMajorVersion, String minMinorVersion, String maxMinorVersion, String sortedBy, String sortDirection, String versionLimit, String versionOffset) {
         List<ObjectWrappers.PackageVersionWrapper> packageVersions = new List<ObjectWrappers.PackageVersionWrapper>(); 
-        String queryString = 'SELECT Id, Branch, Description, IsPasswordProtected, IsReleased, MajorVersion, MinorVersion, PatchVersion, BuildNumber, Tag, Name, Package2Id, SubscriberPackageVersionId, AncestorId, ValidationSkipped, BuildDurationInSeconds, HasPassedCodeCoverageCheck, ReleaseVersion, Language, CreatedBy.Name, CreatedDate FROM Package2Version WHERE IsDeprecated = false '; String whereClause = '';
+        String queryString = 'SELECT Id, Branch, Description, IsPasswordProtected, IsReleased, MajorVersion, MinorVersion, PatchVersion, BuildNumber, Tag, Name, Package2Id, SubscriberPackageVersionId, AncestorId, ValidationSkipped, BuildDurationInSeconds, HasPassedCodeCoverageCheck, ReleaseVersion, Language, CreatedBy.Name, CreatedDate, ValidatedAsync FROM Package2Version WHERE IsDeprecated = false '; String whereClause = '';
         if(!filterWrapperList.isEmpty()){whereClause = getWhereClause(filterWrapperList); if(!String.isBlank(whereClause)){ queryString = queryString + ' AND ' + whereClause;}}
         if(minMajorVersion != null && maxMajorVersion != null && minMinorVersion != null && maxMinorVersion != null){ String versionClause = getVersionRangeWhereClause(minMajorVersion, maxMajorVersion, minMinorVersion, maxMinorVersion); queryString = queryString + versionClause;}
         if (sortedBy != null){ if(sortedBy == 'versionNumber'){ queryString = queryString + ' ORDER BY MajorVersion ' + sortDirection + ', MinorVersion ' + sortDirection + ', PatchVersion ' + sortDirection + ', BuildNumber ' + sortDirection;} else { queryString = queryString + ' ORDER BY ' + sortedBy + ' ' + sortDirection; }}queryString = queryString + ' LIMIT ' + String.escapeSingleQuotes(versionLimit) + ' OFFSET ' + String.escapeSingleQuotes(versionOffset);List<Object> records = submitQuery(queryString); 
@@ -93,7 +93,7 @@ public with sharing class Package2Interface { // NOPMD
 	/**************************************************************************************
 	* @Description	Method for getting the current org base URL for tooling API  
 	**************************************************************************************/ 
-    public static string getBaseURL(String apiType) {String baseURL = URL.getSalesforceBaseUrl().toExternalForm() + '/services/data/v58.0/' + String.escapeSingleQuotes(apiType) + '/';return baseURL;}
+    public static string getBaseURL(String apiType) {String baseURL = URL.getSalesforceBaseUrl().toExternalForm() + '/services/data/v61.0/' + String.escapeSingleQuotes(apiType) + '/';return baseURL;}
     
 	/**************************************************************************************
 	* @Description	Method that build where cloud. We are using escapeSingleQuotes in this method.

@@ -205,7 +205,7 @@ export default class ScratchSettingsExpression extends NavigationMixin(Lightning
             { label: 'Privacy Settings', value: 'privacySettings' },
             { label: 'Process Flow Migration', value: 'processFlowMigration' },
             { label: 'Product Settings', value: 'productSettings' },
-            { label: 'Quote Settings', value: 'quoteSettings' },
+            { label: 'Quotes Settings', value: 'quotesSettings' },
             { label: 'Real Time Event Settings', value: 'realTimeEventSettings' },
             { label: 'Record Page Settings', value: 'recordPageSettings' },
             { label: 'Retail Execution Settings', value: 'retailExecutionSettings' },

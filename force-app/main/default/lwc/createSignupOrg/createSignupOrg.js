@@ -439,6 +439,16 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
         this.trialDays = event.detail.value;
     }
 
+
+    navigateToDemoDevStation(){
+        this[NavigationMixin.Navigate]({
+            type: "standard__webPage",
+            attributes: {
+                url: `https://partners.salesforce.com/pdx/s/learn/article/demo-station-for-partners-MCUTYORCVUVNCJTIVCKP6VHUKF3M?language=en_US`
+            }
+        }); 
+    }
+
     handleTrialsTrailhead() {
         this[NavigationMixin.Navigate]({
             type: "standard__webPage",

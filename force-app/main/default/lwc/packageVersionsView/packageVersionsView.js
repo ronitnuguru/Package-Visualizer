@@ -131,6 +131,7 @@ export default class PackageVersionsView extends LightningElement {
   packageLanguage;
   packageCreatedDate;
   packageCreatedBy;
+  packageValidatedAsync;
 
   installedStatus;
   instanceName;
@@ -224,6 +225,7 @@ export default class PackageVersionsView extends LightningElement {
         label: "Subscriber Package Version Id",
         value: "subscriberPackageVersionId"
       },
+      { label: "Validated Async", value: "validatedAsync" },
       { label: "Validation Skipped", value: "validationSkipped" },
       { label: "Has Metadata Removed", value: "hasMetadataRemoved" },
       { label: "Created Date", value: "createdDate" },
@@ -520,6 +522,7 @@ export default class PackageVersionsView extends LightningElement {
     this.packageLanguage = row.language;
     this.packageCreatedDate = row.createdDate;
     this.packageCreatedBy = row.owner;
+    this.packageValidatedAsync = row.validatedAsync;
   }
 
   handleD3CurrentNode(event) {

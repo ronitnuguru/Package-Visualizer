@@ -118,7 +118,7 @@
                               <lightning-button-icon
                                 icon-name="action:manage_perm_sets"
                                 variant="brand"
-                                onclick={navigateToPermissionSets}
+                                onclick={navigateToPkgVizMainPermSet}
                                 disabled={isSetupEnabled}
                               ></lightning-button-icon>
                             </div>
@@ -163,7 +163,7 @@
                                 <lightning-button-icon
                                   icon-name="action:manage_perm_sets"
                                   variant="brand"
-                                  onclick={navigateToPermissionSets}
+                                  onclick={navigateToPkgVizPushUpgradePermSet}
                                   disabled={isSetupEnabled}
                                 ></lightning-button-icon>
                               </div>
@@ -421,11 +421,13 @@
                                 Create New Users and Select Salesforce Limited Access - Free for User License, and then Limited Access User for Profile
                               </div>
                               <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
-                                <lightning-button-icon
-                                  icon-name="utility:help_doc_ext"
-                                  variant="brand"
-                                  onclick={navigateProvUsers1}
-                                ></lightning-button-icon>
+                                <lightning-button-group>
+                                  <lightning-button-icon
+                                    icon-name="utility:help_doc_ext"
+                                    variant="brand"
+                                    onclick={navigateProvUsers1}
+                                  ></lightning-button-icon>
+                                </lightning-button-group>
                               </div>
                             </div>
                           </li>
@@ -465,7 +467,7 @@
                     <div class="slds-media__figure slds-media__figure_reverse">
                       <lightning-button
                         variant="brand-outline"
-                        label="Setup"
+                        label="Limited Access User Setup"
                         icon-name="utility:setup"
                         icon-position="right"
                         onclick={navigateLimitedAccessUserProfiile}

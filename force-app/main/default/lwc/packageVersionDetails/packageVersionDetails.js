@@ -30,6 +30,7 @@ export default class PackageVersionDetails extends LightningElement {
   @api packageLanguage;
   @api packageCreatedDate;
   @api packageCreatedBy;
+  @api packageValidatedAsync;
 
   sfdxPackageInstalls;
 

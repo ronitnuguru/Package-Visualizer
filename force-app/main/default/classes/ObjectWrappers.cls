@@ -58,6 +58,7 @@ public with sharing class ObjectWrappers{
         @AuraEnabled public string language {get;set;}
         @AuraEnabled public string owner {get;set;}
         @AuraEnabled public Boolean hasMetadataRemoved {get; set;}
+        @AuraEnabled public Boolean validatedAsync {get; set;}
     }
 
     public class PackageCreator {

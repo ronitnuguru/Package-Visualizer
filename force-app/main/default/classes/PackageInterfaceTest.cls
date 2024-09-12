@@ -211,6 +211,7 @@ private class PackageInterfaceTest {
         pkgVersion.isSecurityReviewed = false;
         pkgVersion.BuildDurationInSeconds = 'TEST';
         pkgVersion.language = 'en';
+        pkgVersion.validatedAsync = false;
         system.assertNotEquals(null, pkgVersion);
         
         ObjectWrappers.PackageSubscriberWrapper pkgSub = new ObjectWrappers.PackageSubscriberWrapper();

@@ -81,6 +81,13 @@ export default {
       sortable: true,
       iconName: "standard:record"
     },
+    validatedAsync: {
+      type: "boolean",
+      fieldName: "validatedAsync",
+      label: "Validated Async",
+      sortable: true,
+      iconName: "standard:task2"
+    },
     validationSkipped: {
       type: "boolean",
       fieldName: "validationSkipped",

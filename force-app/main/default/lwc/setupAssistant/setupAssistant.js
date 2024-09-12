@@ -6,6 +6,9 @@ import hasViewSetup from "@salesforce/userPermission/ViewSetup";
 import CREATEORGMESSAGECHANNEL from "@salesforce/messageChannel/CreateOrgMessageChannel__c";
 import DOCKEDUTILITYBARMESSAGECHANNEL from "@salesforce/messageChannel/DockedUtilityBarMessageChannel__c";
 import { publish, subscribe, unsubscribe, MessageContext } from "lightning/messageService";
+import getProfileId from "@salesforce/apex/PackageVisualizerCtrl.getProfileId";
+import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
+
 
 export default class SetupAssistant extends NavigationMixin(LightningElement) {
   @api alert;
@@ -74,8 +77,51 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     );
   }
 
+  navigateToPkgVizMainPermSet(){
+    (async () => {
+      await getNamespacePermSetId({
+          label: 'Package_VisualizerPS',
+          namespace: 'pkgviz'
+      })
+      .then(result => {
+        window.open(`/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`, "_blank");
+      })
+      .catch(error => {
+        console.error(error);
+        this.navigateToPermissionSets();
+      });
+    })();
+  }
+
+  navigateToPkgVizPushUpgradePermSet(){
+    (async () => {
+      await getNamespacePermSetId({
+          label: 'Package_Visualizer_Push_Upgrade',
+          namespace: 'pkgviz'
+      })
+      .then(result => {
+        window.open(`/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`, "_blank");
+      })
+      .catch(error => {
+        console.error(error);
+        this.navigateToPermissionSets();
+      });
+    })();
+  }
+
   navigateLimitedAccessUserProfiile(){
-    window.open("/lightning/setup/EnhancedProfiles/home", "_blank");
+    (async () => {
+      await getProfileId({
+          label: 'Limited Access User'
+      })
+      .then(result => {
+        window.open(`/lightning/setup/EnhancedProfiles/page?address=%2F${result}`, "_blank");
+      })
+      .catch(error => {
+        console.error(error);
+        window.open("/lightning/setup/EnhancedProfiles/home", "_blank");
+      });
+    })();
   }
 
   navigateProvUsers1(){
@@ -83,7 +129,7 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   }
 
   navigateProvUsers2(){
-    window.open("https://developer.salesforce.com/docs/atlas.en-us.248.0.sfdx_dev.meta/sfdx_dev/sfdx_setup_permission_set.htm", "_blank");
+    window.open("https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_permission_set.htm", "_blank");
   }
 
   navigateProvUsers3(){

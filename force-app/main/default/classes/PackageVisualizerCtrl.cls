@@ -266,4 +266,12 @@ public with sharing class PackageVisualizerCtrl {
         Organization org = [SELECT Country FROM Organization LIMIT 1];
         return org.Country;
     }
+
+    @AuraEnabled(cacheable=true)
+    public static String getProfileId(String label){
+        try { String queryString = 'SELECT Id FROM Profile WHERE Name = :label LIMIT 1'; sObject s = Database.query(queryString); return s.Id; } catch (Exception e){ throw new AuraHandledException('Unable to get Profile Id'); }}
+
+    @AuraEnabled(cacheable=true)
+    public static String getNamespacePermSetId(String label, String namespace){
+        try { String queryString = 'SELECT Id FROM PermissionSet WHERE Name = :label AND NamespacePrefix = :namespace'; sObject s = Database.query(queryString); return s.Id; } catch (Exception e){ throw new AuraHandledException('Unable to get Permission Set'); }}
 }
