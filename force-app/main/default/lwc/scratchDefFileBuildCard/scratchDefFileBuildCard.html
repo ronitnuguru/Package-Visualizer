@@ -9,16 +9,6 @@
             Build Scratch Org Definition File
         </h3>
         <lightning-button-group slot="actions">
-            <!--
-            <lightning-button-menu alternative-text="Show menu" icon-name="utility:edit_gpt" menu-alignment="auto">
-                <lightning-menu-subheader label="Industries"></lightning-menu-subheader>
-                <lightning-menu-item label="Financial Services Cloud" value="Menu Item One"></lightning-menu-item>
-                <lightning-menu-item label="Health Cloud" value="Menu Item Two"></lightning-menu-item>
-                <lightning-menu-item label="Net Zero Cloud" value="Menu Item Three"></lightning-menu-item>
-                <lightning-menu-item label="Consumer Goods Cloud" value="Menu Item Four"></lightning-menu-item>
-                <lightning-menu-item label="Energy and Utilities Cloud" value="Menu Item Four"></lightning-menu-item>
-            </lightning-button-menu>
-            -->
             <template if:true={displayScratchOrgActions}>
                 <lightning-button
                     variant="neutral"
@@ -38,6 +28,20 @@
                 onclick={navigateToScratchHelpDefFile}
                 tooltip="Help - Build Your Own Scratch Org Definition File"
             ></lightning-button-icon>
+            <!--
+            <lightning-button-menu alternative-text="Show menu" menu-alignment="auto">
+                <lightning-menu-item label="Data Cloud" value="Data Cloud"></lightning-menu-item>
+                <lightning-menu-item label="Agentforce" value="Agentforce"></lightning-menu-item>
+                <lightning-menu-item label="Data Cloud + Agentforce" value="Data Cloud + Agentforce"></lightning-menu-item>
+                
+                <lightning-menu-subheader label="Industries"></lightning-menu-subheader>
+                <lightning-menu-item label="Financial Services Cloud" value="Menu Item One"></lightning-menu-item>
+                <lightning-menu-item label="Health Cloud" value="Menu Item Two"></lightning-menu-item>
+                <lightning-menu-item label="Net Zero Cloud" value="Menu Item Three"></lightning-menu-item>
+                <lightning-menu-item label="Consumer Goods Cloud" value="Menu Item Four"></lightning-menu-item>
+                <lightning-menu-item label="Energy and Utilities Cloud" value="Menu Item Four"></lightning-menu-item>
+            </lightning-button-menu>
+            -->
         </lightning-button-group>
         <div class="slds-card__body slds-card__body_inner slds-scrollable" style="max-height: 600px;">
             <div class="slds-section slds-is-open">
@@ -104,17 +108,26 @@
                                 required
                             ></lightning-radio-group>
                             <template if:true={displayEdition}>
-                                <lightning-combobox
-                                    name="edition"
-                                    label="Edition"
-                                    placeholder="Select Edition"
-                                    options={editionOptions}
-                                    onchange={handleEditionChange}
-                                    value={editionValue}
-                                    field-level-help="The org edition of this scratch org"
-                                    dropdown-alignment="auto"
-                                    required
-                                ></lightning-combobox>
+                                <div class="slds-grid slds-grid_vertical-align-end slds-grid_pull-padded-small">
+                                    <lightning-combobox
+                                        name="edition"
+                                        label="Edition"
+                                        placeholder="Select Edition"
+                                        options={editionOptions}
+                                        onchange={handleEditionChange}
+                                        value={editionValue}
+                                        field-level-help="The org edition of this scratch org"
+                                        dropdown-alignment="auto"
+                                        required
+                                        class="slds-col"
+                                    ></lightning-combobox>
+                                    <lightning-button-icon
+                                        icon-name="utility:help_doc_ext"
+                                        onclick={navigateToSupportedScratchEditions}
+                                        tooltip="Help - Supported Scratch Org Editions and Allocations"
+                                    ></lightning-button-icon>
+                                </div>
+                                
                             </template> 
                             <template if:false={displayEdition}>
                                 <div class="slds-grid slds-grid_vertical-align-end slds-grid_pull-padded-small">
@@ -257,6 +270,9 @@
                             class="slds-m-right_x-small"
                         ></lightning-icon>
                     </template>
+                    <!--
+                    <lightning-button label="Clear" onclick={handleClearScratchOrgBuildFile} class="slds-m-right_x-small"></lightning-button>
+                    -->
                     <lightning-button variant="brand" label="Build" title="Create Sample Scratch Org Build File" onclick={handleScratchOrgBuildFile}></lightning-button>
                     <template if:true={displayError}>
                         <div class="slds-is-relative">

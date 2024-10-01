@@ -152,11 +152,23 @@ export default class PackageHeader extends NavigationMixin(LightningElement) {
         .catch(error => {
           console.error(error);
           this.displaySpinner = false;
-          // Toast for Failure
+          let toastUrl;
+          if(navigateType === 'License Management Package'){
+            toastUrl = 'https://developer.salesforce.com/docs/atlas.en-us.workbook_lma.meta/workbook_lma/lma_associate_package.htm';
+          } else if (navigateType === 'Feature Parameters'){
+            toastUrl = 'https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_fma_create_feature_parameters.htm';
+          }
+
           this.dispatchEvent(
             new ShowToastEvent({
               title: "Error",
-              message: `We were unable to navigate to ${this.name}'s ${navigateType}`,
+              message: `We were unable to navigate to ${this.name}'s ${navigateType}. {0}`,
+              messageData: [
+                {
+                    url: toastUrl,
+                    label: 'Learn More'
+                },
+              ],
               variant: "error"
             })
           );

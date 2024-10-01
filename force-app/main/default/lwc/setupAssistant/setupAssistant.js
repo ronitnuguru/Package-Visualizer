@@ -8,7 +8,7 @@ import DOCKEDUTILITYBARMESSAGECHANNEL from "@salesforce/messageChannel/DockedUti
 import { publish, subscribe, unsubscribe, MessageContext } from "lightning/messageService";
 import getProfileId from "@salesforce/apex/PackageVisualizerCtrl.getProfileId";
 import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
-
+import getOrgDetails from '@salesforce/apex/PackageVisualizerCtrl.getOrgDetails';
 
 export default class SetupAssistant extends NavigationMixin(LightningElement) {
   @api alert;
@@ -16,6 +16,9 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   @api packageTypes;
 
   @wire(MessageContext) messageContext;
+
+  org;
+  numOfDays;
 
   get isPushUpgradeEnabled() {
     return hasPackageVisualizerPushUpgrade;
@@ -32,6 +35,20 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   get is2GP() {
     return this.packageTypes === '2GP and Unlocked Packages' ? true : false;
   }
+
+  @wire(getOrgDetails)
+    wiredOrg({ error, data }) {
+        if (data) {
+            this.org = data;
+            if (this.org.TrialExpirationDate) {
+                this.numOfDays = new Date(this.org.TrialExpirationDate);
+            }
+            this.error = undefined;
+        } else if (error) {
+            this.org = undefined;
+            console.error(error);
+        }
+    }
 
   handleCreateOrgs(){
     publish(this.messageContext, DOCKEDUTILITYBARMESSAGECHANNEL, {
@@ -213,7 +230,27 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   }
 
   navigateToCodeAnalyzerGitHubAction(){
-    window.open('https://github.com/marketplace/actions/run-salesforce-code-analyzer');
+    window.open('https://github.com/marketplace/actions/run-salesforce-code-analyzer', "_blank");
+  }
+
+  navigateToManageUsersPartnerCommunity(){
+    window.open('https://trailhead.salesforce.com/content/learn/modules/sf_partner_community/sf_partner_community_manage', "_blank");
+  }
+
+  navigateToManageAppxListingTrail(){
+    window.open('https://trailhead.salesforce.com/content/learn/modules/appexchange-partners-publishing', "_blank");
+  }
+
+  navigateToTop20VulnDevPost(){
+    window.open('https://developer.salesforce.com/blogs/2023/08/the-top-20-vulnerabilities-found-in-the-appexchange-security-review', "_blank");
+  }
+
+  navigateToIsvToolingTrailhead(){
+    window.open('https://trailhead.salesforce.com/content/learn/modules/isvforce_basics/isvforce_basics_tools_resources','_blank');
+  }
+
+  navigateToLogCasePartnerCommunity(){
+    window.open(`https://help.salesforce.com/s/articleView?id=000387818&type=1`,'_blank');
   }
 
   navigateScratchOrgBuild(){

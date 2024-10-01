@@ -387,7 +387,13 @@ export default class PackageVersionDetails extends LightningElement {
             this.dispatchEvent(
               new ShowToastEvent({
                 title: "Security Review",
-                message: `${this.packageVersionNumber} has not passed Security Review!`,
+                message: `${this.packageVersionNumber} has not passed Security Review! {0}`,
+                messageData: [
+                  {
+                      url: `https://developer.salesforce.com/docs/atlas.en-us.packagingGuide.meta/packagingGuide/security_review_guidelines.htm`,
+                      label: 'Learn More'
+                  },
+                ],
                 variant: "warning"
               })
             );

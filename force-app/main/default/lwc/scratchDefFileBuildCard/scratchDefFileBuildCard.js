@@ -1,5 +1,6 @@
 import { LightningElement, wire } from 'lwc';
 import { NavigationMixin } from "lightning/navigation";
+import { RefreshEvent } from 'lightning/refresh';
 import ScratchBuildModal from 'c/scratchBuildModal';
 import isActiveScratchOrg from "@salesforce/apex/Package2Interface.isActiveScratchOrg";
 import getOrgCountryCode from '@salesforce/apex/PackageVisualizerCtrl.getOrgCountryCode';
@@ -67,7 +68,11 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
             { label: 'Developer', value: 'Developer' },
             { label: 'Enterprise', value: 'Enterprise' },
             { label: 'Group', value: 'Group' },
-            { label: 'Professional', value: 'Professional' }
+            { label: 'Professional', value: 'Professional' },
+            { label: 'Partner Developer', value: 'Partner Developer' },
+            { label: 'Partner Enterprise', value: 'Partner Enterprise' },
+            { label: 'Partner Group', value: 'Partner Group' },
+            { label: 'Partner Professional', value: 'Partner Professional' }
         ];
     }
 
@@ -222,6 +227,10 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
         }
     }
 
+    handleClearScratchOrgBuildFile(){
+        this.dispatchEvent(new RefreshEvent());
+    }
+
     handlePopoverClose() {
         this.displayError = false;
     }
@@ -249,6 +258,15 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
             type: "standard__webPage",
             attributes: {
                 url: 'https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_shape_intro.htm'
+            }
+        });
+    }
+
+    navigateToSupportedScratchEditions(){
+        this[NavigationMixin.Navigate]({
+            type: "standard__webPage",
+            attributes: {
+                url: 'https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_editions_and_allocations.htm'
             }
         });
     }

@@ -24,6 +24,11 @@ import ENERGY_AND_UTILITIES_CLOUD_ICON from "@salesforce/contentAssetUrl/EnergyA
 import AUTOMOTIVE_CLOUD_ICON from "@salesforce/contentAssetUrl/AutomotiveCloudIcon";
 import SUSTAINABILITY_CLOUD_ICON from "@salesforce/contentAssetUrl/SustainabilityCloud";
 import MANUFACTURING_CLOUD_ICON from "@salesforce/contentAssetUrl/ManufacturingCloudIcon";
+import COMMUNICATIONS_CLOUD_ICON from "@salesforce/contentAssetUrl/CommunicationsCloudIcon";
+import EDUCATION_CLOUD_ICON from "@salesforce/contentAssetUrl/EducationCloudIcon";
+import NONPROFIT_CLOUD_ICON from "@salesforce/contentAssetUrl/NonprofitCloudIcon";
+import PUBLICSECTOR_CLOUD_ICON from "@salesforce/contentAssetUrl/PublicSectorCloudIcon";
+import MEDIA_CLOUD_ICON from "@salesforce/contentAssetUrl/MediaCloudIcon";
 
 export default class DockedComposer extends NavigationMixin(LightningElement) {
 
@@ -43,6 +48,11 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
   automotiveCloudIconUrl = AUTOMOTIVE_CLOUD_ICON;
   manufacturingCloudIconUrl = MANUFACTURING_CLOUD_ICON;
   lifeSciencesCloudIconUrl = LIFE_SCIENCES_CLOUD_ICON;
+  communicationsCloudIconUrl = COMMUNICATIONS_CLOUD_ICON;
+  educationCloudIconUrl = EDUCATION_CLOUD_ICON;
+  publicSectorCloudIconUrl = PUBLICSECTOR_CLOUD_ICON;
+  nonprofitCloudIconUrl = NONPROFIT_CLOUD_ICON;
+  mediaCloudIconUrl = MEDIA_CLOUD_ICON;
 
   @wire(getRecord, { recordId: Id, fields: [ FirstName, LastName, Email ] })
     userDetails({ error, data }) {
@@ -148,11 +158,17 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
         { label: 'Financial Services Cloud' , value: '0TTWs0000009Y2T' },
         { label: 'Health Cloud' , value: '0TTWs0000009Xw1' },
         { label: 'Life Sciences Cloud' , value: '0TTWs000000AVfF' },
-        { label: 'Consumer Goods Cloud', value: '0TTWs0000009Yor'},
+        { label: 'Consumer Goods Cloud - Retail Execution', value: '0TTWs0000009Yor'},
+        { label: 'Consumer Goods Cloud - Trade Promotion Management', value: '0TTWs0000009YvJ'},
         { label: 'Manufacturing Cloud', value: '0TTWs0000009Y8v'},
         { label: 'Automotive Cloud', value: '0TTWs0000009YJV'},
         { label: 'Energy and Utilities Cloud', value: '0TTWs0000009ZwD'},
-        { label: 'Net Zero Cloud', value: '0TTWs0000009YiP'}
+        { label: 'Net Zero Cloud', value: '0TTWs0000009YiP'},
+        { label: 'Communications Cloud', value: '0TTWs0000009ZeT'},
+        { label: 'Education Cloud', value: '0TTWs0000009a8P'},
+        { label: 'Media Cloud', value: '0TTWs0000009Zkv'},
+        { label: 'Nonprofit Cloud', value: '0TTWs0000009kjZ'},
+        { label: 'Public Sector Cloud', value: '0TTWs0000009Ybx'},
     ];
   }
 
@@ -253,8 +269,12 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
             this.partnerPocketGuideLink = 'https://salesforce.quip.com/KndcASmayUg4';
             this.industryTypeIcon = this.healthCloudIconUrl;
         break;
-        case "Consumer Goods Cloud":
+        case "Consumer Goods Cloud - Retail Execution":
             this.partnerPocketGuideLink = 'https://salesforce.quip.com/sfz0Atx4JASz';
+            this.industryTypeIcon = this.consumerGoodsCloudIconUrl;
+        break;
+        case "Consumer Goods Cloud - Trade Promotion Management":
+            this.partnerPocketGuideLink = 'https://salesforce.quip.com/e3D5AxkcisIU';
             this.industryTypeIcon = this.consumerGoodsCloudIconUrl;
         break;
         case "Manufacturing Cloud":
@@ -270,12 +290,32 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
             this.industryTypeIcon = this.energyAndUtilitiesCloudIconUrl;
         break;
         case "Net Zero Cloud":
-            this.partnerPocketGuideLink = null;
+            this.partnerPocketGuideLink = 'https://salesforce.quip.com/vW5eAoGFm73Y';
             this.industryTypeIcon = this.sustainabilityCloudIconUrl;
         break;
         case "Life Sciences Cloud":
             this.partnerPocketGuideLink = null;
             this.industryTypeIcon = this.lifeSciencesCloudIconUrl;
+        break;
+        case "Communications Cloud":
+            this.partnerPocketGuideLink = 'https://salesforce.quip.com/NMljAq78Faau';
+            this.industryTypeIcon = this.communicationsCloudIconUrl;
+        break;
+        case "Education Cloud":
+            this.partnerPocketGuideLink = 'https://salesforce.quip.com/xGX7A4fL0qZ9';
+            this.industryTypeIcon = this.educationCloudIconUrl;
+        break;
+        case "Media Cloud":
+            this.partnerPocketGuideLink = 'https://salesforce.quip.com/LO7xAb6vaFgQ';
+            this.industryTypeIcon = this.mediaCloudIconUrl;
+        break;
+        case "Nonprofit Cloud":
+            this.partnerPocketGuideLink = 'https://salesforce.quip.com/r2jgADR0qSuU';
+            this.industryTypeIcon = this.nonprofitCloudIconUrl;
+        break;
+        case "Public Sector Cloud":
+            this.partnerPocketGuideLink = 'https://salesforce.quip.com/ybE3Aj99fAm0';
+            this.industryTypeIcon = this.publicSectorCloudIconUrl;
         break;
         default:
             this.partnerPocketGuideLink = null;

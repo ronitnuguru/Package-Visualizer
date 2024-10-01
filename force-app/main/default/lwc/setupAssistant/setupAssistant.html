@@ -812,6 +812,104 @@
                         >Learn More</a
                       >
                     </p>
+                    <div class="slds-progress slds-progress_vertical slds-progress_success">
+                      <ol class="slds-progress__list slds-progress__list-bordered">
+                        <li class="slds-progress__item">
+                          <div class="slds-progress__marker"></div>
+                          <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div class="slds-size_3-of-4">
+                              Learn how to manage your team's access to the Salesforce Partner Community
+                            </div>
+                            <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <lightning-button-icon
+                                icon-name="utility:trailhead_ext"
+                                variant="brand"
+                                onclick={navigateToManageUsersPartnerCommunity}
+                              ></lightning-button-icon>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="slds-progress__item">
+                          <div class="slds-progress__marker"></div>
+                          <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div class="slds-size_3-of-4">
+                              Learn how to manage your AppExchange listings with the Partner Console and Listing Builder
+                            </div>
+                            <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <lightning-button-icon
+                                icon-name="utility:trailhead_ext"
+                                variant="brand"
+                                onclick={navigateToManageAppxListingTrail}
+                              ></lightning-button-icon>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="slds-progress__item">
+                          <div class="slds-progress__marker"></div>
+                          <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div class="slds-size_3-of-4">
+                              Review and learn how to mitigate the top 20 vulnerabilities found in the AppExchange Security Review
+                            </div>
+                            <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <lightning-button-icon
+                                icon-name="utility:help_doc_ext"
+                                variant="brand"
+                                onclick={navigateToTop20VulnDevPost}
+                              ></lightning-button-icon>
+                            </div>
+                          </div>
+                        </li>
+                        <template lwc:if={org}>
+                          <li class="slds-progress__item">
+                            <template if:true={numOfDays}>
+                              <div class="slds-progress__marker">
+                                <span class="slds-assistive-text">Active</span>
+                              </div>
+                            </template>
+                            <template if:false={numOfDays}>
+                              <span
+                                class="slds-icon_container slds-icon-utility-success slds-progress__marker slds-progress__marker_icon slds-progress__marker_icon-success"
+                                title="Complete"
+                              >
+                                <lightning-icon
+                                  icon-name="utility:success"
+                                  alternative-text="Success!"
+                                  variant="success"
+                                  size="x-small"
+                                ></lightning-icon>
+                              </span>
+                            </template>
+                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                              <div class="slds-size_3-of-4">
+                                <template if:true={numOfDays}>
+                                  Your Dev Hub Org is set to expire <lightning-relative-date-time value={numOfDays}></lightning-relative-date-time>. You have until <lightning-formatted-date-time value={org.TrialExpirationDate} year="numeric" month="numeric" day="numeric" hour="2-digit"
+                                  minute="2-digit" time-zone-name="short"></lightning-formatted-date-time> to log a case via Partner Community and request org extension. Before submitting for Security Review, you will need to also log a case and convert your Partner Business Org ({org.Id}) from Trial to Active status
+                                </template>
+                                <template if:false={numOfDays}>
+                                  Your Dev Hub Org is under Active status! You're all set to submit your package for Security Review! Learn more about maximizing tools and resources available for AppExchange Partners
+                                </template>
+                              </div>
+                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                                <template if:false={numOfDays}>
+                                  <lightning-button-icon
+                                    icon-name="utility:trailhead_ext"
+                                    variant="brand"
+                                    onclick={navigateToIsvToolingTrailhead}
+                                  ></lightning-button-icon>
+                                </template>
+                                <template if:true={numOfDays}>
+                                  <lightning-button-icon
+                                    icon-name="utility:help_doc_ext"
+                                    variant="brand"
+                                    onclick={navigateToLogCasePartnerCommunity}
+                                  ></lightning-button-icon>
+                                </template>
+                              </div>
+                            </div>
+                          </li>
+                        </template>
+                      </ol>
+                    </div>
                   </div>
                   <div class="slds-media__figure slds-media__figure_reverse">
                     <lightning-button
