@@ -1,5 +1,7 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, wire } from 'lwc';
 import { NavigationMixin } from "lightning/navigation";
+import CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL from "@salesforce/messageChannel/CreateSampleScratchOrgTemplateMessageChannel__c";
+import { subscribe, unsubscribe, MessageContext } from 'lightning/messageService';
 
 export default class ScratchSettingsExpression extends NavigationMixin(LightningElement) {
 
@@ -7,8 +9,11 @@ export default class ScratchSettingsExpression extends NavigationMixin(Lightning
     expressionClass = 'slds-expression__group';
     confirmSelected = true;
     */
+   
     expressionClass = '';
     confirmSelected = false;
+
+    subscription = null;
     
     count;
     metadataSettings = [
@@ -24,7 +29,37 @@ export default class ScratchSettingsExpression extends NavigationMixin(Lightning
 
     confirmedMetadaSettings;
 
+    @wire(MessageContext) messageContext;
+
+    disconnectedCallback() {
+        this.unsubscribeToSampleMetadataMessageChannel();
+    }
+
+    unsubscribeToSampleMetadataMessageChannel() {
+        unsubscribe(this.subscription);
+        this.subscription = null;
+    }
+
+    subscribeToSampleMetadataMessageChannel(){
+
+        if (!this.subscription) {
+            this.subscription = subscribe(
+                this.messageContext,
+                CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL,
+                (message) => {
+                    if(!this.metadataSettings.some(settingObj => settingObj.setting === Object.keys(message)[0])){
+                        this.metadataSettings = [...this.metadataSettings, {autoNumber: this.count++, setting: Object.keys(message)[0]}];
+                    }
+                    this.expressionClass = '';
+                    this.confirmSelected = false;
+                }
+            );
+        }
+    }
+
     connectedCallback(){
+        this.subscribeToSampleMetadataMessageChannel();
+
         this.count = this.metadataSettings.length;
         //this.confirmSettings();
     }
@@ -102,6 +137,7 @@ export default class ScratchSettingsExpression extends NavigationMixin(Lightning
             { label: 'Address Settings', value: 'addressSettings' },
             { label: 'AI Reply Recommendations Settings', value: 'aIReplyRecommendationsSettings' },
             { label: 'Apex Settings', value: 'apexSettings' },
+            { label: 'Analytics Settings', value: 'analyticsSettings' },
             { label: 'AppAnalytics Settings', value: 'appAnalyticsSettings' },
             { label: 'AppExperience Settings', value: 'appExperienceSettings' },
             { label: 'Automated Contacts Settings', value: 'automatedContactsSettings' },
@@ -132,7 +168,7 @@ export default class ScratchSettingsExpression extends NavigationMixin(Lightning
             { label: 'Document Generation Setting', value: 'documentGenerationSetting' },
             { label: 'Dynamic Forms Settings', value: 'dynamicFormsSettings' },
             { label: 'EAC Settings', value: 'eacSettings' },
-            { label: 'Einstein Gpt Settings', value: 'EinsteinGptSettings' },
+            { label: 'Einstein Gpt Settings', value: 'einsteinGptSettings' },
             { label: 'Email Administration Settings', value: 'emailAdministrationSettings' },
             { label: 'Email Integration Settings', value: 'emailIntegrationSettings' },
             { label: 'Email Template Settings', value: 'emailTemplateSettings' },
@@ -211,7 +247,7 @@ export default class ScratchSettingsExpression extends NavigationMixin(Lightning
             { label: 'Real Time Event Settings', value: 'realTimeEventSettings' },
             { label: 'Record Page Settings', value: 'recordPageSettings' },
             { label: 'Retail Execution Settings', value: 'retailExecutionSettings' },
-            { label: 'Sales Agreement Settings', value: 'aalesAgreementSettings' },
+            { label: 'Sales Agreement Settings', value: 'salesAgreementSettings' },
             { label: 'Sandbox Settings', value: 'sandboxSettings' },
             { label: 'Schema Settings', value: 'schemaSettings' },
             { label: 'Search Settings', value: 'searchSettings' },

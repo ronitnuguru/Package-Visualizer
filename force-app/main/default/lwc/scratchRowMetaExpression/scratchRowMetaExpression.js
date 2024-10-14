@@ -1,4 +1,4 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, wire } from 'lwc';
 
 export default class ScratchRowMetaExperession extends LightningElement {
 
@@ -19,8 +19,6 @@ export default class ScratchRowMetaExperession extends LightningElement {
 
     @api getMetaRows(){
         let rows;
-
-
         this.fieldSettings.forEach(row => {
             rows = { ...rows, [row.fieldName]: row.fieldValue};
         });
@@ -38,10 +36,28 @@ export default class ScratchRowMetaExperession extends LightningElement {
                     displayInteger: false,
                     fieldOperator: 'boolean',
                     fieldValue: 'true'
+                },
+                {
+                    autoNumber: 1,
+                    fieldName: 'enableUsersAreLightningOnly',
+                    displayBoolean: true,
+                    displayString: false,
+                    displayInteger: false,
+                    fieldOperator: 'boolean',
+                    fieldValue: 'true'
+                },
+                {
+                    autoNumber: 2,
+                    fieldName: 'enableLexEndUsersNoSwitching',
+                    displayBoolean: true,
+                    displayString: false,
+                    displayInteger: false,
+                    fieldOperator: 'boolean',
+                    fieldValue: 'true'
                 }
             ];
         }
-        else if(this.settingValue == 'mobileSettings'){
+        else if (this.settingValue == 'mobileSettings'){
             this.fieldSettings = [
                 {
                     autoNumber: 0,
@@ -51,6 +67,58 @@ export default class ScratchRowMetaExperession extends LightningElement {
                     displayInteger: false,
                     fieldOperator: 'boolean',
                     fieldValue: 'false'
+                }
+            ];
+        } 
+        else if (this.settingValue == 'einsteinGptSettings'){
+            this.fieldSettings = [
+                {
+                    autoNumber: 0,
+                    fieldName: 'enableEinsteinGptPlatform',
+                    displayBoolean: true,
+                    displayString: false,
+                    displayInteger: false,
+                    fieldOperator: 'boolean',
+                    fieldValue: 'true'
+                }
+            ];
+        }
+        else if (this.settingValue == 'customerDataPlatformSettings'){
+            this.fieldSettings = [
+                {
+                    autoNumber: 0,
+                    fieldName: 'enableCustomerDataPlatform',
+                    displayBoolean: true,
+                    displayString: false,
+                    displayInteger: false,
+                    fieldOperator: 'boolean',
+                    fieldValue: 'true'
+                }
+            ];
+        }
+        else if (this.settingValue == 'analyticsSettings'){
+            this.fieldSettings = [
+                {
+                    autoNumber: 0,
+                    fieldName: 'enableInsights',
+                    displayBoolean: true,
+                    displayString: false,
+                    displayInteger: false,
+                    fieldOperator: 'boolean',
+                    fieldValue: 'true'
+                }
+            ];
+        }
+        else if (this.settingValue == 'devHubSettings'){
+            this.fieldSettings = [
+                {
+                    autoNumber: 0,
+                    fieldName: 'enableDevOpsCenterGA',
+                    displayBoolean: true,
+                    displayString: false,
+                    displayInteger: false,
+                    fieldOperator: 'boolean',
+                    fieldValue: 'true'
                 }
             ];
         }
@@ -84,6 +152,8 @@ export default class ScratchRowMetaExperession extends LightningElement {
             }
         ];
     }
+
+
 
     handleDeleteMetaSetting(event){
         let index = event.target.dataset.index;

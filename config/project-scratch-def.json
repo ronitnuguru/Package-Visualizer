@@ -1,17 +1,7 @@
 {
-  "orgName": "Ronit Nuguru Development",
-  "edition": "Partner Developer",
-  "hasSampleData": false,
-  "features": ["EnableSetPasswordInApi", "Einstein1AIPlatform"],
-  "settings": {
-    "lightningExperienceSettings": {
-      "enableS1DesktopEnabled": true
-    },
-    "mobileSettings": {
-      "enableS1EncryptedStoragePref2": false
-    },
-    "einsteinGptSettings" : {
-      "enableEinsteinGptPlatform" : true 
-    }
-  }
+  "orgName": "Sample Scratch Org",
+  "edition": "Developer",
+  "features": [
+    "EnableSetPasswordInApi"
+  ]
 }

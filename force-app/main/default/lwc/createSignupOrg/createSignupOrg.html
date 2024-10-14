@@ -135,12 +135,10 @@
                                   required
                                 ></lightning-combobox>
                               </div>
-                              <lightning-button-icon 
-                                tooltip='Demo &amp; Dev Station'
-                                class="slds-m-left_small" 
-                                icon-name="utility:help_doc_ext"
-                                onclick={navigateToDemoDevStation}
-                              ></lightning-button-icon>
+                              <lightning-button-menu alternative-text="Show menu" variant="border-filled" icon-name="utility:help_doc_ext" class="slds-m-left_small" menu-alignment="auto">
+                                <lightning-menu-item value="DemoDevStation" label='Demo &amp; Dev Station' onclick={navigateToDemoDevStation}></lightning-menu-item>
+                                <lightning-menu-item value="ChooseRightOrg" label="Choose the Right Salesforce Org for the Right Job" onclick={navigateToRightSfdcOrg}></lightning-menu-item>
+                              </lightning-button-menu>
                             </div>
                             <template if:true={purposeValue}>
                                 <template if:false={displayCreateUsingOptions}>

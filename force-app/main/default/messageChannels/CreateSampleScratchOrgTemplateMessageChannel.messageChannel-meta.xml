@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>This is a Lightning Message Channel that passes the data along for building Scratch Org Templates</description>
+    <isExposed>false</isExposed>
+    <lightningMessageFields>
+        <fieldName>metadataSetting</fieldName>
+    </lightningMessageFields>
+    <masterLabel>CreateSampleScratchOrgTemplateMessageChannel</masterLabel>
+</LightningMessageChannel>

@@ -1,9 +1,13 @@
 import { LightningElement, wire } from 'lwc';
 import { NavigationMixin } from "lightning/navigation";
 import { RefreshEvent } from 'lightning/refresh';
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import ScratchBuildModal from 'c/scratchBuildModal';
 import isActiveScratchOrg from "@salesforce/apex/Package2Interface.isActiveScratchOrg";
 import getOrgCountryCode from '@salesforce/apex/PackageVisualizerCtrl.getOrgCountryCode';
+import CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL from "@salesforce/messageChannel/CreateSampleScratchOrgTemplateMessageChannel__c";
+import { publish, MessageContext } from 'lightning/messageService';
+
 
 export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningElement) {
 
@@ -38,6 +42,8 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
     featureValue = '';
     preferredLanguage = 'en_US';
     country;
+
+    @wire(MessageContext) messageContext;
 
     @wire(getOrgCountryCode)
     wiredCountryCode({ error, data }) {
@@ -101,10 +107,108 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
             href: `https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file_config_values.htm#so_${this.featureValue.toLowerCase().split(':')[0]}`
         };
 
-        if (this.featureValue.trim() !== ''){
+        if (this.featureValue.trim() !== '' && !this.featuresList.some(feature => feature.name === this.featureValue)){
             this.featuresList = [...this.featuresList, newFeature].map(pill => ({ ...pill }));
             this.featureValue = null;
+        } else {
+            this.featureValue = null;
         }
+    }
+
+    agentforceTemplate(){
+        this.editionValue = 'Partner Developer';
+        let features = ['Einstein1AIPlatform', 'EinsteinGPTForDevelopers'];
+
+        features.forEach((feature) => {
+           this.featureValue = feature;
+           this.handleAddFeature();
+        });
+
+        publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
+            "einsteinGptSettings" : {
+                "enableEinsteinGptPlatform" : true
+            }
+        });
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: "Success",
+                message: "Sample Scratch Org Features and Settings for Agentforce have been added",
+                variant: "success"
+            })
+        );
+    }
+
+    dataCloudTemplate(){
+        this.editionValue = 'Partner Developer';
+        let features = ['CustomerDataPlatform', 'MarketingUser'];
+
+        features.forEach((feature) => {
+           this.featureValue = feature;
+           this.handleAddFeature();
+        });
+
+        publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
+            "customerDataPlatformSettings": {
+                "enableCustomerDataPlatform": true
+              }
+        });
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: "Success",
+                message: "Sample Scratch Org Features and Settings for Data Cloud have been added",
+                variant: "success"
+            })
+        );
+    }
+
+    crmAnalyticsTemplate(){
+        this.editionValue = 'Partner Developer';
+        let features = ['DevelopmentWave', 'AnalyticsAdminPerms', 'AnalyticsAppEmbedded', 'EAOutputConnectors', 'EinsteinAnalyticsPlus', 'InsightsPlatform'];
+
+        publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
+            "analyticsSettings": {
+                "enable​Insights": true
+              }
+        });
+
+        features.forEach((feature) => {
+            this.featureValue = feature;
+            this.handleAddFeature();
+        });
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: "Success",
+                message: "Sample Scratch Org Features and Settings for CRM Analytics have been added",
+                variant: "success"
+            })
+        );
+    }
+
+    devOpsCenterTemplate(){
+        this.editionValue = 'Partner Developer';
+        let features = ['DevOpsCenter'];
+
+        publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
+            "devHubSettings": {
+                "enableDevOpsCenterGA": true
+              }
+        });
+
+        features.forEach((feature) => {
+            this.featureValue = feature;
+            this.handleAddFeature();
+        });
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: "Success",
+                message: "Sample Scratch Org Features and Settings for CRM Analytics have been added",
+                variant: "success"
+            })
+        );
     }
 
     handleCreateUsingChange(event) {

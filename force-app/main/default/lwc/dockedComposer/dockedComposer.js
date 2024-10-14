@@ -518,6 +518,15 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
     });
   }
 
+  navigateToRightSfdcOrg(){
+    this[NavigationMixin.Navigate]({
+        type: "standard__webPage",
+        attributes: {
+            url: 'https://developer.salesforce.com/blogs/2024/05/choose-the-right-salesforce-org-for-the-right-job'
+        }
+    });
+  }
+
   handleRefresh() {
     publish(this.messageContext, SIGNUPLISTMESSAGECHANNEL, {
       refresh: true
