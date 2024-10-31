@@ -246,7 +246,6 @@ public with sharing class ObjectWrappers{
         @AuraEnabled public String trialSourceOrgId {get;set;}
         @AuraEnabled public String username {get;set;}
         @AuraEnabled public String edition {get;set;}
-        @AuraEnabled public Boolean isTSO {get;set;}
         @AuraEnabled public datetime systemModstamp;
         @AuraEnabled public datetime createdDate;
         @AuraEnabled public string owner {get;set;}

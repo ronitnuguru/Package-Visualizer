@@ -205,7 +205,7 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
         this.dispatchEvent(
             new ShowToastEvent({
                 title: "Success",
-                message: "Sample Scratch Org Features and Settings for CRM Analytics have been added",
+                message: "Sample Scratch Org Features and Settings for DevOps Center have been added",
                 variant: "success"
             })
         );

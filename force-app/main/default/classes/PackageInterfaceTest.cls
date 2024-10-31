@@ -606,7 +606,6 @@ private class PackageInterfaceTest {
         sw.username = 'testuser';
         sw.edition = 'TestEdition';
         sw.owner = 'test';
-        sw.isTSO = true;
         sw.systemModstamp = Datetime.now();
         sw.createdDate = Datetime.now();
         
@@ -637,7 +636,6 @@ private class PackageInterfaceTest {
         System.assertEquals('TestSourceOrgId', sw.trialSourceOrgId);
         System.assertEquals('testuser', sw.username);
         System.assertEquals('TestEdition', sw.edition);
-        System.assertEquals(true, sw.isTSO);
     }
 
     @isTest public static void testisAccount(){

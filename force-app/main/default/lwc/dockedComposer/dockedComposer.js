@@ -155,22 +155,22 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
 
   get industryTemplateOptions(){
     return [
-        { label: 'Financial Services Cloud' , value: '0TTWs0000009Y2T' },
-        { label: 'Health Cloud' , value: '0TTWs0000009Xw1' },
-        { label: 'Life Sciences Cloud' , value: '0TTWs000000AVfF' },
-        { label: 'Consumer Goods Cloud - Retail Execution', value: '0TTWs0000009Yor'},
-        { label: 'Consumer Goods Cloud - Trade Promotion Management', value: '0TTWs0000009YvJ'},
-        { label: 'Manufacturing Cloud', value: '0TTWs0000009Y8v'},
-        { label: 'Automotive Cloud', value: '0TTWs0000009YJV'},
-        { label: 'Energy and Utilities Cloud', value: '0TTWs0000009ZwD'},
-        { label: 'Net Zero Cloud', value: '0TTWs0000009YiP'},
-        { label: 'Communications Cloud', value: '0TTWs0000009ZeT'},
-        { label: 'Education Cloud', value: '0TTWs0000009a8P'},
-        { label: 'Media Cloud', value: '0TTWs0000009Zkv'},
-        { label: 'Nonprofit Cloud', value: '0TTWs0000009kjZ'},
-        { label: 'Public Sector Cloud', value: '0TTWs0000009Ybx'},
+        { label: 'Financial Services Cloud' , value: '0TTWs000000T9JF' },
+        { label: 'Health Cloud' , value: '0TTWs000000T12L' },
+        { label: 'Life Sciences Cloud' , value: '0TTWs000000T0vt' },
+        { label: 'Consumer Goods Cloud - Retail Execution', value: '0TTWs000000TG6D'},
+        { label: 'Consumer Goods Cloud - Trade Promotion Management', value: '0TTWs000000T1qL'},
+        { label: 'Manufacturing Cloud', value: '0TTWs000000T2hZ'},
+        { label: 'Automotive Cloud', value: '0TTWs000000T2b7'},
+        { label: 'Energy and Utilities Cloud', value: '0TTWs000000T66r'},
+        { label: 'Net Zero Cloud', value: '0TTWs000000UWnF'},
+        { label: 'Communications Cloud', value: '0TTWs000000T9nt'},
+        { label: 'Education Cloud', value: '0TTWs000000T5lt'},
+        { label: 'Media Cloud', value: '0TTWs000000T5yn'},
+        { label: 'Nonprofit Cloud', value: '0TTWs000000T5sL'},
+        { label: 'Public Sector Cloud', value: '0TTWs000000T2Uf'},
     ];
-  }
+}
 
   get createUsingOptions() {
     return [

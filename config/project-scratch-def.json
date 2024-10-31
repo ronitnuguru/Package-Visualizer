@@ -1,7 +1,21 @@
 {
-  "orgName": "Sample Scratch Org",
-  "edition": "Developer",
+  "orgName": "Agentforce Workshop",
+  "edition": "Partner Enterprise",
+  "hasSampleData": true,
+  "release": "current",
+  "country": "US",
+  "language": "en_US",
   "features": [
     "EnableSetPasswordInApi"
-  ]
+  ],
+  "settings": {
+    "lightningExperienceSettings": {
+      "enableS1DesktopEnabled": "true",
+      "enableUsersAreLightningOnly": "true",
+      "enableLexEndUsersNoSwitching": "true"
+    },
+    "mobileSettings": {
+      "enableS1EncryptedStoragePref2": "false"
+    }
+  }
 }

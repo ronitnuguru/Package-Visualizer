@@ -34,6 +34,13 @@ const gridColumns = [
     },
     {
         type: "text",
+        fieldName: "signupEmail",
+        label: "Signup Email",
+        sortable: false,
+        iconName: "standard:email"
+    },
+    {
+        type: "text",
         fieldName: "status",
         label: "Status",
         sortable: false,
