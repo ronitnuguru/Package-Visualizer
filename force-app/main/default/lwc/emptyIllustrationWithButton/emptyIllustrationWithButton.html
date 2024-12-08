@@ -365,8 +365,15 @@
     </p>
   </div>
   <footer class="slds-card__footer">
-    <button class="slds-button slds-button_brand" onclick={handleClick}>
-      {buttonLabel}
-    </button>
+    <template if:true={neutralButtonLabel}>
+      <button class="slds-button slds-button_neutral slds-m-right_x-small" onclick={handleNeutralClick}>
+        {neutralButtonLabel}
+      </button>
+    </template>
+    <template if:true={buttonLabel}>
+      <button class="slds-button slds-button_brand" onclick={handleClick}>
+        {buttonLabel}
+      </button>
+    </template>
   </footer>
 </template>

@@ -4,6 +4,7 @@ export default class EmptyIllustrationWithButton extends LightningElement {
     @api title;
     @api body;
     @api buttonLabel;
+    @api neutralButtonLabel;
     @api size;
 
     get modalSize(){
@@ -12,5 +13,9 @@ export default class EmptyIllustrationWithButton extends LightningElement {
 
     handleClick(){
         this.dispatchEvent(new CustomEvent('select'));
+    }
+
+    handleNeutralClick(){
+        this.dispatchEvent(new CustomEvent('neutralselect'));
     }
 }

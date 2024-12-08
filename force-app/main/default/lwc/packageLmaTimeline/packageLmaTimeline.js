@@ -19,6 +19,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
   modifyLicenseDisplay;
   featureParametersDisplay;
   displayModifyLicenseNav;
+  displayGenAiNav;
   campaignDisplay;
   displayEditView;
 
@@ -29,6 +30,21 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
   modifyStatusValue;
 
   editorValue;
+
+  templatePrompts = [
+    {
+      label: "Help me write...",
+      icon: "utility:edit_gpt"
+    },
+    {
+      label: "How do I...",
+      icon: "utility:search"
+    },
+    {
+      label: "Create an email template...",
+      icon: "utility:email"
+    }
+  ]
 
   @wire(isFmaParameter)
   fma({ data, error }) {
@@ -107,6 +123,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
     this.modifyLicenseDisplay = false;
     this.featureParametersDisplay = false;
     this.campaignDisplay = false;
+    this.displayGenAiNav = false;
     this.getTimeline();
   }
 
@@ -116,6 +133,16 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
     this.modifyLicenseDisplay = true;
     this.featureParametersDisplay = false;
     this.campaignDisplay = false;
+    this.displayGenAiNav = false;
+  }
+
+  handleGenerativeAi(){
+    this.selectedItem = `generative_ai`;
+    this.timelineDisplay = false;
+    this.modifyLicenseDisplay = false;
+    this.featureParametersDisplay = false;
+    this.campaignDisplay = false;
+    this.displayGenAiNav = true;
   }
 
   handleFeatureParameters() {
@@ -124,6 +151,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
     this.modifyLicenseDisplay = false;
     this.featureParametersDisplay = true;
     this.campaignDisplay = false;
+    this.displayGenAiNav = false;
   }
 
   handleCampaignHistory() {

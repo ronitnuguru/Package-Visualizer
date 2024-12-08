@@ -187,6 +187,108 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
         );
     }
 
+    fscTemplate(){
+        let features = ['FinancialServicesCommunityUser:5', 'FinancialServicesInsuranceUser', 'FinancialServicesUser:5', 'FSCAlertFramework', 'FSCServiceProcess', 'IndustriesBranchManagement', 'PersonAccounts', 'ContactsToMultipleAccounts', 'AssociationEngine'];
+
+        features.forEach((feature) => {
+            this.featureValue = feature;
+            this.handleAddFeature();
+        });
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: "Success",
+                message: "Sample Scratch Org Features and Settings for Financial Services Cloud have been added",
+                variant: "success"
+            })
+        );
+    }
+
+    hlsTemplate(){
+        let features = ['HealthCloudAddOn', 'HealthCloudForCmty', 'HealthCloudMedicationReconciliation', 'HealthCloudPNMAddOn', 'HealthCloudUser', 'HLSAnalytics', 'PersonAccounts', 'ContactsToMultipleAccounts'];
+
+        features.forEach((feature) => {
+            this.featureValue = feature;
+            this.handleAddFeature();
+        });
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: "Success",
+                message: "Sample Scratch Org Features and Settings for Health Cloud have been added",
+                variant: "success"
+            })
+        ); 
+    }
+
+    cgTemplate(){
+        let features = ['EinsteinVisits', 'CGAnalytics'];
+
+        features.forEach((feature) => {
+            this.featureValue = feature;
+            this.handleAddFeature();
+        });
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: "Success",
+                message: "Sample Scratch Org Features and Settings for Consumer Goods Cloud have been added",
+                variant: "success"
+            })
+        );
+    }
+
+    eduTemplate(){
+        let features = ['EducationCloud:3'];
+
+        features.forEach((feature) => {
+            this.featureValue = feature;
+            this.handleAddFeature();
+        });
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: "Success",
+                message: "Sample Scratch Org Features and Settings for Education Cloud have been added",
+                variant: "success"
+            })
+        );
+    }
+
+    euTemplate(){
+        let features = ['EnergyAndUtilitiesCloud', 'EAndUDigitalSales'];
+
+        features.forEach((feature) => {
+            this.featureValue = feature;
+            this.handleAddFeature();
+        });
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: "Success",
+                message: "Sample Scratch Org Features and Settings for Energy and Utilities Cloud have been added",
+                variant: "success"
+            })
+        );
+    }
+
+    netZeroTemplate(){
+        let features = ['SustainabilityApp', 'SustainabilityCloud', 'TCRMforSustainability', 'DisclosureFramework'];
+
+        features.forEach((feature) => {
+            this.featureValue = feature;
+            this.handleAddFeature();
+        });
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: "Success",
+                message: "Sample Scratch Org Features and Settings for Net Zero Cloud have been added",
+                variant: "success"
+            })
+        );
+    }
+
     devOpsCenterTemplate(){
         this.editionValue = 'Partner Developer';
         let features = ['DevOpsCenter'];

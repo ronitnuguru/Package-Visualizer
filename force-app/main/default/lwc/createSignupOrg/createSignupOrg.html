@@ -119,7 +119,7 @@
                         <div class="">
                             <div class="slds-grid slds-grid_vertical-align-center slds-grid_vertical-align-end">
                               <template lwc:if={purposeIcon}>
-                                <div class="slds-align_absolute-center slds-m-top_medium">
+                                <div class="">
                                   <img src={purposeIcon} width="35" height="35" class="slds-m-right_x-small "/>
                                 </div>
                               </template>
@@ -166,9 +166,9 @@
                                     ></lightning-radio-group>
                                 </template>
                                 <template if:true={displayIndustryOptions}>
-                                  <div class="slds-grid slds-grid_vertical-align-center">
+                                  <div class="slds-grid">
                                     <template lwc:if={industryTypeIcon}>
-                                      <div class="slds-align_absolute-center">
+                                      <div class="">
                                         <img src={industryTypeIcon} width="35" height="35" class="slds-m-right_x-small "/>
                                       </div>
                                     </template>
@@ -368,6 +368,8 @@
             <lightning-button
               variant="brand"
               label="Create"
+              icon-name="utility:sparkles"
+              icon-position="right"
               onclick={handleStartTrial}
               disabled={displaySpinner}
             ></lightning-button>

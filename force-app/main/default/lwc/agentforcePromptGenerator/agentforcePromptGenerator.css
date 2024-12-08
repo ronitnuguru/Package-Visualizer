@@ -1,0 +1,7 @@
+.card-style{
+    --slds-c-card-body-spacing-block-end: 0;
+}
+
+.text-area-style {
+  --slds-c-textarea-sizing-min-height: 250px;
+}

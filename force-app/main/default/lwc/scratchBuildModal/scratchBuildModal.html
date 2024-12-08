@@ -12,7 +12,16 @@
                 ></lightning-icon>
             </div>
             <div class="slds-media__body">
-              <p>Discover the various ways you can create scratch orgs via the CLI. <a href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_create.htm" target="_blank">Learn More</a></p>
+                <div>
+                    <ul class="slds-list_dotted">
+                        <li>
+                            The sample file includes the necessary configuration to help jump start the shape your scratch org. You can customize the <a href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file_config_values.htm" target="_blank">Features</a> and <a href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_settings.htm" target="_blank">Metadata Settings</a> further based on your your specifc requirements. 
+                        </li>
+                        <li>
+                            <a href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_create.htm" target="_blank">Discover</a> the various ways you can create scratch orgs via the CLI. 
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
         <code>
@@ -24,6 +33,8 @@
             label="Download JSON" 
             onclick={handleDownloadJson} 
             variant="brand"
+            icon-name="utility:download"
+            icon-position="right"
         ></lightning-button>
     </lightning-modal-footer>
 </template>

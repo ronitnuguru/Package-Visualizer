@@ -1,10 +1,6 @@
 {
-  "orgName": "Agentforce Workshop",
-  "edition": "Partner Enterprise",
-  "hasSampleData": true,
-  "release": "current",
-  "country": "US",
-  "language": "en_US",
+  "orgName": "PkgViz",
+  "edition": "Developer",
   "features": [
     "EnableSetPasswordInApi"
   ],

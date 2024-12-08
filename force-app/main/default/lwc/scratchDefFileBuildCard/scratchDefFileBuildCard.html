@@ -28,12 +28,19 @@
                 onclick={navigateToScratchHelpDefFile}
                 tooltip="Help - Build Your Own Scratch Org Definition File"
             ></lightning-button-icon>
-           
             <lightning-button-menu alternative-text="Show menu" menu-alignment="auto" tooltip="Sample Scratch Org Templates" icon-name="utility:insert_tag_field">
                 <lightning-menu-item prefix-icon-name="utility:einstein" label="Agentforce" value="Agentforce" onclick={agentforceTemplate}></lightning-menu-item>
                 <lightning-menu-item prefix-icon-name="utility:data_cloud" label="Data Cloud" value="Data Cloud" onclick={dataCloudTemplate}></lightning-menu-item>
                 <lightning-menu-item prefix-icon-name="utility:tableau" label="CRM Analytics" value="CRM Analytics" onclick={crmAnalyticsTemplate}></lightning-menu-item>
                 <lightning-menu-item prefix-icon-name="utility:lightning_extension" label="DevOps Center" value="DevOps Center" onclick={devOpsCenterTemplate}></lightning-menu-item>
+                <lightning-menu-divider></lightning-menu-divider>
+                <lightning-menu-subheader label="Industries"></lightning-menu-subheader>
+                <lightning-menu-item label="Financial Service Cloud" value="Financial Service Cloud" onclick={fscTemplate}></lightning-menu-item>
+                <lightning-menu-item label="Health Cloud" value="Health Cloud" onclick={hlsTemplate}></lightning-menu-item>
+                <lightning-menu-item label="Consumer Goods Cloud" value="Consumer Goods Cloud" onclick={cgTemplate}></lightning-menu-item>
+                <lightning-menu-item label="Net Zero Cloud" value="Net Zero Cloud" onclick={netZeroTemplate}></lightning-menu-item>
+                <lightning-menu-item label="Energy and Utilities Cloud" value="Energy and Utilities Cloud" onclick={euTemplate} ></lightning-menu-item>
+                <lightning-menu-item label="Education Cloud" value="Education Cloud" onclick={eduTemplate}></lightning-menu-item>
             </lightning-button-menu>
             
         </lightning-button-group>
@@ -264,7 +271,14 @@
                             class="slds-m-right_x-small"
                         ></lightning-icon>
                     </template>
-                    <lightning-button variant="brand" label="Build" title="Create Sample Scratch Org Build File" onclick={handleScratchOrgBuildFile}></lightning-button>
+                    <lightning-button 
+                        variant="brand" 
+                        label="Build"
+                        icon-name="utility:sparkles"
+                        icon-position="right"
+                        title="Create Sample Scratch Org Build File" 
+                        onclick={handleScratchOrgBuildFile}
+                    ></lightning-button>
                     <template if:true={displayError}>
                         <div class="slds-is-relative">
                             <section aria-describedby="dialog-body-id-5" aria-labelledby="dialog-heading-id-2" class="slds-popover slds-popover_error slds-nubbin_bottom-right tf-popover" role="dialog">

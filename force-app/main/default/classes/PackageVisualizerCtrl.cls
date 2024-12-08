@@ -274,4 +274,9 @@ public with sharing class PackageVisualizerCtrl {
     @AuraEnabled(cacheable=true)
     public static String getNamespacePermSetId(String label, String namespace){
         try { String queryString = 'SELECT Id FROM PermissionSet WHERE Name = :label AND NamespacePrefix = :namespace'; sObject s = Database.query(queryString); return s.Id; } catch (Exception e){ throw new AuraHandledException('Unable to get Permission Set'); }}
+    
+    @AuraEnabled
+    public static Object invokeModelsGenAi(String className, String methodName, String modelName, String prompt) {
+        try { String namespacedClass = 'pkgviz.'+className; Callable callableInstance = (Callable) Type.forName(className).newInstance(); Map<String, Object> payload = new Map<String, Object>{ 'modelName' => modelName, 'prompt' => prompt }; String result = (String) callableInstance.call(methodName, payload); return result; } catch (Exception e) { throw new AuraHandledException(e.getMessage()); }
+    }
 }

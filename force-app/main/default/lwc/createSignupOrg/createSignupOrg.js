@@ -216,7 +216,7 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
             { label: 'Manufacturing Cloud', value: '0TTWs000000T2hZ'},
             { label: 'Automotive Cloud', value: '0TTWs000000T2b7'},
             { label: 'Energy and Utilities Cloud', value: '0TTWs000000T66r'},
-            { label: 'Net Zero Cloud', value: '0TTWs000000UWnF'},
+            { label: 'Net Zero Cloud', value: '0TTWs000000VKTt'},
             { label: 'Communications Cloud', value: '0TTWs000000T9nt'},
             { label: 'Education Cloud', value: '0TTWs000000T5lt'},
             { label: 'Media Cloud', value: '0TTWs000000T5yn'},

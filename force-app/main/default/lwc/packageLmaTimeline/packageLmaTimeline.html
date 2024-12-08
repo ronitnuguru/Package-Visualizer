@@ -144,6 +144,15 @@
               >
               </lightning-vertical-navigation-item-icon>
             </template>
+            
+            <lightning-vertical-navigation-item-icon
+              label="Agentforce"
+              name="generative_ai"
+              icon-name="utility:einstein"
+              onclick={handleGenerativeAi}
+            >
+            </lightning-vertical-navigation-item-icon>
+            
             <!--
             <template if:true={displayFMA}>
               <lightning-vertical-navigation-item-icon
@@ -213,7 +222,7 @@
               </lightning-button-group>
               <div></div>
               <div
-                class="slds-grid slds-gutters slds-wrap slds-var-p-around_medium"
+                class="slds-grid slds-gutters slds-var-p-around_medium"
               >
                 <template if:false={displayEditView}>
                   <div class="slds-col slds-var-p-around_small">
@@ -393,6 +402,17 @@
                 </div>
               </template>
             </lightning-card>
+          </div>
+        </template>
+        <template if:true={displayGenAiNav}>
+          <div
+            class="slds-border_left slds-border_bottom slds-border_right slds-border_top slds-var-m-top_medium timeline-card-style"
+          >
+              <c-agentforce-prompt-generator
+                title-header="What can I help with?"
+                title-icon="standard:story"
+                template-prompts={templatePrompts}
+              ></c-agentforce-prompt-generator>
           </div>
         </template>
         <!--
