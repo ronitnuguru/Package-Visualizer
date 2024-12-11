@@ -5,9 +5,11 @@
     <masterLabel>Agentforce - Custom Prompt Generator</masterLabel>
     <targets>
         <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__RecordPage</target>
     </targets>
     <targetConfigs>
-        <targetConfig targets="lightning__AppPage">
+        <targetConfig targets="lightning__AppPage, lightning__HomePage, lightning__RecordPage">
             <property name="titleHeader" label="Header" type="String" default="What can I help with?"></property>
             <property name="titleIcon" label="SLDS Icon" type="String" default="standard:story"></property>
             <property name="templatePrompts" label="Template Prompts" type="String" default='[ { "label": "Help me write...", "icon": "utility:edit_gpt" }, { "label": "How do I...", "icon": "utility:search" }, {"label": "Find documentation for...", "icon": "utility:knowledge_base" } ]'></property>

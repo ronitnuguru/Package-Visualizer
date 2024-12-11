@@ -3,6 +3,24 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
+                <componentInstanceProperties>
+                    <name>templatePrompts</name>
+                    <value>[ { &quot;label&quot;: &quot;Help me write...&quot;, &quot;icon&quot;: &quot;utility:edit_gpt&quot; }, { &quot;label&quot;: &quot;How do I...&quot;, &quot;icon&quot;: &quot;utility:search&quot; }, {&quot;label&quot;: &quot;Find documentation for...&quot;, &quot;icon&quot;: &quot;utility:knowledge_base&quot; } ]</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>titleHeader</name>
+                    <value>What can I help with?</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>titleIcon</name>
+                    <value>standard:story</value>
+                </componentInstanceProperties>
+                <componentName>agentforcePromptGenerator</componentName>
+                <identifier>c_agentforcePromptGenerator</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
                 <componentName>createSignupOrg</componentName>
                 <identifier>c_createSignupOrg</identifier>
             </componentInstance>

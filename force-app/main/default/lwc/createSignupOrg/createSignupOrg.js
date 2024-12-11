@@ -211,17 +211,17 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
             { label: 'Financial Services Cloud' , value: '0TTWs000000T9JF' },
             { label: 'Health Cloud' , value: '0TTWs000000T12L' },
             { label: 'Life Sciences Cloud' , value: '0TTWs000000T0vt' },
-            { label: 'Consumer Goods Cloud - Retail Execution', value: '0TTWs000000TG6D'},
+            { label: 'Consumer Goods Cloud - Retail Execution', value: '0TTWs000000UMCn'},
             { label: 'Consumer Goods Cloud - Trade Promotion Management', value: '0TTWs000000T1qL'},
             { label: 'Manufacturing Cloud', value: '0TTWs000000T2hZ'},
-            { label: 'Automotive Cloud', value: '0TTWs000000T2b7'},
+            { label: 'Automotive Cloud', value: '0TTWs000000UOWL'},
             { label: 'Energy and Utilities Cloud', value: '0TTWs000000T66r'},
             { label: 'Net Zero Cloud', value: '0TTWs000000VKTt'},
-            { label: 'Communications Cloud', value: '0TTWs000000T9nt'},
+            { label: 'Communications Cloud', value: '0TTWs000000W4Zx'},
             { label: 'Education Cloud', value: '0TTWs000000T5lt'},
             { label: 'Media Cloud', value: '0TTWs000000T5yn'},
             { label: 'Nonprofit Cloud', value: '0TTWs000000T5sL'},
-            { label: 'Public Sector Cloud', value: '0TTWs000000T2Uf'},
+            { label: 'Public Sector Cloud', value: '0TTWs000000UOCz'},
         ];
     }
 

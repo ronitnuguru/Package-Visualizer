@@ -1,10 +1,34 @@
 <template>
     <lightning-card class="card-style">
         <template if:true={displayExtensionIllustration}>
+            <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-around_medium" role="status">
+                <div class="slds-media__figure">
+                    <lightning-icon
+                        size="small"
+                        icon-name="utility:info"
+                        alternative-text="info"
+                        title="info"
+                        variant="inverse"
+                    ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                    <div>
+                        Component Requirements
+                        <ol class="slds-list_ordered">
+                            <li>
+                                Enable Agentforce in <a href="/lightning/setup/EinsteinGPTSetup/home" target="_blank">Einstein Setup</a> and <a href="/lightning/setup/EinsteinCopilot/home" target="_blank">Agent Studio</a> 
+                            </li>
+                            <li>
+                                Install Package Visualizer + ISV Tooling Unlocked Extension Package. <a href="https://salesforce.quip.com/f3SWA340YbFH" target="_blank">Learn More</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
             <c-empty-illustration-with-button
                 title="Component not available..."
-                body="It looks like you may have not installed the extension managed package or you don't have the necessary permissions to perform Agentforce related functionalities. Please contact your admin and refer Package Visualizer's customization guide..."
-                button-label="Install Extension Package"
+                body="Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance..."
+                button-label="Install Unlocked Package"
                 neutral-button-label="Back"
                 size="medium"
                 onselect={handleExtensionInstall}
@@ -54,6 +78,7 @@
                     placeholder="Messsage Agentforce..."
                     onchange={handlePromptChange} 
                     value={prompt}
+                    required
                 ></lightning-textarea>
 
                 <template lwc:if={templatePrompts}>

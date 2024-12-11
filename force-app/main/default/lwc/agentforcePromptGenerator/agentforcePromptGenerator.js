@@ -16,6 +16,7 @@ export default class AgentforcePromptGenerator extends NavigationMixin(Lightning
     displayExtensionIllustration = false;
 
     modelsValue = 'sfdc_ai__DefaultGPT4Omni';
+    currentPkgVersionId = '04tRh000000iA0TIAU';
 
     connectedCallback(){
         if(this.templatePrompts){
@@ -56,11 +57,10 @@ export default class AgentforcePromptGenerator extends NavigationMixin(Lightning
     }
 
     handleExtensionInstall(){
-        const currentPkgVersionId = '04tRh000000hdEDIAY';
         this[NavigationMixin.Navigate]({
             type: 'standard__webPage',
             attributes: {
-                url: `/packaging/installPackage.apexp?p0=${currentPkgVersionId}`
+                url: `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`
             }
         });
     }
