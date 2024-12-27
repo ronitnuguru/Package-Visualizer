@@ -279,4 +279,9 @@ public with sharing class PackageVisualizerCtrl {
     public static Object invokeModelsGenAi(String className, String methodName, String modelName, String prompt) {
         try { String namespacedClass = 'pkgviz.'+className; Callable callableInstance = (Callable) Type.forName(className).newInstance(); Map<String, Object> payload = new Map<String, Object>{ 'modelName' => modelName, 'prompt' => prompt }; String result = (String) callableInstance.call(methodName, payload); return result; } catch (Exception e) { throw new AuraHandledException(e.getMessage()); }
     }
+
+    @AuraEnabled
+    public static Object invokePromptAndUserModelsGenAi(String className, String methodName, String modelName, String userPrompt, String systemPrompt) {
+        try { String namespacedClass = 'pkgviz.'+className; Callable callableInstance = (Callable) Type.forName(className).newInstance(); Map<String, Object> payload = new Map<String, Object>{ 'modelName' => modelName, 'userPrompt' => userPrompt, 'systemPrompt' => systemPrompt  }; String result = (String) callableInstance.call(methodName, payload); return result; } catch (Exception e) { throw new AuraHandledException(e.getMessage()); }
+    }
 }

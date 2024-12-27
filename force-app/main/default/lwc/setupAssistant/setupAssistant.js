@@ -1,5 +1,6 @@
 import { LightningElement, api, wire } from "lwc";
 import { NavigationMixin } from "lightning/navigation";
+import agentforcePromptModalGenerator from 'c/agentforcePromptModalGenerator';
 import hasPackageVisualizerCore from "@salesforce/customPermission/Package_Visualizer_Core";
 import hasPackageVisualizerPushUpgrade from "@salesforce/customPermission/Package_Visualizer_Push_Upgrade";
 import hasViewSetup from "@salesforce/userPermission/ViewSetup";
@@ -261,4 +262,51 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
       }
     });
   }
+
+  openAskAgentforce(event){
+    switch (event.target.value) {
+      case "enableDevHub":
+        this.openModal({
+          headerLabel: "Ask Agentforce",
+          userPrompt: `How do I enable Dev Hub Features in Salesforce's Setup?`,
+          systemPrompt: `Provide neatly numbered documentation with numbered steps and hyperlinks. Do not share additional information. Keep it concise and simple. The end output needs to be displayed in easily readable rich text format where text is formatted by HTML tags. Don't include the root html tag. Mostly focus on anchor tags and lists. For example, the hyperlinks need to be clickable and open in a new tab`
+        })
+        break;
+      case "createRegisterNamespace":
+        this.openModal({
+          headerLabel: "Ask Agentforce",
+          userPrompt: `How do I create and register namespace for Second-Generation Packages (2GP)?`,
+          systemPrompt: `Provide neatly numbered documentation with numbered steps and hyperlinks. Do not share additional information. Keep it concise and simple. The end output needs to be displayed in easily readable rich text format where text is formatted by HTML tags. Don't include the root html tag. Mostly focus on anchor tags and lists. For example, the hyperlinks need to be clickable and open in a new tab. Keep the scope to 2GP packages only. Only setup details in a Salesforce org. Do not share details on CLI`
+        })
+        break;
+      case "provAccessDevs":
+        this.openModal({
+          headerLabel: "Ask Agentforce",
+          userPrompt: `How do I provsion access to developers in Salesforce?`,
+          systemPrompt: `Provide neatly numbered documentation with numbered steps and hyperlinks. Do not share additional information. Keep it concise and simple. The end output needs to be displayed in easily readable rich text format where text is formatted by HTML tags. Don't include the root html tag. Mostly focus on anchor tags and lists. For example, the hyperlinks need to be clickable and open in a new tab. Keep the scope to 2GP packages only. Only setup details in a Salesforce org. Do not share details on CLI`
+        })
+        break;
+        case "dxSetup":
+          this.openModal({
+            headerLabel: "Ask Agentforce",
+            userPrompt: `How do I enable Dev Hub Features in Salesforce's Setup?`,
+            systemPrompt: `Provide neatly numbered documentation with numbered steps and hyperlinks. Do not share additional information. Keep it concise and simple. The end output needs to be displayed in easily readable rich text format where text is formatted by HTML tags. Don't include the root html tag. Mostly focus on anchor tags and lists. For example, the hyperlinks need to be clickable and open in a new tab`
+          })
+        break;
+      default:
+        break;
+    }
+  }
+
+  async openModal(details){
+    const result = await agentforcePromptModalGenerator.open({
+      label: details.headerLabel,
+      size: 'medium',
+      content: {
+          userPrompt: details.userPrompt,
+          systemPrompt: details.systemPrompt
+      }
+    });   
+  }
+
 }

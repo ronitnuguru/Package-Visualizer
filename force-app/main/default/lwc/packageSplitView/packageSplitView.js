@@ -1,6 +1,7 @@
 import { LightningElement, wire, api } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { NavigationMixin } from "lightning/navigation";
+import agentforcePromptModalGenerator from 'c/agentforcePromptModalGenerator';
 import hasPackageVisualizerPushUpgrade from "@salesforce/customPermission/Package_Visualizer_Push_Upgrade";
 import { publish, subscribe, unsubscribe, MessageContext } from "lightning/messageService";
 import PACAKGEEDITMESSAGECHANNEL from "@salesforce/messageChannel/PackageEditMessageChannel__c";
@@ -433,5 +434,29 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
         componentName: "pkgviz__scratchDefFileBuildCard",
       }
     });
+  }
+
+  openAskAgentforce(event){
+    switch (event.target.value) {
+      case "packagesOverview":
+        this.openModal({
+          headerLabel: "Ask Agentforce",
+          userPrompt: `How does Second-Generation Packaging work in Salesforce?`,
+          systemPrompt: `Provide neatly numbered documentation with numbered steps and hyperlinks. Do not share additional information. Keep it concise and simple. The end output needs to be displayed in easily readable rich text format where text is formatted by HTML tags. Don't include the root html tag. Mostly focus on anchor tags and lists. For example, the hyperlinks need to be clickable and open in a new tab`
+        })
+        break;
+      default:
+        break;
+    }
+  }
+  async openModal(details){
+    const result = await agentforcePromptModalGenerator.open({
+      label: details.headerLabel,
+      size: 'medium',
+      content: {
+          userPrompt: details.userPrompt,
+          systemPrompt: details.systemPrompt
+      }
+    });   
   }
 }

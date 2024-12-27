@@ -14,6 +14,8 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
     installUnlockedPackageIllustration;
     displayWalkthroughs;
 
+    currentPkgVersionId = '04tRh000000iBB3IAM';
+
     @wire(verifyUnlockedPackageInstalled)
     wiredData({ error, data }) {
         if (data === true) {
@@ -55,7 +57,7 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
         this[NavigationMixin.Navigate]({
             type: "standard__webPage",
             attributes: {
-              url: `/packaging/installPackage.apexp?p0=04tRh000000EqhtIAC`
+              url: `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`
             }
         });
     }

@@ -59,8 +59,6 @@ export default class DemoTrialsCard extends LightningElement {
 
     async handleBrandClick(){
         const result = await createOrgModal.open({
-            // `label` is not included here in this example.
-            // it is set on lightning-modal-header instead
             label: this.title,
             size: 'medium',
             description: `Create Signup Modal for ${this.title}`,

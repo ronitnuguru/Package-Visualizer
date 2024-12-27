@@ -232,7 +232,6 @@
                   </div>
                   <div class="slds-media__figure slds-media__figure_reverse">
                     <lightning-button
-                      variant="brand-outline"
                       label="Guide"
                       icon-name="utility:quip"
                       icon-position="right"
@@ -279,14 +278,21 @@
                         </ul>
                     </div>
                     <div class="slds-media__figure slds-media__figure_reverse">
-                      <lightning-button
-                        variant="brand-outline"
-                        label="Setup"
-                        icon-name="utility:setup"
-                        icon-position="right"
-                        onclick={navigateToDevHub}
-                        disabled={isSetupEnabled}
-                      ></lightning-button>
+                      <lightning-button-group>
+                        <lightning-button
+                          label="Setup"
+                          icon-name="utility:setup"
+                          icon-position="right"
+                          onclick={navigateToDevHub}
+                          disabled={isSetupEnabled}
+                        ></lightning-button>
+                        <lightning-button-icon 
+                          icon-name="utility:einstein"
+                          tooltip="Ask Agentforce"
+                          value="enableDevHub"
+                          onclick={openAskAgentforce}
+                        ></lightning-button-icon>
+                      </lightning-button-group> 
                     </div>
                   </div>
                 </div>
@@ -371,14 +377,21 @@
                       </div>
                     </div>
                     <div class="slds-media__figure slds-media__figure_reverse">
-                      <lightning-button
-                        variant="brand-outline"
-                        label="Guide"
-                        icon-name="utility:apex"
-                        icon-position="right"
-                        onclick={navigateUnderstandingNamespaces}
-                        disabled={isSetupEnabled}
-                      ></lightning-button>
+                      <lightning-button-group>
+                        <lightning-button
+                          label="Guide"
+                          icon-name="utility:apex"
+                          icon-position="right"
+                          onclick={navigateUnderstandingNamespaces}
+                          disabled={isSetupEnabled}
+                        ></lightning-button>
+                        <lightning-button-icon 
+                          icon-name="utility:einstein"
+                          tooltip="Ask Agentforce"
+                          value="createRegisterNamespace"
+                          onclick={openAskAgentforce}
+                        ></lightning-button-icon>
+                      </lightning-button-group>
                     </div>
                   </div>
                 </div>
@@ -465,14 +478,21 @@
                       </div>
                     </div>
                     <div class="slds-media__figure slds-media__figure_reverse">
-                      <lightning-button
-                        variant="brand-outline"
-                        label="Limited Access User Setup"
-                        icon-name="utility:setup"
-                        icon-position="right"
-                        onclick={navigateLimitedAccessUserProfiile}
-                        disabled={isSetupEnabled}
-                      ></lightning-button>
+                      <lightning-button-group>
+                        <lightning-button
+                          label="Limited Access User Setup"
+                          icon-name="utility:setup"
+                          icon-position="right"
+                          onclick={navigateLimitedAccessUserProfiile}
+                          disabled={isSetupEnabled}
+                        ></lightning-button>
+                        <lightning-button-icon 
+                          icon-name="utility:einstein"
+                          tooltip="Ask Agentforce"
+                          value="provAccessDevs"
+                          onclick={openAskAgentforce}
+                        ></lightning-button-icon>
+                      </lightning-button-group>
                     </div>
                   </div>
                 </div>
@@ -609,13 +629,20 @@
                     </div>
                   </div>
                   <div class="slds-media__figure slds-media__figure_reverse">
-                    <lightning-button
-                      variant="brand-outline"
-                      label="Developer Center"
-                      icon-name="utility:salesforce1"
-                      icon-position="right"
-                      onclick={navigateToDXDevCenter}
-                    ></lightning-button>
+                    <lightning-button-group>
+                      <lightning-button
+                        label="Developer Center"
+                        icon-name="utility:salesforce1"
+                        icon-position="right"
+                        onclick={navigateToDXDevCenter}
+                      ></lightning-button>
+                      <lightning-button-icon 
+                        icon-name="utility:einstein"
+                        tooltip="Ask Agentforce"
+                        value="dxSetup"
+                        onclick={openAskAgentforce}
+                      ></lightning-button-icon>
+                    </lightning-button-group>
                   </div>
                 </div>
               </div>

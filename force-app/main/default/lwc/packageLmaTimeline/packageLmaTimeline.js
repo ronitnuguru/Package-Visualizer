@@ -44,7 +44,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
       label: "Create an email template...",
       icon: "utility:email"
     }
-  ]
+  ];
 
   @wire(isFmaParameter)
   fma({ data, error }) {

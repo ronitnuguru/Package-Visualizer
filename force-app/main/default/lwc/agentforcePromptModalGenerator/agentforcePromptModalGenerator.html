@@ -1,0 +1,122 @@
+<template>
+    <lightning-modal-header class="modal-window" label={label}></lightning-modal-header>
+    <lightning-modal-body>
+        <template if:true={displayModels}>
+          <lightning-combobox
+            name="models"
+            label="Models"
+            value={modelsValue}
+            placeholder="Select Supported Models"
+            dropdown-alignment="auto"
+            options={modelsTypeOptions}
+            onchange={handleModelsTypeChange}
+            field-level-help="A geo-aware model automatically routes your LLM request to a nearby data center based on where your org is provisioned. It offers greater control over data residency, and using nearby data centers minimizes latency"
+          ></lightning-combobox>
+        </template>
+        <template if:true={displayEditPrompt}>
+          <template if:false={displayModels}>
+            <lightning-combobox
+              name="models"
+              label="Models"
+              value={modelsValue}
+              placeholder="Select Supported Models"
+              dropdown-alignment="auto"
+              options={modelsTypeOptions}
+              onchange={handleModelsTypeChange}
+              field-level-help="A geo-aware model automatically routes your LLM request to a nearby data center based on where your org is provisioned. It offers greater control over data residency, and using nearby data centers minimizes latency"
+            ></lightning-combobox>
+          </template>
+          <lightning-textarea 
+            name="prompt" 
+            label="User Prompt"
+            placeholder="Messsage Agentforce..."
+            onchange={handleUserPromptChange} 
+            value={userPrompt}
+            class="text-area-style"
+            required
+          ></lightning-textarea>
+          <lightning-textarea 
+            name="prompt" 
+            label="System Prompt"
+            placeholder="Messsage Agentforce..."
+            onchange={handleSystemPromptChange} 
+            value={systemPrompt}
+            class="text-area-style"
+            required
+          ></lightning-textarea>
+        </template>
+        <template if:false={displayEditPrompt}>
+          <li class="slds-chat-listitem slds-chat-listitem_inbound">
+            <div class="slds-chat-message">
+                <span class="slds-avatar slds-m-right_x-small">
+                    <span class="slds-icon_container">
+                      <lightning-icon
+                        icon-name="utility:einstein"
+                      ></lightning-icon>
+                    </span>
+                </span>
+              <div class="slds-chat-message__body">
+                <div class="slds-chat-message__text slds-chat-message__text_inbound">
+                  <span>{userPrompt}</span>
+                </div>
+                <div class="slds-chat-message__meta">Agentforce • {promptCurrentTime}</div>
+              </div>
+            </div>
+          </li>
+          <li class="slds-chat-listitem slds-chat-listitem_outbound">
+            <div class="slds-chat-message">
+              <div class="slds-chat-message__body">
+                <template lwc:if={displayResult}>
+                  <div class="slds-chat-message__text slds-chat-message__text_outbound-agent">
+                    <lightning-formatted-rich-text value={response}></lightning-formatted-rich-text>
+                  </div>
+                  <div class="slds-chat-message__meta">Agentforce • {responseCurrentTime}</div>
+                </template>
+                <template lwc:else>
+                  <div class="slds-chat-message__text slds-chat-message__text_outbound-agent">
+                    <span class="slds-icon-typing slds-is-animated" title="Analyzing Request...">
+                      <span class="slds-icon-typing__dot"></span>
+                      <span class="slds-icon-typing__dot"></span>
+                      <span class="slds-icon-typing__dot"></span>
+                      <span class="slds-assistive-text">Analyzing Request...</span>
+                    </span>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </li>
+        </template>
+    </lightning-modal-body>
+    <template if:false={displayEditPrompt}>
+      <lightning-modal-footer>
+          <lightning-button
+              label="Cancel"
+              onclick={handleCancel}
+              class="slds-m-right_x-small"
+          >
+          </lightning-button>
+          <lightning-button-group>
+            <lightning-button
+              variant="brand"
+              label="Ask Again"
+              icon-name="utility:sparkles"
+              icon-position="right"
+              onclick={handleAskAgain}
+              disabled={enableAskAgain}
+            ></lightning-button>
+            <template lwc:if={displayResult}>
+              <lightning-button-menu alternative-text="Show menu" menu-alignment="auto" variant="border-filled" onselect={handleAgentPromptMenu}>
+                <lightning-menu-item value="switchModel" label="Switch Model" icon-name="utility:replace"></lightning-menu-item>
+                <lightning-menu-item value="editPrompt" label="Edit Prompt" icon-name="utility:prompt_edit"></lightning-menu-item>
+              </lightning-button-menu>
+            </template>
+          </lightning-button-group>
+      </lightning-modal-footer>
+    </template>
+    <template if:true={displayEditPrompt}>
+      <lightning-modal-footer>
+        <lightning-button label="Back" onclick={hanbleBack} class="slds-m-left_x-small"></lightning-button>
+        <lightning-button variant="brand" icon-position="right" icon-name="utility:sparkles" label="Generate" onclick={handleAskAgain} class="slds-m-left_x-small" disabled={enableGenerate}></lightning-button>
+      </lightning-modal-footer>
+    </template>
+</template>
