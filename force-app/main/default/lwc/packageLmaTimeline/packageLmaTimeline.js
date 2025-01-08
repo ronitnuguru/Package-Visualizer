@@ -33,16 +33,16 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
 
   templatePrompts = [
     {
+      label: "Create an email template...",
+      icon: "utility:email"
+    },
+    {
       label: "Help me write...",
       icon: "utility:edit_gpt"
     },
     {
       label: "How do I...",
       icon: "utility:search"
-    },
-    {
-      label: "Create an email template...",
-      icon: "utility:email"
     }
   ];
 

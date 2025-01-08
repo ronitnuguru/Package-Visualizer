@@ -51,12 +51,6 @@
                 <identifier>c_orgExpirationCard</identifier>
             </componentInstance>
         </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentName>inAppGuidanceCard</componentName>
-                <identifier>c_inAppGuidanceCard</identifier>
-            </componentInstance>
-        </itemInstances>
         <name>region3</name>
         <type>Region</type>
     </flexiPageRegions>
