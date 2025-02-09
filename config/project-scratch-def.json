@@ -1,8 +1,11 @@
 {
-  "orgName": "PkgViz",
-  "edition": "Developer",
+  "orgName": "Agentforce Scratch",
+  "edition": "Partner Developer",
+  "hasSampleData": true,
   "features": [
-    "EnableSetPasswordInApi"
+    "EnableSetPasswordInApi",
+    "Einstein1AIPlatform",
+    "EinsteinGPTForDevelopers"
   ],
   "settings": {
     "lightningExperienceSettings": {
@@ -12,6 +15,9 @@
     },
     "mobileSettings": {
       "enableS1EncryptedStoragePref2": "false"
+    },
+    "einsteinGptSettings": {
+      "enableEinsteinGptPlatform": "true"
     }
   }
 }

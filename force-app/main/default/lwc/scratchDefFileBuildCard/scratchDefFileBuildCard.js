@@ -141,7 +141,7 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
 
     dataCloudTemplate(){
         this.editionValue = 'Partner Developer';
-        let features = ['CustomerDataPlatform', 'MarketingUser'];
+        let features = ['CustomerDataPlatform', 'CustomerDataPlatformLite', 'MarketingUser'];
 
         features.forEach((feature) => {
            this.featureValue = feature;
@@ -190,6 +190,12 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
     fscTemplate(){
         let features = ['FinancialServicesCommunityUser:5', 'FinancialServicesInsuranceUser', 'FinancialServicesUser:5', 'FSCAlertFramework', 'FSCServiceProcess', 'IndustriesBranchManagement', 'PersonAccounts', 'ContactsToMultipleAccounts', 'AssociationEngine'];
 
+        publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
+            "industriesSettings": {
+                "enableFinancialAccountMgmt": true
+            }
+        });
+
         features.forEach((feature) => {
             this.featureValue = feature;
             this.handleAddFeature();
@@ -206,6 +212,13 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
 
     hlsTemplate(){
         let features = ['HealthCloudAddOn', 'HealthCloudForCmty', 'HealthCloudMedicationReconciliation', 'HealthCloudPNMAddOn', 'HealthCloudUser', 'HLSAnalytics', 'PersonAccounts', 'ContactsToMultipleAccounts'];
+
+        publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
+            "industriesSettings": {
+                "enableClinicalDataModel": true,
+                "enableContactCenterAccess": true
+            }
+        });
 
         features.forEach((feature) => {
             this.featureValue = feature;
@@ -240,6 +253,12 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
 
     eduTemplate(){
         let features = ['EducationCloud:3'];
+
+        publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
+            "industriesSettings": {
+                "enableEducationCloud": true
+            }
+        });
 
         features.forEach((feature) => {
             this.featureValue = feature;
@@ -284,6 +303,23 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
             new ShowToastEvent({
                 title: "Success",
                 message: "Sample Scratch Org Features and Settings for Net Zero Cloud have been added",
+                variant: "success"
+            })
+        );
+    }
+
+    pubSecTemplate(){
+        let features = ['PublicSectorAccess', 'PublicSectorApplicationUsageCreditsAddOn', 'PublicSectorSiteTemplate'];
+
+        features.forEach((feature) => {
+            this.featureValue = feature;
+            this.handleAddFeature();
+        });
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: "Success",
+                message: "Sample Scratch Org Features and Settings for Public Sector Cloud have been added",
                 variant: "success"
             })
         );

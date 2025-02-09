@@ -107,6 +107,15 @@ export default class AgentforcePromptModalGenerator extends LightningModal {
         this.close();
     }
 
+    handleExtensionInstall(){
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`
+            }
+        });
+    }
+
     handleUserPromptChange(event){
         this.userPrompt = event.target.value;
     }

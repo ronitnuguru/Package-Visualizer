@@ -441,8 +441,8 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
       case "packagesOverview":
         this.openModal({
           headerLabel: "Ask Agentforce",
-          userPrompt: `How does Second-Generation Packaging work in Salesforce?`,
-          systemPrompt: `Provide neatly numbered documentation with numbered steps and hyperlinks. Do not share additional information. Keep it concise and simple. The end output needs to be displayed in easily readable rich text format where text is formatted by HTML tags. Don't include the root html tag. Mostly focus on anchor tags and lists. For example, the hyperlinks need to be clickable and open in a new tab`
+          userPrompt: `How to develop and use Second-Generation Packaging (2GP) in Salesforce?`,
+          systemPrompt: `You are an AI assistant that generates responses in a well-structured, readable rich text format suitable for rendering in HTML. Your output should follow these guidelines: 1. **Use HTML Formatting:** - Format key points using <strong> for emphasis and <ul> or <ol> for lists. - Use <p> for paragraphs to ensure readability. - Include <code> for inline code snippets and <pre><code> for blocks of code when needed. 2. **Ensure Readability & Structure:** - Break content into **logical sections** with headings and spacing. - Use **bullet points and numbered lists** for better clarity. - Avoid long, dense paragraphs—use line breaks where necessary. 3. **Enhance User Experience:** - Include relevant hyperlinks (<a href="URL">Link Text</a>) when mentioning external resources. - When listing examples, format them clearly in <blockquote> or <code> where applicable. - Maintain **consistent indentation** and spacing for readability. Do not include unnecessary white spaces. Do not include heading tags and stay consistent with paragraph tags`
         })
         break;
       default:

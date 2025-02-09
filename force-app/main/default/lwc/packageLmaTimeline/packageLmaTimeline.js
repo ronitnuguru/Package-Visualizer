@@ -259,15 +259,17 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
   handleSendEmailClick() {
     let _licencseId = this.extractIdFromUrl(this.license.id);
     let _sendToId;
+    let _relatedToId;
 
     if (this.license.leadId) {
       _sendToId = this.extractIdFromUrl(this.license.leadId);
-    } else if (this.license.contactId) {
+    }else if (this.license.contactId) {
       _sendToId = this.extractIdFromUrl(this.license.contactId);
+      _relatedToId = _sendToId;
     } else {
       _sendToId = null;
     }
-
+    console.log(_sendToId);
     var pageRef = {
       type: "standard__quickAction",
       attributes: {
@@ -277,7 +279,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
         recordId: _sendToId,
         defaultFieldValues:
           encodeDefaultFieldValues({
-            RelatedToId: _licencseId
+            RelatedToId: _relatedToId
           })
       }
     };

@@ -1,6 +1,40 @@
 <template>
     <lightning-modal-header class="modal-window" label={label}></lightning-modal-header>
     <lightning-modal-body>
+      <template if:true={displayExtensionIllustration}>
+        <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-around_medium" role="status">
+            <div class="slds-media__figure">
+                <lightning-icon
+                    size="small"
+                    icon-name="utility:info"
+                    alternative-text="info"
+                    title="info"
+                    variant="inverse"
+                ></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+                <div>
+                    Component Requirements
+                    <ol class="slds-list_ordered">
+                        <li>
+                            Enable Agentforce in <a href="/lightning/setup/EinsteinGPTSetup/home" target="_blank">Einstein Setup</a> and <a href="/lightning/setup/EinsteinCopilot/home" target="_blank">Agent Studio</a> 
+                        </li>
+                        <li>
+                            Install Package Visualizer + ISV Tooling Unlocked Extension Package. <a href="https://salesforce.quip.com/f3SWA340YbFH" target="_blank">Learn More</a>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <c-empty-illustration-with-button
+            title="Component not available..."
+            body="Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance..."
+            button-label="Install Unlocked Package"
+            size="medium"
+            onselect={handleExtensionInstall}
+        ></c-empty-illustration-with-button>
+      </template>
+      <template if:false={displayExtensionIllustration}>
         <template if:true={displayModels}>
           <lightning-combobox
             name="models"
@@ -51,7 +85,7 @@
                 <span class="slds-avatar slds-m-right_x-small">
                     <span class="slds-icon_container">
                       <lightning-icon
-                        icon-name="utility:einstein"
+                        icon-name="utility:agent_astro"
                       ></lightning-icon>
                     </span>
                 </span>
@@ -86,6 +120,7 @@
             </div>
           </li>
         </template>
+      </template>
     </lightning-modal-body>
     <template if:false={displayEditPrompt}>
       <lightning-modal-footer>

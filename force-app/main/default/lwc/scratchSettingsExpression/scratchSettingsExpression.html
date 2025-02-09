@@ -19,7 +19,6 @@
                     <lightning-button-icon
                         icon-name="utility:help_doc_ext"
                         class="slds-m-left_x-small"
-                        alternative-text="Settings"
                         variant="border-filled"
                         data-index={it.index}
                         onclick={navigateMetaHelpDoc}
@@ -29,7 +28,6 @@
                         <lightning-button-icon
                             icon-name="utility:delete"
                             class="slds-m-left_x-small setting-button"
-                            alternative-text="Remove"
                             variant="border-filled"
                             onclick={onRemoveSetting}
                             data-index={it.index}
@@ -38,6 +36,7 @@
                             disabled={confirmSelected}
                         ></lightning-button-icon>
                     </template>
+                    <lightning-helptext class="slds-form-element_stacked" content="Visit respective Metadata Setting documentation to further enable appropriate features"></lightning-helptext>
                 </div>
                 <ul class="slds-card__body slds-card__body_inner">
                     <c-scratch-row-meta-expression

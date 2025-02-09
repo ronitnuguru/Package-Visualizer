@@ -12,6 +12,7 @@ export default class ScratchSettingsExpression extends NavigationMixin(Lightning
    
     expressionClass = '';
     confirmSelected = false;
+    industriesTooltip;
 
     subscription = null;
     
@@ -168,6 +169,7 @@ export default class ScratchSettingsExpression extends NavigationMixin(Lightning
             { label: 'Document Generation Setting', value: 'documentGenerationSetting' },
             { label: 'Dynamic Forms Settings', value: 'dynamicFormsSettings' },
             { label: 'EAC Settings', value: 'eacSettings' },
+            { label: 'Einstein Agent Settings', value: 'einsteinAgentSettings' },
             { label: 'Einstein Gpt Settings', value: 'einsteinGptSettings' },
             { label: 'Email Administration Settings', value: 'emailAdministrationSettings' },
             { label: 'Email Integration Settings', value: 'emailIntegrationSettings' },
@@ -221,11 +223,8 @@ export default class ScratchSettingsExpression extends NavigationMixin(Lightning
             { label: 'Object Linking Settings', value: 'ibjectLinkingSettings' },
             { label: 'Omni Channel Settings', value: 'omniChannelSettings' },
             { label: 'Omni Interaction Access Config', value: 'omniInteractionAccessConfig' },
-            { label: 'OmniInteractionAccessConfig', value: 'omniInteractionAccessConfig' },
             { label: 'Omni Interaction Config', value: 'omniInteractionConfig' },
-            { label: 'OmniInteractionAccessConfig', value: 'omniInteractionAccessConfig' },
             { label: 'Opportunity Insights Settings', value: 'opportunityInsightsSettings' },
-            { label: 'OmniInteractionAccessConfig', value: 'omniInteractionAccessConfig' },
             { label: 'Opportunity Settings', value: 'opportunitySettings' },
             { label: 'Opportunity Score Settings', value: 'opportunityScoreSettings' },
             { label: 'Order Management Settings', value: 'orderManagementSettings' },
