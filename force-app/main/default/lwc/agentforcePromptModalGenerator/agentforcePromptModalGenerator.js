@@ -28,11 +28,11 @@ export default class AgentforcePromptModalGenerator extends LightningModal {
 
     get modelsTypeOptions() {
         return [
+            { label: 'Azure OpenAI GPT-4o (Latest GPT-4 Model)', value: 'sfdc_ai__DefaultGPT4Omni' },
             { label: 'Anthropic Claude 3 Haiku on Amazon (Salesforce Managed)', value: 'sfdc_ai__DefaultBedrockAnthropicClaude3Haiku' },
             { label: 'Azure OpenAI Ada 002 (Embeddings Only)', value: 'sfdc_ai__DefaultTextEmbeddingAda_002' },
             { label: 'Azure OpenAI GPT-3.5 Turbo', value: 'sfdc_ai__DefaultGPT35Turbo' },
             { label: 'Azure OpenAI GPT-4 Turbo (Older GPT-4 Model)', value: 'sfdc_ai__DefaultGPT4Turbo' },
-            { label: 'Azure OpenAI GPT-4o (Latest GPT-4 Model)', value: 'sfdc_ai__DefaultGPT4Omni' },
             { label: 'OpenAI GPT-4 (Older GPT-4 Model)', value: 'sfdc_ai__DefaultGPT4' },
             { label: 'OpenAI GPT 3.5 Turbo Instruct', value: 'sfdc_ai__DefaultGPT35TurboInstruct' }
         ];

@@ -9,7 +9,6 @@ export default class OrgLimits extends LightningElement {
     limitsList = [];
     limitsFilterList;
 
-
     displaySpinner = true;
 
     @wire(getLimits)

@@ -4,8 +4,7 @@
   "hasSampleData": true,
   "features": [
     "EnableSetPasswordInApi",
-    "Einstein1AIPlatform",
-    "EinsteinGPTForDevelopers"
+    "Einstein1AIPlatform"
   ],
   "settings": {
     "lightningExperienceSettings": {

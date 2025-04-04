@@ -269,7 +269,6 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
     } else {
       _sendToId = null;
     }
-    console.log(_sendToId);
     var pageRef = {
       type: "standard__quickAction",
       attributes: {
