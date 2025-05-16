@@ -136,7 +136,7 @@
                     <lightning-button-menu
                       alternative-text="Show menu"
                       icon-name="utility:filterList"
-                      variant="container"
+                      class="slds-var-m-right_x-small"
                     >
                       <template if:true={allPackageCheck}>
                         <lightning-menu-item
@@ -192,10 +192,10 @@
                       title="Refresh List"
                       onclick={handleRefreshList}
                     >
-                      <lightning-icon
+                      <lightning-button-icon
                         icon-name="utility:refresh"
-                        size="xx-small"
-                      ></lightning-icon>
+                        variant="border-filled"
+                      ></lightning-button-icon>
                       <span class="slds-assistive-text">Refresh List</span>
                     </button>
                   </div>
