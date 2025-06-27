@@ -24,7 +24,7 @@ export default class AgentforcePromptModalGenerator extends LightningModal {
     }
 
     modelsValue = 'sfdc_ai__DefaultGPT4Omni';
-    currentPkgVersionId = '04tRh000000iBB3IAM';
+    currentPkgVersionId = '04tRh0000019tSvIAI';
 
     get modelsTypeOptions() {
         return [

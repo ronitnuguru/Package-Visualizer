@@ -16,7 +16,7 @@ export default class AgentforcePromptGenerator extends NavigationMixin(Lightning
     displayExtensionIllustration = false;
 
     modelsValue = 'sfdc_ai__DefaultGPT4Omni';
-    currentPkgVersionId = '04tRh000000iBB3IAM';
+    currentPkgVersionId = '04tRh0000019tSvIAI';
 
     connectedCallback(){
         if(this.templatePrompts){
@@ -99,6 +99,15 @@ export default class AgentforcePromptGenerator extends NavigationMixin(Lightning
         }).catch(error => {
             console.error('Failed to copy text: ', error);
         });
+    }
+
+    handleFeedback(){
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: 'Thanks for your feedback',
+                variant: 'success',
+            }),
+        );
     }
 
     handleGenerate(){

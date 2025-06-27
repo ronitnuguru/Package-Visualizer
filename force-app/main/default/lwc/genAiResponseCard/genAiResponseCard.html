@@ -1,0 +1,75 @@
+<template>
+    <lightning-card class="card-style">
+        <template if:true={displayExtensionIllustration}>
+            <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-around_medium" role="status">
+                <div class="slds-media__figure">
+                    <lightning-icon
+                        size="small"
+                        icon-name="utility:info"
+                        alternative-text="info"
+                        title="info"
+                        variant="inverse"
+                    ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                    <div>
+                        Component Requirements
+                        <ol class="slds-list_ordered">
+                            <li>
+                                Enable Agentforce in <a href="/lightning/setup/EinsteinGPTSetup/home" target="_blank">Einstein Setup</a> and <a href="/lightning/setup/EinsteinCopilot/home" target="_blank">Agent Studio</a> 
+                            </li>
+                            <li>
+                                Install Package Visualizer + ISV Tooling Unlocked Extension Package. <a href="https://salesforce.quip.com/f3SWA340YbFH" target="_blank">Learn More</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <c-empty-illustration-with-button
+                title="Component not available..."
+                body="Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance..."
+                button-label="Install Unlocked Package"
+                neutral-button-label="Back"
+                size="medium"
+                onselect={handleExtensionInstall}
+                onneutralselect={handleIllustrationClear}
+            ></c-empty-illustration-with-button>
+        </template>
+        <template if:false={displayExtensionIllustration}>
+            <h3 slot="title" class="slds-truncate">
+                <lightning-icon 
+                    icon-name={titleIcon}
+                    alternative-text={titleIcon}
+                    size="medium"
+                    class="slds-m-right_small"
+                ></lightning-icon>
+                {titleHeader}
+            </h3>
+            <lightning-button-group slot="actions">
+            </lightning-button-group>
+            <div class="slds-card__body slds-card__body_inner">
+                <template if:true={displaySpinner}>
+                    <div class="slds-p-top_xx-large">
+                        <lightning-spinner
+                            alternative-text="Loading"
+                            size="medium"
+                            variant="brand"
+                        ></lightning-spinner>
+                    </div>
+                </template>
+                <template lwc:if={aiResponse}>
+                    <lightning-formatted-rich-text value={aiResponse}></lightning-formatted-rich-text>
+                </template>
+                <template lwc:elseif={error}>
+                    <c-empty-illustration-with-button
+                        title="Component not available..."
+                        body="Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance..."
+                        button-label="Install Unlocked Package"
+                        size="medium"
+                        onselect={handleExtensionInstall}
+                    ></c-empty-illustration-with-button>
+                </template>
+            </div>
+        </template>
+    </lightning-card>
+</template>

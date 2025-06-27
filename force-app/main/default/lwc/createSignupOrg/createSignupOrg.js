@@ -14,39 +14,7 @@ import FirstName from '@salesforce/schema/User.FirstName';
 import LastName from '@salesforce/schema/User.LastName'; 
 import Email from '@salesforce/schema/User.Email';
 
-import PLATFORM_ICON from "@salesforce/contentAssetUrl/PlatformIcon";
-import INDUSTRIES_ICON from "@salesforce/contentAssetUrl/IndustriesIcon";
-import FINANCIAL_SERVICES_CLOUD_ICON from "@salesforce/contentAssetUrl/FinancialServicesIcon";
-import HEALTH_CLOUD_ICON from "@salesforce/contentAssetUrl/HealthcareCloudIcon";
-import LIFE_SCIENCES_CLOUD_ICON from "@salesforce/contentAssetUrl/LifeSciencesCloudIcon";
-import CONSUMER_GOODS_CLOUD_ICON from "@salesforce/contentAssetUrl/ConsumerGoodsIcon";
-import ENERGY_AND_UTILITIES_CLOUD_ICON from "@salesforce/contentAssetUrl/EnergyAndUtilitiesCloudIcon";
-import AUTOMOTIVE_CLOUD_ICON from "@salesforce/contentAssetUrl/AutomotiveCloudIcon";
-import SUSTAINABILITY_CLOUD_ICON from "@salesforce/contentAssetUrl/SustainabilityCloud";
-import MANUFACTURING_CLOUD_ICON from "@salesforce/contentAssetUrl/ManufacturingCloudIcon";
-import COMMUNICATIONS_CLOUD_ICON from "@salesforce/contentAssetUrl/CommunicationsCloudIcon";
-import EDUCATION_CLOUD_ICON from "@salesforce/contentAssetUrl/EducationCloudIcon";
-import NONPROFIT_CLOUD_ICON from "@salesforce/contentAssetUrl/NonprofitCloudIcon";
-import PUBLICSECTOR_CLOUD_ICON from "@salesforce/contentAssetUrl/PublicSectorCloudIcon";
-import MEDIA_CLOUD_ICON from "@salesforce/contentAssetUrl/MediaCloudIcon";
-
 export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
-
-    platformIconUrl = PLATFORM_ICON;
-    industriesIconUrl = INDUSTRIES_ICON;
-    financialServicesIconUrl = FINANCIAL_SERVICES_CLOUD_ICON;
-    healthCloudIconUrl = HEALTH_CLOUD_ICON;
-    consumerGoodsCloudIconUrl = CONSUMER_GOODS_CLOUD_ICON;
-    energyAndUtilitiesCloudIconUrl = ENERGY_AND_UTILITIES_CLOUD_ICON;
-    sustainabilityCloudIconUrl = SUSTAINABILITY_CLOUD_ICON;
-    automotiveCloudIconUrl = AUTOMOTIVE_CLOUD_ICON;
-    manufacturingCloudIconUrl = MANUFACTURING_CLOUD_ICON;
-    lifeSciencesCloudIconUrl = LIFE_SCIENCES_CLOUD_ICON;
-    communicationsCloudIconUrl = COMMUNICATIONS_CLOUD_ICON;
-    educationCloudIconUrl = EDUCATION_CLOUD_ICON;
-    publicSectorCloudIconUrl = PUBLICSECTOR_CLOUD_ICON;
-    nonprofitCloudIconUrl = NONPROFIT_CLOUD_ICON;
-    mediaCloudIconUrl = MEDIA_CLOUD_ICON;
 
     displaySignUpRequest;
     displayError;
@@ -109,9 +77,6 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
     templateId;
 
     selectedTab = "sign-up-create";
-
-    purposeIcon;
-    industryTypeIcon;
 
     @wire(getOrgCountryCode)
     wiredCountryCode({ error, data }) {
@@ -208,20 +173,20 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
 
     get industryTemplateOptions(){
         return [
-            { label: 'Financial Services Cloud' , value: '0TTWs000000T9JF' },
-            { label: 'Health Cloud' , value: '0TTWs000000T12L' },
-            { label: 'Life Sciences Cloud' , value: '0TTWs000000T0vt' },
-            { label: 'Consumer Goods Cloud - Retail Execution', value: '0TTWs000000UMCn'},
-            { label: 'Consumer Goods Cloud - Trade Promotion Management', value: '0TTWs000000T1qL'},
-            { label: 'Manufacturing Cloud', value: '0TTWs000000T2hZ'},
-            { label: 'Automotive Cloud', value: '0TTWs000000UOWL'},
-            { label: 'Energy and Utilities Cloud', value: '0TTWs000000T66r'},
-            { label: 'Net Zero Cloud', value: '0TTWs000000VKTt'},
-            { label: 'Communications Cloud', value: '0TTWs000000W4Zx'},
+            { label: 'Financial Services Cloud' , value: '0TTWs000000yqrl' },
+            { label: 'Health Cloud' , value: '0TTWs000000zzHt' },
+            { label: 'Life Sciences Cloud' , value: '0TTWs000000zywv' },
+            { label: 'Consumer Goods Cloud - Retail Execution', value: '0TTWs000000y3kb'},
+            { label: 'Consumer Goods Cloud - Trade Promotion Management', value: '0TTWs000000xkGX'},
+            { label: 'Manufacturing Cloud', value: '0TTWs000000zbXJ'},
+            { label: 'Automotive Cloud', value: '0TTWs000000zbYv'},
+            { label: 'Energy and Utilities Cloud', value: '0TTWs000000zyNR'},
+            { label: 'Net Zero Cloud', value: '0TTWs000000y6qX'},
+            { label: 'Communications Cloud', value: '0TTWs000000yngz'},
             { label: 'Education Cloud', value: '0TTWs000000T5lt'},
-            { label: 'Media Cloud', value: '0TTWs000000T5yn'},
-            { label: 'Nonprofit Cloud', value: '0TTWs000000T5sL'},
-            { label: 'Public Sector Cloud', value: '0TTWs000000UOCz'},
+            { label: 'Media Cloud', value: '0TTWs000000yo0L'},
+            { label: 'Nonprofit Cloud', value: '0TTWs000000yOIn'},
+            { label: 'Public Sector Cloud', value: '0TTWs000000ynnR'},
         ];
     }
 
@@ -233,63 +198,48 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
         switch (selectedLabel) {
             case "Financial Services Cloud":
                 this.partnerPocketGuideLink = 'https://salesforce.quip.com/4UUtAVZlDZWB';
-                this.industryTypeIcon = this.financialServicesIconUrl;
             break;
             case "Health Cloud":
                 this.partnerPocketGuideLink = 'https://salesforce.quip.com/KndcASmayUg4';
-                this.industryTypeIcon = this.healthCloudIconUrl;
             break;
             case "Consumer Goods Cloud - Retail Execution":
                 this.partnerPocketGuideLink = 'https://salesforce.quip.com/sfz0Atx4JASz';
-                this.industryTypeIcon = this.consumerGoodsCloudIconUrl;
             break;
             case "Consumer Goods Cloud - Trade Promotion Management":
                 this.partnerPocketGuideLink = 'https://salesforce.quip.com/e3D5AxkcisIU';
-                this.industryTypeIcon = this.consumerGoodsCloudIconUrl;
             break;
             case "Manufacturing Cloud":
                 this.partnerPocketGuideLink = 'https://salesforce.quip.com/7FvdANrb3HIC';
-                this.industryTypeIcon = this.manufacturingCloudIconUrl;
             break;
             case "Automotive Cloud":
                 this.partnerPocketGuideLink = 'https://salesforce.quip.com/3rbkAtiEDqrh';
-                this.industryTypeIcon = this.automotiveCloudIconUrl;
             break;
             case "Energy and Utilities Cloud":
                 this.partnerPocketGuideLink = 'https://salesforce.quip.com/gspfAFdJHzzB';
-                this.industryTypeIcon = this.energyAndUtilitiesCloudIconUrl;
             break;
             case "Net Zero Cloud":
                 this.partnerPocketGuideLink = 'https://salesforce.quip.com/vW5eAoGFm73Y';
-                this.industryTypeIcon = this.sustainabilityCloudIconUrl;
             break;
             case "Life Sciences Cloud":
                 this.partnerPocketGuideLink = null;
-                this.industryTypeIcon = this.lifeSciencesCloudIconUrl;
             break;
             case "Communications Cloud":
                 this.partnerPocketGuideLink = 'https://salesforce.quip.com/NMljAq78Faau';
-                this.industryTypeIcon = this.communicationsCloudIconUrl;
             break;
             case "Education Cloud":
                 this.partnerPocketGuideLink = 'https://salesforce.quip.com/xGX7A4fL0qZ9';
-                this.industryTypeIcon = this.educationCloudIconUrl;
             break;
             case "Media Cloud":
                 this.partnerPocketGuideLink = 'https://salesforce.quip.com/LO7xAb6vaFgQ';
-                this.industryTypeIcon = this.mediaCloudIconUrl;
             break;
             case "Nonprofit Cloud":
                 this.partnerPocketGuideLink = 'https://salesforce.quip.com/r2jgADR0qSuU';
-                this.industryTypeIcon = this.nonprofitCloudIconUrl;
             break;
             case "Public Sector Cloud":
                 this.partnerPocketGuideLink = 'https://salesforce.quip.com/ybE3Aj99fAm0';
-                this.industryTypeIcon = this.publicSectorCloudIconUrl;
             break;
             default:
                 this.partnerPocketGuideLink = null;
-                this.industryTypeIcon = null;
         }
     }
 
@@ -331,7 +281,6 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
                 this.displayTestDemoOptions = false;
                 this.displayTsoOptions = false;
                 this.displayIndustryOptions = false;
-                this.purposeIcon = this.platformIconUrl;
             } else {
                 this.displayTsoOptions = true;
                 this.displayTestDemoOptions = false;
@@ -344,14 +293,12 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
             this.displayDevelopmentOptions = false;
             this.displayTsoOptions = false;
             this.displayIndustryOptions = false;
-            this.purposeIcon = this.platformIconUrl;
         } else if (this.purposeValue === 'industry-templates'){
             this.displayCreateUsingOptions = false;
             this.displayDevelopmentOptions = false;
             this.displayTestDemoOptions = false;
             this.displayTsoOptions = false;
             this.displayIndustryOptions = true;
-            this.purposeIcon = this.industriesIconUrl;
         }
         this.displayStandard = this.createUsingValue === 'trialforce' ? false : true;
     }
@@ -397,8 +344,6 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
         this.masterSubscriptionAgreement = false;
 
         this.partnerPocketGuideLink = null;
-        this.industryTypeIcon = null;
-        this.purposeIcon = null;
 
         this.dispatchEvent(
             new ShowToastEvent({

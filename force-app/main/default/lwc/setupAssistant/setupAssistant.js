@@ -174,8 +174,8 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     window.open("/lightning/setup/SecurityCspTrustedSite/home", "_blank");
   }
 
-  navigateToMigrationCommunity() {
-    window.open("https://partners.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F94V000000PkSm", "_blank");
+  navigateTo2GPMigrationDocs() {
+    window.open("https://developer.salesforce.com/docs/atlas.en-us.pkg1_dev.meta/pkg1_dev/move_to_second_gen_pkg.htm", "_blank");
   }
 
   navigateToChecklistBuilder(){

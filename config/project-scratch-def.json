@@ -1,10 +1,12 @@
 {
-  "orgName": "Agentforce Scratch",
+  "orgName": "Agentforce Agent",
   "edition": "Partner Developer",
-  "hasSampleData": true,
+  "country": "US",
+  "language": "en_US",
   "features": [
     "EnableSetPasswordInApi",
-    "Einstein1AIPlatform"
+    "Einstein1AIPlatform",
+    "EinsteinGPTForDevelopers"
   ],
   "settings": {
     "lightningExperienceSettings": {

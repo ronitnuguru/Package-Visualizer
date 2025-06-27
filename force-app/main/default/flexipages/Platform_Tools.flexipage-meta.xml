@@ -5,7 +5,7 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>templatePrompts</name>
-                    <value>[ { &quot;label&quot;: &quot;Help me write...&quot;, &quot;icon&quot;: &quot;utility:edit_gpt&quot; }, { &quot;label&quot;: &quot;How do I...&quot;, &quot;icon&quot;: &quot;utility:search&quot; }, {&quot;label&quot;: &quot;Find documentation for...&quot;, &quot;icon&quot;: &quot;utility:knowledge_base&quot; } ]</value>
+                    <value>[ { &quot;label&quot;: &quot;Help me write...&quot;, &quot;icon&quot;: &quot;utility:edit_gpt&quot; }, { &quot;label&quot;: &quot;How do I...&quot;, &quot;icon&quot;: &quot;utility:ai_search&quot; }, {&quot;label&quot;: &quot;Find documentation for...&quot;, &quot;icon&quot;: &quot;utility:knowledge_base&quot; } ]</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>titleHeader</name>

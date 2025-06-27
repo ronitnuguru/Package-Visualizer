@@ -14,7 +14,7 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
     installUnlockedPackageIllustration;
     displayWalkthroughs;
 
-    currentPkgVersionId = '04tRh000000iBB3IAM';
+    currentPkgVersionId = '04tRh0000019tSvIAI';
 
     @wire(verifyUnlockedPackageInstalled)
     wiredData({ error, data }) {

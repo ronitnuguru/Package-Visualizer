@@ -4,7 +4,7 @@
     <protected>true</protected>
     <values>
         <field>Description__c</field>
-        <value xsi:type="xsd:string">The code is public and open-source. Feel free to view, modify, adopt and help enhance for the benefit of the wider Salesforce community!</value>
+        <value xsi:type="xsd:string">The code is public and open-source. Feel free to view, fork, adopt, iterate and help enhance for the benefit of the wider Salesforce community!</value>
     </values>
     <values>
         <field>Icon__c</field>

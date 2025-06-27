@@ -8,8 +8,10 @@
 }
 
 .timeline-card-style {
-  border-radius: 0.25rem;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 0.25rem; /* More rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 
+              0 2px 4px rgba(0, 0, 0, 0.06); /* Layered shadows for depth */
+  transition: box-shadow 0.3s ease, transform 0.3s ease; /* Smooth hover effects */
 }
 
 .card-style{

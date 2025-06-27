@@ -142,6 +142,12 @@ export default class PackageLmaView extends NavigationMixin(LightningElement) {
 
   displayLMAInAppPrompt;
 
+  displayGenAiLicenses = false;
+  genAiLicensesAccordionClass = `slds-section slds-var-p-top_medium`;
+
+  aiResponse;
+  error;
+
   get tableOptions() {
     return [
       { label: "License Name", value: "id" },
@@ -216,6 +222,13 @@ export default class PackageLmaView extends NavigationMixin(LightningElement) {
     if (this.displayAllLicenses) {
       this.loadLicenses(true, false);
     }
+  }
+
+  toggleGenAiLicensesAccordion(){
+    this.displayGenAiLicenses = !this.displayGenAiLicenses;
+    this.genAiLicensesAccordionClass = this.displayGenAiLicenses
+      ? `slds-section slds-var-p-top_medium slds-is-open`
+      : `slds-section slds-var-p-top_medium`;
   }
 
   loadLicenses(applyFilters, isViewMore) {

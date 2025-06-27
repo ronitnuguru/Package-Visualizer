@@ -34,6 +34,7 @@
             onselect={handleExtensionInstall}
         ></c-empty-illustration-with-button>
       </template>
+    
       <template if:false={displayExtensionIllustration}>
         <template if:true={displayModels}>
           <lightning-combobox
@@ -121,6 +122,7 @@
           </li>
         </template>
       </template>
+    
     </lightning-modal-body>
     <template if:false={displayEditPrompt}>
       <lightning-modal-footer>

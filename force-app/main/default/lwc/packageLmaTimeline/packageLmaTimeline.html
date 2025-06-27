@@ -152,6 +152,14 @@
               onclick={handleGenerativeAi}
             >
             </lightning-vertical-navigation-item-icon>
+
+            <lightning-vertical-navigation-item-icon
+              label="AI Summary"
+              name="summary_ai"
+              icon-name="utility:slack_ai_summary"
+              onclick={handleAiSummary}
+            >
+            </lightning-vertical-navigation-item-icon>
             
             <!--
             <template if:true={displayFMA}>
@@ -391,7 +399,7 @@
                 </template>
               </div>
               <template if:true={displayEditView}>
-                <div class="slds-modal__footer">
+                <div slot="footer">
                   <div class="slds-align_absolute-center">
                     <lightning-button
                       label="Cancel"
@@ -421,6 +429,18 @@
                 title-icon="standard:story"
                 template-prompts={templatePrompts}
               ></c-agentforce-prompt-generator>
+          </div>
+        </template>
+
+        <template if:true={displayGenAiSummary}>
+          <div class="slds-border_left slds-border_bottom slds-border_right slds-border_top slds-var-m-top_medium timeline-card-style">
+            <c-gen-ai-response-card
+              title-header="Generative AI Summary - License"
+              title-icon="standard:panel_detail"
+              object-name="sfLma__License__c"
+              prompt-template-name="pkgviz__License_Summary"
+              record-id={licenseId}
+            ></c-gen-ai-response-card>
           </div>
         </template>
         <!--

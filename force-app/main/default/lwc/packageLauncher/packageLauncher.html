@@ -9,7 +9,7 @@
   >
     <div class="slds-modal__container">
       <header
-        class="slds-modal__header slds-einstein-header slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-grid_align-center"
+        class="slds-modal__header slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-grid_align-center"
       >
         <button
           class="slds-button slds-button_icon slds-modal__close"
@@ -25,21 +25,30 @@
           <span class="slds-assistive-text">Close</span>
         </button>
         <h2 id="header43" class="slds-text-heading_medium slds-show_medium" style="font-weight: 400;">Package Launcher</h2>
-        <div class="slds-app-launcher__header-search slds-var-p-bottom_medium">
+        <div class="slds-app-launcher__header-search">
           <lightning-input
             placeholder="Find a Package"
             type="search"
+            variant="label-hidden"
             onchange={handleSearchInputChange}
           ></lightning-input>
         </div>
-        <lightning-button
-          label="Visit AppExchange"
-          title="AppExchange"
-          icon-name="utility:new_window"
-          icon-position="right"
-          class="slds-show_medium"
-          onclick={launchAppx}
-        ></lightning-button>
+        <lightning-button-group>
+          <lightning-button
+            label="AppExchange"
+            icon-name="utility:cart"
+            icon-position="right"
+            class="slds-show_medium"
+            onclick={launchAppx}
+          ></lightning-button>
+          <lightning-button
+            label="AgentExchange"
+            icon-name="utility:agent_astro"
+            icon-position="right"
+            class="slds-show_medium"
+            onclick={launchAgentx}
+          ></lightning-button>
+        </lightning-button-group>
       </header>
       <div
         class="slds-modal__content slds-app-launcher__content slds-var-p-around_medium"

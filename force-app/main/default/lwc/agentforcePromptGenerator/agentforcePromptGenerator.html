@@ -75,7 +75,7 @@
                 <lightning-textarea 
                     name="prompt" 
                     label="Prompt"
-                    placeholder="Messsage Agentforce..."
+                    placeholder="Ask Agentforce..."
                     onchange={handlePromptChange} 
                     value={prompt}
                     required
@@ -100,14 +100,18 @@
                 </template>
                 
                 <template lwc:if={displayResult}>
-                    <lightning-textarea label="Response" value={response} class="text-area-style"></lightning-textarea>
+                    <lightning-textarea label="Gen AI Draft Response" value={response} class="text-area-style"></lightning-textarea>
                 </template>
             </div>
             <div slot="footer" class="slds-clearfix" >
                 <div class="slds-float_right">
                     <lightning-button label="Clear" onclick={handleClear} class="slds-m-left_x-small"></lightning-button>
                     <template lwc:if={displayResult}>
-                        <lightning-button label="Copy to Clipboard" onclick={handleCopyPaste} class="slds-m-left_x-small"></lightning-button>
+                        <lightning-button-group class="slds-m-left_x-small">
+                            <lightning-button-icon icon-name="utility:like" tooltip="Like"  variant="border-filled" onclick={handleFeedback}></lightning-button-icon>
+                            <lightning-button-icon icon-name="utility:dislike" tooltip="Dislike"  variant="border-filled" onclick={handleFeedback}></lightning-button-icon>
+                            <lightning-button-icon icon-name="utility:copy_to_clipboard" tooltip="Copy to Clipboard"  variant="border-filled" onclick={handleCopyPaste} ></lightning-button-icon>
+                        </lightning-button-group>
                     </template>
                     <lightning-button variant="brand" icon-position="right" icon-name="utility:sparkles" label="Generate" onclick={handleGenerate} class="slds-m-left_x-small" disabled={enableGenerate}></lightning-button>
                 </div>

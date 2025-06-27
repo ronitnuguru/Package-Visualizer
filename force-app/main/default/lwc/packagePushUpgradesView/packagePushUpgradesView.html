@@ -261,6 +261,19 @@
                     autocomplete="off"
                     field-level-help="ID that subscribers use to install the package version (starts with 04t)"
                   ></lightning-input>
+                  <!--
+                  <lightning-record-picker
+                      label="Package Versions"
+                      placeholder="Search Package Versions..."
+                      object-api-name="sfLma__Package_Version__c"
+                      filter={packageVersionFilter}
+                      value={filteredRecordPickerSubscriberPackageVersionID}
+                      onchange={handleFilteredRecordPickerSubscriberPackageVersionIDChange}
+                      display-info={packageDisplayInfo}
+                      matching-info={packageMatchingInfo}
+                      field-level-help="LMA Required"
+                  ></lightning-record-picker>
+                  -->
                   <div>
                     <fieldset class="slds-form-element slds-var-p-bottom_xx-small">
                       <legend

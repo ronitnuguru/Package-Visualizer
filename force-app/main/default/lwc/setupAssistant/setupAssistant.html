@@ -1,37 +1,29 @@
 <template>
   <article class="slds-card slds-m-bottom_xx-large">
-    <div class="slds-grid slds-einstein-header slds-card__header">
+    <div class="slds-grid slds-card__header">
       <header class="slds-media slds-media_center slds-has-flexi-truncate">
         <div
           class="slds-grid slds-grid_vertical-align-center slds-size_3-of-4 slds-medium-size_2-of-3"
         >
           <div class="slds-media__figure">
-            <span class="slds-icon_container slds-icon-utility-salesforce1">
-              <lightning-icon icon-name="utility:salesforce1"></lightning-icon>
+            <span class="slds-icon_container">
+              <lightning-icon icon-name="utility:setup_assistant_guide"></lightning-icon>
             </span>
           </div>
           <div class="slds-media__body">
-            <h2
-              id="header43"
-              class="slds-text-heading_medium"
-              style="font-weight: 400;"
-            >
+            <h2 class="slds-text-heading_medium">
               Setup Assistant ({packageTypes})
             </h2>
           </div>
         </div>
-        <div
-          class="slds-einstein-header__figure slds-size_1-of-4 slds-medium-size_1-of-3"
-        ></div>
       </header>
       <template if:true={packageListAvailable}>
-        <lightning-button-group class="slds-align_absolute-center">
+        <lightning-button-group>
           <lightning-button-icon
             icon-name="utility:back"
             variant="border-filled"
             tooltip="Back to Package Visualizer"
             onclick={handleBackToPackageVisualizer}
-            class="slds-var-m-left_x-small"
           ></lightning-button-icon>
         </lightning-button-group>
       </template>
@@ -975,12 +967,12 @@
                         size="small"
                         class="slds-var-p-right_small"
                       ></lightning-icon>
-                      1GP -> 2GP Package Migration Developer Preview
+                      1GP -> 2GP Package Migration (Generally Available)
                     </h3>
                     <p>
-                      Cannot find your pacakge? Was your package built using 1GP? Developer Preview for 1GP to 2GP is now open to all ISVs! All you need is a first-generation pacakge that you'd like to test drive migration for and a Partner Community Login.&nbsp;
+                      Are you still using first-generation managed packaging (1GP) for your package development work? If so, you're not alone. Many ISVs like you are looking to move to second-generation managed packaging (2GP) and take advantage of its many benefits.&nbsp;
                       <a
-                        href="https://developer.salesforce.com/blogs/2023/05/move-to-managed-2gp-with-package-migrations"
+                        href="https://developer.salesforce.com/blogs/2025/06/move-to-managed-2gp-with-package-migrations"
                         target="_blank"
                         title="Learn More"
                         >Learn More</a
@@ -990,10 +982,10 @@
                   <div class="slds-media__figure slds-media__figure_reverse">
                     <lightning-button
                       variant="brand-outline"
-                      label="Partner Community Group"
-                      icon-name="utility:groups"
+                      label="Guide"
+                      icon-name="utility:apex"
                       icon-position="right"
-                      onclick={navigateToMigrationCommunity}
+                      onclick={navigateTo2GPMigrationDocs}
                     ></lightning-button>
                   </div>
                 </div>

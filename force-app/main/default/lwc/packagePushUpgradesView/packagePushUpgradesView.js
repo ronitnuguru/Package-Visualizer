@@ -132,6 +132,41 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
   selectedInstancesString = undefined;
 
   filteredSubscriberPackageVersionID;
+  filteredRecordPickerSubscriberPackageVersionID;
+
+  /*
+  packageVersionFilter = {
+    criteria: [
+      {
+        fieldPath: 'sfLma__Package__r.sfLma__Package_ID__c',
+        operator: 'eq',
+        value: `${this.subscriberPackageId}`
+      }
+    ]
+  }
+
+ 
+  
+
+  packageVersionFilter = {
+    criteria: [
+      {
+        fieldPath: 'sfLma__Package__r.sfLma__Package_ID__c',
+        operator: 'eq',
+        value: `${this.subscriberPackageId}`
+      }
+    ]
+  }
+    */
+
+  packageMatchingInfo = {
+    primaryField: { fieldPath: 'Name' }
+  };
+
+  packageDisplayInfo = {
+    primaryField: 'Name',
+    additionalFields: ['sfLma__Release_Date__c']
+  };
 
   get displayManagedPackageType() {
     return true;
@@ -172,6 +207,21 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
     this.loadInstancesFromTrust().then(result => {
       this.instanceList = result;
     });
+
+    this.packageVersionFilter = {
+      criteria: [
+        {
+          fieldPath: 'sfLma__Package__r.sfLma__Package_ID__c',
+          operator: 'eq',
+          value: `${this.subscriberPackageId}`
+        },
+        {
+          fieldPath: 'sfLma__Version_ID__c',
+          operator: 'lt',
+          value: `${this.packageSubscriberVersionId}`
+        }
+      ]
+    }
   }
 
   disconnectedCallback() {
@@ -429,6 +479,11 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
     this.filteredSubscriberPackageVersionID = event.detail.value;
   }
 
+  
+  handleFilteredRecordPickerSubscriberPackageVersionIDChange(event){
+    this.filteredRecordPickerSubscriberPackageVersionID = event.detail.recordId;
+  }
+
   handleFieldsToDisplay() {
     this.fieldsToDisplayModal = true;
   }
@@ -483,6 +538,7 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
     this.subscriberOffset = 0;
     this.disableInfiniteLoad = true;
     this.filteredSubscriberPackageVersionID = undefined;
+    this.filteredRecordPickerSubscriberPackageVersionID = undefined;
     this.getSubscribersFromVersions(true, false);
     this.filterState = true;
     this.handleFilterState(this.filterState);

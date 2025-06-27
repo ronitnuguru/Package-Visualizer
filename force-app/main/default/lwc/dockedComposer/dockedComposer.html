@@ -208,11 +208,6 @@
                       <div class="">
                           <div class="">
                             <div class="slds-grid slds-grid_vertical-align-center slds-grid_vertical-align-end">
-                              <template lwc:if={purposeIcon}>
-                                <div class="slds-align_absolute-center slds-m-top_medium">
-                                  <img src={purposeIcon} width="35" height="35" class="slds-m-right_x-small "/>
-                                </div>
-                              </template>
                               <div class="slds-col">
                                 <lightning-combobox
                                   name="purpose"
@@ -257,11 +252,6 @@
                                   </template>
                                   <template if:true={displayIndustryOptions}>
                                     <div class="slds-grid slds-grid_vertical-align-center">
-                                      <template lwc:if={industryTypeIcon}>
-                                        <div class="slds-align_absolute-center">
-                                          <img src={industryTypeIcon} width="35" height="35" class="slds-m-right_x-small "/>
-                                        </div>
-                                      </template>
                                       <div class="slds-col">
                                         <lightning-combobox
                                           name="industryTemplates"

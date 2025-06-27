@@ -42,6 +42,15 @@ export default class PackageLauncher extends NavigationMixin(LightningElement) {
     });
   }
 
+  launchAgentx(){
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+          url: "https://agentexchange.salesforce.com/"
+      }
+    });
+  }
+
   handleDockedLimitsClick() {
     publish(this.messageContext, DOCKEDUTILITYBARMESSAGECHANNEL, {
       dockedBarControls: "Limits",

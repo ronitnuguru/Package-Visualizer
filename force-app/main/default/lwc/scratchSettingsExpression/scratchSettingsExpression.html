@@ -16,14 +16,6 @@
                         required
                         disabled={confirmSelected}
                     ></lightning-combobox>
-                    <lightning-button-icon
-                        icon-name="utility:help_doc_ext"
-                        class="slds-m-left_x-small"
-                        variant="border-filled"
-                        data-index={it.index}
-                        onclick={navigateMetaHelpDoc}
-                        tooltip="Setting Documentation"
-                    ></lightning-button-icon>
                     <template if:false={it.value.recordId}>
                         <lightning-button-icon
                             icon-name="utility:delete"
@@ -36,6 +28,14 @@
                             disabled={confirmSelected}
                         ></lightning-button-icon>
                     </template>
+                    <lightning-button-icon
+                        icon-name="utility:help_doc_ext"
+                        class="slds-m-left_x-small"
+                        variant="border-filled"
+                        data-index={it.index}
+                        onclick={navigateMetaHelpDoc}
+                        tooltip="Setting Documentation"
+                    ></lightning-button-icon>
                     <lightning-helptext class="slds-form-element_stacked" content="Visit respective Metadata Setting documentation to further enable appropriate features"></lightning-helptext>
                 </div>
                 <ul class="slds-card__body slds-card__body_inner">

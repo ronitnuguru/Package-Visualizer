@@ -42,7 +42,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
     },
     {
       label: "How do I...",
-      icon: "utility:search"
+      icon: "utility:ai_search"
     }
   ];
 
@@ -124,6 +124,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
     this.featureParametersDisplay = false;
     this.campaignDisplay = false;
     this.displayGenAiNav = false;
+    this.displayGenAiSummary = false;
     this.getTimeline();
   }
 
@@ -134,6 +135,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
     this.featureParametersDisplay = false;
     this.campaignDisplay = false;
     this.displayGenAiNav = false;
+    this.displayGenAiSummary = false;
   }
 
   handleGenerativeAi(){
@@ -143,6 +145,17 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
     this.featureParametersDisplay = false;
     this.campaignDisplay = false;
     this.displayGenAiNav = true;
+    this.displayGenAiSummary = false;
+  }
+
+  handleAiSummary(){
+    this.selectedItem = `summary_ai`;
+    this.timelineDisplay = false;
+    this.modifyLicenseDisplay = false;
+    this.featureParametersDisplay = false;
+    this.campaignDisplay = false;
+    this.displayGenAiNav = false;
+    this.displayGenAiSummary = true;
   }
 
   handleFeatureParameters() {
@@ -152,6 +165,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
     this.featureParametersDisplay = true;
     this.campaignDisplay = false;
     this.displayGenAiNav = false;
+    this.displayGenAiSummary = false;
   }
 
   handleCampaignHistory() {
@@ -160,6 +174,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
     this.modifyLicenseDisplay = false;
     this.featureParametersDisplay = false;
     this.campaignDisplay = true;
+    this.displayGenAiSummary = false;
   }
 
   handleEdit() {
