@@ -394,4 +394,8 @@ export default class DockedUtilityBar extends NavigationMixin(LightningElement) 
     this.dataStorageMBPercentage = (this.dataStorageMBRem / this.dataStorageMBMax) * 100;
 
   }
+
+  updateLimits(event){
+    
+  }
 }

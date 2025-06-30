@@ -16,7 +16,7 @@ export default class AgentforcePromptGenerator extends NavigationMixin(Lightning
     displayExtensionIllustration = false;
 
     modelsValue = 'sfdc_ai__DefaultGPT4Omni';
-    currentPkgVersionId = '04tRh0000019tSvIAI';
+    currentPkgVersionId = '04tRh000001ANXRIA4';
 
     connectedCallback(){
         if(this.templatePrompts){

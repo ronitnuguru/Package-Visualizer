@@ -3,7 +3,7 @@ import LightningModal from 'lightning/modal';
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import invokePromptAndUserModelsGenAi from "@salesforce/apex/PackageVisualizerCtrl.invokePromptAndUserModelsGenAi";
 
-export default class AgentforcePromptModalGenerator extends LightningModal {
+export default class AgentforcePromptModalGenerator extends LightningModal  {
     @api content;
     @api label;
 
@@ -24,7 +24,7 @@ export default class AgentforcePromptModalGenerator extends LightningModal {
     }
 
     modelsValue = 'sfdc_ai__DefaultGPT4Omni';
-    currentPkgVersionId = '04tRh0000019tSvIAI';
+    currentPkgVersionId = '04tRh000001ANXRIA4';
 
     get modelsTypeOptions() {
         return [
@@ -97,7 +97,7 @@ export default class AgentforcePromptModalGenerator extends LightningModal {
         }
     }
 
-    hanbleBack(){
+    handleBack(){
         this.displayModels = false;
         this.displayEditPrompt = false;
     }

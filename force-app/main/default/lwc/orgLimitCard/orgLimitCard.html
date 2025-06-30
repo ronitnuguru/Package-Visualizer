@@ -9,9 +9,14 @@
             Org Limits
         </h3>
         <lightning-button-group slot="actions">
+            <template lwc:if={limitsData}>
+                <lightning-button-icon icon-name="utility:sparkles" onclick={handleGenAiOrgLimitsModal}></lightning-button-icon>
+            </template>
         </lightning-button-group>
         <div class="slds-card__body slds-card__body_inner slds-scrollable" style="max-height:500px">
-            <c-org-limits></c-org-limits>
+            <c-org-limits
+                onlimits={updateLimits}
+            ></c-org-limits>
         </div>
     </lightning-card>
 </template>

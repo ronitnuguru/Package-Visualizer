@@ -16,6 +16,9 @@ export default class OrgLimits extends LightningElement {
         if (data) {
             try {
                 this.limits = JSON.parse(data);
+                this.dispatchEvent(new CustomEvent('limits', {
+                    detail: this.limits
+                }));
                 this.displaySpinner = false;
     
                 Object.entries(this.limits).forEach((entry) => {

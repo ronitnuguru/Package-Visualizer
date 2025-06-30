@@ -9,7 +9,11 @@
             Org Details
         </h3>
         <lightning-button-group slot="actions">
+            <!--
             <lightning-button-icon icon-name="utility:salesforce1" variant="border-filled" tooltip="Trust Instance" onclick={handleTrustInstance}></lightning-button-icon>
+            -->
+            <lightning-button-icon icon-name="utility:your_account" variant="border-filled" tooltip="Your Account" onclick={handleYourAccount}></lightning-button-icon>
+            <lightning-button-icon icon-name="utility:store" variant="border-filled" tooltip="Salesforce Go" onclick={handleSfdcGo}></lightning-button-icon>
             <template lwc:if={org}>
                 <template if:true={org.TrialExpirationDate}>
                     <lightning-button-icon icon-name="utility:help_doc_ext" variant="border-filled" tooltip="Extend Trial Orgs" onclick={handleHelpDoc}></lightning-button-icon>
@@ -131,6 +135,18 @@
                         </template>
                     </div>
                 </div>
+                <template lwc:if={instance}>
+                    <div class="slds-m-top_small">
+                        <c-trust-instance-detail
+                            instance-key={instance.key}
+                            location={instance.location}
+                            maintenance-window={instance.maintenanceWindow}
+                            release-number={instance.releaseNumber}
+                            release-version={instance.releaseVersion}
+                            status={instance.status}
+                        ></c-trust-instance-detail>
+                    </div>
+                </template>
             </template>
             <template if:false={displaySpinner}>             
                 <template if:false={org}>

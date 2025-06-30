@@ -122,7 +122,6 @@
           </li>
         </template>
       </template>
-    
     </lightning-modal-body>
     <template if:false={displayEditPrompt}>
       <lightning-modal-footer>
@@ -152,7 +151,7 @@
     </template>
     <template if:true={displayEditPrompt}>
       <lightning-modal-footer>
-        <lightning-button label="Back" onclick={hanbleBack} class="slds-m-left_x-small"></lightning-button>
+        <lightning-button label="Back" onclick={handleBack} class="slds-m-left_x-small"></lightning-button>
         <lightning-button variant="brand" icon-position="right" icon-name="utility:sparkles" label="Generate" onclick={handleAskAgain} class="slds-m-left_x-small" disabled={enableGenerate}></lightning-button>
       </lightning-modal-footer>
     </template>

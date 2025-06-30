@@ -11,3 +11,8 @@
 .list_item {
   padding-left: 0.8rem;
 }
+
+.success-icon-style{
+  background-color: white;
+  color: var(--slds-g-color-success-base-40);
+}

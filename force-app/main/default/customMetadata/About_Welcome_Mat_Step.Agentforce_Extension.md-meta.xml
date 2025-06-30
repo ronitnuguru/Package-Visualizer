@@ -4,15 +4,15 @@
     <protected>true</protected>
     <values>
         <field>Description__c</field>
-        <value xsi:type="xsd:string">Install Unlocked Package to unlock natively embedded Agentforce and Generative AI features.</value>
+        <value xsi:type="xsd:string">Install or upgrade Unlocked Package to leverage natively embedded Agentforce and Generative AI features</value>
     </values>
     <values>
         <field>Icon__c</field>
-        <value xsi:type="xsd:string">standard:agent_astro</value>
+        <value xsi:type="xsd:string">custom:custom76</value>
     </values>
     <values>
         <field>Link__c</field>
-        <value xsi:type="xsd:string">/packaging/installPackage.apexp?p0=04tRh0000019tSvIAI</value>
+        <value xsi:type="xsd:string">/packaging/installPackage.apexp?p0=04tRh000001ANXRIA4</value>
     </values>
     <values>
         <field>Order__c</field>

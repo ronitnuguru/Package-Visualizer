@@ -115,7 +115,17 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
         }
     }
 
-    agentforceTemplate(){
+    scratchFeatureToast(type){
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: "Success",
+                message: `Sample Scratch Org Features and Settings for ${type} have been added`,
+                variant: "success"
+            })
+        );
+    }
+
+    agentforceTemplate(event){
         this.editionValue = 'Partner Developer';
         let features = ['Einstein1AIPlatform', 'EinsteinGPTForDevelopers'];
 
@@ -130,16 +140,10 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
             }
         });
 
-        this.dispatchEvent(
-            new ShowToastEvent({
-                title: "Success",
-                message: "Sample Scratch Org Features and Settings for Agentforce have been added",
-                variant: "success"
-            })
-        );
+        this.scratchFeatureToast(event.currentTarget.value);
     }
 
-    dataCloudTemplate(){
+    dataCloudTemplate(event){
         this.editionValue = 'Partner Developer';
         let features = ['CustomerDataPlatform', 'CustomerDataPlatformLite', 'MarketingUser'];
 
@@ -154,16 +158,46 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
               }
         });
 
+        this.scratchFeatureToast(event.currentTarget.value);
+    }
+
+    marketingCloudTemplate(event){
+        this.editionValue = 'Partner Developer';
+        let features = ['MarketingCloud', 'MarketingUser', 'AIAttribution'];
+
+        features.forEach((feature) => {
+           this.featureValue = feature;
+           this.handleAddFeature();
+        });
+
+        this.scratchFeatureToast(event.currentTarget.value);
+    }
+
+    revCloudTemplate(event){
+        this.editionValue = 'Partner Developer';
+        let features = ['BillingAdvanced', 'InvoiceManagement', 'CoreCpq'];
+
+        publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
+            "revenueManagementSettings": {
+                "enableCoreCPQ": true
+              }
+        });
+
+        features.forEach((feature) => {
+            this.featureValue = feature;
+            this.handleAddFeature();
+        });
+
         this.dispatchEvent(
             new ShowToastEvent({
                 title: "Success",
-                message: "Sample Scratch Org Features and Settings for Data Cloud have been added",
+                message: `Sample Scratch Org Features and Settings for ${event.currentTarget.value} have been added`,
                 variant: "success"
             })
         );
     }
 
-    crmAnalyticsTemplate(){
+    crmAnalyticsTemplate(event){
         this.editionValue = 'Partner Developer';
         let features = ['DevelopmentWave', 'AnalyticsAdminPerms', 'AnalyticsAppEmbedded', 'EAOutputConnectors', 'EinsteinAnalyticsPlus', 'InsightsPlatform'];
 
@@ -178,16 +212,10 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
             this.handleAddFeature();
         });
 
-        this.dispatchEvent(
-            new ShowToastEvent({
-                title: "Success",
-                message: "Sample Scratch Org Features and Settings for CRM Analytics have been added",
-                variant: "success"
-            })
-        );
+        this.scratchFeatureToast(event.currentTarget.value);
     }
 
-    fscTemplate(){
+    fscTemplate(event){
         let features = ['FinancialServicesCommunityUser:5', 'FinancialServicesInsuranceUser', 'FinancialServicesUser:5', 'FSCAlertFramework', 'FSCServiceProcess', 'IndustriesBranchManagement', 'PersonAccounts', 'ContactsToMultipleAccounts', 'AssociationEngine'];
 
         publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
@@ -201,16 +229,10 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
             this.handleAddFeature();
         });
 
-        this.dispatchEvent(
-            new ShowToastEvent({
-                title: "Success",
-                message: "Sample Scratch Org Features and Settings for Financial Services Cloud have been added",
-                variant: "success"
-            })
-        );
+        this.scratchFeatureToast(event.currentTarget.value);
     }
 
-    hlsTemplate(){
+    hlsTemplate(event){
         let features = ['HealthCloudAddOn', 'HealthCloudForCmty', 'HealthCloudMedicationReconciliation', 'HealthCloudPNMAddOn', 'HealthCloudUser', 'HLSAnalytics', 'PersonAccounts', 'ContactsToMultipleAccounts'];
 
         publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
@@ -225,16 +247,10 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
             this.handleAddFeature();
         });
 
-        this.dispatchEvent(
-            new ShowToastEvent({
-                title: "Success",
-                message: "Sample Scratch Org Features and Settings for Health Cloud have been added",
-                variant: "success"
-            })
-        ); 
+        this.scratchFeatureToast(event.currentTarget.value);
     }
 
-    cgTemplate(){
+    cgTemplate(event){
         let features = ['EinsteinVisits', 'CGAnalytics'];
 
         features.forEach((feature) => {
@@ -242,16 +258,10 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
             this.handleAddFeature();
         });
 
-        this.dispatchEvent(
-            new ShowToastEvent({
-                title: "Success",
-                message: "Sample Scratch Org Features and Settings for Consumer Goods Cloud have been added",
-                variant: "success"
-            })
-        );
+        this.scratchFeatureToast(event.currentTarget.value);
     }
 
-    eduTemplate(){
+    eduTemplate(event){
         let features = ['EducationCloud:3'];
 
         publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
@@ -265,16 +275,10 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
             this.handleAddFeature();
         });
 
-        this.dispatchEvent(
-            new ShowToastEvent({
-                title: "Success",
-                message: "Sample Scratch Org Features and Settings for Education Cloud have been added",
-                variant: "success"
-            })
-        );
+        this.scratchFeatureToast(event.currentTarget.value);
     }
 
-    euTemplate(){
+    euTemplate(event){
         let features = ['EnergyAndUtilitiesCloud', 'EAndUDigitalSales'];
 
         features.forEach((feature) => {
@@ -282,16 +286,10 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
             this.handleAddFeature();
         });
 
-        this.dispatchEvent(
-            new ShowToastEvent({
-                title: "Success",
-                message: "Sample Scratch Org Features and Settings for Energy and Utilities Cloud have been added",
-                variant: "success"
-            })
-        );
+        this.scratchFeatureToast(event.currentTarget.value);
     }
 
-    netZeroTemplate(){
+    netZeroTemplate(event){
         let features = ['SustainabilityApp', 'SustainabilityCloud', 'TCRMforSustainability', 'DisclosureFramework'];
 
         features.forEach((feature) => {
@@ -299,16 +297,10 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
             this.handleAddFeature();
         });
 
-        this.dispatchEvent(
-            new ShowToastEvent({
-                title: "Success",
-                message: "Sample Scratch Org Features and Settings for Net Zero Cloud have been added",
-                variant: "success"
-            })
-        );
+        this.scratchFeatureToast(event.currentTarget.value);
     }
 
-    pubSecTemplate(){
+    pubSecTemplate(event){
         let features = ['PublicSectorAccess', 'PublicSectorApplicationUsageCreditsAddOn', 'PublicSectorSiteTemplate'];
 
         features.forEach((feature) => {
@@ -316,16 +308,10 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
             this.handleAddFeature();
         });
 
-        this.dispatchEvent(
-            new ShowToastEvent({
-                title: "Success",
-                message: "Sample Scratch Org Features and Settings for Public Sector Cloud have been added",
-                variant: "success"
-            })
-        );
+        this.scratchFeatureToast(event.currentTarget.value);
     }
 
-    devOpsCenterTemplate(){
+    devOpsCenterTemplate(event){
         this.editionValue = 'Partner Developer';
         let features = ['DevOpsCenter'];
 
@@ -340,13 +326,7 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
             this.handleAddFeature();
         });
 
-        this.dispatchEvent(
-            new ShowToastEvent({
-                title: "Success",
-                message: "Sample Scratch Org Features and Settings for DevOps Center have been added",
-                variant: "success"
-            })
-        );
+        this.scratchFeatureToast(event.currentTarget.value);
     }
 
     handleCreateUsingChange(event) {

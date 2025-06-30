@@ -1,18 +1,14 @@
-import { LightningElement, api } from 'lwc';
-import invokeGenAiPromptTemplate from '@salesforce/apexContinuation/PackageVisualizerCtrl.invokeGenAiPromptTemplate';
+import { api } from 'lwc';
+import LightningModal from 'lightning/modal';
 import { NavigationMixin } from "lightning/navigation";
+import invokeGenAiPromptTemplate from '@salesforce/apexContinuation/PackageVisualizerCtrl.invokeGenAiPromptTemplate';
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 
-export default class GenAiResponseCard extends NavigationMixin(LightningElement) {
-    
-    @api titleHeader;
-    @api titleIcon;
-    @api objectName;
-    @api promptTemplateName;
-    @api recordId;
+export default class GenAiLimitsModal  extends LightningModal {
+    @api content;
+    @api label;
 
     displaySpinner = true;
-    displayExtensionIllustration = false;
 
     aiResponse;
     error;
@@ -32,14 +28,18 @@ export default class GenAiResponseCard extends NavigationMixin(LightningElement)
         });
     }
 
+    handleClose(){
+        this.close();
+    }
+
     async generateAiResponse() {
         try {
             this.aiResponse = await invokeGenAiPromptTemplate({
                 className: 'GenAiPromptTemplateController',
-                methodName: `recordSummary`,
-                recordId: this.recordId,
-                objectInput: this.objectName,
-                promptTemplateName: this.promptTemplateName
+                methodName: `singleFreeText`,
+                recordId: this.content,
+                objectInput: 'Limits_Data',
+                promptTemplateName: 'Org_Limits_Summary'
             });
             this.error = undefined;
             this.displaySpinner = false;
@@ -50,4 +50,6 @@ export default class GenAiResponseCard extends NavigationMixin(LightningElement)
             this.displaySpinner = false;
         }
     }
+
+   
 }

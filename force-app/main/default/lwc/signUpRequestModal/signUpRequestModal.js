@@ -14,6 +14,7 @@ export default class SignUpRequestModal extends NavigationMixin(LightningElement
 
     connectedCallback() {
         this.trustUrl = `https://status.salesforce.com/instances/${this.rowData.createdOrgInstance}`;
+        
         this.loadInstanceFromTrust()
             .then(result => {
                 if (result.message === "Instance not found") {
