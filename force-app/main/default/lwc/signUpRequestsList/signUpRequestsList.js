@@ -1,10 +1,7 @@
 import { LightningElement, wire } from 'lwc';
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
-import {
-    subscribe,
-    unsubscribe,
-    MessageContext
-} from "lightning/messageService";
+import { subscribe, unsubscribe, MessageContext } from "lightning/messageService";
+import { NavigationMixin } from "lightning/navigation";
 import getSignUpRequests from "@salesforce/apexContinuation/PackageVisualizerCtrl.getSignUpRequests";
 import SignUpRequestsFields from "./signUpRequestsFields";
 import SIGNUPLISTMESSAGECHANNEL from "@salesforce/messageChannel/SignupListMessageChannel__c";
@@ -66,7 +63,7 @@ const gridColumns = [
     }
 ];
 
-export default class SignUpRequestsList extends LightningElement {
+export default class SignUpRequestsList extends NavigationMixin(LightningElement) {
 
     @wire(MessageContext) messageContext;
 

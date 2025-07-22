@@ -521,9 +521,17 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
   }
 
   loadMoreData() {
-    if (this.disableInfiniteLoad) {
+    if (this.disableInfiniteLoad && this.subscriberOffset <= 1950) {
       this.subscriberOffset = this.subscriberOffset + this.subscriberLimit;
       this.getSubscribersFromVersions(this.displayFilterMeta, true);
+    } else if (this.subscriberOffset === 2000){
+        this.dispatchEvent(
+          new ShowToastEvent({
+            title: `Push Upgrades Limit`,
+            message: `You can only choose up to 2050 subscribers for push upgrade requests`,
+            variant: "info"
+          })
+        );
     }
   }
 

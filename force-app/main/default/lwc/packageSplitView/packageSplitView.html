@@ -61,6 +61,15 @@
                           class="slds-var-m-right_x-small"
                           onclick={handleSetupAssistantClick}
                         ></lightning-button-icon>
+                        <!--
+                        <lightning-button-icon
+                          icon-name="utility:walkthroughs"
+                          variant="border-filled"
+                          tooltip="In App Guidance Walkthrough"
+                          class="slds-var-m-right_x-small"
+                          onclick={handleInAppGuidanceWalkthrough}
+                        ></lightning-button-icon>
+                        -->
                         <lightning-button-icon
                           icon-name="utility:agent_astro"
                           variant="border-filled"
@@ -124,7 +133,7 @@
               </div>
               <template if:true={packageList}>
                 <div class="slds-grid slds-grid_vertical-align-center slds-var-p-bottom_xx-small">
-                  <p class="slds-text-body_small slds-text-color_weak">
+                  <p class="slds-text-body_small slds-text-color_weak slds-truncate">
                     {packageListSize} items • Sorted by Name
                     <br />
                     {filterLabel} • Updated&nbsp;
@@ -133,6 +142,15 @@
                     ></lightning-relative-date-time>
                   </p>
                   <div class="slds-no-flex slds-grid slds-col_bump-left">
+                    <!--
+                    <lightning-button-icon
+                      icon-name="utility:sparkles"
+                      tooltip="Generative AI"
+                      variant="border-filled"
+                      onclick={handlePackageGenAi}
+                      class="slds-m-right_x-small"
+                    ></lightning-button-icon>
+                    -->
                     <lightning-button-menu
                       alternative-text="Show menu"
                       icon-name="utility:filterList"

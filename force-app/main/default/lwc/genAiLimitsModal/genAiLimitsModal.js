@@ -1,10 +1,8 @@
 import { api } from 'lwc';
 import LightningModal from 'lightning/modal';
-import { NavigationMixin } from "lightning/navigation";
 import invokeGenAiPromptTemplate from '@salesforce/apexContinuation/PackageVisualizerCtrl.invokeGenAiPromptTemplate';
-import { ShowToastEvent } from "lightning/platformShowToastEvent";
 
-export default class GenAiLimitsModal  extends LightningModal {
+export default class GenAiLimitsModal extends LightningModal {
     @api content;
     @api label;
 
@@ -13,19 +11,13 @@ export default class GenAiLimitsModal  extends LightningModal {
     aiResponse;
     error;
 
-    currentPkgVersionId = '04tRh000001ANXRIA4';
+    currentPkgVersionId = '04tRh000001APUPIA4';
 
     connectedCallback(){
         this.generateAiResponse();
     }
-
     handleExtensionInstall(){
-        this[NavigationMixin.Navigate]({
-            type: 'standard__webPage',
-            attributes: {
-                url: `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`
-            }
-        });
+        window.open(`/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`, "_blank");
     }
 
     handleClose(){
@@ -39,7 +31,7 @@ export default class GenAiLimitsModal  extends LightningModal {
                 methodName: `singleFreeText`,
                 recordId: this.content,
                 objectInput: 'Limits_Data',
-                promptTemplateName: 'Org_Limits_Summary'
+                promptTemplateName: 'pkgviz__Org_Limits_Summary'
             });
             this.error = undefined;
             this.displaySpinner = false;

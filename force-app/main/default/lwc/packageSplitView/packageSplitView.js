@@ -301,7 +301,7 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
         this.managedPackageCheck = false;
         this.filterLabel = type;
         break;
-      case "2GP Managed Packages":
+      case "Managed Packages":
         this.allPackageCheck = false;
         this.unlockedPackageCheck = false;
         this.managedPackageCheck = true;
@@ -458,5 +458,9 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
           systemPrompt: details.systemPrompt
       }
     });   
+  }
+
+  handleInAppGuidanceWalkthrough(){
+
   }
 }

@@ -9,3 +9,11 @@
     right: -65px;
     transform: translateX(-50%);
 }
+
+.scroll-style {
+    max-height: 500px;
+}
+
+.scroll-style-disabled {
+    max-height: none;
+}

@@ -31,7 +31,7 @@
         <lightning-button-icon icon-name="utility:trailhead_ext" variant="border-filled" tooltip="Trailhead Module" onclick={handleTrialsTrailhead}></lightning-button-icon>
         <lightning-button-icon icon-name="utility:help_doc_ext" variant="border-filled" onclick={handleHelpDoc}></lightning-button-icon>
     </lightning-button-group>
-    <div class="slds-card__body slds-scrollable" style="max-height:500px">
+    <div class={scrollStyleClass}>
       <lightning-tabset active-tab-value={selectedTab}>
           <lightning-tab label="Sign-Up" value="sign-up-create" class="slds-p-horizontal_small" icon-name="standard:default" onactive={handleActive}>
             <template if:true={isPackageVisualizerEnabled}>
@@ -219,7 +219,7 @@
                                         <lightning-combobox
                                             name="edition"
                                             label="Edition"
-                                            value={editionValue}
+                                            value="Partner Developer"
                                             placeholder="How will you use this org?"
                                             options={developmentOptions}
                                             onchange={editionChange}

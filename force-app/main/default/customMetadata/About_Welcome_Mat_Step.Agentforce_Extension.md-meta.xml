@@ -12,7 +12,7 @@
     </values>
     <values>
         <field>Link__c</field>
-        <value xsi:type="xsd:string">/packaging/installPackage.apexp?p0=04tRh000001ANXRIA4</value>
+        <value xsi:type="xsd:string">/packaging/installPackage.apexp?p0=04tRh000001APUPIA4</value>
     </values>
     <values>
         <field>Order__c</field>

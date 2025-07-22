@@ -121,24 +121,28 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
     ];
   }
 
+
   get industryTemplateOptions(){
     return [
         { label: 'Financial Services Cloud' , value: '0TTWs000000yqrl' },
+        { label: 'Financial Services Cloud - Digital Insurance' , value: '0TTWs000000ywNh' },
         { label: 'Health Cloud' , value: '0TTWs000000zzHt' },
         { label: 'Life Sciences Cloud' , value: '0TTWs000000zywv' },
-        { label: 'Consumer Goods Cloud - Retail Execution', value: '0TTWs000000y3kb'},
+        { label: 'Consumer Goods Cloud - Retail Execution', value: '0TTWs0000010fvR'},
         { label: 'Consumer Goods Cloud - Trade Promotion Management', value: '0TTWs000000xkGX'},
         { label: 'Manufacturing Cloud', value: '0TTWs000000zbXJ'},
         { label: 'Automotive Cloud', value: '0TTWs000000zbYv'},
-        { label: 'Energy and Utilities Cloud', value: '0TTWs000000zyNR'},
+        { label: `Energy & Utilities Cloud`, value: '0TTWs000000zyNR'},
         { label: 'Net Zero Cloud', value: '0TTWs000000y6qX'},
         { label: 'Communications Cloud', value: '0TTWs000000yngz'},
-        { label: 'Education Cloud', value: '0TTWs000000T5lt'},
+        { label: 'Education Cloud', value: '0TTWs000000yOCL'},
         { label: 'Media Cloud', value: '0TTWs000000yo0L'},
         { label: 'Nonprofit Cloud', value: '0TTWs000000yOIn'},
         { label: 'Public Sector Cloud', value: '0TTWs000000ynnR'},
+        { label: 'Revenue Cloud', value: '0TTWs00000122Wb'},
+        { label: 'Loyalty Cloud', value: '0TTWs0000011IC1'}
     ];
-}
+  }
 
   get createUsingOptions() {
     return [

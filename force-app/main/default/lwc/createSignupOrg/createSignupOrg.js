@@ -1,4 +1,4 @@
-import { LightningElement, wire } from "lwc";
+import { LightningElement, wire, api } from "lwc";
 import { getRecord } from 'lightning/uiRecordApi';
 import isSignupRequest from "@salesforce/apex/PackageVisualizerCtrl.isSignupRequest";
 import getSignupCount from "@salesforce/apex/PackageVisualizerCtrl.getSignupCount";
@@ -16,6 +16,8 @@ import Email from '@salesforce/schema/User.Email';
 
 export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
 
+    @api disableScroll;
+
     displaySignUpRequest;
     displayError;
     errorText;
@@ -27,6 +29,27 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
     currentUserLastName;
     currentUserEmail;
     currentUserAutofillError;
+
+    get scrollStyleClass() {
+        const baseClasses = 'slds-card__body slds-scrollable';
+        const scrollClass = this.disableScroll ? 'scroll-style-disabled' : 'scroll-style';
+        return `${baseClasses} ${scrollClass}`;
+    }
+
+    connectedCallback(){
+        
+        if (this.purposeValue) {
+            this.handlePurposeChange(this.purposeValue);
+        }
+        
+        if (this.industryTemplateValue) {
+            this.handleIndustryTemplateChange(this.industryTemplateValue);
+        }
+        
+        if (this.editionValue) {
+            this.handleEditionChange(this.editionValue);
+        }
+    }
 
     @wire(getRecord, { recordId: Id, fields: [ FirstName, LastName, Email ] })
     userDetails({ error, data }) {
@@ -63,14 +86,14 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
     masterSubscriptionAgreement;
     partnerPocketGuideLink;
 
-    purposeValue;
-    industryTemplateValue;
+    @api purposeValue;
+    @api industryTemplateValue;
     createUsingValue = "standard";
     displayCreateUsingOptions;
     displayIndustryOptions;
     displayStandard = true;
 
-    editionValue;
+    @api editionValue;
     displayDevelopmentOptions;
     displayTestDemoOptions;
     displayTsoOptions;
@@ -165,35 +188,43 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
 
     get purposeOptions() {
         return [
-            { label: 'Development', value: 'development' },
-            { label: 'Test/Demo', value: 'test/demo' },
-            { label: 'Industries Development', value: 'industry-templates' }
+            { label: 'Development', value: 'Development' },
+            { label: 'Test/Demo', value: 'Test/Demo' },
+            { label: 'Industries Development', value: 'Industry Development' }
         ];
     }
 
     get industryTemplateOptions(){
         return [
             { label: 'Financial Services Cloud' , value: '0TTWs000000yqrl' },
+            { label: 'Financial Services Cloud - Digital Insurance' , value: '0TTWs000000ywNh' },
             { label: 'Health Cloud' , value: '0TTWs000000zzHt' },
             { label: 'Life Sciences Cloud' , value: '0TTWs000000zywv' },
-            { label: 'Consumer Goods Cloud - Retail Execution', value: '0TTWs000000y3kb'},
-            { label: 'Consumer Goods Cloud - Trade Promotion Management', value: '0TTWs000000xkGX'},
+            { label: 'Consumer Goods Cloud (Retail Execution)', value: '0TTWs0000010fvR'},
+            { label: 'Consumer Goods Cloud (Trade Promotion Management)', value: '0TTWs000000xkGX'},
             { label: 'Manufacturing Cloud', value: '0TTWs000000zbXJ'},
             { label: 'Automotive Cloud', value: '0TTWs000000zbYv'},
-            { label: 'Energy and Utilities Cloud', value: '0TTWs000000zyNR'},
+            { label: `Energy & Utilities Cloud`, value: '0TTWs000000zyNR'},
             { label: 'Net Zero Cloud', value: '0TTWs000000y6qX'},
             { label: 'Communications Cloud', value: '0TTWs000000yngz'},
-            { label: 'Education Cloud', value: '0TTWs000000T5lt'},
+            { label: 'Education Cloud', value: '0TTWs000000yOCL'},
             { label: 'Media Cloud', value: '0TTWs000000yo0L'},
             { label: 'Nonprofit Cloud', value: '0TTWs000000yOIn'},
             { label: 'Public Sector Cloud', value: '0TTWs000000ynnR'},
+            { label: 'Revenue Cloud', value: '0TTWs00000122Wb'},
+            { label: 'Loyalty Cloud', value: '0TTWs0000011IC1'}
         ];
     }
 
     industryTemplateChange(event) {
-        this.industryTemplateValue = event.detail.value;
+        this.handleIndustryTemplateChange(event.detail.value);
+    }
+
+    handleIndustryTemplateChange(value) {
+        this.industryTemplateValue = value;
                 
-        let selectedLabel = event.target.options.find(opt => opt.value === event.detail.value).label;
+        // Find the label from the options based on the value
+        let selectedLabel = this.industryTemplateOptions.find(opt => opt.value === value)?.label;
         
         switch (selectedLabel) {
             case "Financial Services Cloud":
@@ -251,7 +282,11 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
     }
 
     editionChange(event) {
-        this.editionValue = event.detail.value;
+        this.handleEditionChange(event.detail.value);
+    }
+
+    handleEditionChange(value) {
+        this.editionValue = value;
     }
 
     handleSuppressEmailChange(event) {
@@ -272,11 +307,15 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
     }
 
     purposeChange(event) {
-        this.purposeValue = event.detail.value;
-        if (this.purposeValue === 'development' || this.purposeValue === 'tso') {
+        this.handlePurposeChange(event.detail.value);
+    }
+
+    handlePurposeChange(purposeValue) {
+        this.purposeValue = purposeValue;
+        if (this.purposeValue === 'Development' || this.purposeValue === 'tso') {
             this.displayCreateUsingOptions = false;
             this.createUsingValue = 'standard';
-            if (this.purposeValue === 'development') {
+            if (this.purposeValue === 'Development') {
                 this.displayDevelopmentOptions = true;
                 this.displayTestDemoOptions = false;
                 this.displayTsoOptions = false;
@@ -287,13 +326,13 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
                 this.displayDevelopmentOptions = false;
                 this.displayIndustryOptions = false;
             }
-        } else if (this.purposeValue === 'test/demo') {
+        } else if (this.purposeValue === 'Test/Demo') {
             this.displayCreateUsingOptions = true;
             this.displayTestDemoOptions = true;
             this.displayDevelopmentOptions = false;
             this.displayTsoOptions = false;
             this.displayIndustryOptions = false;
-        } else if (this.purposeValue === 'industry-templates'){
+        } else if (this.purposeValue === 'Industry Development'){
             this.displayCreateUsingOptions = false;
             this.displayDevelopmentOptions = false;
             this.displayTestDemoOptions = false;
@@ -353,6 +392,9 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
             })
         );
 
+        if(!this.disableScroll){
+            this.dispatchEvent(new CustomEvent('close'));
+        }
     }
 
     createSignupTrial() {
@@ -361,7 +403,7 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
 
         if (!this.displayStandard) {
             this.templateId = this.template.querySelector('.templateId').value
-        } else if(this.purposeValue === 'industry-templates'){
+        } else if(this.purposeValue === 'Industry Development'){
             this.templateId = this.industryTemplateValue;
             this.editionValue = null;
         } else {
@@ -426,48 +468,75 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
 
 
     navigateToDemoDevStation(){
-        this[NavigationMixin.Navigate]({
-            type: "standard__webPage",
-            attributes: {
-                url: `https://partners.salesforce.com/pdx/s/learn/article/demo-station-for-partners-MCUTYORCVUVNCJTIVCKP6VHUKF3M?language=en_US`
-            }
-        }); 
+        const url = `https://partners.salesforce.com/pdx/s/learn/article/demo-station-for-partners-MCUTYORCVUVNCJTIVCKP6VHUKF3M?language=en_US`;
+        if(!this.disableScroll){
+            this[NavigationMixin.Navigate]({
+                type: "standard__webPage",
+                attributes: {
+                    url: url
+                }
+            }); 
+        } else {
+            window.open(url, "_blank");
+        }
+        
     }
 
     handleTrialsTrailhead() {
-        this[NavigationMixin.Navigate]({
-            type: "standard__webPage",
-            attributes: {
-                url: `https://trailhead.salesforce.com/content/learn/modules/isv_app_trials`
-            }
-        });
+        const url = `https://trailhead.salesforce.com/content/learn/modules/isv_app_trials`;
+        if(!this.disableScroll){
+            this[NavigationMixin.Navigate]({
+                type: "standard__webPage",
+                attributes: {
+                    url: url
+                }
+            });
+        } else {
+            window.open(url, "_blank");
+        }
+        
     }
 
     handleHelpDoc() {
-        this[NavigationMixin.Navigate]({
-            type: "standard__webPage",
-            attributes: {
-                url: `https://salesforce.quip.com/f3SWA340YbFH#temp:C:OUN0313da3cd7494be9a6d27e23e`
-            }
-        });
+        const url = `https://salesforce.quip.com/f3SWA340YbFH#temp:C:OUN0313da3cd7494be9a6d27e23e`;
+        if(!this.disableScroll){
+            this[NavigationMixin.Navigate]({
+                type: "standard__webPage",
+                attributes: {
+                    url: url
+                }
+            });
+        } else {
+            window.open(url, "_blank");
+        }
     }
 
     handlePartnerPocketGuide(){
-        this[NavigationMixin.Navigate]({
-            type: "standard__webPage",
-            attributes: {
-                url: this.partnerPocketGuideLink
-            }
-        });
+        if(!this.disableScroll){
+            this[NavigationMixin.Navigate]({
+                type: "standard__webPage",
+                attributes: {
+                    url: this.partnerPocketGuideLink
+                }
+            });
+        } else {
+            window.open(this.partnerPocketGuideLink, "_blank");
+        }
+        
     }
 
     navigateToRightSfdcOrg(){
-        this[NavigationMixin.Navigate]({
-            type: "standard__webPage",
-            attributes: {
-                url: 'https://developer.salesforce.com/blogs/2024/05/choose-the-right-salesforce-org-for-the-right-job'
-            }
-        });
+        const url = 'https://developer.salesforce.com/blogs/2024/05/choose-the-right-salesforce-org-for-the-right-job';
+        if(!this.disableScroll){
+            this[NavigationMixin.Navigate]({
+                type: "standard__webPage",
+                attributes: {
+                    url: url
+                }
+            });
+        } else {
+            window.open(this.partnerPocketGuideLink, "_blank");
+        }
     }
 
     handleRefresh() {

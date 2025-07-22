@@ -4,7 +4,7 @@
     <protected>true</protected>
     <values>
         <field>Description__c</field>
-        <value xsi:type="xsd:string">Your package has been upgraded to version 7.56</value>
+        <value xsi:type="xsd:string">Your package has been upgraded to version 7.62</value>
     </values>
     <values>
         <field>Icon__c</field>
