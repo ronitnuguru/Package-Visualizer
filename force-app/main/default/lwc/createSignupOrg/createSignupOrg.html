@@ -371,23 +371,22 @@
             <lightning-button
               variant="brand"
               label="Create"
-              icon-name="utility:sparkles"
-              icon-position="right"
               onclick={handleStartTrial}
               disabled={displaySpinner}
             ></lightning-button>
             <template if:true={displayError}>
               <div class="slds-is-relative">
-                  <section aria-describedby="dialog-body-id-5" aria-labelledby="dialog-heading-id-2" class="slds-popover slds-popover_error slds-nubbin_bottom-right tf-popover" role="dialog">
+                  <section class="slds-popover slds-popover_error slds-nubbin_bottom-right tf-popover" role="dialog">
                       <button class="slds-button slds-button_icon slds-button_icon-small slds-float_right slds-popover__close slds-button_icon-inverse" title="Close dialog" style="color:white">
-                          <lightning-icon
-                              size="x-small"
+                          <lightning-button-icon
+                              size="small"
                               icon-name="utility:close"
                               alternative-text="Close"
                               title="Close"
+                              variant="bare"
                               class="slds-current-color"
                               onclick={handlePopoverClose}
-                          ></lightning-icon>
+                          ></lightning-button-icon>
                         <span class="slds-assistive-text">Close</span>
                       </button>
                       <header class="slds-popover__header">

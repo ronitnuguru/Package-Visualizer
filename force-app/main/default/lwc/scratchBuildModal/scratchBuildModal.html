@@ -20,28 +20,237 @@
                         <li>
                             <a href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_create.htm" target="_blank">Discover</a> the various ways you can create scratch orgs via the CLI. 
                         </li>
+                        <template lwc:if={aiResponse}>
+                            <li>
+                                AI generated response maybe incorrect or may not account for all edge cases. Please review and validate your configuration.
+                            </li>
+                        </template>
                     </ul>
                 </div>
             </div>
         </div>
-        <code>
-            <pre class="slds-expression__group">{content}</pre>
-        </code>
+        <template lwc:if={aiDiff}>
+            <div class="slds-grid slds-gutters slds-card slds-m-top_small">
+                <div class="slds-col slds-size_6-of-12">
+                    <div class="slds-border_top slds-border_bottom slds-border_right slds-border_left card-style">
+                        <lightning-card>
+                            <h3 slot="title" class="slds-truncate">
+                                <lightning-icon 
+                                    icon-name="standard:avatar" 
+                                    size="medium" 
+                                    class="slds-m-right_small"
+                                ></lightning-icon>
+                                User Generated
+                            </h3>
+                            <lightning-button-group slot="actions">
+                                <lightning-button-icon
+                                    tooltip="Copy to Clipboard" 
+                                    onclick={handleUserCopyPaste} 
+                                    icon-name="utility:copy_to_clipboard"
+                                    icon-position="right"
+                                ></lightning-button-icon>
+                                <lightning-button-icon
+                                    tooltip="Download JSON" 
+                                    onclick={handleUserDownloadJson} 
+                                    icon-name="utility:download"
+                                    icon-position="right"
+                                ></lightning-button-icon>
+                            </lightning-button-group>
+                            <div class="slds-p-horizontal_medium">
+                                <code>
+                                    <pre class="slds-expression__group slds-scrollable">{content}</pre>
+                                </code>
+                            </div>
+                        </lightning-card>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_6-of-12">
+                    <template if:true={displaySpinner}>
+                        <lightning-spinner
+                          alternative-text="Loading"
+                          size="medium"
+                          variant="brand"
+                        ></lightning-spinner>
+                    </template>
+                    <div class="slds-border_top slds-border_bottom slds-border_right slds-border_left card-style">
+                        <lightning-card>
+                            <h3 slot="title" class="slds-truncate">
+                                <lightning-icon 
+                                    icon-name="standard:story" 
+                                    size="medium" 
+                                    class="slds-m-right_small"
+                                ></lightning-icon>
+                                AI Generated
+                            </h3>
+                            <lightning-button-group slot="actions">
+                                <template lwc:if={aiResponse}>
+                                    <lightning-button
+                                        label="Suggest Improvement"
+                                        icon-name="utility:sparkles"
+                                        icon-position="right"
+                                        variant="brand"
+                                        onclick={handleAiSuggestImprovements}
+                                    ></lightning-button>
+                                    <template if:true={displayAiSuggest}>
+                                        <div class="slds-is-relative">
+                                            <section class="slds-popover slds-nubbin_top-right tf-popover slds-popover_large" role="dialog">
+                                                <button class="slds-button slds-button_icon slds-button_icon-small slds-float_right slds-popover__close slds-button_icon-inverse" title="Close dialog" style="color:white">
+                                                    <lightning-button-icon
+                                                        size="x-small"
+                                                        icon-name="utility:close"
+                                                        alternative-text="Close"
+                                                        title="Close"
+                                                        value="bare"
+                                                        class="slds-current-color"
+                                                        onclick={handlePopoverClose}
+                                                    ></lightning-button-icon>
+                                                  <span class="slds-assistive-text">Close</span>
+                                                </button>
+                                                <header class="slds-popover__header">
+                                                    <div class="slds-media slds-media_center slds-has-flexi-truncate ">
+                                                      <div class="slds-media__figure">
+                                                          <lightning-icon
+                                                              size="small"
+                                                              icon-name="utility:agent_astro"
+                                                              class="icon-style"
+                                                          ></lightning-icon>
+                                                      </div>
+                                                      <div class="slds-media__body">
+                                                        <h2 class="slds-truncate slds-text-heading_small tf-popover_header" title="Resolve error">How can we improve this?</h2>
+                                                      </div>
+                                                    </div>
+                                                  </header>
+                                                  <div class="slds-popover__body slds-popover__body_scrollable tf-popover-body">
+                                                    <lightning-textarea 
+                                                        required 
+                                                        label="Revise AI Response" 
+                                                        placeholder="Include Industries Settings related to Net Zero Cloud..."
+                                                        onchange={handleAiSuggestionChange}
+                                                    ></lightning-textarea>
+                                                  </div>
+                                                  <footer class="slds-popover__footer">
+                                                    <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-end">
+                                                        <lightning-button
+                                                            label="AI Rewrite"
+                                                            variant="brand"
+                                                            icon-name="utility:sparkles"
+                                                            icon-position="right"
+                                                            onclick={handleAiRewrite}
+                                                            disabled={isAiSuggestionEmpty}
+                                                        ></lightning-button>
+                                                    </div>
+                                                  </footer>
+                                            </section>
+                                        </div>
+                                    </template>
+                                    <lightning-button-icon
+                                        tooltip="Copy to Clipboard" 
+                                        onclick={handleAiCopyPaste} 
+                                        icon-name="utility:copy_to_clipboard"
+                                        icon-position="right"
+                                    ></lightning-button-icon>
+                                    <lightning-button-icon
+                                        tooltip="Download JSON" 
+                                        onclick={handleAiDownloadJson} 
+                                        icon-name="utility:download"
+                                        icon-position="right"
+                                    ></lightning-button-icon>
+                                </template>
+                            </lightning-button-group>
+                            <template lwc:if={aiResponse}>
+                                <div class="slds-p-horizontal_medium">
+                                    <code>
+                                        <pre class="slds-expression__group slds-scrollable">{aiResponse}</pre>
+                                    </code>
+                                </div>
+                            </template>
+                            <template lwc:elseif={error}>
+                                <template if:true={error}>
+                                    <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-around_medium" role="status">
+                                        <div class="slds-media__figure">
+                                            <lightning-icon
+                                                size="small"
+                                                icon-name="utility:info"
+                                                alternative-text="info"
+                                                title="info"
+                                                variant="inverse"
+                                            ></lightning-icon>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <div>
+                                                Component Requirements
+                                                <ol class="slds-list_ordered">
+                                                    <li>
+                                                        Enable Agentforce in <a href="/lightning/setup/EinsteinGPTSetup/home" target="_blank">Einstein Setup</a> and <a href="/lightning/setup/EinsteinCopilot/home" target="_blank">Agent Studio</a> 
+                                                    </li>
+                                                    <li>
+                                                        Install Package Visualizer + ISV Tooling Unlocked Extension Package. <a href="https://salesforce.quip.com/f3SWA340YbFH" target="_blank">Learn More</a>
+                                                    </li>
+                                                </ol>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-p-horizontal_medium">
+                                        <c-empty-illustration-with-button
+                                            title="Component not available..."
+                                            body="Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance..."
+                                            button-label="Install Unlocked Package"
+                                            size="small"
+                                            onselect={handleExtensionInstall}
+                                        ></c-empty-illustration-with-button>
+                                    </div>
+                                </template>
+                            </template>
+                        </lightning-card>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template lwc:else>
+            <code>
+                <pre class="slds-expression__group">{content}</pre>
+            </code>
+        </template>
     </lightning-modal-body>
     <lightning-modal-footer>
-        <!--
-        <lightning-button
-            label="Edit"
-            onclick={handleEdit}
-            class="slds-m-right_x-small"
-        ></lightning-button>
-        -->
-        <lightning-button
-            label="Download JSON" 
-            onclick={handleDownloadJson} 
-            variant="brand"
-            icon-name="utility:download"
-            icon-position="right"
-        ></lightning-button>
+        <template if:true={aiDiff}>
+            <lightning-button
+                label="Back"
+                onclick={handleAiClear}
+                icon-name="utility:back"
+                class="slds-m-right_x-small"
+            ></lightning-button>
+            <lightning-button
+                label="Close"
+                onclick={handleCloseModal}
+            ></lightning-button>
+        </template>
+
+        <template if:false={aiDiff}>
+            <lightning-button-group>
+                <lightning-button-icon
+                    tooltip="Copy to Clipboard" 
+                    onclick={handleUserCopyPaste} 
+                    icon-name="utility:copy_to_clipboard"
+                    icon-position="right"
+                ></lightning-button-icon>
+                <lightning-button-icon
+                    tooltip="Download JSON" 
+                    onclick={handleUserDownloadJson} 
+                    icon-name="utility:download"
+                    icon-position="right"
+                ></lightning-button-icon>
+            </lightning-button-group>
+
+            <lightning-button
+                label="AI Rewrite"
+                onclick={handleAiRewrite}
+                class="slds-m-left_x-small"
+                variant="brand"
+                icon-name="utility:sparkles"
+                icon-position="right"
+            ></lightning-button>
+        </template>
+        
     </lightning-modal-footer>
 </template>

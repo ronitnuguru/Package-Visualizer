@@ -218,12 +218,6 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
     fscTemplate(event){
         let features = ['FinancialServicesCommunityUser:5', 'FinancialServicesInsuranceUser', 'FinancialServicesUser:5', 'FSCAlertFramework', 'FSCServiceProcess', 'IndustriesBranchManagement', 'PersonAccounts', 'ContactsToMultipleAccounts', 'AssociationEngine'];
 
-        publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
-            "industriesSettings": {
-                "enableFinancialAccountMgmt": true
-            }
-        });
-
         features.forEach((feature) => {
             this.featureValue = feature;
             this.handleAddFeature();
@@ -234,13 +228,6 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
 
     hlsTemplate(event){
         let features = ['HealthCloudAddOn', 'HealthCloudForCmty', 'HealthCloudMedicationReconciliation', 'HealthCloudPNMAddOn', 'HealthCloudUser', 'HLSAnalytics', 'PersonAccounts', 'ContactsToMultipleAccounts'];
-
-        publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
-            "industriesSettings": {
-                "enableClinicalDataModel": true,
-                "enableContactCenterAccess": true
-            }
-        });
 
         features.forEach((feature) => {
             this.featureValue = feature;
@@ -263,12 +250,6 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
 
     eduTemplate(event){
         let features = ['EducationCloud:3'];
-
-        publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
-            "industriesSettings": {
-                "enableEducationCloud": true
-            }
-        });
 
         features.forEach((feature) => {
             this.featureValue = feature;
@@ -434,7 +415,7 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
                 return;
             } else {
                 const result = await ScratchBuildModal.open({
-                    size: 'medium',
+                    size: 'large',
                     label: 'Sample Scratch Org Definition File',
                     content: JSON.stringify(this.jsonScratchBuild, null, 2)
                 });

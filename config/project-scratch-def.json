@@ -1,14 +1,14 @@
 {
-  "orgName": "Omnistudio",
+  "orgName": "Agentforce",
   "edition": "Partner Developer",
+  "hasSampleData": true,
   "release": "current",
   "country": "US",
   "language": "en_US",
   "features": [
     "EnableSetPasswordInApi",
-    "OmnistudioRuntime",
-    "OmnistudioDesigner",
-    "OmnistudioMetadata"
+    "Einstein1AIPlatform",
+    "EinsteinGPTForDevelopers"
   ],
   "settings": {
     "lightningExperienceSettings": {
@@ -18,6 +18,9 @@
     },
     "mobileSettings": {
       "enableS1EncryptedStoragePref2": "false"
+    },
+    "einsteinGptSettings": {
+      "enableEinsteinGptPlatform": "true"
     }
   }
 }

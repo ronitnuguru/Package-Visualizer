@@ -282,6 +282,7 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
     }
 
     editionChange(event) {
+        console.log(event.detail.value);
         this.handleEditionChange(event.detail.value);
     }
 
@@ -316,6 +317,7 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
             this.displayCreateUsingOptions = false;
             this.createUsingValue = 'standard';
             if (this.purposeValue === 'Development') {
+                this.editionValue = 'Partner Developer';
                 this.displayDevelopmentOptions = true;
                 this.displayTestDemoOptions = false;
                 this.displayTsoOptions = false;
@@ -391,10 +393,7 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
                 variant: "success"
             })
         );
-
-        if(!this.disableScroll){
-            this.dispatchEvent(new CustomEvent('close'));
-        }
+        this.dispatchEvent(new CustomEvent('close'));
     }
 
     createSignupTrial() {

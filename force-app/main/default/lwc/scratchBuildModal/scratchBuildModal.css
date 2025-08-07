@@ -1,0 +1,23 @@
+.card-style {
+    border-radius: 0.25rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 
+                0 2px 4px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.tf-popover{
+    text-align: left;
+    position: absolute;
+    bottom: -215px;
+    right: -200px;
+    transform: translateX(-50%);
+}
+
+.tf-popover-body{
+    height: 7rem;
+    overflow-y: auto;
+}
+
+.icon-style{
+    --slds-c-icon-color-foreground-default: var(--lwc-brandAccessible);
+}

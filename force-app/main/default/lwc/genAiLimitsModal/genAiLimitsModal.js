@@ -11,7 +11,7 @@ export default class GenAiLimitsModal extends LightningModal {
     aiResponse;
     error;
 
-    currentPkgVersionId = '04tRh000001APUPIA4';
+    currentPkgVersionId = '04tRh000001FlXWIA0';
 
     connectedCallback(){
         this.generateAiResponse();
