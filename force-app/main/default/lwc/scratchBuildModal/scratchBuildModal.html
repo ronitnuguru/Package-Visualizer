@@ -65,15 +65,17 @@
                     </div>
                 </div>
                 <div class="slds-col slds-size_6-of-12">
-                    <template if:true={displaySpinner}>
-                        <lightning-spinner
-                          alternative-text="Loading"
-                          size="medium"
-                          variant="brand"
-                        ></lightning-spinner>
-                    </template>
                     <div class="slds-border_top slds-border_bottom slds-border_right slds-border_left card-style">
                         <lightning-card>
+                            <template if:true={displaySpinner}>
+                                <div class="slds-p-vertical_medium">
+                                    <lightning-spinner
+                                        alternative-text="Loading"
+                                        size="medium"
+                                        variant="brand"
+                                    ></lightning-spinner>
+                                </div>
+                            </template>
                             <h3 slot="title" class="slds-truncate">
                                 <lightning-icon 
                                     icon-name="standard:story" 
