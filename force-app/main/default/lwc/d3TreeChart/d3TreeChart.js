@@ -1,11 +1,7 @@
 import { LightningElement, api, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { loadScript } from "lightning/platformResourceLoader";
-import {
-  subscribe,
-  unsubscribe,
-  MessageContext
-} from "lightning/messageService";
+import { subscribe, unsubscribe, MessageContext } from "lightning/messageService";
 import D3MESSAGECHANNEL from "@salesforce/messageChannel/D3MessageChannel__c";
 import D3 from "@salesforce/resourceUrl/d3";
 
@@ -19,37 +15,64 @@ export default class D3TreeChart extends LightningElement {
 
   @wire(MessageContext) messageContext;
 
+  // Core state
   d3Initialized = false;
   displaySpinner = true;
 
   treeData;
   isReleasedTreeData;
-  errorBody =
-    "Looks like we were unable render visualizations for this package...";
+  errorBody = "Looks like we were unable render visualizations for this package...";
 
-  activeSections = [];
-  accordionHeader = "Version Details";
-  subscriberPackageVersionId;
-  name;
-  isReleased;
-  currentNode;
-  currentNodeAncestry = [];
-  displayNodeDetails = false;
-  displayAccordionSlot = false;
+  // UI state - minimal for clean visualization
 
+  // Interaction state
   debounceTime = 500;
-
-  filterValue;
   subscription = null;
+  chartControls;
+  filterWrapper;
+  hoveredNode = null;
+  selectedNode = null;
+  
+  // Visualization constants
+  ANIMATION_DURATION = 300;
+  NODE_RADIUS = 12;
+  NODE_SPACING = 180;
+  COLORS = {
+    node: {
+      default: '#ffffff',
+      collapsed: '#1589ee',
+      highlighted: '#ff6b35',
+      selected: '#0066cc',
+      hover: '#f3f3f3'
+    },
+    link: {
+      default: '#6b7280',
+      highlighted: '#1589ee',
+      path: '#999'
+    },
+    text: {
+      default: '#1f2937',
+      highlighted: '#fff'
+    }
+  };
 
+  // Chart dimensions
   margin;
   width;
   height;
   treeDataHeight;
   svg = null;
-
-  chartControls;
-  filterWrapper;
+  panBehavior = null;
+  
+  // Smooth scrolling state
+  smoothScrollState = {
+    velocityX: 0,
+    velocityY: 0,
+    lastTimestamp: 0,
+    isDecelerating: false,
+    momentum: 0.9, // Momentum decay factor
+    minVelocity: 0.1 // Minimum velocity threshold
+  };
 
   connectedCallback() {
     this.subscription = subscribe(
@@ -85,66 +108,136 @@ export default class D3TreeChart extends LightningElement {
       })
       .then(() => {
         try {
-          this.treeDataHeight = this.treeData.height;
-          this.margin = { top: 10, right: 0, bottom: 30, left: 120 };
-          this.width =
-            window.innerWidth +
-            this.treeDataHeight * (this.treeDataHeight / 2) * 10;
-          this.height = window.innerHeight;
-
-          this.svg = d3
-            .select(this.template.querySelector("div.d3"))
-            .append("svg")
-            .attr("width", this.width + this.margin.right + this.margin.left)
-            .attr("height", this.height + this.margin.top + this.margin.bottom)
-            .append("g")
-            .attr(
-              "transform",
-              `translate(${this.margin.left}, ${this.margin.top})`
-            );
-          this.template.querySelector(".chart-box").scrollIntoView();
+          this.setupVisualization();
           this.initializeD3();
           this.displaySpinner = false;
         } catch (error) {
-          console.error(error);
-          this.displaySpinner = false;
-          this.treeData = undefined;
-          this.errorBody =
-            "Looks like you do not have enough released package version nodes to view visualizations...";
+          this.handleVisualizationError(error);
         }
       })
       .catch(error => {
-        console.error(error);
-        this.displaySpinner = false;
-        this.dispatchEvent(
-          new ShowToastEvent({
-            title: "Error loading D3",
-            message: error,
-            variant: "error"
-          })
-        );
+        this.handleLoadError(error);
       });
     this.d3Initialized = true;
+  }
+
+  setupVisualization() {
+    this.treeDataHeight = this.treeData.height;
+    this.margin = { top: 20, right: 50, bottom: 50, left: 150 };
+    
+    // Count total nodes for better height calculation
+    let totalNodes = 0;
+    this.treeData.each(() => totalNodes++);
+    
+    // Responsive dimensions with dynamic sizing based on tree structure
+    const container = this.template.querySelector("div.d3");
+    const containerRect = container.getBoundingClientRect();
+    
+    // Dynamic width based on tree depth
+    this.width = Math.max(1200, (containerRect.width || window.innerWidth * 0.8) + this.treeDataHeight * 250);
+    
+    // Dynamic height based on total nodes and tree depth
+    const minHeight = 600;
+    const nodeBasedHeight = totalNodes * 40; // 40px per node
+    const depthBasedHeight = this.treeDataHeight * 120; // 120px per level
+    const maxHeight = window.innerHeight * 0.9; // Don't exceed 90% of screen height
+    
+    this.height = Math.max(minHeight, Math.min(maxHeight, Math.max(nodeBasedHeight, depthBasedHeight)));
+    
+
+
+    // Create SVG with zoom and pan capabilities
+    const svgContainer = d3
+      .select(container)
+      .append("svg")
+      .attr("width", this.width)
+      .attr("height", this.height)
+      .style("border", "1px solid rgba(255, 255, 255, 0.3)")
+      .style("border-radius", "8px")
+      .style("background", "rgba(255, 255, 255, 0.1)");
+
+    // Enhanced zoom and pan behavior with keyboard support
+    this.panBehavior = d3.zoom()
+      .scaleExtent([0.3, 3]) // Allow zoom from 30% to 300%
+      .filter((event) => {
+        // Only allow zoom for Ctrl+wheel, allow drag and keyboard events
+        if (event.type === 'wheel') {
+          return event.ctrlKey || event.metaKey; // Only zoom when Ctrl/Cmd is held
+        }
+        return event.type === 'mousedown' || event.type === 'touchstart' || event.type === 'keydown';
+      })
+      .on("zoom", (event) => {
+        const transform = event.transform;
+        this.svg.attr("transform", `translate(${this.margin.left + transform.x}, ${this.margin.top + transform.y}) scale(${transform.k})`);
+      });
+
+    svgContainer.call(this.panBehavior);
+
+    // Ultra-smooth momentum-based wheel event handling
+    this.initializeSmoothScrolling(svgContainer);
+
+    // Add keyboard event listeners for zoom functionality
+    this.addKeyboardControls(svgContainer);
+
+    this.svg = svgContainer
+      .append("g")
+      .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`);
+
+
+
+    // Simple setup without complex gradients
+
+    this.template.querySelector(".chart-box").scrollIntoView();
+  }
+
+
+
+  handleVisualizationError(error) {
+    console.error('Visualization error:', error);
+    this.displaySpinner = false;
+    this.treeData = undefined;
+    this.errorBody = "Looks like you do not have enough released package version nodes to view visualizations...";
+  }
+
+  handleLoadError(error) {
+    console.error('D3 load error:', error);
+    this.displaySpinner = false;
+    this.dispatchEvent(
+      new ShowToastEvent({
+        title: "Error loading D3",
+        message: error.message || error,
+        variant: "error"
+      })
+    );
   }
 
   initializeD3() {
     const me = this;
 
+    // Clear previous visualization
+    me.svg.selectAll("*").remove();
+
+    // Prepare node data with names like original
     me.treeData.each(function(d) {
       d.name = d.data.versionNumber;
     });
 
     let i = 0;
-    let duration = 750;
     let root;
-    let treemap = d3.tree().size([me.height, me.width]);
+    
+    // Calculate tree layout size based on expanded tree
+    const layoutWidth = me.width - me.margin.left - me.margin.right;
+    const layoutHeight = me.height - me.margin.top - me.margin.bottom;
+    const treemap = d3.tree().size([layoutHeight, layoutWidth]);
 
     root = d3.hierarchy(me.treeData, function(d) {
       return d.children;
     });
-    root.x0 = me.height / 2;
+    
+    root.x0 = (me.height - me.margin.top - me.margin.bottom) / 2;
     root.y0 = 0;
 
+    // Apply initial state based on controls
     if (me.chartControls === "ExpandAll") {
       expand(root);
       update(root);
@@ -152,9 +245,8 @@ export default class D3TreeChart extends LightningElement {
       collapse(root);
       update(root);
     } else {
-      if (!this.packageSubscriberVersionId) {
-        root.children.forEach(collapse);
-      }
+      // Default: Auto-expand all nodes on load
+      expand(root);
       update(root);
     }
 
@@ -167,7 +259,7 @@ export default class D3TreeChart extends LightningElement {
     }
 
     function expand(d) {
-      var children = d.children ? d.children : d._children;
+      const children = d.children ? d.children : d._children;
       if (d._children) {
         d.children = d._children;
         d._children = null;
@@ -176,36 +268,47 @@ export default class D3TreeChart extends LightningElement {
     }
 
     function update(source) {
-      let treeData = treemap(root);
-      treemap = d3.tree().size([me.height, me.width]);
-      let nodes = treeData.descendants(),
-        links = treeData.descendants().slice(1);
+      const treeData = treemap(root);
+      const nodes = treeData.descendants();
+      const links = treeData.descendants().slice(1);
 
+      // Position nodes with dynamic spacing
+      const dynamicSpacing = Math.max(150, Math.min(250, layoutWidth / (me.treeDataHeight + 1)));
       nodes.forEach(function(d) {
-        d.y = d.depth * 180;
+        d.y = d.depth * dynamicSpacing;
       });
 
-      let node = me.svg.selectAll("g.node").data(nodes, function(d) {
+      // Update nodes
+      const node = me.svg.selectAll("g.node").data(nodes, function(d) {
         return d.id || (d.id = ++i);
       });
 
-      let nodeEnter = node
+      // Enter new nodes
+      const nodeEnter = node
         .enter()
         .append("g")
         .attr("class", "node")
         .attr("transform", function(d) {
           return `translate(${source.y0}, ${source.x0})`;
         })
-        .on("click", click);
+        .style("cursor", "pointer")
+        .on("click", click)
+        .on("mouseover", handleNodeMouseOver)
+        .on("mouseout", handleNodeMouseOut);
 
+      // Enhanced circles for gray background
       nodeEnter
         .append("circle")
         .attr("class", "node")
         .attr("r", 1e-6)
         .style("fill", function(d) {
-          return d._children ? "lightsteelblue" : "#fff";
-        });
+          return d._children ? "#1589ee" : "#ffffff";
+        })
+        .style("stroke", "#1589ee")
+        .style("stroke-width", "2.5px")
+        .style("filter", "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))");
 
+      // Text labels with names like original
       nodeEnter
         .append("text")
         .attr("dy", ".35em")
@@ -215,90 +318,113 @@ export default class D3TreeChart extends LightningElement {
         .attr("text-anchor", function(d) {
           return d.children || d._children ? "end" : "start";
         })
+        .style("font-size", "12px")
+        .style("font-weight", "500")
+        .style("fill", "#1f2937")
+        .style("text-shadow", "0 1px 2px rgba(255, 255, 255, 0.8)")
         .text(function(d) {
           return d.data.name;
         });
 
-      let nodeUpdate = nodeEnter.merge(node);
+      // Merge enter and update selections
+      const nodeUpdate = nodeEnter.merge(node);
 
+      // Transition to new positions
       nodeUpdate
         .transition()
-        .duration(duration)
+        .duration(me.ANIMATION_DURATION)
         .attr("transform", function(d) {
           return `translate(${d.y}, ${d.x})`;
         });
 
+      // Fast circle updates with better contrast
       nodeUpdate
         .select("circle.node")
-        .attr("r", 10)
+        .transition()
+        .duration(me.ANIMATION_DURATION)
+        .ease(d3.easeBackOut.overshoot(1.2))
+        .attr("r", 8)
         .style("fill", function(d) {
-          return d._children ? "lightsteelblue" : "#fff";
+          return d._children ? "#1589ee" : "#ffffff";
         })
-        .attr("cursor", "pointer");
+        .style("stroke", "#1589ee")
+        .style("stroke-width", "2.5px")
+        .style("filter", "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))");
 
-      let nodeExit = node
+      // Remove exiting nodes
+      const nodeExit = node
         .exit()
         .transition()
-        .duration(duration)
+        .duration(me.ANIMATION_DURATION)
         .attr("transform", function(d) {
           return `translate(${source.y}, ${source.x})`;
         })
         .remove();
 
       nodeExit.select("circle").attr("r", 1e-6);
-
       nodeExit.select("text").style("fill-opacity", 1e-6);
 
-      let link = me.svg.selectAll("path.link").data(links, function(d) {
+      // Update links
+      const link = me.svg.selectAll("path.link").data(links, function(d) {
         return d.id;
       });
 
-      let linkEnter = link
+      // Enhanced links for gray background
+      const linkEnter = link
         .enter()
         .insert("path", "g")
         .attr("class", "link")
+        .style("fill", "none")
+        .style("stroke", "#6b7280")
+        .style("stroke-width", "2px")
+        .style("opacity", "0.8")
         .attr("d", function(d) {
-          var o = { x: source.x0, y: source.y0 };
+          const o = { x: source.x0, y: source.y0 };
           return diagonal(o, o);
         });
 
-      let linkUpdate = linkEnter.merge(link);
+      // Merge enter and update selections
+      const linkUpdate = linkEnter.merge(link);
 
+      // Fast link transitions
       linkUpdate
         .transition()
-        .duration(duration)
+        .duration(me.ANIMATION_DURATION)
         .attr("d", function(d) {
           return diagonal(d, d.parent);
         });
 
-      let linkExit = link
+      // Remove exiting links
+      const linkExit = link
         .exit()
         .transition()
-        .duration(duration)
+        .duration(me.ANIMATION_DURATION)
         .attr("d", function(d) {
-          var o = { x: source.x, y: source.y };
+          const o = { x: source.x, y: source.y };
           return diagonal(o, o);
         })
         .remove();
 
+      // Store previous positions
       nodes.forEach(function(d) {
         d.x0 = d.x;
         d.y0 = d.y;
       });
 
       function diagonal(s, d) {
-        let path = `M ${s.y} ${s.x}
-              C ${(s.y + d.y) / 2} ${s.x},
-                ${(s.y + d.y) / 2} ${d.x},
-                ${d.y} ${d.x}`;
-
-        return path;
+        return `M ${s.y} ${s.x}
+                C ${(s.y + d.y) / 2} ${s.x},
+                  ${(s.y + d.y) / 2} ${d.x},
+                  ${d.y} ${d.x}`;
       }
 
-      function click(d, versionNode) {
-        this.dispatchEvent(
-          new CustomEvent("detail", { detail: versionNode.data, bubbles: true })
-        );
+
+
+      function click(event, versionNode) {
+        // Update selected node
+        me.selectedNode = versionNode;
+        
+        // Toggle node expansion
         if (versionNode.children) {
           if (versionNode.children.length) {
             me.height = me.height - versionNode.children.length * 20;
@@ -312,77 +438,315 @@ export default class D3TreeChart extends LightningElement {
           versionNode.children = versionNode._children;
           versionNode._children = null;
         }
+        
         update(versionNode);
+      }
+
+      function handleNodeMouseOver(event, d) {
+        // Simple hover effect
+        d3.select(event.currentTarget)
+          .select("circle.node")
+          .transition()
+          .duration(100)
+          .attr("r", 10)
+          .style("stroke-width", "3px");
+      }
+
+      function handleNodeMouseOut(event, d) {
+        // Quick return to normal
+        d3.select(event.currentTarget)
+          .select("circle.node")
+          .transition()
+          .duration(100)
+          .attr("r", 8)
+          .style("stroke-width", "2px");
       }
     }
   }
 
   prepData() {
-    let d3Array = [];
+    if (!this.gridData || !Array.isArray(this.gridData)) {
+      throw new Error('Invalid grid data provided');
+    }
+
+    const d3Array = [];
+    
+    // Process grid data with enhanced validation
     this.gridData.forEach(element => {
-      if (element.ancestorId === undefined) {
-        d3Array.push({ ...element, ancestorId: "Package" });
-      } else {
-        d3Array.push({ ...element });
+      if (!element.subscriberPackageVersionId) {
+        console.warn('Missing subscriberPackageVersionId for element:', element);
+        return;
       }
+      
+      const processedElement = {
+        ...element,
+        ancestorId: element.ancestorId || "Package",
+        versionNumber: element.versionNumber || 'Unknown',
+        isReleased: Boolean(element.isReleased),
+        name: element.name || element.versionNumber
+      };
+      
+      d3Array.push(processedElement);
     });
+    
+    // Add root package node
     d3Array.unshift({
       subscriberPackageVersionId: "Package",
       ancestorId: "",
-      versionNumber: this.namespacePrefix
+      versionNumber: this.namespacePrefix || 'Root Package',
+      name: this.namespacePrefix || 'Root Package',
+      isReleased: true
     });
 
-    this.treeData = d3
-      .stratify()
-      .id(function(d) {
-        return d.subscriberPackageVersionId;
-      })
-      .parentId(function(d) {
-        return d.ancestorId;
-      })(d3Array);
+    try {
+      this.treeData = d3
+        .stratify()
+        .id(d => d.subscriberPackageVersionId)
+        .parentId(d => d.ancestorId)(d3Array);
 
-    if (this.packageSubscriberVersionId) {
-      let z = this.treeData.find(
-        node => node.id === this.packageSubscriberVersionId
+      // Filter to specific subtree if needed
+      if (this.packageSubscriberVersionId) {
+        const targetNode = this.treeData.find(
+          node => node.id === this.packageSubscriberVersionId
+        );
+        if (targetNode) {
+          this.treeData = targetNode.copy();
+        }
+      }
+    } catch (error) {
+      console.error('Error creating tree structure:', error);
+      throw new Error('Failed to create tree visualization: Invalid data hierarchy');
+    }
+  }
+
+  // Public API methods for external control
+  @api
+  expandAll() {
+    this.chartControls = "ExpandAll";
+    if (this.d3Initialized) {
+      this.initializeD3();
+    }
+  }
+
+  @api
+  collapseAll() {
+    this.chartControls = "CollapseAll";
+    if (this.d3Initialized) {
+      this.initializeD3();
+    }
+  }
+
+
+
+
+
+
+
+
+
+  // Clean visualization - node details removed for minimal UI
+
+
+
+
+
+
+
+  // Clean visualization focused on D3 interaction only
+
+  // Initialize ultra-smooth momentum-based scrolling
+  initializeSmoothScrolling(svgContainer) {
+    let wheelTimeout;
+    let animationFrame;
+    
+    const applyMomentum = () => {
+      if (!this.smoothScrollState.isDecelerating) return;
+      
+      const currentTransform = d3.zoomTransform(svgContainer.node());
+      
+      // Apply velocity-based movement
+      const newTransform = currentTransform.translate(
+        this.smoothScrollState.velocityX,
+        this.smoothScrollState.velocityY
       );
-      this.treeData = z.copy();
-    }
+      
+      // Apply transform immediately for smoothness
+      this.panBehavior.transform(svgContainer, newTransform);
+      
+      // Decay velocity
+      this.smoothScrollState.velocityX *= this.smoothScrollState.momentum;
+      this.smoothScrollState.velocityY *= this.smoothScrollState.momentum;
+      
+      // Continue animation if velocity is significant
+      if (Math.abs(this.smoothScrollState.velocityX) > this.smoothScrollState.minVelocity ||
+          Math.abs(this.smoothScrollState.velocityY) > this.smoothScrollState.minVelocity) {
+        animationFrame = requestAnimationFrame(applyMomentum);
+      } else {
+        this.smoothScrollState.isDecelerating = false;
+      }
+    };
+    
+    svgContainer.on("wheel", (event) => {
+      // If Ctrl/Cmd is held, let D3 zoom handle it
+      if (event.ctrlKey || event.metaKey) {
+        return; // Let D3 zoom behavior handle this
+      }
+      
+      event.preventDefault();
+      
+      // Enhanced smoothness parameters
+      const sensitivity = 1.5; // Increased sensitivity
+      const dampening = 0.7; // Reduce jitter
+      
+      // Calculate movement deltas with dampening
+      const deltaX = (-event.deltaX * sensitivity) * dampening;
+      const deltaY = (-event.deltaY * sensitivity) * dampening;
+      
+      // Apply immediate movement for responsiveness
+      const currentTransform = d3.zoomTransform(svgContainer.node());
+      const immediateTransform = currentTransform.translate(deltaX, deltaY);
+      this.panBehavior.transform(svgContainer, immediateTransform);
+      
+      // Update velocity for momentum
+      this.smoothScrollState.velocityX = deltaX * 0.3; // Reduced momentum factor
+      this.smoothScrollState.velocityY = deltaY * 0.3;
+      
+      // Reset momentum animation
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+      clearTimeout(wheelTimeout);
+      
+      // Start momentum deceleration after wheel stops
+      wheelTimeout = setTimeout(() => {
+        this.smoothScrollState.isDecelerating = true;
+        animationFrame = requestAnimationFrame(applyMomentum);
+      }, 50); // Short delay before momentum kicks in
+    });
   }
 
-  handleAccordionToggle(event) {
-    if (event.detail.openSections.length) {
-      this.displayAccordionSlot =
-        event.detail.openSections.length > 0 ? true : false;
-    }
+  // Keyboard controls for zoom functionality
+  addKeyboardControls(svgContainer) {
+    const me = this;
+    
+    // Make SVG focusable for keyboard events
+    svgContainer.attr("tabindex", 0);
+    
+    // Add keyboard event listener
+    svgContainer.on("keydown", function(event) {
+      const currentTransform = d3.zoomTransform(this);
+      let newTransform = currentTransform;
+      
+      switch(event.key) {
+        case '+':
+        case '=':
+          // Zoom in with + or = key
+          event.preventDefault();
+          newTransform = currentTransform.scale(1.2);
+          break;
+          
+        case '-':
+        case '_':
+          // Zoom out with - or _ key
+          event.preventDefault();
+          newTransform = currentTransform.scale(0.8);
+          break;
+          
+        case '0':
+          // Reset zoom with 0 key
+          event.preventDefault();
+          newTransform = d3.zoomIdentity;
+          break;
+          
+        case 'ArrowUp':
+          // Pan up with arrow key
+          event.preventDefault();
+          newTransform = currentTransform.translate(0, 50);
+          break;
+          
+        case 'ArrowDown':
+          // Pan down with arrow key
+          event.preventDefault();
+          newTransform = currentTransform.translate(0, -50);
+          break;
+          
+        case 'ArrowLeft':
+          // Pan left with arrow key
+          event.preventDefault();
+          newTransform = currentTransform.translate(50, 0);
+          break;
+          
+        case 'ArrowRight':
+          // Pan right with arrow key
+          event.preventDefault();
+          newTransform = currentTransform.translate(-50, 0);
+          break;
+          
+        default:
+          return; // Don't prevent default for other keys
+      }
+      
+      // Apply the transformation with smooth animation
+      d3.select(this).transition()
+        .duration(200)
+        .ease(d3.easeQuadOut)
+        .call(me.panBehavior.transform, newTransform);
+    });
+    
+    // Focus the SVG when the component is ready
+    setTimeout(() => {
+      svgContainer.node().focus();
+    }, 100);
+    
+
   }
 
-  handleNodeDetail(event) {
-    this.displayNodeDetails = true;
-    this.accordionHeader = event.detail.name;
-    this.currentNode = event.detail.data;
-    this.currentNodeAncestry = [
-      ...event.detail.descendants(),
-      ...event.detail.ancestors()
-    ];
-    this.subscriberPackageVersionId =
-      event.detail.data.subscriberPackageVersionId;
-    this.name = event.detail.data.name;
-    this.isReleased = event.detail.data.isReleased;
+
+
+
+
+
+
+  // Utility method to get chart statistics
+  getChartStatistics() {
+    if (!this.treeData) return null;
+    
+    const stats = {
+      totalNodes: 0,
+      releasedNodes: 0,
+      maxDepth: 0
+    };
+    
+    this.treeData.each(node => {
+      stats.totalNodes++;
+      if (node.data.isReleased) {
+        stats.releasedNodes++;
+      }
+      if (node.depth > stats.maxDepth) {
+        stats.maxDepth = node.depth;
+      }
+    });
+    
+    return stats;
   }
 
-  handleVersionDetailExpand() {
-    this.dispatchEvent(
-      new CustomEvent("currentnode", { detail: this.currentNode })
-    );
-  }
-
-  handleScrollToLeft() {
-    this.dispatchEvent(new CustomEvent("scrollleft"));
-  }
-
-  handleScrollToRight() {
-    this.dispatchEvent(
-      new CustomEvent("scrollright", { detail: this.treeDataHeight })
-    );
+  // Export functionality for chart data
+  @api
+  exportTreeData() {
+    if (!this.treeData) return null;
+    
+    const exportData = [];
+    this.treeData.each(node => {
+      exportData.push({
+        id: node.data.subscriberPackageVersionId,
+        name: node.data.name || node.data.versionNumber,
+        version: node.data.versionNumber,
+        isReleased: node.data.isReleased,
+        depth: node.depth,
+        ancestorId: node.data.ancestorId
+      });
+    });
+    
+    return exportData;
   }
 }

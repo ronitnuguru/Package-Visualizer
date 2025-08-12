@@ -1,86 +1,30 @@
 <template>
   <div class="chart-box">
+    <!-- Loading State -->
     <template if:true={displaySpinner}>
+      <div class="loading-overlay">
         <lightning-spinner
-          alternative-text="Loading"
+          alternative-text="Loading visualization..."
           size="medium"
           variant="brand"
         ></lightning-spinner>
+      </div>
     </template>
 
+    <!-- Main Visualization -->
     <template if:true={treeData}>
-      <div ondetail={handleNodeDetail}>
-        <div class="d3" lwc:dom="manual"></div>
-      </div>
-
-      <div class="slds-is-absolute scroll-controls slds-var-p-around_small">
-        <lightning-button-icon icon-name="utility:back"  variant="brand" onclick={handleScrollToLeft} class="slds-var-m-right_small"></lightning-button-icon>
-        <lightning-button-icon icon-name="utility:forward"  variant="brand" onclick={handleScrollToRight}></lightning-button-icon>
-      </div>
-      <div
-        class="slds-var-m-around_small slds-is-absolute node-accordion"
-      >
-        <article class="slds-card">
-          <lightning-accordion
-            allow-multiple-sections-open
-            active-section-name={activeSections}
-            onsectiontoggle={handleAccordionToggle}
-          >
-            <lightning-accordion-section
-              name="node-details"
-              label={accordionHeader}
-              class=""
-            >
-              <template if:true={displayNodeDetails}>
-                <template if:true={subscriberPackageVersionId}>
-                  <template if:true={displayAccordionSlot}>
-                    <lightning-icon
-                      slot="actions"
-                      icon-name="utility:info_alt"
-                      variant="inverse"
-                      size="small"
-                      class="info-icon slds-var-m-left_medium"
-                      onclick={handleVersionDetailExpand}
-                    ></lightning-icon>
-                  </template>
-                  <div>
-                    <span class="slds-no-flex slds-var-p-horizontal_xx-small"
-                      >ID:</span
-                    >
-                    <span>{subscriberPackageVersionId}</span>
-                  </div>
-                </template>
-                <template if:true={name}>
-                  <div>
-                    <span class="slds-no-flex slds-var-p-horizontal_xx-small"
-                      >NAME:</span
-                    >
-                    <span>{name}</span>
-                  </div>
-                </template>
-              </template>
-              <template if:false={displayNodeDetails}>
-                <div class="slds-illustration slds-illustration_small">
-                  <div class="slds-text-longform">
-                    <p class="slds-text-body_regular">
-                      <lightning-icon
-                        icon-name="utility:touch_action"
-                        variant="inverse"
-                      ></lightning-icon>
-                      Click package version node for more details!
-                    </p>
-                  </div>
-                </div>
-              </template>
-            </lightning-accordion-section>
-          </lightning-accordion>
-        </article>
-      </div>
+      <div class="d3" lwc:dom="manual"></div>
     </template>
+    
+    <!-- Enhanced Error State -->
     <template if:false={displaySpinner}>
       <template if:false={treeData}>
-        <c-empty-large-illustration-view title="Hmm…" body={errorBody}>
-        </c-empty-large-illustration-view>
+        <div class="error-state">
+          <c-empty-large-illustration-view 
+            title="Visualization Unavailable" 
+            body={errorBody}>
+          </c-empty-large-illustration-view>
+        </div>
       </template>
     </template>
   </div>

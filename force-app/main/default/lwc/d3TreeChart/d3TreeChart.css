@@ -1,56 +1,145 @@
+/* Enhanced D3 Tree Chart Styles */
+
+/* Container and Layout */
+.chart-box {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  background: transparent;
+}
+
+/* SVG Focus State for Keyboard Navigation */
+.chart-box svg:focus {
+  outline: 2px solid #1589ee;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(21, 137, 238, 0.2);
+}
+
+/* Smooth transitions for all zoom/pan operations */
+.chart-box svg {
+  transition: none; /* Let D3 handle transitions */
+}
+
+/* Visual indicator for keyboard controls */
+.chart-box::before {
+  content: "Keyboard: +/- zoom, arrows pan, 0 reset | Mouse: Ctrl+wheel zoom, 2-finger pan";
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+.chart-box svg:focus::before {
+  opacity: 1;
+}
+
+/* Node Styles - Optimized for gray background */
 .node {
   cursor: pointer;
 }
 
 .node circle {
-  fill: #fff;
-  stroke: var(--lwc-brandAccessible);
-  stroke-width: 3px;
+  fill: #ffffff;
+  stroke: #1589ee;
+  stroke-width: 2.5px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
+.node.highlighted circle {
+  stroke: #ff6b35;
+  stroke-width: 3px;
+  fill: #ffffff;
+  filter: drop-shadow(0 2px 6px rgba(255, 107, 53, 0.3));
+}
+
+.node.selected circle {
+  stroke: #0066cc;
+  stroke-width: 3px;
+  fill: #ffffff;
+  filter: drop-shadow(0 2px 6px rgba(0, 102, 204, 0.3));
+}
+
+/* Text Styles - High contrast for gray background */
+.node-text {
+  font-size: 12px;
+  font-weight: 500;
+  fill: #1f2937;
+  pointer-events: none;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+
+
+/* Link Styles - Better visibility on gray background */
 .link {
   fill: none;
-  stroke: #bbb;
+  stroke: #6b7280;
   stroke-width: 2px;
+  opacity: 0.8;
 }
 
-.node-accordion {
-  right: 10px;
-  bottom: 10px;
+
+
+/* Clean visualization - control styles removed */
+
+
+
+
+
+
+
+/* Clean visualization - icon styles removed */
+
+
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .node-text {
+    font-size: 10px;
+  }
 }
 
-.card-style{
-  background-color: var(--lwc-brandAccessible);
-}
-
-.node-controls{
+/* Loading and Error States */
+.loading-overlay {
   position: absolute;
-  right: 10px;
-  top: 10px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  z-index: 1000;
 }
 
-.scroll-controls{
-  left: 10px;
-  bottom: 10px;
+.error-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
 }
 
-.icon-shadow{
-  -webkit-box-shadow: 0 10px 6px -6px #777;
-  -moz-box-shadow: 0 10px 6px -6px #777;
-  box-shadow: 0 10px 6px -6px #777;
+/* Accessibility Enhancements */
+.node:focus {
+  outline: 2px solid #1589ee;
+  outline-offset: 2px;
 }
 
-.info-icon{
-  cursor: pointer;
-}
-
-.left-icon{
-  background-color: var(--lwc-brandAccessible);
-  cursor: pointer;
-}
-
-.right-icon{
-  background-color: var(--lwc-brandAccessible);
-  cursor: pointer;
-  transform: scaleX(-1);
+@media (prefers-reduced-motion: reduce) {
+  .node, .link {
+    transition: none;
+  }
 }
