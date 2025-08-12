@@ -174,6 +174,8 @@ private class PackageInterfaceTest {
         pkg.subscriberPackageID = 'TEST';
         pkg.isOrgDependent = true;
         pkg.wasTransferred = false;
+        pkg.appAnalyticsEnabled = false;
+        pkg.dataCloudPackage = false;
         pkg.createdBy = pc;
         pkg.createdDate = System.now();
         pkg.owner = 'TEST';

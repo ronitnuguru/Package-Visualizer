@@ -9,6 +9,7 @@ export default class AppAnalyticsFormModal extends NavigationMixin(LightningElem
   @api appDataType;
   @api subscriberPackageId;
   @api subscribers;
+  @api appAnalyticsEnabled;
 
   @wire(MessageContext) messageContext;
 

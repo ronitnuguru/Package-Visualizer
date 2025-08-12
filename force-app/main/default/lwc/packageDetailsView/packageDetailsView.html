@@ -112,6 +112,33 @@
           disabled
           field-level-help="Indicates whether the package was previously associated with a different Dev Hub Org"
         ></lightning-input>
+        <template if:false={editMode}>
+          <lightning-input
+            type="checkbox"
+            label="AppAnalytics Enabled"
+            checked={appAnalyticsEnabled}
+            disabled
+            field-level-help="Indicates whether App Analytics is enabled for the package"
+          ></lightning-input>
+        </template>
+        <template if:true={editMode}>
+          <lightning-input
+            type="checkbox"
+            label="AppAnalytics Enabled"
+            value={appAnalyticsEnabled}
+            checked={appAnalyticsEnabled}
+            name="AppAnalyticsEnabled"
+            class="edit-field"
+            field-level-help="Indicates whether App Analytics is enabled for the package"
+          ></lightning-input>
+        </template>
+        <lightning-input
+          type="checkbox"
+          label="Data Cloud Package"
+          checked={dcPackage}
+          disabled
+          field-level-help="Indicates whether the package contains Data Cloud metadata. When creating a managed package with Data Cloud metadata, you must isolate the Data Cloud metadata from the other Salesforce metadata by creating a separate package that contains only Data Cloud metadata. Then create a package dependency between your dedicated Data Cloud package and any related packages."
+        ></lightning-input>
         <div class="slds-var-p-vertical_xx-small">
           <template if:false={editMode}>
             <template lwc:if={packageUserId}>
@@ -167,40 +194,6 @@
           </template>
         </div>
         <div>
-          <!--
-          <template if:true={editMode}>
-            <lightning-input
-              type="text"
-              label="Package Error Username"
-              value={packageErrorUsername}
-              name="PackageErrorUsername"
-              class="edit-field"
-              field-level-help="The email address for an active user in the Dev Hub org you want to receive email notification regarding package-related errors"
-            ></lightning-input>
-          </template>
-
-          <template if:false={editMode}>
-            <template if:true={packageErrorUsername}>
-              <lightning-input
-                type="text"
-                label="Package Error Username"
-                value={packageErrorUsername}
-                readonly
-                class="slds-border_bottom"
-                field-level-help="The email address for an active user in the Dev Hub org you want to receive email notification regarding package-related errors"
-              ></lightning-input>
-            </template>
-            <template if:false={packageErrorUsername}>
-              <lightning-input
-                type="text"
-                label="Package Error Username"
-                value={packageErrorUsername}
-                disabled
-                field-level-help="The email address for an active user in the Dev Hub org you want to receive email notification regarding package-related errors"
-              ></lightning-input>
-            </template>
-          </template>
-          -->
           <lightning-input
             type="text"
             label="Created By"

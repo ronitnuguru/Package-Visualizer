@@ -312,6 +312,7 @@
             name={currentPackage.name}
             type={currentPackage.containerOptions}
             namespace-prefix={currentPackage.namespacePrefix}
+            app-analytics-enabled={currentPackage.appAnalyticsEnabled}
           ></c-package-header>
           <article class="slds-card">
             <lightning-tabset active-tab-value={selectedTab}>
@@ -333,6 +334,8 @@
                       is-deprecated={currentPackage.isDeprecated}
                       is-org-dependent={currentPackage.isOrgDependent}
                       was-transferred={currentPackage.wasTransferred}
+                      app-analytics-enabled={currentPackage.appAnalyticsEnabled}
+                      dc-package={currentPackage.dataCloudPackage}
                       package-type={currentPackage.containerOptions}
                       package-error-username={currentPackage.packageErrorUsername}
                       package-created-by={currentPackage.owner}

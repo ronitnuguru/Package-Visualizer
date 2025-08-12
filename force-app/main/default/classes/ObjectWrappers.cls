@@ -22,6 +22,8 @@ public with sharing class ObjectWrappers{
         @AuraEnabled public Boolean wasTransferred	{get;set;}
         @AuraEnabled public PackageCreator createdBy {get;set;}
         @AuraEnabled public Datetime createdDate {get;set;}
+        @AuraEnabled public Boolean appAnalyticsEnabled {get;set;}
+        @AuraEnabled public Boolean dataCloudPackage {get;set;}
         @AuraEnabled public string owner {get;set;}
     }
 

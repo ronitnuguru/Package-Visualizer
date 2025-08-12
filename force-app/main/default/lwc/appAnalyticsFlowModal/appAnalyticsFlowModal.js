@@ -4,6 +4,7 @@ export default class AppAnalyticsFlowModal extends LightningElement {
   @api subscriberPackageId;
   @api subscribers;
   @api header;
+  @api appAnalyticsEnabled;
 
   displayAppAnalyticsDataTypeScreen = true;
   displayAppAnalyticsFormScreen;

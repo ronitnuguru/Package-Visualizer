@@ -1,15 +1,13 @@
 import { LightningElement, wire, api } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { NavigationMixin } from "lightning/navigation";
-import {
-  subscribe,
-  unsubscribe,
-  MessageContext
-} from "lightning/messageService";
+import { subscribe, unsubscribe, MessageContext } from "lightning/messageService";
 import getResourcesMetadata from "@salesforce/apex/PackageVisualizerCtrl.getResourcesMetadata";
 import getAppAnalyticsRequests from "@salesforce/apexContinuation/PackageVisualizerCtrl.getAppAnalyticsRequests";
 import getAnnouncementsMetadata from "@salesforce/apex/PackageVisualizerCtrl.getAnnouncementsMetadata";
 import DOCKEDUTILITYBARMESSAGECHANNEL from "@salesforce/messageChannel/DockedUtilityBarMessageChannel__c";
+import genAiLimitsModal from 'c/genAiLimitsModal';
+
 
 export default class DockedUtilityBar extends NavigationMixin(LightningElement) {
   @wire(MessageContext) messageContext;
@@ -394,6 +392,20 @@ export default class DockedUtilityBar extends NavigationMixin(LightningElement) 
     this.dataStorageMBPercentage = (this.dataStorageMBRem / this.dataStorageMBMax) * 100;
 
   }
+
+  handleGenAiLimits() {
+    this.openModal({
+      headerLabel: "Generative AI Summary - Org Limits",
+    });
+  }
+
+  async openModal(details){
+    const result = await genAiLimitsModal.open({
+      label: details.headerLabel,
+      size: 'medium',
+      content: JSON.stringify(this.limitsData)
+    });
+}
 
   updateLimits(event){
     

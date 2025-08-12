@@ -16,6 +16,8 @@ export default class PackageDetailsView extends LightningElement {
   @api isDeprecated;
   @api isOrgDependent;
   @api wasTransferred;
+  @api appAnalyticsEnabled;
+  @api dcPackage;
   @api packageType;
   @api packageErrorUsername;
   @api packageCreatedDate;
@@ -133,6 +135,11 @@ export default class PackageDetailsView extends LightningElement {
           if (result === "success") {
             this.editMode = false;
             this.packageErrorUsername = wrapper.find(item => item.fieldName === "PackageErrorUsername")?.value;
+            // Update appAnalyticsEnabled if it was modified
+            const appAnalyticsItem = wrapper.find(item => item.fieldName === "AppAnalyticsEnabled");
+            if (appAnalyticsItem !== undefined) {
+              this.appAnalyticsEnabled = appAnalyticsItem.value;
+            }
             this.dispatchEvent(
               new ShowToastEvent({
                 title: "Success",
@@ -183,7 +190,15 @@ export default class PackageDetailsView extends LightningElement {
       let wrapper = [];
       let editableFields = this.template.querySelectorAll(".edit-field");
       editableFields.forEach(input => {
-        if (input.value) {
+        if (input.type === 'checkbox') {
+          // Handle checkbox fields
+          wrapper.push({
+            fieldName: input.name,
+            value: input.checked,
+            dataType: "BOOLEAN"
+          });
+        } else if (input.value) {
+          // Handle other input fields
           wrapper.push({
             fieldName: input.name,
             value: input.value,

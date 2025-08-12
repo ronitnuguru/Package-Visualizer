@@ -9,7 +9,7 @@ public with sharing class Package2Interface { // NOPMD
 	* @Description  Get the list of packages using tooling API. 
 	**************************************************************************************/     
     public static List<ObjectWrappers.PackageWrapper> getPackage2(String sortDirection) {
-        List<ObjectWrappers.PackageWrapper> packages = new List<ObjectWrappers.PackageWrapper>();string s = 'Select Id, ContainerOptions, Description, Name, NamespacePrefix, SubscriberPackageID, isOrgDependent, PackageErrorUsername, WasTransferred, CreatedBy.Name, CreatedDate FROM Package2 WHERE IsDeprecated = false ORDER BY Name ' + String.escapeSingleQuotes(sortDirection) + ' LIMIT 500';List<Object> records = submitQuery(s); 
+        List<ObjectWrappers.PackageWrapper> packages = new List<ObjectWrappers.PackageWrapper>();string s = 'Select Id, ContainerOptions, Description, Name, NamespacePrefix, SubscriberPackageID, isOrgDependent, PackageErrorUsername, WasTransferred, CreatedBy.Name, CreatedDate, AppAnalyticsEnabled, DataCloudPackage FROM Package2 WHERE IsDeprecated = false ORDER BY Name ' + String.escapeSingleQuotes(sortDirection) + ' LIMIT 500';List<Object> records = submitQuery(s); 
         for(Object record : records) {ObjectWrappers.PackageWrapper p = (ObjectWrappers.PackageWrapper)JSON.deserialize(JSON.serialize(record), ObjectWrappers.PackageWrapper.class);if(p.CreatedBy != null){p.owner = p.CreatedBy.name;} p.isOrgDependent = p.isOrgDependent == true; packages.add(p); } return packages;
     }
 

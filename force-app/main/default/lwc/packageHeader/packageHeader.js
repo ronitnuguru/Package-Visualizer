@@ -13,6 +13,7 @@ export default class PackageHeader extends NavigationMixin(LightningElement) {
   @api id;
   @api namespacePrefix;
   @api subscriberPackageId;
+  @api appAnalyticsEnabled;
 
   displayLMA;
   displayFMA;
