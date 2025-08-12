@@ -112,25 +112,27 @@
           disabled
           field-level-help="Indicates whether the package was previously associated with a different Dev Hub Org"
         ></lightning-input>
-        <template if:false={editMode}>
-          <lightning-input
-            type="checkbox"
-            label="AppAnalytics Enabled"
-            checked={appAnalyticsEnabled}
-            disabled
-            field-level-help="Indicates whether App Analytics is enabled for the package"
-          ></lightning-input>
-        </template>
-        <template if:true={editMode}>
-          <lightning-input
-            type="checkbox"
-            label="AppAnalytics Enabled"
-            value={appAnalyticsEnabled}
-            checked={appAnalyticsEnabled}
-            name="AppAnalyticsEnabled"
-            class="edit-field"
-            field-level-help="Indicates whether App Analytics is enabled for the package"
-          ></lightning-input>
+        <template if:true={managedPackageView}>
+          <template if:false={editMode}>
+            <lightning-input
+              type="checkbox"
+              label="AppAnalytics Enabled"
+              checked={appAnalyticsEnabled}
+              disabled
+              field-level-help="Indicates whether App Analytics is enabled for the package"
+            ></lightning-input>
+          </template>
+          <template if:true={editMode}>
+            <lightning-input
+              type="checkbox"
+              label="AppAnalytics Enabled"
+              value={appAnalyticsEnabled}
+              checked={appAnalyticsEnabled}
+              name="AppAnalyticsEnabled"
+              class="edit-field"
+              field-level-help="Indicates whether App Analytics is enabled for the package"
+            ></lightning-input>
+          </template>
         </template>
         <lightning-input
           type="checkbox"
@@ -319,7 +321,7 @@
             icon-name="utility:error"
             alternative-text="error"
             title="Error"
-            variant="error"
+            variant="inverse"
           ></lightning-icon>
         </template>
         <lightning-button
