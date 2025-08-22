@@ -62,6 +62,7 @@
               <template if:true={type}>
                 <lightning-button
                   label="Edit"
+                  icon-name="utility:edit"
                   onclick={handleEdit}
               ></lightning-button>
               </template>
@@ -74,6 +75,7 @@
               <template if:true={displayAppAnalyticsButton}>
                 <lightning-button
                   label="Request AppAnalytics"
+                  icon-name="utility:setup_modal"
                   onclick={handleAppAnalytics}
                 ></lightning-button>
                 <template if:true={displayLMA}>
@@ -111,6 +113,7 @@
                 <template if:true={type}>
                   <lightning-menu-item
                     label="Edit"
+                    icon-name="utility:edit"
                     onclick={handleEdit}
                   ></lightning-menu-item>
                 </template>
@@ -123,6 +126,7 @@
                 <template if:true={displayAppAnalyticsButton}>
                   <lightning-menu-item
                     label="Request AppAnalytics"
+                    icon-name="utility:setup_modal"
                     onclick={handleAppAnalytics}
                   ></lightning-menu-item>
                 </template>
