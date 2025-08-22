@@ -611,13 +611,13 @@
                           <div class="slds-progress__marker"></div>
                           <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                             <div class="slds-size_3-of-4">
-                              Keep your code secure by incorporating Salesforce Code Analyzer's GitHub Action in your CI/CD workflow
+                              Maintain high standards of code quality and efficiency by incorporating Salesforce Code Analyzer in your development lifecycle
                             </div>
                             <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
                               <lightning-button-icon
                                 icon-name="utility:help_doc_ext"
                                 variant="brand"
-                                onclick={navigateToCodeAnalyzerGitHubAction}
+                                onclick={navigateToCodeAnalyzerGuide}
                               ></lightning-button-icon>
                             </div>
                           </div>
@@ -734,7 +734,7 @@
                                 Run Salesforce Code Analyzer Scan
                               </strong>
                               <p class="slds-var-m-top_xx-small">
-                                <code>sf scanner run --format=csv --outfile=CodeAnalyzerGeneral.csv --target="./" --category="Security"</code>
+                                <code>sf code-analyzer run --rule-selector AppExchange --rule-selector Recommended:Security --output-file CodeAnalyzerReport.html</code>
                               </p>
                             </div>
                             <div
@@ -744,52 +744,6 @@
                                 icon-name="utility:apex"
                                 variant="brand"
                                 onclick={navigateToCodeAnalyzer}
-                              ></lightning-button-icon>
-                            </div>
-                          </div>
-                        </li>
-                        <li class="list_item">
-                          <div
-                            class="slds-progress__item_content slds-grid slds-grid_align-spread border-bottom"
-                          >
-                            <div class="slds-size_3-of-4">
-                              <strong class="slds-text-title_caps">
-                                Run Salesforce Graph Engine
-                              </strong>
-                              <p class="slds-var-m-top_xx-small">
-                                <code>sf scanner run dfa --format=csv --outfile=CodeAnalyzerDFA.csv --target="./" --projectdir="./" --category="Security"</code>
-                              </p>
-                            </div>
-                            <div
-                              class="slds-grid slds-grid_align-end slds-size_1-of-4"
-                            >
-                              <lightning-button-icon
-                                icon-name="utility:apex"
-                                variant="brand"
-                                onclick={navigateToGraphEngine}
-                              ></lightning-button-icon>
-                            </div>
-                          </div>
-                        </li>
-                        <li class="list_item">
-                          <div
-                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
-                          >
-                            <div class="slds-size_3-of-4">
-                              <strong class="slds-text-title_caps">
-                                Run Salesforce Code Analyzer in preparation for AppExchange Security Review
-                              </strong>
-                              <p class="slds-var-m-top_xx-small">
-                                <code>sf scanner run --engine="pmd-appexchange" --format=csv --outfile=CodeAnalyzerPmdAppExchange.csv --target="./"</code>
-                              </p>
-                            </div>
-                            <div
-                              class="slds-grid slds-grid_align-end slds-size_1-of-4"
-                            >
-                              <lightning-button-icon
-                                icon-name="utility:apex"
-                                variant="brand"
-                                onclick={navigateToPMD}
                               ></lightning-button-icon>
                             </div>
                           </div>

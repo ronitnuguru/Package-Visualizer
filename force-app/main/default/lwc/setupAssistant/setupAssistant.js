@@ -198,14 +198,6 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     window.open("https://developer.salesforce.com/docs/atlas.en-us.packagingGuide.meta/packagingGuide/security_review_code_analyzer_scan.htm", "_blank");
   }
 
-  navigateToGraphEngine(){
-    window.open("https://forcedotcom.github.io/sfdx-scanner/en/v3.x/salesforce-graph-engine/introduction/", "_blank");
-  }
-
-  navigateToPMD(){
-    window.open("https://forcedotcom.github.io/sfdx-scanner/en/v3.x/architecture/pmd-engine/", "_blank");
-  }
-
   navigateTosfCommands(){
     window.open("https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_unified.htm", "_blank")
   }
@@ -230,8 +222,8 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     window.open("https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm", "_blank");
   }
 
-  navigateToCodeAnalyzerGitHubAction(){
-    window.open('https://github.com/marketplace/actions/run-salesforce-code-analyzer', "_blank");
+  navigateToCodeAnalyzerGuide(){
+    window.open('https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/code-analyzer.md', "_blank");
   }
 
   navigateToManageUsersPartnerCommunity(){
