@@ -4,9 +4,9 @@
       "path": "force-app",
       "default": true,
       "package": "Package Visualizer",
-      "versionName": "Version 7.69",
-      "versionNumber": "7.69.0.NEXT",
-      "ancestorVersion": "7.68.0"
+      "versionName": "Version 7.70",
+      "versionNumber": "7.70.0.NEXT",
+      "ancestorVersion": "7.69.0"
     }
   ],
   "name": "Package Visualizer",

@@ -20,6 +20,7 @@ export default class PackageListView extends LightningElement {
   iconName;
   currentPackageDisplay;
   initialCheck = true;
+  isFocused = false;
 
   subscription = null;
 
@@ -58,6 +59,14 @@ export default class PackageListView extends LightningElement {
     this.subscription = null;
   }
 
+  get listItemClass() {
+    let classes = "slds-split-view__list-item";
+    if (this.currentPackageDisplay) {
+      classes += " slds-is-selected";
+    }
+    return classes;
+  }
+
   handlePackageChange() {
     this.dispatchEvent(
       new CustomEvent("packagechange", { detail: this.index })
@@ -66,5 +75,21 @@ export default class PackageListView extends LightningElement {
       currentPackageName: this.name
     });
     this.initialCheck = false;
+  }
+
+  handleKeyDown(event) {
+    // Handle Enter and Space key activation
+    if (event.keyCode === 13 || event.keyCode === 32) {
+      event.preventDefault();
+      this.handlePackageChange();
+    }
+  }
+
+  handleFocus() {
+    this.isFocused = true;
+  }
+
+  handleBlur() {
+    this.isFocused = false;
   }
 }

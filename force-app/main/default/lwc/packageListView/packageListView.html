@@ -1,14 +1,17 @@
 <template>
   <li
-    class="slds-split-view__list-item"
+    class={listItemClass}
     role="presentation"
-    onclick={handlePackageChange}
   >
     <a
       aria-selected={currentPackageDisplay}
       role="option"
       class="slds-split-view__list-item-action slds-grow slds-has-flexi-truncate"
       tabindex="0"
+      onclick={handlePackageChange}
+      onkeydown={handleKeyDown}
+      onfocus={handleFocus}
+      onblur={handleBlur}
     >
       <div class="slds-grid slds-gutters">
         <span

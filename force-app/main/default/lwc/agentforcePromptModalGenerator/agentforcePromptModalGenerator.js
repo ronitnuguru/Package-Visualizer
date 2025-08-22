@@ -23,17 +23,20 @@ export default class AgentforcePromptModalGenerator extends LightningModal  {
         return !this.displayResult;
     }
 
-    modelsValue = 'sfdc_ai__DefaultGPT4Omni';
+    modelsValue = 'sfdc_ai__DefaultGPT5';
     currentPkgVersionId = '04tRh000001FlXWIA0';
 
     get modelsTypeOptions() {
         return [
-            { label: 'Azure OpenAI GPT-4o (Latest GPT-4 Model)', value: 'sfdc_ai__DefaultGPT4Omni' },
-            { label: 'Anthropic Claude 3.7 Sonnet on Amazon	(Salesforce Managed)', value: 'sfdc_ai__DefaultBedrockAnthropicClaude37Sonnet' },
-            { label: 'Anthropic Claude 3 Haiku on Amazon (Salesforce Managed)', value: 'sfdc_ai__DefaultBedrockAnthropicClaude3Haiku' },
-            { label: 'Vertex AI (Google) Gemini 2.0 Flash', value: 'sfdc_ai__DefaultVertexAIGemini20Flash001' },
-            { label: 'Vertex AI (Google) Gemini 2.0 Flash Lite', value: 'sfdc_ai__DefaultVertexAIGemini20FlashLite001' },
-            { label: 'Azure OpenAI GPT 3.5 Turbo', value: 'sfdc_ai__DefaultAzureOpenAIGPT35Turbo' }
+            { label: 'Azure OpenAI GPT-5', value: 'sfdc_ai__DefaultGPT5' },
+            { label: 'Azure OpenAI GPT-4.1', value: 'sfdc_ai__DefaultGPT41Mini' },
+            { label: 'Azure OpenAI GPT-5 Mini', value: 'sfdc_ai__DefaultGPT5Mini' },
+            { label: 'Azure OpenAI GPT-4.1 Mini', value: 'sfdc_ai__DefaultGPT41Mini' },
+            { label: 'Anthropic Claude 4 Sonnet on Amazon', value: 'sfdc_ai__DefaultBedrockAnthropicClaude4Sonnet' },
+            { label: 'Anthropic Claude 3.7 Sonnet on Amazon', value: 'sfdc_ai__DefaultBedrockAnthropicClaude37Sonnet' },
+            { label: 'Anthropic Claude 3 Haiku on Amazon', value: 'sfdc_ai__DefaultBedrockAnthropicClaude3Haiku' },
+            { label: 'Vertex AI (Google) Gemini 2.5 Flash', value: 'sfdc_ai__DefaultVertexAIGemini25Flash001' },
+            { label: 'Vertex AI (Google) Gemini 2.5 Flash Lite', value: 'sfdc_ai__DefaultVertexAIGemini25FlashLite001' },
         ];
     }
 

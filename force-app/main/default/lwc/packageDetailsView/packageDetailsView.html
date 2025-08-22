@@ -96,22 +96,6 @@
     </div>
     <div class="slds-col slds-col_padded">
       <template if:true={packageType}>
-        <template if:false={managedPackageView}>
-          <lightning-input
-            type="checkbox"
-            label="Is Org Dependent"
-            checked={isOrgDependent}
-            field-level-help="Indicates whether the package depends on unpackaged metadata in the Installation Org"
-            disabled
-          ></lightning-input>
-        </template>
-        <lightning-input
-          type="checkbox"
-          label="Was Transferred"
-          checked={wasTransferred}
-          disabled
-          field-level-help="Indicates whether the package was previously associated with a different Dev Hub Org"
-        ></lightning-input>
         <template if:true={managedPackageView}>
           <template if:false={editMode}>
             <lightning-input
@@ -134,6 +118,22 @@
             ></lightning-input>
           </template>
         </template>
+        <template if:false={managedPackageView}>
+          <lightning-input
+            type="checkbox"
+            label="Is Org Dependent"
+            checked={isOrgDependent}
+            field-level-help="Indicates whether the package depends on unpackaged metadata in the Installation Org"
+            disabled
+          ></lightning-input>
+        </template>
+        <lightning-input
+          type="checkbox"
+          label="Was Transferred"
+          checked={wasTransferred}
+          disabled
+          field-level-help="Indicates whether the package was previously associated with a different Dev Hub Org"
+        ></lightning-input>
         <lightning-input
           type="checkbox"
           label="Data Cloud Package"

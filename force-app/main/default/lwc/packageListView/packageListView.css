@@ -1,5 +1,19 @@
-a:active {
-  box-shadow: inset 4px 0 0 var(--lwc-brandAccessible, rgb(0, 112, 210));
+a[role="option"] {
+  border-left: 4px solid transparent;
+}
+
+a[role="option"]:focus {
+  box-shadow: var(--slds-g-shadow-outset-focus);
+  border-left-color: var(--slds-g-color-brand-base-60);
+}
+
+li.slds-is-selected a[role="option"] {
+  background-color: var(--slds-g-color-neutral-base-95);
+  border-left-color: var(--slds-g-color-brand-base-60);
+}
+
+li.slds-is-selected a[role="option"]:focus {
+  box-shadow: var(--slds-g-shadow-outset-focus);
 }
 
 .font-style {

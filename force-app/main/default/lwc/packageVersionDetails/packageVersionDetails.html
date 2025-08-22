@@ -87,7 +87,7 @@
       </div>
       <lightning-input
         type="url"
-        label="Package Install (SFDX)"
+        label="Package Install (sf)"
         value={sfdxPackageInstall}
         class="slds-border_bottom"
         readonly
@@ -334,7 +334,7 @@
       </div>
     </div>
   </div>
-  <footer class="slds-modal__footer">
+  <div class="slds-card__footer">
     <template if:false={editMode}>
       <div class="slds-grid slds-grid_align-end">
         <div class="slds-show_large">
@@ -541,7 +541,7 @@
         ></lightning-button>
       </div>
     </template>
-  </footer>
+  </div>
   <template if:true={displayPromoteWarningModal}>
     <c-warning-modal
       header="Promote Package Version?"
