@@ -408,6 +408,6 @@ export default class DockedUtilityBar extends NavigationMixin(LightningElement) 
 }
 
   updateLimits(event){
-    
+    this.limitsData = event.detail;
   }
 }

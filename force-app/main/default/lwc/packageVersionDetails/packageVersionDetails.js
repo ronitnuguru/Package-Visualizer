@@ -96,6 +96,11 @@ export default class PackageVersionDetails extends LightningElement {
     return `Are you sure you want to promote package version "${this.packageVersionNumber}"`;
   }
 
+  get packageReleaseVersionUrl(){
+    let releaseNotesVersion = 2 * this.packageReleaseVersion + 128;
+    return `https://help.salesforce.com/s/articleView?id=release-notes.salesforce_release_notes.htm&release=${releaseNotesVersion}`;
+  }
+
   onBrandClick(){
     this.handlePromote();
   }

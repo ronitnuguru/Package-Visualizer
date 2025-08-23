@@ -73,7 +73,7 @@
           class="slds-form-element__label slds-var-p-bottom_xx-small"
           for="text-input-id-1"
         >
-          Package Install (URL)
+          Package Install (url)
         </label>
         <div
           class="slds-form-element__control input-style-size slds-var-p-bottom_x-small slds-truncate"
@@ -293,14 +293,24 @@
           ></lightning-input>
         </template>
         <template if:true={packageReleaseVersion}>
-          <lightning-input
-            type="text"
-            label="Salesforce Release Version"
-            value={packageReleaseVersion}
-            class="slds-border_bottom"
-            field-level-help="Salesforce release version used to create the package version"
-            readonly
-          ></lightning-input>
+          <div class="slds-form-element slds-border_bottom">
+            <label
+              class="slds-form-element__label slds-var-p-bottom_xx-small"
+              for="text-input-id-1"
+            >
+              Salesforce Release Version
+            </label>
+            <div
+              class="slds-form-element__control input-style-size slds-var-p-bottom_x-small slds-truncate"
+            >
+              <a 
+                href={packageReleaseVersionUrl}
+                target="_blank"
+                class="install-url">
+                {packageReleaseVersion}
+              </a>
+            </div>
+          </div>
         </template>
         <lightning-input
           type="text"
