@@ -1,0 +1,89 @@
+<template>
+    <lightning-tabset variant="vertical">
+            <lightning-tab label="Manageability Rules" icon-name="utility:table_settings">
+                <lightning-card hide-header>
+                    <div class="slds-grid slds-col">
+                        <lightning-datatable
+                            key-field="id"
+                            data={data}
+                            columns={columns}
+                            hide-checkbox-column
+                        ></lightning-datatable>
+                    </div>
+                </lightning-card>
+                
+            </lightning-tab>
+            <lightning-tab label="Developer Environments" icon-name="utility:apex">
+                <lightning-card hide-header>
+                    <lightning-tabset>
+                        <lightning-tab label="Scratch Orgs">
+                            <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small" role="status">
+                                <div class="slds-media__figure">
+                                    <lightning-icon
+                                        size="small"
+                                        icon-name="utility:info"
+                                        alternative-text="info"
+                                        title="info"
+                                        variant="inverse"
+                                    ></lightning-icon>
+                                    </div>
+                                    <div class="slds-media__body">
+                                    <p>Construct scratch org features and settings to mimic the shape of an org towards your development lifecycle.&nbsp;
+                                        <a onclick={navigateScratchOrgBuild}>Learn More</a>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="slds-grid slds-gutters slds-wrap">
+                                <div class="slds-col">
+                                    <span>
+                                        <lightning-icon icon-name="utility:settings" size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+                                        Features:
+                                        <ul class="slds-list_dotted">
+                                            <li>
+                                                <a target="_blank" href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file_config_values.htm?utm_source=chatgpt.com#so_einsteingenerativeai">Einstein1AIPlatform</a>
+                                            </li>
+                                        </ul>
+                                    </span>
+                                </div>
+                                <div class="slds-col">
+                                    <span>
+                                        <lightning-icon icon-name="utility:settings" size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+                                        Settings:
+                                        <ul class="slds-list_dotted">
+                                            <li>
+                                                <a target="_blank" href="https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_einsteingptsettings.htm">einsteinGptSettings</a>
+                                            </li>
+                                        </ul>
+                                    </span>
+                                </div>
+                            </div>
+                        </lightning-tab>
+                        <lightning-tab label="Developer &amp; Demo Orgs ">
+                            <template lwc:if={orgId}>
+                                <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small" role="status">
+                                    <div class="slds-media__figure">
+                                        <lightning-icon
+                                            size="small"
+                                            icon-name="utility:skill"
+                                            variant="inverse"
+                                        ></lightning-icon>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <p>
+                                            Log cases via <a target="_blank" href="https://partners.salesforce.com/">Partner Community</a> to provision the following licenses and features for your org - <code>{orgId}</code>
+                                        </p>
+                                    </div>
+                                </div>
+                            </template>
+                            <lightning-icon icon-name="utility:settings" size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+                            Features:
+                            <ul class="slds-list_dotted">
+                                <li>Agentforce</li>
+                                <li>Digital Engagement</li>
+                            </ul>
+                        </lightning-tab>
+                    </lightning-tabset>
+                </lightning-card>
+            </lightning-tab>
+     </lightning-tabset>
+</template>

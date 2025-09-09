@@ -268,6 +268,11 @@ public with sharing class PackageVisualizerCtrl {
     }
 
     @AuraEnabled(cacheable=true)
+    public static boolean isPboOrg(){
+        return (isLMA() && Package2Interface.isEnvironmentHubMember());
+    }
+
+    @AuraEnabled(cacheable=true)
     public static String getProfileId(String label){
         try { String queryString = 'SELECT Id FROM Profile WHERE Name = :label LIMIT 1'; sObject s = Database.query(queryString); return s.Id; } catch (Exception e){ throw new AuraHandledException('Unable to get Profile Id'); }}
 

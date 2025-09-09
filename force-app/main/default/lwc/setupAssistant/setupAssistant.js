@@ -10,16 +10,20 @@ import { publish, subscribe, unsubscribe, MessageContext } from "lightning/messa
 import getProfileId from "@salesforce/apex/PackageVisualizerCtrl.getProfileId";
 import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
 import getOrgDetails from '@salesforce/apex/PackageVisualizerCtrl.getOrgDetails';
+import isPboOrg from '@salesforce/apex/PackageVisualizerCtrl.isPboOrg';
 
 export default class SetupAssistant extends NavigationMixin(LightningElement) {
   @api alert;
   @api packageListAvailable;
   @api packageTypes;
 
+  isPBO;
+
   @wire(MessageContext) messageContext;
 
   org;
   numOfDays;
+  orgId;
 
   get isPushUpgradeEnabled() {
     return hasPackageVisualizerPushUpgrade;
@@ -44,11 +48,24 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
             if (this.org.TrialExpirationDate) {
                 this.numOfDays = new Date(this.org.TrialExpirationDate);
             }
+            if(this.org.Id){
+              this.orgId = this.org.Id;
+            }
             this.error = undefined;
         } else if (error) {
             this.org = undefined;
             console.error(error);
         }
+    }
+
+  @wire(isPboOrg)
+    wiredPboOrg({ error, data }) {
+      if (data) {
+        this.isPBO = data;
+      } else if (error) {
+        this.isPBO = false;
+        console.error(error);
+      }
     }
 
   handleCreateOrgs(){
@@ -246,6 +263,18 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     window.open(`https://help.salesforce.com/s/articleView?id=000387818&type=1`,'_blank');
   }
 
+  navigateToDevloperCenters(){
+    window.open(`https://developer.salesforce.com/developer-centers`,'_blank');
+  }
+
+  navigateToAgentforcePackageableMetadata(){
+    window.open(`https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/dev2gp_packageable_agentforce_md.htm`,'_blank');
+  }
+
+  navigateToPboTrailhead(){
+    window.open(`https://trailhead.salesforce.com/content/learn/modules/isvforce_basics/isvforce_basics_tools_resources`,'_blank');
+  }
+
   navigateScratchOrgBuild(){
     this[NavigationMixin.Navigate]({
       type: "standard__component",
@@ -301,4 +330,17 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     });   
   }
 
+  handleAnchorClick(event) {
+   event.preventDefault();
+        
+   const targetId = event.currentTarget.dataset.target;
+   const targetElement = this.template.querySelector(`[data-id="${targetId}"]`);
+   
+   if (targetElement) {
+       targetElement.scrollIntoView({
+           behavior: 'smooth',
+           block: 'center' 
+       });
+    }
+  }
 }

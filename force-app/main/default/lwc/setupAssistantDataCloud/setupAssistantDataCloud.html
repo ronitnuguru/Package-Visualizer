@@ -1,0 +1,128 @@
+<template>
+    <lightning-tabset variant="vertical">
+        <lightning-tab label="Manageability Rules" icon-name="utility:table_settings">
+            <div class="slds-progress slds-progress_vertical slds-progress_success slds-p-around_x-small">
+                <ol class="slds-progress__list slds-progress__list-bordered">
+                  <li class="slds-progress__item">
+                    <div class="slds-progress__marker"></div>
+                    <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                      <div class="slds-size_3-of-4">
+                        Review the cheat sheet for all the metadata components that you can package with Data Cloud
+                      </div>
+                      <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                        <lightning-button-icon
+                          icon-name="utility:help_doc_ext"
+                          variant="brand"
+                          onclick={navigateToDataCloudPackagingCheatSheet}
+                        ></lightning-button-icon>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="slds-progress__item">
+                    <div class="slds-progress__marker"></div>
+                    <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                      <div class="slds-size_3-of-4">
+                        Review the workflow for developing, distributing and managing Data Cloud metadata
+                      </div>
+                      <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                        <lightning-button-icon
+                          icon-name="utility:help_doc_ext"
+                          variant="brand"
+                          onclick={navigateToDataCloudWorkflow}
+                        ></lightning-button-icon>
+                      </div>
+                    </div>
+                  </li>
+                </ol>
+            </div>
+        </lightning-tab>
+        <lightning-tab label="Developer Environments" icon-name="utility:apex">
+            <lightning-tabset>
+                <lightning-tab label="Scratch Orgs">
+                    <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small" role="status">
+                        <div class="slds-media__figure">
+                          <lightning-icon
+                            size="small"
+                            icon-name="utility:info"
+                            alternative-text="info"
+                            title="info"
+                            variant="inverse"
+                          ></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                          <ul class="slds-list_dotted">
+                            <li>
+                              Log a case via Partner Community to enable Data Cloud in scratch orgs. This feature is only available through Partner Business Org's (PBO) Dev Hub.&nbsp;
+                              <a target="blank" href="https://partners.salesforce.com/">Learn More</a>
+                            </li>
+                            <li>
+                              Construct scratch org features and settings to mimic the shape of an org towards your development lifecycle.&nbsp;
+                              <a onclick={navigateScratchOrgBuild}>Learn More</a>
+                            </li>
+                          </ul>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col">
+                            <span>
+                                <lightning-icon icon-name="utility:settings" size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+                                Features:
+                                <ul class="slds-list_dotted">
+                                    <li>
+                                        <a target="_blank" href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file_config_values.htm#so_customerdataplatform">CustomerDataPlatform</a>
+                                    </li>
+                                    <li>
+                                        <a target="_blank" href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file_config_values.htm#so_customerdataplatformlite">CustomerDataPlatformLite</a>
+                                    </li>
+                                    <li>
+                                        <a target="_blank" href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file_config_values.htm#so_marketinguser">MarketingUser</a>
+                                    </li>
+                                </ul>
+                            </span>
+                        </div>
+                        <div class="slds-col">
+                            <span>
+                                <lightning-icon icon-name="utility:settings" size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+                                Settings:
+                                <ul class="slds-list_dotted">
+                                    <li>
+                                        <a target="_blank" href="https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_customerdataplatformsettings.htm">customerDataPlatformSettings</a>
+                                    </li>
+                                </ul>
+                            </span>
+                        </div>
+                    </div>
+                </lightning-tab>
+                <lightning-tab label="Developer &amp; Demo Orgs ">
+                  <template lwc:if={orgId}>
+                      <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small" role="status">
+                          <div class="slds-media__figure">
+                              <lightning-icon
+                                  size="small"
+                                  icon-name="utility:skill"
+                                  variant="inverse"
+                              ></lightning-icon>
+                          </div>
+                          <div class="slds-media__body">
+                            <ul class="slds-list_dotted">
+                              <li>
+                                Log cases via <a target="_blank" href="https://partners.salesforce.com/">Partner Community</a> to provision the following licenses and features for your org - <code>{orgId}</code>
+                              </li>
+                              <li>
+                                Available for ISV tiers Exploration and above.&nbsp;
+                                <a target="_blank" href="https://partners.salesforce.com/pdx/s/learn/article/appexchange-partner-program-MC5PXFRKELXJD3HGJKJJQCKNPI5A?language=en_US">Learn More</a>
+                              </li>
+                            </ul>
+                          </div>
+                      </div>
+                  </template>
+                  <lightning-icon icon-name="utility:settings" size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+                  Features:
+                  <ul class="slds-list_dotted">
+                      <li>Data Cloud</li>
+                  </ul>
+              </lightning-tab>
+            </lightning-tabset>
+        </lightning-tab>
+    </lightning-tabset>
+</template>
