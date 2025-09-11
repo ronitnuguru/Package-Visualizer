@@ -128,9 +128,14 @@
                         <template if:true={is2GP}>
                           <li class="slds-progress__item">
                             <template if:false={isPBO}>
-                              <div class="slds-progress__marker">
-                                <span class="slds-assistive-text">Active</span>
-                              </div>
+                              <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                                <lightning-icon
+                                  icon-name="utility:warning"
+                                  variant="warning"
+                                  size="x-small"
+                                  class="success-icon-style"
+                                ></lightning-icon>
+                              </span>
                             </template>
                             <template if:true={isPBO}>
                               <span class="slds-icon_container slds-icon-utility-success slds-progress__marker slds-progress__marker_icon slds-progress__marker_icon-success">
@@ -327,12 +332,8 @@
               <article class="slds-setup-assistant__step">
                 <div class="slds-setup-assistant__step-summary">
                   <div class="slds-media">
-                    <div
-                      class="slds-setup-assistant__step-summary-content slds-media__body"
-                    >
-                      <h3
-                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
-                      >
+                    <div class="slds-setup-assistant__step-summary-content slds-media__body">
+                      <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
                         <lightning-icon
                           icon-name="utility:toggle"
                           size="small"
@@ -404,7 +405,14 @@
                       <div class="slds-progress slds-progress_vertical slds-progress_success">
                         <ol class="slds-progress__list slds-progress__list-bordered">
                           <li class="slds-progress__item">
-                            <div class="slds-progress__marker"></div>
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                               <div class="slds-size_3-of-4">
                                 Create a Developer Editon Org for the sole purpose of registering your package's namespace. It may take a little while for org creation. Check your email once the org is provisioned. Then go to this newly provisioned org's Setup &rarr; Package Manager to register the namespace.&nbsp;
@@ -428,7 +436,14 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <div class="slds-progress__marker"></div>
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                               <div class="slds-size_3-of-4">
                                 Link your registered namespace by authenticating into the Developer Edition Org you created in the previous step. Once linked, we can create 2GPs with that namespace. This allows you to organize, and distribute your code and metadata in a scalable manner.&nbsp;
@@ -438,7 +453,6 @@
                                   >Learn More</a
                                 >
                               </div>
-                              
                               <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
                                 <lightning-button-icon
                                   tooltip="Namespace Registries"
@@ -482,12 +496,8 @@
               <article class="slds-setup-assistant__step">
                 <div class="slds-setup-assistant__step-summary">
                   <div class="slds-media">
-                    <div
-                      class="slds-setup-assistant__step-summary-content slds-media__body"
-                    >
-                      <h3
-                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
-                      >
+                    <div class="slds-setup-assistant__step-summary-content slds-media__body">
+                      <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
                         <lightning-icon
                           icon-name="utility:user_role"
                           size="small"
@@ -506,7 +516,14 @@
                       <div class="slds-progress slds-progress_vertical slds-progress_success">
                         <ol class="slds-progress__list slds-progress__list-bordered">
                           <li class="slds-progress__item">
-                            <div class="slds-progress__marker"></div>
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                               <div class="slds-size_3-of-4">
                                 Create New Users and Select Salesforce Limited Access - Free for User License, and then Limited Access User for Profile
@@ -523,7 +540,14 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <div class="slds-progress__marker"></div>
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                               <div class="slds-size_3-of-4">
                                 Create a Permission Set for developer to access the required Dev Hub Objects
@@ -538,7 +562,14 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <div class="slds-progress__marker"></div>
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                               <div class="slds-size_3-of-4">
                                 Assign System Permissions for the ability to create Second-Generation Managed Packages and Package Versions
@@ -586,12 +617,8 @@
               <article class="slds-setup-assistant__step">
                 <div class="slds-setup-assistant__step-summary">
                   <div class="slds-media">
-                    <div
-                      class="slds-setup-assistant__step-summary-content slds-media__body"
-                    >
-                      <h3
-                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
-                      >
+                    <div class="slds-setup-assistant__step-summary-content slds-media__body">
+                      <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
                         <lightning-icon
                           icon-name="utility:apex"
                           size="small"
@@ -605,7 +632,14 @@
                       <div class="slds-progress slds-progress_vertical slds-progress_success">
                         <ol class="slds-progress__list slds-progress__list-bordered">
                           <li class="slds-progress__item">
-                            <div class="slds-progress__marker"></div>
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                               <div class="slds-size_3-of-4">
                                 Salesforce CLI is a command-line interface that simplifies development and build automation when working with your Salesforce org. Use it to create and manage orgs, synchronize source to and from orgs, create and install packages, and more.&nbsp;
@@ -625,7 +659,14 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <div class="slds-progress__marker"></div>
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                               <div class="slds-size_3-of-4">
                                 Salesforce Extensions for Visual Studio Code Editor accelerates development on the Customer 360 Platform with features for working with scratch orgs, Lightning Web Components, Apex and other metadata.&nbsp;
@@ -645,7 +686,14 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <div class="slds-progress__marker"></div>
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                               <div class="slds-size_3-of-4">
                                 Lay the foundation of your package by setting up your app's Project Structure. Ensure you edit the namespace parameter with global namespace you have registered for your package
@@ -660,7 +708,14 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <div class="slds-progress__marker"></div>
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                               <div class="slds-size_3-of-4">
                                 Create an Application by following the basic workflow when you are starting from scratch to develop an app that runs on the Salesforce Platform
@@ -675,7 +730,14 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <div class="slds-progress__marker"></div>
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                               <div class="slds-size_3-of-4">
                                 Build a sample Scratch Org Definition File to mimic the shape of an org towards your development lifecycle, such as sandbox, packaging, or production. These source-driven and fully configurable scratch orgs allow developers to emulate different Salesforce editions with different features and settings
@@ -690,7 +752,14 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <div class="slds-progress__marker"></div>
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                               <div class="slds-size_3-of-4">
                                 Maintain high standards of code quality and efficiency by incorporating Salesforce Code Analyzer in your development lifecycle
@@ -737,12 +806,8 @@
               <article class="slds-setup-assistant__step">
                 <div class="slds-setup-assistant__step-summary">
                   <div class="slds-media">
-                    <div
-                      class="slds-setup-assistant__step-summary-content slds-media__body"
-                    >
-                      <h3
-                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
-                      >
+                    <div class="slds-setup-assistant__step-summary-content slds-media__body">
+                      <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
                         <lightning-icon
                           icon-name="utility:package"
                           size="small"
@@ -760,7 +825,14 @@
                       <div class="slds-progress slds-progress_vertical slds-progress_success">
                         <ol class="slds-progress__list slds-progress__list-bordered border-bottom">
                           <li class="slds-progress__item">
-                            <div class="slds-progress__marker"></div>
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                               <div class="slds-size_3-of-4">
                                 To <a href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_pkg_base.htm" target="_blank">create a package</a>: <code>sf package create --name "Package Name" --description "Your Package Description" --package-type Managed --path force-app --target-dev-hub "DevHubOrgAlias"</code>
@@ -775,7 +847,14 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <div class="slds-progress__marker"></div>
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                               <div class="slds-size_3-of-4">
                                 To <a href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_pkg_ver.htm" target="_blank">create a package version</a>: <code>sf package version create --package "Package Name" --wait 20 --installation-key-bypass --code-coverage --definition-file config/project-scratch-def.json --target-dev-hub "DevHubOrgAlias"</code>
@@ -790,7 +869,14 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <div class="slds-progress__marker"></div>
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                               <div class="slds-size_3-of-4">
                                 To <a href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_pkg_ver_promote.htm" target="_blank">promote/release a package version</a>: <code>sf package version promote --package "Package Version Alias"</code>
@@ -805,13 +891,9 @@
                             </div>
                           </li>
                         </ol>
-                        <ol
-                          class="list_ordered"
-                        >
+                        <ol class="list_ordered">
                           <li class="list_item">
-                            <div
-                              class="slds-progress__item_content slds-grid slds-grid_align-spread border-bottom"
-                            >
+                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread border-bottom">
                               <div class="slds-size_3-of-4">
                                 <strong class="slds-text-title_caps">
                                   Run Salesforce Code Analyzer Scan
@@ -877,7 +959,14 @@
                     <div class="slds-progress slds-progress_vertical slds-progress_success">
                       <ol class="slds-progress__list slds-progress__list-bordered">
                         <li class="slds-progress__item">
-                          <div class="slds-progress__marker"></div>
+                          <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <lightning-icon
+                              icon-name="utility:info"
+                              variant="info"
+                              size="x-small"
+                              class="success-icon-style"
+                            ></lightning-icon>
+                          </span>
                           <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                             <div class="slds-size_3-of-4">
                               Learn how to manage your team's access to the Salesforce Partner Community
@@ -892,7 +981,14 @@
                           </div>
                         </li>
                         <li class="slds-progress__item">
-                          <div class="slds-progress__marker"></div>
+                          <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <lightning-icon
+                              icon-name="utility:info"
+                              variant="info"
+                              size="x-small"
+                              class="success-icon-style"
+                            ></lightning-icon>
+                          </span>
                           <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                             <div class="slds-size_3-of-4">
                               Learn how to manage your AppExchange listings with the Partner Console and Listing Builder
@@ -907,7 +1003,14 @@
                           </div>
                         </li>
                         <li class="slds-progress__item">
-                          <div class="slds-progress__marker"></div>
+                          <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <lightning-icon
+                              icon-name="utility:info"
+                              variant="info"
+                              size="x-small"
+                              class="success-icon-style"
+                            ></lightning-icon>
+                          </span>
                           <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
                             <div class="slds-size_3-of-4">
                               Review and learn how to mitigate the top 20 vulnerabilities found in the AppExchange Security Review
@@ -924,15 +1027,18 @@
                         <template lwc:if={org}>
                           <li class="slds-progress__item">
                             <template if:true={numOfDays}>
-                              <div class="slds-progress__marker">
-                                <span class="slds-assistive-text">Active</span>
-                              </div>
+                              <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                                <lightning-icon
+                                  icon-name="utility:warning"
+                                  variant="warning"
+                                  size="x-small"
+                                  class="success-icon-style"
+                                ></lightning-icon>
+                              </span>
                             </template>
                             <template if:false={numOfDays}>
                               <span
-                                class="slds-icon_container slds-icon-utility-success slds-progress__marker slds-progress__marker_icon slds-progress__marker_icon-success"
-                                title="Complete"
-                              >
+                                class="slds-icon_container slds-icon-utility-success slds-progress__marker slds-progress__marker_icon slds-progress__marker_icon-success">
                                 <lightning-icon
                                   icon-name="utility:success"
                                   alternative-text="Success!"
@@ -1049,12 +1155,8 @@
             <article class="slds-setup-assistant__step">
               <div class="slds-setup-assistant__step-summary">
                 <div class="slds-media">
-                  <div
-                    class="slds-setup-assistant__step-summary-content slds-media__body"
-                  >
-                    <h3
-                      class="slds-setup-assistant__step-summary-title slds-text-heading_small"
-                    >
+                  <div class="slds-setup-assistant__step-summary-content slds-media__body">
+                    <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
                       <lightning-icon
                         icon-name="utility:alert"
                         size="small"
