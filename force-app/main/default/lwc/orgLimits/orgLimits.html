@@ -8,18 +8,20 @@
     </template>
     <template lwc:if={limits}>
         <div class="">
-            <div onkeyup={handleKeyUp} class="slds-m-top_small">
-                <lightning-input
-                    name="search-limits"
-                    placeholder="Search Limits"
-                    label="Search Limits"
-                    type="search"
-                    variant="label-hidden"
-                    onchange={handleSearchInputChange}
-                    value={searchQuery}
-                    autocomplete="off" 
-                ></lightning-input>
-            </div>
+            <template if:true={hideSearch}>
+                <div onkeyup={handleKeyUp} class="slds-m-top_small">
+                    <lightning-input
+                        name="search-limits"
+                        placeholder="Search Limits"
+                        label="Search Limits"
+                        type="search"
+                        variant="label-hidden"
+                        onchange={handleSearchInputChange}
+                        value={searchQuery}
+                        autocomplete="off" 
+                    ></lightning-input>
+                </div>
+            </template>
             <template for:each={limitsFilterList} for:item="limit">
                 <c-docked-limits-bar
                     key={limit.label}

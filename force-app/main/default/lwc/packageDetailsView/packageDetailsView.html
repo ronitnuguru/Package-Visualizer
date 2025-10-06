@@ -61,7 +61,7 @@
         ></lightning-input>
         <template if:false={editMode}>
           <template if:true={description}>
-            <div class="slds-form-element slds-border_bottom">
+            <div class="slds-form-element">
               <label
                 class="slds-form-element__label slds-var-p-bottom_xx-small"
                 for="text-input-id-1"
@@ -79,7 +79,6 @@
             <lightning-textarea
               label="Description"
               value={description}
-              class="slds-border_bottom"
               disabled
             ></lightning-textarea>
           </template>

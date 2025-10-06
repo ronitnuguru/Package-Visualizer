@@ -8,11 +8,11 @@
     </values>
     <values>
         <field>Icon__c</field>
-        <value xsi:type="xsd:string">custom:custom76</value>
+        <value xsi:type="xsd:string">standard:solution</value>
     </values>
     <values>
         <field>Link__c</field>
-        <value xsi:type="xsd:string">/packaging/installPackage.apexp?p0=04tRh000001APUPIA4</value>
+        <value xsi:type="xsd:string">https://appexchange.salesforce.com/appxListingDetail?listingId=632af825-58e1-4e61-a2b6-8b008449ca03</value>
     </values>
     <values>
         <field>Order__c</field>

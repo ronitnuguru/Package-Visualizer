@@ -14,7 +14,7 @@ export default class ScratchBuildModal extends LightningModal {
     displayAiSuggest;
     aiSuggestion;
 
-    currentPkgVersionId = '04tRh000001FlXWIA0';
+    currentPkgVersionId = '04tRh000001NBdJIAW';
 
     get isAiSuggestionEmpty(){
         return !this.aiSuggestion;
@@ -64,7 +64,7 @@ export default class ScratchBuildModal extends LightningModal {
     async generateAiResponse() {
         try {
             this.aiResponse = await invokeGenAiPromptTemplate({
-                className: 'GenAiPromptTemplateController',
+                className: 'AgentGenAiPromptTemplateController',
                 methodName: `singleFreeText`,
                 recordId: `${this.aiSuggestion} ${this.content}`,
                 objectInput: `User_Generated_Scratch_Org_File`,

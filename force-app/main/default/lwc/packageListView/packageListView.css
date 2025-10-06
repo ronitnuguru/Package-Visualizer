@@ -24,26 +24,26 @@ li.slds-is-selected a[role="option"]:focus {
   --slds-c-badge-color-background: #3ba755;
   --slds-c-badge-text-color: white;
   --slds-c-badge-icon-color-foreground: white;
-  --slds-c-badge-radius-border: 4px;
+  --slds-c-badge-radius-border: 15rem;
 }
 
 .unlocked-badge {
   --slds-c-badge-color-background: #db6d7a;
   --slds-c-badge-text-color: white;
   --slds-c-badge-icon-color-foreground: white;
-  --slds-c-badge-radius-border: 4px;
+  --slds-c-badge-radius-border: 15rem;
 }
 
 .first-managed-badge{
   --slds-c-badge-color-background: #ff5d2d;
   --slds-c-badge-text-color: white;
   --slds-c-badge-icon-color-foreground: white;
-  --slds-c-badge-radius-border: 4px;
+  --slds-c-badge-radius-border: 15rem;
 }
 
 .first-unmanaged-badge{
   --slds-c-badge-color-background: #9050e9;
   --slds-c-badge-text-color: white;
   --slds-c-badge-icon-color-foreground: white;
-  --slds-c-badge-radius-border: 4px;
+  --slds-c-badge-radius-border: 15rem;
 }

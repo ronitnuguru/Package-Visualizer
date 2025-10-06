@@ -1,8 +1,9 @@
-import { LightningElement, wire } from 'lwc';
+import { LightningElement, wire, api } from 'lwc';
 import getLimits from '@salesforce/apex/LimitsController.getLimits';
 
 export default class OrgLimits extends LightningElement {
 
+    @api hideSearch;
     limits;
     error;
 

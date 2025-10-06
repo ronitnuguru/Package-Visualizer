@@ -17,7 +17,7 @@ export default class GenAiResponseCard extends NavigationMixin(LightningElement)
     aiResponse;
     error;
 
-    currentPkgVersionId = '04tRh000001FlXWIA0';
+    currentPkgVersionId = '04tRh000001NBdJIAW';
 
     connectedCallback(){
         this.generateAiResponse();
@@ -35,7 +35,7 @@ export default class GenAiResponseCard extends NavigationMixin(LightningElement)
     async generateAiResponse() {
         try {
             this.aiResponse = await invokeGenAiPromptTemplate({
-                className: 'GenAiPromptTemplateController',
+                className: 'AgentGenAiPromptTemplateController',
                 methodName: `recordSummary`,
                 recordId: this.recordId,
                 objectInput: this.objectName,

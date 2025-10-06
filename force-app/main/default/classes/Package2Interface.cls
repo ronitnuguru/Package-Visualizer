@@ -3,6 +3,7 @@
 * @Date         11/10/2020
 * @Description  Interface Class for making thats make all call out for 2GP Visualizer application.  
 *******************************************************************************************/
+@NamespaceAccessible
 public with sharing class Package2Interface { // NOPMD
     
 	/**************************************************************************************
@@ -88,11 +89,13 @@ public with sharing class Package2Interface { // NOPMD
 	/**************************************************************************************
 	* @Description Method for getting the visualforce session id inorder to invoke tooling API  
 	**************************************************************************************/ 
+    @NamespaceAccessible
     public static string getSessionId() {Pagereference sidPage = Page.SessionCreator; if(Test.isRunningTest()){ return 'we can not run getContent in test class';} else { Map<String,Object> sidJSON = (Map<String,Object>)JSON.deserializeUntyped(sidPage.getContent().toString()); String sessionID = (String)sidJSON.get('sessionId'); return sessionID;}}
 
 	/**************************************************************************************
 	* @Description	Method for getting the current org base URL for tooling API  
 	**************************************************************************************/ 
+    @NamespaceAccessible
     public static string getBaseURL(String apiType) {String baseURL = URL.getSalesforceBaseUrl().toExternalForm() + '/services/data/v61.0/' + String.escapeSingleQuotes(apiType) + '/';return baseURL;}
     
 	/**************************************************************************************

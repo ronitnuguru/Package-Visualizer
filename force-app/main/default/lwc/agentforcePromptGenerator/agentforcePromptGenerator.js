@@ -24,7 +24,7 @@ export default class AgentforcePromptGenerator extends NavigationMixin(Lightning
     }
 
     modelsValue = 'sfdc_ai__DefaultGPT5';
-    currentPkgVersionId = '04tRh000001FlXWIA0';
+    currentPkgVersionId = '04tRh000001NBdJIAW';
 
     get modelsTypeOptions() {
         return [
@@ -32,9 +32,11 @@ export default class AgentforcePromptGenerator extends NavigationMixin(Lightning
             { label: 'Azure OpenAI GPT-4.1', value: 'sfdc_ai__DefaultGPT41Mini' },
             { label: 'Azure OpenAI GPT-5 Mini', value: 'sfdc_ai__DefaultGPT5Mini' },
             { label: 'Azure OpenAI GPT-4.1 Mini', value: 'sfdc_ai__DefaultGPT41Mini' },
-            { label: 'Anthropic Claude 4 Sonnet on Amazon', value: 'sfdc_ai__DefaultBedrockAnthropicClaude4Sonnet' },
-            { label: 'Anthropic Claude 3.7 Sonnet on Amazon', value: 'sfdc_ai__DefaultBedrockAnthropicClaude37Sonnet' },
-            { label: 'Anthropic Claude 3 Haiku on Amazon', value: 'sfdc_ai__DefaultBedrockAnthropicClaude3Haiku' },
+            { label: 'Anthropic Claude 4 Sonnet on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAnthropicClaude4Sonnet' },
+            { label: 'Amazon Nova Pro on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAmazonNovaPro' },
+            { label: 'Amazon Nova Lite on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAmazonNovaLite' },
+            { label: 'Anthropic Claude 3.7 Sonnet on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAnthropicClaude37Sonnet' },
+            { label: 'Anthropic Claude 3 Haiku on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAnthropicClaude3Haiku' },
             { label: 'Vertex AI (Google) Gemini 2.5 Flash', value: 'sfdc_ai__DefaultVertexAIGemini25Flash001' },
             { label: 'Vertex AI (Google) Gemini 2.5 Flash Lite', value: 'sfdc_ai__DefaultVertexAIGemini25FlashLite001' },
         ];
@@ -117,7 +119,7 @@ export default class AgentforcePromptGenerator extends NavigationMixin(Lightning
         this.displaySpinner = true;
         (async () => {
             await invokeModelsGenAi({
-                className: 'GenAiController',
+                className: 'AgentGenAiController',
                 methodName: 'createGeneration',
                 modelName: this.modelsValue,
                 prompt: this.prompt

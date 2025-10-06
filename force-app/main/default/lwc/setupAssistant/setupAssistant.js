@@ -240,7 +240,7 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   }
 
   navigateToCodeAnalyzerGuide(){
-    window.open('https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/code-analyzer.md', "_blank");
+    window.open('https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide', "_blank");
   }
 
   navigateToManageUsersPartnerCommunity(){

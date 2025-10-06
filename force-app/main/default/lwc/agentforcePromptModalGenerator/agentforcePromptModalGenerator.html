@@ -29,7 +29,7 @@
         <c-empty-illustration-with-button
             title="Component not available..."
             body="Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance..."
-            button-label="Install Unlocked Package"
+            button-label="Install Managed Package"
             size="medium"
             onselect={handleExtensionInstall}
         ></c-empty-illustration-with-button>
@@ -70,6 +70,7 @@
             class="text-area-style"
             required
           ></lightning-textarea>
+          <!--
           <lightning-textarea 
             name="prompt" 
             label="System Prompt"
@@ -79,6 +80,7 @@
             class="text-area-style"
             required
           ></lightning-textarea>
+          -->
         </template>
         <template if:false={displayEditPrompt}>
           <li class="slds-chat-listitem slds-chat-listitem_inbound">
