@@ -83,6 +83,19 @@ export default class ScratchRowMetaExperession extends LightningElement {
                 }
             ];
         }
+        else if (this.settingValue == 'botSettings'){
+            this.fieldSettings = [
+                {
+                    autoNumber: 0,
+                    fieldName: 'enableBots',
+                    displayBoolean: true,
+                    displayString: false,
+                    displayInteger: false,
+                    fieldOperator: 'boolean',
+                    fieldValue: 'true'
+                }
+            ];
+        }
         else if (this.settingValue == 'customerDataPlatformSettings'){
             this.fieldSettings = [
                 {

@@ -127,7 +127,7 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
 
     agentforceTemplate(event){
         this.editionValue = 'Partner Developer';
-        let features = ['Einstein1AIPlatform', 'EinsteinGPTForDevelopers'];
+        let features = ['Einstein1AIPlatform', 'Chatbot'];
 
         features.forEach((feature) => {
            this.featureValue = feature;
@@ -139,7 +139,11 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
                 "enableEinsteinGptPlatform" : true
             }
         });
-
+        publish(this.messageContext, CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL, {
+            "botSettings": {
+                "enableBots": true
+            }
+        });
         this.scratchFeatureToast(event.currentTarget.value);
     }
 

@@ -67,8 +67,8 @@ export default class ScratchBuildModal extends LightningModal {
                 className: 'AgentGenAiPromptTemplateController',
                 methodName: `singleFreeText`,
                 recordId: `${this.aiSuggestion} ${this.content}`,
-                objectInput: `User_Generated_Scratch_Org_File`,
-                promptTemplateName: 'pkgviz__Generate_AI_Scratch_Org_Definition_File'
+                objectInput: 'User_Generated_Scratch_Org_File',
+                promptTemplateName: 'pkgviz__ISV_Agent_Generate_Scratch_Org_Definition_File'
             });
             this.error = undefined;
             this.displaySpinner = false;

@@ -8,7 +8,7 @@
     </template>
     <template lwc:if={limits}>
         <div class="">
-            <template if:true={hideSearch}>
+            <template if:false={hideSearch}>
                 <div onkeyup={handleKeyUp} class="slds-m-top_small">
                     <lightning-input
                         name="search-limits"
