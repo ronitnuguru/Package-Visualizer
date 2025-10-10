@@ -2,18 +2,15 @@
   <lightning-card>
       <h3 slot="title" class="slds-truncate">
           <lightning-icon 
-              icon-name="standard:walkthroughs"
-              alternative-text="Walkthroughs"
+              icon-name={iconName}
               size="medium"
-              class="slds-m-right_small"
+              class="slds-m-right_small card_header_icon"
           ></lightning-icon>
-          In-App Guidance
+          {title}
       </h3>
       <lightning-button-group slot="actions">
-          <template if:true={steps}>
-            <lightning-button-icon icon-name="utility:target_mode" tooltip="Upgrade to the Latest Unlocked Package" variant="border-filled" onclick={navigateUnlockedPackageInstall}></lightning-button-icon>
-          </template>
-          <lightning-button-icon icon-name="utility:help_doc_ext" tooltip="Help - In App Guidance Setup" variant="border-filled" onclick={handleHelpDoc}></lightning-button-icon>
+          <lightning-button label="Guide" icon-name="utility:help_doc_ext" icon-position="right" variant="border-filled" onclick={handleHelpDoc}></lightning-button>
+          <lightning-button-icon icon-name="utility:slack_conversations" variant="border-filled" tooltip="Partnerblazer Slack Community" onclick={handleSlackCommunity}></lightning-button-icon>
       </lightning-button-group>
       <div class="slds-card__body slds-card__body_inner">
           <template if:true={displaySpinner}>
@@ -23,53 +20,33 @@
                 variant="brand"
               ></lightning-spinner>
           </template>
-          <template if:false={displaySpinner}>
-              <template if:true={installUnlockedPackageIllustration}>
-                  <c-empty-illustration-with-button
-                      title="Component not available..."
-                      body="Looks like you have not installed the dependent ISV Tooling Prompts Unlocked Package to view In-App Guidance walkthroughs..."
-                      button-label="Install Managed Package"
-                      size="medium"
-                      onselect={navigateUnlockedPackageInstall}
-                ></c-empty-illustration-with-button>
+            <template if:false={displaySpinner}>
+              <template for:each={resourcesData} for:item="resource" for:index="index">
+                <div class="card-style slds-var-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small slds-media" key={resource.label}>
+                  <lightning-card>
+                    <h4 slot="title" class="slds-truncate" title={resource.label}>
+                      <lightning-icon 
+                          icon-name={resource.icon}
+                          size="medium"
+                          class="slds-m-right_small"
+                      ></lightning-icon>
+                      {resource.label}
+                    </h4>
+                    <lightning-button-group slot="actions">
+                      <template lwc:if={resource.helpGuideLink}>
+                        <lightning-button-icon variant="border-filled" icon-name={resource.helpGuideIcon} data-index={index} onclick={navigateToHelpGuide}></lightning-button-icon>
+                      </template>
+                    </lightning-button-group>
+                    <div class="slds-card__body_inner">
+                      <p>{resource.description}</p>
+                    </div>
+                    <div slot="footer">
+                      <lightning-button-icon tooltip="AgentExchange Listing" variant="border-filled" icon-name="utility:agent_astro" icon-position="right" data-index={index} onclick={navigateToAgentExchangeListing} class="slds-m-right_x-small"></lightning-button-icon>
+                      <lightning-button label="Install" variant="brand" icon-name="utility:download" icon-position="right" data-index={index} onclick={handleInstall}></lightning-button>
+                    </div>
+                  </lightning-card>
+                </div>
               </template>
-              <template if:true={steps}>
-                  <div class="">
-                    <template
-                      for:each={steps}
-                      for:item="step"
-                      for:index="index"
-                    >
-                      <div class="slds-var-p-bottom_x-small" key={step.pkgviz__Title__c}>
-                        <a
-                          target="_blank"
-                          href={step.pkgviz__Link__c}
-                          class="slds-box slds-box_link slds-box_x-small slds-media"
-                        >
-                          <div
-                            class="slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center slds-var-m-left_xx-small"
-                          >
-                            <lightning-icon
-                              icon-name="standard:prompt"
-                              alternative-text="Link"
-                              size="medium"
-                            ></lightning-icon>
-                          </div>
-                          <div
-                            class="slds-media__body slds-border_left slds-var-p-around_x-small"
-                          >
-                            <strong class="slds-text-title_caps" title={step.pkgviz__Title__c}
-                              >{step.pkgviz__Title__c}</strong
-                            >
-                            <p class="slds-text-body_small">
-                              {step.pkgviz__Description__c}
-                            </p>
-                          </div>
-                        </a>
-                      </div>
-                    </template>
-                  </div>
-                </template>
           </template>
       </div>
   </lightning-card>

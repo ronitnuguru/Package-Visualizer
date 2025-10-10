@@ -282,7 +282,6 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
     }
 
     editionChange(event) {
-        console.log(event.detail.value);
         this.handleEditionChange(event.detail.value);
     }
 

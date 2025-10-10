@@ -1,17 +1,9 @@
 {
-  "orgName": "DC + AF",
-  "edition": "Partner Developer",
-  "hasSampleData": true,
-  "release": "current",
-  "country": "US",
-  "language": "en_US",
+  "orgName": "PkgViz Scratch Org",
+  "edition": "Developer",
+  "release": "preview",
   "features": [
-    "EnableSetPasswordInApi",
-    "Einstein1AIPlatform",
-    "EinsteinGPTForDevelopers",
-    "CustomerDataPlatform",
-    "CustomerDataPlatformLite",
-    "MarketingUser"
+    "EnableSetPasswordInApi"
   ],
   "settings": {
     "lightningExperienceSettings": {
@@ -21,12 +13,6 @@
     },
     "mobileSettings": {
       "enableS1EncryptedStoragePref2": "false"
-    },
-    "einsteinGptSettings": {
-      "enableEinsteinGptPlatform": "true"
-    },
-    "customerDataPlatformSettings": {
-      "enableCustomerDataPlatform": "true"
     }
   }
 }

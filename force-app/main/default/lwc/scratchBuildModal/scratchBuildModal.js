@@ -113,7 +113,6 @@ export default class ScratchBuildModal extends LightningModal {
                     }),
                 );
                 // Optional: Show success message
-                console.log('AI response copied to clipboard');
             }).catch(err => {
                 console.error('Failed to copy AI response to clipboard:', err);
                 // Fallback for older browsers
@@ -140,7 +139,6 @@ export default class ScratchBuildModal extends LightningModal {
                     variant: 'success',
                 }),
             );
-            console.log('AI response copied to clipboard (fallback method)');
         } catch (err) {
             console.error('Fallback copy to clipboard failed:', err);
         }
