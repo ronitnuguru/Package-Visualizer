@@ -22,16 +22,16 @@
           </template>
             <template if:false={displaySpinner}>
               <template for:each={resourcesData} for:item="resource" for:index="index">
-                <div class="card-style slds-var-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small slds-media" key={resource.label}>
+                <div class="card-style slds-var-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small" key={resource.label}>
                   <lightning-card>
-                    <h4 slot="title" class="slds-truncate" title={resource.label}>
+                    <h3 slot="title" class="slds-truncate" title={resource.label}>
                       <lightning-icon 
                           icon-name={resource.icon}
                           size="medium"
                           class="slds-m-right_small"
                       ></lightning-icon>
                       {resource.label}
-                    </h4>
+                    </h3>
                     <lightning-button-group slot="actions">
                       <template lwc:if={resource.helpGuideLink}>
                         <lightning-button-icon variant="border-filled" icon-name={resource.helpGuideIcon} data-index={index} onclick={navigateToHelpGuide}></lightning-button-icon>

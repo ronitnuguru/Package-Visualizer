@@ -275,6 +275,10 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     window.open(`https://trailhead.salesforce.com/content/learn/modules/isvforce_basics/isvforce_basics_tools_resources`,'_blank');
   }
 
+  navigateToCodeBuilder(){
+    window.open(`/runtime_developerplatform_codebuilder/codebuilder.app?launch=true`,'_blank');
+  }
+
   navigateScratchOrgBuild(){
     this[NavigationMixin.Navigate]({
       type: "standard__component",

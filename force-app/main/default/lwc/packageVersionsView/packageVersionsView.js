@@ -146,7 +146,7 @@ export default class PackageVersionsView extends LightningElement {
   filterState = false;
   displayFilterMeta;
   displayFilterDockPanel = `slds-panel slds-size_medium slds-panel_docked slds-panel_docked-left slds-panel_drawer slds-border_top slds-border_right slds-border_bottom slds-hidden`;
-  responsivePanelStyle = `border-style: ridge; direction:ltr;width:100%;border-color:#DDDBDA;border-width:thin;box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);`;
+  responsivePanelStyle = `direction:ltr;width:100%;`;
   heightStyle = `table-style table-height slds-p-horizontal_medium slds-p-bottom_medium`;
   checkBoxFilterValues = [];
 
@@ -410,8 +410,8 @@ export default class PackageVersionsView extends LightningElement {
             this.filterState = false;
             this.handleFilterState(this.filterState);
             this.responsivePanelStyle = this.filterState
-              ? `border-style: ridge; direction:ltr; width:calc(100% - 320px);border-color:#DDDBDA;border-width:thin;box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);`
-              : `border-style: ridge; direction:ltr;width:100%;border-color:#DDDBDA;border-width:thin;box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);`;
+              ? `direction:ltr; width:calc(100% - 320px);`
+              : `direction:ltr;width:100%;`;
           }
         })
         .catch(error => {
@@ -622,8 +622,8 @@ export default class PackageVersionsView extends LightningElement {
     this.filterState = !this.filterState;
     this.handleFilterState(this.filterState);
     this.responsivePanelStyle = this.filterState
-      ? `border-style: ridge; direction:ltr; width:calc(100% - 320px);border-color:#DDDBDA;border-width:thin;box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);`
-      : `border-style: ridge; direction:ltr;width:100%;border-color:#DDDBDA;border-width:thin;box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);`;
+      ? `direction:ltr; width:calc(100% - 320px);`
+      : `direction:ltr;width:100%;`;
   }
 
   handleFilterState(state) {
@@ -674,8 +674,8 @@ export default class PackageVersionsView extends LightningElement {
       this.filterState = false;
       this.handleFilterState(this.filterState);
       this.responsivePanelStyle = this.filterState
-        ? `border-style: ridge; direction:ltr; width:calc(100% - 320px);border-color:#DDDBDA;border-width:thin;box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);`
-        : `border-style: ridge; direction:ltr;width:100%;border-color:#DDDBDA;border-width:thin;box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);`;
+        ? `direction:ltr; width:calc(100% - 320px);`
+        : `direction:ltr;width:100%;`;
       this.versionOffset = 0;
       this.disableInfiniteLoad = true;
       this.loadPackageVersions(this.packageId, true, false);

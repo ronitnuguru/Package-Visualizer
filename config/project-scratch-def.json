@@ -1,7 +1,6 @@
 {
   "orgName": "PkgViz Scratch Org",
   "edition": "Developer",
-  "release": "preview",
   "features": [
     "EnableSetPasswordInApi"
   ],

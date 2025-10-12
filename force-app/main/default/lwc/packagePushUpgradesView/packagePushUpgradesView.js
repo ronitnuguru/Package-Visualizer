@@ -108,7 +108,7 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
   displayChartDockPanel = `slds-panel slds-size_medium slds-panel_docked slds-panel_docked-left slds-panel_drawer slds-border_top slds-border_right slds-border_bottom slds-hidden`;
   chartInit;
 
-  responsivePanelStyle = `border-style: ridge; direction:ltr;width:100%;border-color:#DDDBDA;border-width:thin;box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);`;
+  responsivePanelStyle = `direction:ltr;width:100%;`;
   pushUpgradeBreadCrumbLabel;
 
   selectedOrgStatusOptions = [];
@@ -410,8 +410,8 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
     this.chartState = false;
     this.handleChartState(false);
     this.responsivePanelStyle = this.filterState
-      ? `border-style: ridge; direction:ltr; width:calc(100% - 320px);border-color:#DDDBDA;border-width:thin;box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);`
-      : `border-style: ridge; direction:ltr;width:100%;border-color:#DDDBDA;border-width:thin;box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);`;
+      ? `direction:ltr; width:calc(100% - 320px);`
+      : `direction:ltr;width:100%;`;
   }
 
   handleChartPanel() {
@@ -421,8 +421,8 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
     this.filterState = false;
     this.handleFilterState(false);
     this.responsivePanelStyle = this.chartState
-      ? `border-style: ridge; direction:ltr; width:calc(100% - 320px);border-color:#DDDBDA;border-width:thin;box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);`
-      : `border-style: ridge; direction:ltr;width:100%;border-color:#DDDBDA;border-width:thin;box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);`;
+      ? `direction:ltr; width:calc(100% - 320px);`
+      : `direction:ltr;width:100%;`;
   }
 
   handleFilterState(state) {
@@ -571,8 +571,8 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
     this.filterState = false;
     this.handleFilterState(this.filterState);
     this.responsivePanelStyle = this.filterState
-      ? `border-style: ridge; direction:ltr; width:calc(100% - 320px);border-color:#DDDBDA;border-width:thin;box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);`
-      : `border-style: ridge; direction:ltr;width:100%;border-color:#DDDBDA;border-width:thin;box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);`;
+      ? `direction:ltr; width:calc(100% - 320px);`
+      : `direction:ltr;width:100%;`;
     this.subscriberOffset = 0;
     if (this.regionsValues.length !== 0 && this.regionsValues.length !== 5) {
       this.getFilteredInstanceList();
