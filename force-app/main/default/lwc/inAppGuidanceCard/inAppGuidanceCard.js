@@ -5,7 +5,7 @@ import verifyUnlockedPackageInstalled from "@salesforce/apex/PackageVisualizerCt
 export default class InAppGuidanceCard extends NavigationMixin(LightningElement) {
     displaySpinner;
 
-    title = 'Dreamforce 2025 Demo';
+    title = 'AgentExchange Showcase';
     iconName = 'utility:salesforce1';
     resourcesData = [
         {
@@ -16,7 +16,8 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
             installLink: '/packaging/installPackage.apexp?p0=04tRh000001NopxIAC',
             helpGuideLink: 'https://salesforce.quip.com/f3SWA340YbFH',
             helpGuideIcon: 'utility:quip'
-        },
+        }
+        /*
         {
             label: 'Plauti',
             description: 'Standardize, validate, and verify phone numbers, and email addresses upon entry through Agentforce. Empower your customers and lead the way with real-time updates during conversations, fostering a connection that inspires trust and confidence.',
@@ -25,23 +26,15 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
             installLink: '/packaging/installPackage.apexp?p0=04tIV000000GOb3YAG',
             helpGuideLink: 'https://www.plauti.com/dreamforce-2025-the-biggest-salesforce-event-of-the-year',
             helpGuideIcon: 'utility:trailblazer_ext'
-        },
-        {
-            label: 'GoMeddo',
-            description: 'Native Salesforce scheduling and booking solution where Agentforce Agents you can recognize natural and real life conversational user requests, matching them with current availability, for the best customer experience and efficiency.',
-            icon: 'standard:agent_astro',
-            listingLink: 'https://appexchange.salesforce.com/appxListingDetail?listingId=fb196a9e-bc3a-4040-99ce-e2b12f4dbd2c',
-            installLink: '/packagingSetupUI/ipLanding.app?apvId=04tQH000001Tp4zYAC',
-            helpGuideLink: 'https://www.gomeddo.com/',
-            helpGuideIcon: 'utility:trailblazer_ext'
         }
+         */
     ];
 
     handleHelpDoc(){
         this[NavigationMixin.Navigate]({
             type: "standard__webPage",
             attributes: {
-              url: `https://salesforce.quip.com/`
+              url: `https://wp-appexchange.salesforce.com/wp-content/uploads/2025/10/DF25-AgentExchange-Build-Station-Instructions.pdf`
             },
             state: {
                 target: "_blank"

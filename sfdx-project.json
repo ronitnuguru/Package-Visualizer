@@ -4,9 +4,9 @@
       "path": "force-app",
       "default": true,
       "package": "Package Visualizer",
-      "versionName": "Version 7.93",
-      "versionNumber": "7.93.0.NEXT",
-      "ancestorVersion": "7.92.0"
+      "versionName": "Version 7.99",
+      "versionNumber": "7.99.0.NEXT",
+      "ancestorVersion": "7.98.0"
     }
   ],
   "name": "Package Visualizer",
@@ -180,6 +180,12 @@
     "Package Visualizer@7.90.0-1": "04tRh000001NykTIAS",
     "Package Visualizer@7.91.0-1": "04tRh000001NyxNIAS",
     "Package Visualizer@7.92.0-1": "04tRh000001NyyzIAC",
-    "Package Visualizer@7.93.0-1": "04tRh000001Nz0bIAC"
+    "Package Visualizer@7.93.0-1": "04tRh000001Nz0bIAC",
+    "Package Visualizer@7.94.0-1": "04tRh000001O7cTIAS",
+    "Package Visualizer@7.95.0-1": "04tRh000001O8VJIA0",
+    "Package Visualizer@7.96.0-1": "04tRh000001O8gbIAC",
+    "Package Visualizer@7.97.0-2": "04tRh000001O8v7IAC",
+    "Package Visualizer@7.98.0-1": "04tRh000001PIVpIAO",
+    "Package Visualizer@7.99.0-1": "04tRh000001PaVxIAK"
   }
 }

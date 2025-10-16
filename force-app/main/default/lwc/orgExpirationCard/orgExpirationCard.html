@@ -30,20 +30,17 @@
             </template>
             <template lwc:if={org}>
                 <template if:false={org.TrialExpirationDate}>
-                    <div class="slds-notify slds-notify_alert slds-m-bottom_xx-small" role="alert">
-                        <span class="slds-assistive-text">info</span>
-                        <span
-                            class="slds-icon_container slds-icon-utility-warning slds-var-m-right_x-small"
-                        >
-                          <lightning-icon
-                            size="small"
-                            icon-name="utility:info"
-                            variant="inverse"
-                          ></lightning-icon>
-                        </span>
-                        <h2>
-                          Org is set to Active status. The Trial Expiration Date for this org is not available. Navigate to the org's <a target="_blank" href="/lightning/setup/CompanyProfileInfo/home">Company Information</a> for more details
-                        </h2>
+                    <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info" role="status">
+                        <div class="slds-media__figure">
+                            <lightning-icon
+                                size="small"
+                                icon-name="utility:info"
+                                variant="inverse"
+                            ></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            Org is set to Active status. The Trial Expiration Date for this org is not available. Navigate to the org's <a target="_blank" href="/lightning/setup/CompanyProfileInfo/home">Company Information</a> for more details
+                        </div>
                     </div>
                 </template>
                 <template if:true={org.TrialExpirationDate}>
