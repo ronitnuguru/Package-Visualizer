@@ -1,159 +1,152 @@
 <template>
   <div class="slds-var-p-around_medium slds-page-header">
     <div class="slds-grid">
-        <article class="slds-tile slds-media">
-          <div class="slds-media__figure">
-            <template if:true={displayLoadingIcon}>
-              <lightning-dynamic-icon
-                type="eq"
-                option="play"
-                alternative-text="Request in progress"
-                slot="media"
-              >
-              </lightning-dynamic-icon>
-            </template>
-            <template if:true={displaySuccessIcon}>
-              <lightning-icon
-                icon-name="utility:success"
-                alternative-text="Success!"
-                variant="success"
-                size="medium"
-                slot="media"
-              ></lightning-icon>
-            </template>
-            <template if:true={displayErrorIcon}>
-              <lightning-icon
-                icon-name="utility:error"
-                alternative-text="Error!"
-                variant="error"
-                size="medium"
-                slot="media"
-              ></lightning-icon>
-            </template>
-            <template if:true={displayWarningIcon}>
-              <lightning-icon
-                icon-name="utility:warning"
-                alternative-text="Warning!"
-                variant="warning"
-                size="medium"
-                slot="media"
-              ></lightning-icon>
-            </template>
+      <article class="slds-tile slds-media">
+        <div class="slds-media__figure">
+          <template if:true={displayLoadingIcon}>
+            <lightning-dynamic-icon
+              type="eq"
+              option="play"
+              alternative-text="Request in progress"
+            ></lightning-dynamic-icon>
+          </template>
+          <template if:true={displaySuccessIcon}>
+            <lightning-icon
+              icon-name="utility:success"
+              alternative-text="Success!"
+              variant="success"
+              size="medium"
+            ></lightning-icon>
+          </template>
+          <template if:true={displayErrorIcon}>
+            <lightning-icon
+              icon-name="utility:error"
+              alternative-text="Error!"
+              variant="error"
+              size="medium"
+            ></lightning-icon>
+          </template>
+          <template if:true={displayWarningIcon}>
+            <lightning-icon
+              icon-name="utility:warning"
+              alternative-text="Warning!"
+              variant="warning"
+              size="medium"
+            ></lightning-icon>
+          </template>
+        </div>
+        <div class="slds-media__body">
+          <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+            <h3 class="slds-tile__title slds-truncate slds-text-link tile-style">
+              <span>{pushId}</span>
+            </h3>
+            <div class="slds-shrink-none">
+              <template if:true={displayAbort}>
+                <lightning-button-menu
+                  alternative-text="Show menu"
+                  menu-alignment="auto"
+                  variant="border-filled"
+                  icon-size="small"
+                >
+                  <lightning-menu-item
+                    value="Abort"
+                    label="Abort"
+                    onclick={handleAbort}
+                  ></lightning-menu-item>
+                </lightning-button-menu>
+              </template>
+            </div>
           </div>
-          <div class="slds-media__body">
-            <div
-              class="slds-grid slds-grid_align-spread slds-has-flexi-truncate"
-            >
-              <h3 class="slds-tile__title slds-truncate slds-text-link tile-style">
-                <span>{pushId}</span>
-              </h3>
-              <div class="slds-shrink-none">
-                <template if:true={displayAbort}>
-                  <lightning-button-menu alternative-text="Show menu" menu-alignment="auto" variant="border-filled" icon-size="small">
-                    <lightning-menu-item value="Abort" label="Abort" onclick={handleAbort}></lightning-menu-item>
-                  </lightning-button-menu>
+          <div class="slds-tile__detail">
+            <div class="slds-grid slds-gutters">
+              <div class="slds-col slds-col slds-size_4-of-12">
+                <div>{status}</div>
+                <template if:true={pushDurationSeconds}>
+                  <div>
+                    Completed in {pushDurationSeconds} seconds
+                  </div>
+                </template>
+                <template if:true={displayStatusProgress}>
+                  <div class="slds-grid">
+                    <div class="slds-col slds-align_absolute-center slds-p-horizontal_none slds-size_9-of-12">
+                      <div
+                        class="slds-progress-bar slds-progress-bar_circular"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        aria-valuenow={successPercentage}
+                        role="progressbar"
+                      >
+                        <span
+                          class="slds-progress-bar__value slds-progress-bar__value_success"
+                          style={progressStyle}
+                        ></span>
+                      </div>
+                    </div>
+                    <div class="slds-col">
+                      <span>{successProgress}/{totalProgress}</span>
+                    </div>
+                  </div>
                 </template>
               </div>
-            </div>
-            <div class="slds-tile__detail">
-              <div class="slds-grid slds-gutters">
-                <div class="slds-col slds-col slds-size_4-of-12">
-                  <div>{status}</div>
-                  <template if:true={pushDurationSeconds}>
-                    <div>
-                      Completed in {pushDurationSeconds} seconds
-                    </div>
+              <div class="slds-col">
+                <dl class="slds-list_horizontal slds-wrap">
+                  <template if:true={pushScheduledStartTime}>
+                    <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                      Scheduled Start Time:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      <lightning-formatted-date-time
+                        value={pushScheduledStartTime}
+                        year="numeric"
+                        month="numeric"
+                        day="numeric"
+                        hour="2-digit"
+                        minute="2-digit"
+                        time-zone-name="short"
+                        hour12="true"
+                      ></lightning-formatted-date-time>
+                    </dd>
                   </template>
-                  <template if:true={displayStatusProgress}>
-                    <div class="slds-grid">
-                      <div
-                        class="slds-col slds-align_absolute-center slds-p-horizontal_none slds-size_9-of-12"
-                      >
-                        <div
-                          class="slds-progress-bar slds-progress-bar_circular"
-                          aria-valuemin="0"
-                          aria-valuemax="100"
-                          aria-valuenow={successPercentage}
-                          role="progressbar"
-                        >
-                          <span
-                            class="slds-progress-bar__value slds-progress-bar__value_success"
-                            style={progressStyle}
-                          >
-                          </span>
-                        </div>
-                      </div>
-                      <div class="slds-col">
-                        <span>{successProgress}/{totalProgress}</span>
-                      </div>
-                    </div>
+                  <template if:true={pushStartTime}>
+                    <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                      Start Time:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      <lightning-formatted-date-time
+                        value={pushStartTime}
+                        year="numeric"
+                        month="numeric"
+                        day="numeric"
+                        hour="2-digit"
+                        minute="2-digit"
+                        time-zone-name="short"
+                        hour12="true"
+                      ></lightning-formatted-date-time>
+                    </dd>
                   </template>
-                </div>
-                <div class="slds-col">
-                  <dl class="slds-list_horizontal slds-wrap">
-                    <template if:true={pushScheduledStartTime}>
-                      <dt
-                        class="slds-item_label slds-text-color_weak slds-truncate"
-                      >
-                        Scheduled Start Time:
-                      </dt>
-                      <dd class="slds-item_detail slds-truncate">
-                        <lightning-formatted-date-time
-                          value={pushScheduledStartTime}
-                          year="numeric"
-                          month="numeric"
-                          day="numeric"
-                          hour="2-digit"
-                          minute="2-digit"
-                          time-zone-name="short"
-                          hour12="true"
-                        ></lightning-formatted-date-time>
-                      </dd>
-                    </template>
-                    <template if:true={pushStartTime}>
-                      <dt
-                        class="slds-item_label slds-text-color_weak slds-truncate"
-                      >
-                        Start Time:
-                      </dt>
-                      <dd class="slds-item_detail slds-truncate">
-                        <lightning-formatted-date-time
-                          value={pushStartTime}
-                          year="numeric"
-                          month="numeric"
-                          day="numeric"
-                          hour="2-digit"
-                          minute="2-digit"
-                          time-zone-name="short"
-                          hour12="true"
-                        ></lightning-formatted-date-time>
-                      </dd>
-                    </template>
-                    <template if:true={pushEndTime}>
-                      <dt
-                        class="slds-item_label slds-text-color_weak slds-truncate"
-                      >
-                        End Time:
-                      </dt>
-                      <dd class="slds-item_detail slds-truncate">
-                        <lightning-formatted-date-time
-                          value={pushEndTime}
-                          year="numeric"
-                          month="numeric"
-                          day="numeric"
-                          hour="2-digit"
-                          minute="2-digit"
-                          time-zone-name="short"
-                          hour12="true"
-                        ></lightning-formatted-date-time>
-                      </dd>
-                    </template>
-                  </dl>
-                </div>
+                  <template if:true={pushEndTime}>
+                    <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                      End Time:
+                    </dt>
+                    <dd class="slds-item_detail slds-truncate">
+                      <lightning-formatted-date-time
+                        value={pushEndTime}
+                        year="numeric"
+                        month="numeric"
+                        day="numeric"
+                        hour="2-digit"
+                        minute="2-digit"
+                        time-zone-name="short"
+                        hour12="true"
+                      ></lightning-formatted-date-time>
+                    </dd>
+                  </template>
+                </dl>
               </div>
             </div>
           </div>
-        </article>
+        </div>
+      </article>
     </div>
   </div>
   <div class={packagePushJobsAccordionClass}>
@@ -247,20 +240,29 @@
                     Filters Enabled
                   </li>
                 </template>
-                  <li class="slds-item">
-                    Updated&nbsp;<lightning-relative-date-time
+                <li class="slds-item">
+                  Updated&nbsp;<lightning-relative-date-time
                     value={relativeDateTime}
                   ></lightning-relative-date-time>
                 </li>
               </ul>
               <div class="slds-col_bump-left">
                 <div class="slds-grid slds-grid_align-end">
+                  <!--
+                  <lightning-button-icon
+                    icon-name="utility:agent_astro"
+                    variant="border-filled"
+                    tooltip="Ask Agentforce"
+                    onclick={openAskAgentforce}
+                    class="slds-m-left_x-small"
+                  ></lightning-button-icon>
+                  -->
                   <lightning-button-menu
                     icon-name="utility:table_settings"
                     menu-alignment="auto"
                     variant="border-filled"
                     alternative-text="Table Settings"
-                    class="slds-var-p-left_x-small"
+                    class="slds-m-left_x-small"
                   >
                     <lightning-menu-subheader
                       label="Table Controls"
@@ -274,13 +276,13 @@
                   </lightning-button-menu>
                   <lightning-button-icon
                     icon-name="utility:refresh"
-                    class="slds-var-p-left_x-small"
+                    class="slds-m-left_x-small"
                     variant="border-filled"
                     alternative-text="Refresh"
                     title="Refresh"
                     onclick={handleRefresh}
                   ></lightning-button-icon>
-                  <lightning-button-group class="slds-var-p-left_x-small">
+                  <lightning-button-group class="slds-m-left_x-small">
                     <lightning-button-icon-stateful
                       icon-name="utility:chart"
                       selected={chartState}
@@ -401,8 +403,7 @@
                   load-more-offset="5"
                   hide-checkbox-column
                   show-row-number-column
-                >
-                </lightning-datatable>
+                ></lightning-datatable>
                 <template if:true={displayDatatableSpinner}>
                   <lightning-spinner
                     alternative-text="Loading"
@@ -434,7 +435,6 @@
       neutral-button-label="Cancel"
       onbrandclick={onBrandClick}
       onneutralclick={onNeutralClick}
-    >
-    </c-warning-modal>
+    ></c-warning-modal>
   </template>
 </template>

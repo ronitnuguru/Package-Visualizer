@@ -75,5 +75,15 @@ export default class TrustInstanceDetail extends NavigationMixin(LightningElemen
     });
   }
 
+  handleReleaseNotes() {
+    let releaseNotesVersion = this.releaseNumber ? this.releaseNumber.split('.')[0] : ''; 
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: `https://help.salesforce.com/s/articleView?id=release-notes.salesforce_release_notes.htm&release=${releaseNotesVersion}`
+      }
+    });
+  }
+
 
 }

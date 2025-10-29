@@ -9,9 +9,6 @@
           {title}
       </h3>
       <lightning-button-group slot="actions">
-        <!--
-          <lightning-button label="Guide" icon-name="utility:help_doc_ext" icon-position="right" variant="border-filled" onclick={handleHelpDoc}></lightning-button>
-        -->
           <lightning-button-icon icon-name="utility:slack_conversations" variant="border-filled" tooltip="Partnerblazer Slack Community" onclick={handleSlackCommunity}></lightning-button-icon>
       </lightning-button-group>
       <div class="slds-card__body slds-card__body_inner">
@@ -23,6 +20,27 @@
               ></lightning-spinner>
           </template>
             <template if:false={displaySpinner}>
+              <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small" role="status">
+                <div class="slds-media__figure">
+                    <lightning-icon
+                        size="small"
+                        icon-name="utility:info"
+                        alternative-text="info"
+                        title="info"
+                        variant="inverse"
+                    ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                    <div>
+                        Component Requirements
+                        <ol class="slds-list_ordered">
+                            <li>
+                                Enable Agentforce in <a href="/lightning/setup/EinsteinGPTSetup/home" target="_blank">Einstein Setup</a> and <a href="/lightning/setup/EinsteinCopilot/home" target="_blank">Agent Studio</a> 
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+              </div>
               <template for:each={resourcesData} for:item="resource" for:index="index">
                 <div class="card-style slds-var-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small" key={resource.label}>
                   <lightning-card>
@@ -35,21 +53,37 @@
                       {resource.label}
                     </h3>
                     <lightning-button-group slot="actions">
+                      <lightning-button-icon tooltip="AgentExchange Listing" variant="border-filled" icon-name="utility:cart" index={index} onclick={navigateToAgentExchangeListing}></lightning-button-icon>
                       <template lwc:if={resource.helpGuideLink}>
-                        <lightning-button-icon variant="border-filled" icon-name={resource.helpGuideIcon} data-index={index} onclick={navigateToHelpGuide}></lightning-button-icon>
+                        <lightning-button-icon tooltip="Setup Guide" variant="border-filled" icon-name={resource.helpGuideIcon} data-index={index} onclick={navigateToHelpGuide}></lightning-button-icon>
                       </template>
                     </lightning-button-group>
                     <div class="slds-card__body_inner">
                       <p>{resource.description}</p>
                     </div>
                     <div slot="footer">
-                      <lightning-button-icon tooltip="AgentExchange Listing" variant="border-filled" icon-name="utility:agent_astro" icon-position="right" data-index={index} onclick={navigateToAgentExchangeListing} class="slds-m-right_x-small"></lightning-button-icon>
                       <lightning-button label="Install" variant="brand" icon-name="utility:download" icon-position="right" data-index={index} onclick={handleInstall}></lightning-button>
                     </div>
                   </lightning-card>
                 </div>
               </template>
           </template>
+          <!--
+          <lightning-carousel disable-auto-scroll>
+            <lightning-carousel-image
+                src = "https://appexchange.salesforce.com/image_host/ee46b967-a7dd-4e08-9fa1-4b41777ac022.png"
+                header = "First Card"
+                description = "First card description."
+                href = "javascript:void(0);"
+            ></lightning-carousel-image>
+            <lightning-carousel-image
+                src = "https://appexchange.salesforce.com/image_host/585e6b95-25e8-40c6-9ba9-c935ac2cb90a.png"
+                header = "Second Card"
+                description = "Second card description."
+                href = "javascript:void(0);"
+            ></lightning-carousel-image>
+        </lightning-carousel>
+        -->
       </div>
   </lightning-card>
 </template>

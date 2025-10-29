@@ -1,87 +1,93 @@
 <template>
-  <div
-    class="slds-grid slds-wrap slds-var-p-horizontal_medium slds-page-header"
-  >
-    <article class="slds-tile slds-media">
-      <div class="slds-media__figure">
+  <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small">
+    <lightning-card>
+      <h3 slot="title" class="slds-truncate">
         <lightning-icon
           icon-name={sldsIcon}
           size="medium"
-          slot="media"
           variant={sldsIconVariant}
+           class="slds-m-right_small"
         ></lightning-icon>
-      </div>
-      <div class="slds-media__body">
-        <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
-          <h3 class="slds-tile__title slds-truncate slds-text-link">
-            <a href={trustUrl} target="_blank" class="tile-style"
-              >{instanceKey}</a
-            >
-          </h3>
-          <div class="slds-shrink-none">
-            <lightning-button-group>
-              <lightning-button-icon variant="border-filled" icon-name="utility:real_time" tooltip="Instance History" onclick={handleInstanceHistory}></lightning-button-icon>
-              <lightning-button-icon variant="border-filled" icon-name="utility:maintenance_plan" tooltip="Instance Maintenance" onclick={handleInstanceMaintenancePlan}></lightning-button-icon>
-            </lightning-button-group>
+        <a href={trustUrl} target="_blank">{instanceKey}</a>
+      </h3>
+      <lightning-button-group slot="actions">
+        <lightning-button-icon variant="border-filled" icon-name="utility:real_time" tooltip="Instance History" onclick={handleInstanceHistory}></lightning-button-icon>
+        <lightning-button-icon variant="border-filled" icon-name="utility:maintenance_plan" tooltip="Instance Maintenance" onclick={handleInstanceMaintenancePlan}></lightning-button-icon>
+        <lightning-button-icon variant="border-filled" icon-name="utility:contract_doc" tooltip="Release Notes" onclick={handleReleaseNotes}></lightning-button-icon>
+      </lightning-button-group>
+      <div class="slds-card__body slds-card__body_inner">
+        <!--
+        <div class="slds-grid slds-gutters slds-wrap">
+          <div class="slds-col">
+            <template if:true={statusTitle}>
+              <lightning-input type="text" label="Status" value={statusTitle} readonly></lightning-input>
+            </template>
+            <template if:true={region}>
+              <lightning-input type="text" label="Region" value={region} readonly></lightning-input>
+            </template>
+            <template if:true={maintenanceWindow}>
+              <lightning-input type="text" label="Maintenance Window" value={maintenanceWindow} readonly field-level-help="Whenever possible, and only as maintenance is necessary, Salesforce will schedule system maintenance the first and third weekends of the calendar month during the window listed. When a calendar month begins on a Sunday, we would hold system maintenance the first and third full weekends of the month."></lightning-input>
+            </template>
+          </div>
+          <div class="slds-col">
+            <template if:true={releaseVersion}>
+              <lightning-input type="text" label="Release Version" value={releaseVersion} readonly></lightning-input>
+            </template>
+            <template if:true={releaseNumber}>
+              <lightning-input type="text" label="Release Number" value={releaseNumber} readonly></lightning-input>
+            </template>
           </div>
         </div>
-        <div class="slds-tile__detail">
-          <div class="slds-grid slds-gutters slds-wrap">
-            <div class="slds-col slds-size_8-of-12 slds-truncate">
-              <dl class="slds-list_horizontal slds-wrap">
-                <template if:true={statusTitle}>
-                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
-                    Status:
-                  </dt>
-                  <dd class="slds-item_detail slds-truncate">
-                    {statusTitle}
-                  </dd>
-                </template>
-                <template if:true={region}>
-                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
-                    Region:
-                  </dt>
-                  <dd class="slds-item_detail slds-truncate">
-                    {region}
-                  </dd>
-                </template>
-              </dl>
-            </div>
-            <div class="slds-col slds-size_8-of-12">
-              <dl class="slds-list_horizontal slds-wrap">
-                <template if:true={releaseVersion}>
-                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
-                    Release Version:
-                  </dt>
-                  <dd class="slds-item_detail slds-truncate">
-                    {releaseVersion}
-                  </dd>
-                </template>
-                <template if:true={releaseNumber}>
-                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
-                    Release Number:
-                  </dt>
-                  <dd class="slds-item_detail slds-truncate">
-                    {releaseNumber}
-                  </dd>
-                </template>
-                <template if:true={maintenanceWindow}>
-                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
-                    Maintenance Window:
-                  </dt>
-                  <dd class="slds-item_detail slds-truncate">
-                    {maintenanceWindow}&nbsp;
-                    <lightning-helptext
-                      style="display:inline-flex"
-                      content="Whenever possible, and only as maintenance is necessary, Salesforce will schedule system maintenance the first and third weekends of the calendar month during the window listed. When a calendar month begins on a Sunday, we would hold system maintenance the first and third full weekends of the month."
-                    ></lightning-helptext>
-                  </dd>
-                </template>
-              </dl>
-            </div>
-          </div>
-        </div>
+        -->
+        <lightning-tile>
+          <dl class="slds-list_horizontal slds-wrap">
+            <template if:true={statusTitle}>
+              <dt class="slds-item_label slds-text-color_weak" title="Status">
+                <p class="slds-truncate">Status:</p>
+              </dt>
+              <dd class="slds-item_detail slds-tile__meta slds-truncate">
+                {statusTitle}
+              </dd>
+            </template>
+            <template if:true={region}>
+            <dt class="slds-item_label slds-text-color_weak" title="Region">
+              <p class="slds-truncate">Region:</p>
+            </dt>
+            <dd class="slds-item_detail slds-tile__meta slds-truncate">
+              {region}
+            </dd>
+            </template>
+            <template if:true={releaseVersion}>
+            <dt class="slds-item_label slds-text-color_weak" title="Release Version">
+              <p class="slds-truncate">Release Version:</p>
+            </dt>
+            <dd class="slds-item_detail slds-tile__meta slds-truncate">
+              {releaseVersion}
+            </dd>
+            </template>
+            <template if:true={releaseNumber}>
+            <dt class="slds-item_label slds-text-color_weak" title="Release Number">
+              <p class="slds-truncate">Release Number:</p>
+            </dt>
+            <dd class="slds-item_detail slds-tile__meta slds-truncate">
+              {releaseNumber}
+            </dd>
+            </template>
+            <template if:true={maintenanceWindow}>
+            <dt class="slds-item_label slds-text-color_weak" title="Maintenance Window">
+              <p class="slds-truncate">Maintenance Window:</p>
+            </dt>
+            <dd class="slds-item_detail slds-tile__meta slds-truncate">
+              {maintenanceWindow}&nbsp;
+                <lightning-helptext
+                  style="display:inline-flex"
+                  content="Whenever possible, and only as maintenance is necessary, Salesforce will schedule system maintenance the first and third weekends of the calendar month during the window listed. When a calendar month begins on a Sunday, we would hold system maintenance the first and third full weekends of the month."
+                ></lightning-helptext>
+            </dd>
+            </template>
+          </dl>
+        </lightning-tile>
       </div>
-    </article>
+    </lightning-card>
   </div>
 </template>

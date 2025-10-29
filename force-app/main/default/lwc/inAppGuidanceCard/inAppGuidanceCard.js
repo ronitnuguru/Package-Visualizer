@@ -9,7 +9,7 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
     iconName = 'utility:salesforce1';
     resourcesData = [
         {
-            label: 'Package Visualizer + ISV Tooling',
+            label: 'Agentforce Extension',
             description: 'Extend agentic and AI capabilities to help ease your packaging and ISV development cycle.',
             icon: 'standard:agent_astro',
             listingLink: 'https://appexchange.salesforce.com/appxListingDetail?listingId=632af825-58e1-4e61-a2b6-8b008449ca03',
@@ -17,17 +17,6 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
             helpGuideLink: 'https://salesforce.quip.com/f3SWA340YbFH',
             helpGuideIcon: 'utility:quip'
         }
-        /*
-        {
-            label: 'Plauti',
-            description: 'Standardize, validate, and verify phone numbers, and email addresses upon entry through Agentforce. Empower your customers and lead the way with real-time updates during conversations, fostering a connection that inspires trust and confidence.',
-            icon: 'standard:agent_astro',
-            listingLink: 'https://appexchange.salesforce.com/appxListingDetail?listingId=ff8d3192-7b65-41c2-b7f3-4713a588f541',
-            installLink: '/packaging/installPackage.apexp?p0=04tIV000000GOb3YAG',
-            helpGuideLink: 'https://www.plauti.com/dreamforce-2025-the-biggest-salesforce-event-of-the-year',
-            helpGuideIcon: 'utility:trailblazer_ext'
-        }
-         */
     ];
 
     handleHelpDoc(){
