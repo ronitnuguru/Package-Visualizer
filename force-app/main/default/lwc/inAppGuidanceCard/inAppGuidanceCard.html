@@ -53,7 +53,7 @@
                       {resource.label}
                     </h3>
                     <lightning-button-group slot="actions">
-                      <lightning-button-icon tooltip="AgentExchange Listing" variant="border-filled" icon-name="utility:cart" index={index} onclick={navigateToAgentExchangeListing}></lightning-button-icon>
+                      <lightning-button-icon tooltip="AgentExchange Listing" variant="border-filled" icon-name="utility:cart" data-index={index} onclick={navigateToAgentExchangeListing}></lightning-button-icon>
                       <template lwc:if={resource.helpGuideLink}>
                         <lightning-button-icon tooltip="Setup Guide" variant="border-filled" icon-name={resource.helpGuideIcon} data-index={index} onclick={navigateToHelpGuide}></lightning-button-icon>
                       </template>

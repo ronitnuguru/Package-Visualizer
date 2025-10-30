@@ -279,6 +279,10 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     window.open(`/runtime_developerplatform_codebuilder/codebuilder.app?launch=true`,'_blank');
   }
 
+  navigateTo2GPComponentsAvailability(){
+    window.open(`https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/packaging_packageable_components.htm`,'_blank');
+  }
+
   navigateScratchOrgBuild(){
     this[NavigationMixin.Navigate]({
       type: "standard__component",

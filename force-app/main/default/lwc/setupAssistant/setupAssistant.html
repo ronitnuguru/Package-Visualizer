@@ -923,6 +923,25 @@
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread border-bottom">
                               <div class="slds-size_3-of-4">
                                 <strong class="slds-text-title_caps">
+                                  Components Available in Managed Packages
+                                </strong>
+                                <p class="slds-var-m-top_xx-small">
+                                  <a href="https://developer.salesforce.com/docs/success/metadata-coverage-report/references/coverage-report/metadata-coverage-report.html" target="_blank">Metadata Coverage Report</a>: Each metadata component that you include in a managed package has certain rules that determine its behavior in a subscriber org. These manageability rules determine whether you, or the subscriber, can edit or remove components after the package version is created and installed.
+                                </p>
+                              </div>
+                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                                <lightning-button-icon
+                                  icon-name="utility:package"
+                                  variant="brand"
+                                  onclick={navigateTo2GPComponentsAvailability}
+                                ></lightning-button-icon>
+                              </div>
+                            </div>
+                          </li>
+                          <li class="list_item">
+                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread border-bottom">
+                              <div class="slds-size_3-of-4">
+                                <strong class="slds-text-title_caps">
                                   Run Salesforce Code Analyzer Scan
                                 </strong>
                                 <p class="slds-var-m-top_xx-small">
@@ -963,12 +982,8 @@
             <article class="slds-setup-assistant__step">
               <div class="slds-setup-assistant__step-summary">
                 <div class="slds-media">
-                  <div
-                    class="slds-setup-assistant__step-summary-content slds-media__body"
-                  >
-                    <h3
-                      class="slds-setup-assistant__step-summary-title slds-text-heading_small"
-                    >
+                  <div class="slds-setup-assistant__step-summary-content slds-media__body">
+                    <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
                       <lightning-icon
                         icon-name="utility:shield"
                         size="small"
@@ -1127,12 +1142,8 @@
               <article class="slds-setup-assistant__step">
                 <div class="slds-setup-assistant__step-summary">
                   <div class="slds-media">
-                    <div
-                      class="slds-setup-assistant__step-summary-content slds-media__body"
-                    >
-                      <h3
-                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
-                      >
+                    <div class="slds-setup-assistant__step-summary-content slds-media__body">
+                      <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
                         <lightning-icon
                           icon-name="utility:salesforce1"
                           size="small"
