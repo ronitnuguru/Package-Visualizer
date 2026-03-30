@@ -13,10 +13,9 @@
 
   <template if:false={displayFlexiWidth}>
     <div class="slds-align_absolute-center slds-var-p-top_xx-large">
-      <c-empty-illustration-view
-        body="Package Visualizer is not available in Mobile Experience"
-      >
-      </c-empty-illustration-view>
+      <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+        <p slot="description">Package Visualizer is not available in Mobile Experience</p>
+      </lightning-empty-state>
     </div>
   </template>
 </template>

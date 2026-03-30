@@ -17,34 +17,24 @@
     <template if:true={versionSubscribersData}>
       <template if:true={displayEmptyView}>
         <template if:true={displayFilterMeta}>
-          <c-empty-illustration-with-button
-            title="Hmm..."
-            body="We could not find any results based on your filters..."
-            button-label="Edit Filters"
-            onselect={handleFilterEdit}
-            size="large"
-          >
-          </c-empty-illustration-with-button>
+          <lightning-empty-state title="Hmm..." illustration-name="success:new">
+            <p slot="description">We could not find any results based on your filters...</p>
+            <lightning-button variant="brand" label="Edit Filters" slot="cta" onclick={handleFilterEdit}>
+            </lightning-button>
+          </lightning-empty-state>
         </template>
         <template if:false={displayFilterMeta}>
           <template if:true={searchTerm}>
-            <c-empty-illustration-with-button
-              title="Hmm…"
-              body="We could not find any results based on your search..."
-              button-label="Refresh"
-              onselect={handleFilterReset}
-              size="large"
-            >
-            </c-empty-illustration-with-button>
+            <lightning-empty-state title="Hmm…" illustration-name="success:new">
+              <p slot="description">We could not find any results based on your search...</p>
+              <lightning-button variant="brand" label="Refresh" slot="cta" onclick={handleFilterReset}>
+              </lightning-button>
+            </lightning-empty-state>
           </template>
           <template if:false={searchTerm}>
-            <div class="slds-var-p-around_small">
-              <c-empty-large-illustration-view
-                title="Hmm…"
-                body="Looks like you do not have any eligible subscribers to upgrade for this package..."
-              >
-              </c-empty-large-illustration-view>
-            </div>
+            <lightning-empty-state title="Hmm…" illustration-name="success:new">
+              <p slot="description">Looks like you do not have any eligible subscribers to upgrade for this package...</p>
+            </lightning-empty-state>
           </template>
         </template>
       </template>
@@ -344,14 +334,12 @@
     </template>
     <template if:false={versionSubscribersData}>
       <template if:true={displayFilterMeta}>
-        <c-empty-illustration-with-button
+        <lightning-empty-state title="Hmm..." illustration-name="success:new">
           title="Hmm..."
-          body="We could not find any results based on your filters..."
-          button-label="Edit Filters"
-          onselect={handleFilterEdit}
-          size="large"
-        >
-        </c-empty-illustration-with-button>
+          <p slot="description">We could not find any results based on your filters...</p>
+          <lightning-button variant="brand" label="Edit Filters" slot="cta" onclick={handleFilterEdit}>
+          </lightning-button>
+        </lightning-empty-state>
       </template>
     </template>
   </template>

@@ -174,32 +174,25 @@
           <div class="slds-card slds-var-p-horizontal_medium">
             <template if:false={displayLmaLicensesView}>
               <template if:false={displaySpinner}>
-                <c-empty-large-illustration-view
-                  title="Hmm…"
-                  body="Looks like were unable to retrieve any associated LMA licenses for this package..."
-                >
-                </c-empty-large-illustration-view>
+                <lightning-empty-state title="Hmm…" illustration-name="success:new">
+                  <p slot="description">Looks like were unable to retrieve any associated LMA licenses for this package...</p>
+                </lightning-empty-state>
               </template>
             </template>
             <template if:true={displayLmaLicensesView}>
               <template if:true={displayEmptyView}>
                 <template if:true={displayFilterMeta}>
-                  <c-empty-illustration-with-button
-                    title="Hmm..."
-                    body="We could not find any results based on your filters..."
-                    button-label="Edit Filters"
-                    onselect={handleFilterEdit}
-                    size="large"
-                  >
-                  </c-empty-illustration-with-button>
+                  <lightning-empty-state title="Hmm..." illustration-name="success:new">
+                    <p slot="description">We could not find any results based on your filters...</p>
+                    <lightning-button variant="brand" label="Edit Filters" slot="cta" onclick={handleFilterEdit}>
+                    </lightning-button>
+                  </lightning-empty-state>
                 </template>
                 <template if:false={displayFilterMeta}>
                   <template if:false={displaySpinner}>
-                    <c-empty-large-illustration-view
-                      title="Hmm…"
-                      body="Looks like we could not find any LMA licenses for this package version..."
-                    >
-                    </c-empty-large-illustration-view>
+                    <lightning-empty-state title="Hmm…" illustration-name="success:new">
+                      <p slot="description">Looks like we could not find any LMA licenses for this package version...</p>
+                    </lightning-empty-state>
                   </template>
                 </template>
               </template>
@@ -428,13 +421,11 @@
   </template>
   <template if:true={displayEmptyLMA}>
     <template if:false={displaySpinner}>
-      <c-empty-illustration-with-button
-        title="Hmm..."
-        body="Looks like we could not find the associated license for this subscriber or the package is not connected to the LMA..."
-        button-label="Associate Package with LMA"
-        size="large"
-        onselect={navigateToHelpLma}
-      ></c-empty-illustration-with-button>
+        <lightning-empty-state title="Hmm..." illustration-name="success:new">
+        <p slot="description">Looks like we could not find the associated license for this subscriber or the package is not connected to the LMA...</p>
+        <lightning-button variant="brand" label="Associate Package with LMA" slot="cta" onclick={navigateToHelpLma}>
+        </lightning-button>
+      </lightning-empty-state>
     </template>
   </template>
   <template if:true={displayLMAInAppPrompt}>

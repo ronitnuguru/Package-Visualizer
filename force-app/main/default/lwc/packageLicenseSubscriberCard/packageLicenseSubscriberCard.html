@@ -11,7 +11,7 @@
             <header class="slds-media slds-media_center slds-has-flexi-truncate slds-m-bottom_x-small">
                 <div class="slds-media__figure">
                     <lightning-icon
-                        icon-name="standard:employee_organization"
+                        icon-name="standard:customer"
                         size="medium"
                     ></lightning-icon>
                 </div>
@@ -297,21 +297,17 @@
             <template lwc:else>
               <template if:false={displaySpinner}>
                 <div class="slds-p-around_medium">
-                  <c-empty-illustration-view
-                    title="Hmm..."
-                    body="It looks like the Package Subscriber Feature is disabled. Please reach out to the Package Owner for further assistance..."
-                  >
-                  </c-empty-illustration-view>
+                  <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+                    <p slot="description">It looks like the Package Subscriber Feature is disabled. Please reach out to the Package Owner for further assistance...</p>
+                  </lightning-empty-state>
                 </div>
               </template>
             </template>
             <template lwc:if={displayIllustration}>
               <div class="slds-p-around_medium">
-                <c-empty-illustration-view
-                  title="Hmm..."
-                  body="We were unable to retreive package subscriber details..."
-                >
-              </c-empty-illustration-view>
+                <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+                  <p slot="description">We were unable to retreive package subscriber details...</p>
+                </lightning-empty-state>
               </div>
             </template>
         </div>

@@ -1,5 +1,6 @@
 import { LightningElement, api } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import LightningModal from 'lightning/modal';
 import PackagePushJobFields from "./packagePushJobFields";
 import getPackageVersionPushJobs from "@salesforce/apexContinuation/PushUpgradesCtrl.getPackageVersionPushJobs";
 import updatePackagePushRequest from "@salesforce/apex/PushUpgradesCtrl.updatePackagePushRequest";
@@ -19,7 +20,7 @@ const columns = [
     fieldName: "SubscriberOrganizationKey",
     label: "Subscriber Org",
     sortable: true,
-    iconName: "standard:employee_organization"
+    iconName: "standard:customer"
   },
   {
     type: "text",
@@ -54,7 +55,7 @@ const columns = [
   }
 ];
 
-export default class PackagePushJobView extends LightningElement {
+export default class PackagePushJobView extends LightningModal  {
   @api pushId;
   @api pushDurationSeconds;
   @api pushEndTime;

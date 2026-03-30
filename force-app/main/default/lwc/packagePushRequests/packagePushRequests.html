@@ -20,18 +20,14 @@
   </template>
   <template if:false={packageVersionList}>
     <template if:true={displayError}>
-      <c-empty-large-illustration-view
-        title="Something went wrong..."
-        body="Looks like we were unable retrieve any push upgrade requests for this package..."
-      >
-      </c-empty-large-illustration-view>
+      <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+        <p slot="description">Looks like we were unable retrieve any push upgrade requests for this package...</p>
+      </lightning-empty-state>
     </template>
     <template if:true={displayEmpty}>
-      <c-empty-large-illustration-view
-        title="Hmm..."
-        body="Looks like you do not have any push upgrade requests for this package..."
-      >
-      </c-empty-large-illustration-view>
+      <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+        <p slot="description">Looks like you do not have any push upgrade requests for this package...</p>
+      </lightning-empty-state>
     </template>
   </template>
 </template>

@@ -16,7 +16,7 @@ export default class PackageSubscriberDetail extends NavigationMixin(LightningEl
   @api orgStatus;
   @api orgType;
   @api packageType;
-
+  @api parentOrg;
   subscribers;
 
   displayLMA;
@@ -26,6 +26,9 @@ export default class PackageSubscriberDetail extends NavigationMixin(LightningEl
   displayPushUpgradeSection;
   displayPushUpgradeList = false;
   upgradeAccordionClass = `slds-section slds-var-p-top_medium`;
+
+  displaySandboxes = false;
+  sandboxAccordionClass = `slds-section slds-var-p-top_medium`;
 
   trustUrl;
   license;
@@ -43,6 +46,10 @@ export default class PackageSubscriberDetail extends NavigationMixin(LightningEl
 
   get managedPackageType() {
     return this.packageType === "Managed" ? true : false;
+  }
+
+  get isActiveProductionOrg() {
+    return this.orgType === "Production" && this.orgStatus === "Active" ? true : false;
   }
 
   connectedCallback() {
@@ -111,6 +118,13 @@ export default class PackageSubscriberDetail extends NavigationMixin(LightningEl
     if (this.displaySubLicense) {
       this.loadLicense();
     }
+  }
+
+  toggleSandboxAccordion() {
+    this.displaySandboxes = !this.displaySandboxes;
+    this.sandboxAccordionClass = this.displaySandboxes
+      ? `slds-section slds-var-p-top_medium slds-is-open`
+      : `slds-section slds-var-p-top_medium`;
   }
 
   togglePushUpgradeAccordion() {

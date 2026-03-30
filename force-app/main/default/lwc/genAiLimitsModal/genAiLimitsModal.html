@@ -15,13 +15,11 @@
                 <lightning-formatted-rich-text value={aiResponse}></lightning-formatted-rich-text>
             </template>
             <template lwc:elseif={error}>
-                <c-empty-illustration-with-button
-                    title="Component not available..."
-                    body="Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance..."
-                    button-label="Install Managed Package"
-                    size="medium"
-                    onselect={handleExtensionInstall}
-                ></c-empty-illustration-with-button>
+                <lightning-empty-state title="Component not available..." illustration-name="noresults:unknown">
+                    <p slot="description">Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance...</p>
+                    <lightning-button variant="brand" label="Install Managed Package" slot="cta" onclick={handleExtensionInstall}>
+                    </lightning-button>
+                </lightning-empty-state>
             </template>
         </div>
         <!--

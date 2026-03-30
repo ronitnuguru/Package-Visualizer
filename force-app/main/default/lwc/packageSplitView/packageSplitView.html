@@ -86,8 +86,8 @@
                           onclick={handlePlatformTools}
                         ></lightning-button-icon>
                         <lightning-button-menu alternative-text="Show menu" icon-name="utility:salesforce1" menu-alignment="auto" class="slds-var-m-right_x-small">
-                          <lightning-menu-item label="Create Orgs" onclick={handleCreateOrgs}></lightning-menu-item>
-                          <lightning-menu-item label="Build Scratch Org Definition File" onclick={navigateScratchOrgBuild}></lightning-menu-item>
+                          <lightning-menu-item prefix-icon-name="utility:dx_org_test" label="Create Orgs" onclick={handleCreateOrgs}></lightning-menu-item>
+                          <lightning-menu-item prefix-icon-name="utility:dx_org_dev" label="Build Scratch Org Definition File" onclick={navigateScratchOrgBuild}></lightning-menu-item>
                       </lightning-button-menu>
                         <lightning-button-menu
                           alternative-text="Show menu"
@@ -242,9 +242,7 @@
               <template if:true={packageList}>
                 <div class="slds-grid slds-grid_vertical">
                   <div
-                    class="slds-split-view__list-header slds-grid"
-                    style="background-color: #ffffff;"
-                  >
+                    class="slds-split-view__list-header slds-grid">
                     <span class="slds-assistive-text">Sorted by:</span>
                     <span onclick={handleSort} style="cursor: pointer;">
                       Name&nbsp;
@@ -289,10 +287,9 @@
               </template>
               <template if:false={packageList}>
                 <div class="slds-align_absolute-center slds-text-heading_small slds-var-p-around_xx-small">
-                  <c-empty-illustration-view
-                    title="Hmm..."
-                    body="We were unable to retrieve any 2GP Packages associated with this org..."
-                  ></c-empty-illustration-view>
+                  <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+                    <p slot="description">We were unable to retrieve any 2GP Packages associated with this org...</p>
+                  </lightning-empty-state>
                 </div>
               </template>
             </template>

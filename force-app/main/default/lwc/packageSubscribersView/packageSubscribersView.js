@@ -23,7 +23,7 @@ const columns = [
     fieldName: "orgName",
     label: "Organization Name",
     sortable: true,
-    iconName: "standard:employee_organization",
+    iconName: "standard:customer",
     wrapText: true
   },
   {
@@ -85,7 +85,7 @@ export default class PackageSubscribersView extends LightningElement {
   orgName;
   orgStatus;
   orgType;
-
+  parentOrg;
   displayEmptyView;
   displaySubscriberDetailBreadcrumb;
   displaySubscribersList;
@@ -342,6 +342,7 @@ export default class PackageSubscribersView extends LightningElement {
     this.orgName = row.orgName;
     this.orgStatus = row.orgStatus;
     this.orgType = row.orgType;
+    this.parentOrg = row.parentOrg;
     this.versionSubscribersDetail = true;
   }
 

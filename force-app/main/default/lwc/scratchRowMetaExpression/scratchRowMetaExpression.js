@@ -6,7 +6,7 @@ export default class ScratchRowMetaExperession extends LightningElement {
     @api rowIndex;
     @api settingValue;
     
-    operatorValue = 'boolean';
+    operatorValue;
     dynamicRowMetaExpression;
 
     displayBoolean = true;

@@ -26,15 +26,16 @@
                 </div>
             </div>
         </div>
-        <c-empty-illustration-with-button
-            title="Component not available..."
-            body="Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance..."
-            button-label="Install Managed Package"
-            size="medium"
-            onselect={handleExtensionInstall}
-        ></c-empty-illustration-with-button>
+        <lightning-empty-state title="Component not available..." illustration-name="noresults:unknown">
+            <p slot="description">Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance...</p>
+            <lightning-button-group slot="cta">
+              <lightning-button variant="neutral" label="Back" onclick={handleIllustrationClear}>
+              </lightning-button>
+              <lightning-button variant="brand" label="Install Managed Package" onclick={handleExtensionInstall}>
+              </lightning-button>
+            </lightning-button-group>
+        </lightning-empty-state>
       </template>
-    
       <template if:false={displayExtensionIllustration}>
         <template if:true={displayModels}>
           <lightning-combobox

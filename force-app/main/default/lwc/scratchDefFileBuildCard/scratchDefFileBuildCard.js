@@ -478,6 +478,15 @@ export default class ScratchDefFiileBuildCard extends NavigationMixin(LightningE
         });
     }
 
+    navigateToScratchDevWorkflow(){
+        this[NavigationMixin.Navigate]({
+            type: "standard__webPage",
+            attributes: {
+                url: 'https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/dev2gp_so_how_fit_pkg_dev.htm'
+            }
+        });
+    }
+
     get preferredLanguageOptions() {
         return [
             { label: 'English', value: 'en_US' },

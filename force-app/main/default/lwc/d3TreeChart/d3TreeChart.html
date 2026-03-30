@@ -20,10 +20,9 @@
     <template if:false={displaySpinner}>
       <template if:false={treeData}>
         <div class="error-state">
-          <c-empty-large-illustration-view 
-            title="Visualization Unavailable" 
-            body={errorBody}>
-          </c-empty-large-illustration-view>
+          <lightning-empty-state title="Visualization Unavailable"  illustration-name="error:connectionissue">
+            <p slot="description">{errorBody}</p>
+          </lightning-empty-state>
         </div>
       </template>
     </template>

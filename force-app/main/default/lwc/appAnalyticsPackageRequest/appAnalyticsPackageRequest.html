@@ -67,12 +67,11 @@
               </template>
               <template if:true={appAnalyticsNotAvailableView}>
                 <div class="slds-align_absolute-center">
-                  <c-empty-illustration-with-button
-                    body="We were unable to retrieve any AppAnalytics requests from the past 24 hours..."
-                    button-label="Refresh"
-                    onselect={handleRefresh}
-                  >
-                  </c-empty-illustration-with-button>
+                  <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+                    <p slot="description">We were unable to retrieve any AppAnalytics requests from the past 24 hours...</p>
+                    <lightning-button variant="brand" label="Refresh" slot="cta" onclick={handleRefresh}>
+                    </lightning-button>
+                  </lightning-empty-state>  
                 </div>
               </template>
           </template>

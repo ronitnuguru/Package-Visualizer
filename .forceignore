@@ -13,3 +13,6 @@ package.xml
 **/tsconfig.json
 
 **/*.ts
+
+.claude
+.cursor

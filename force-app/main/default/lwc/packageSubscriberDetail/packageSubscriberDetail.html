@@ -1,87 +1,65 @@
 <template>
   <div class="slds-var-p-around_small">
     <template if:true={orgKey}>
-      <div
-        class="slds-grid slds-wrap slds-var-p-horizontal_medium slds-page-header"
-      >
-        <article class="slds-tile slds-media">
-          <div class="slds-media__figure">
+      <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small">
+        <lightning-card>
+          <h3 slot="title" class="slds-truncate">
             <lightning-icon
-              icon-name="standard:employee_organization"
+              icon-name="standard:customer"
               size="medium"
-              slot="media"
+              class="slds-m-right_small"
             ></lightning-icon>
-          </div>
-          <div class="slds-media__body">
-            <div
-              class="slds-grid slds-grid_align-spread slds-has-flexi-truncate"
-            >
-              <h3 class="slds-tile__title">
-                <span class="tile-style">{orgName}</span>
-              </h3>
-              <template if:true={managedPackageType}>
-                <div class="slds-shrink-none">
-                    <lightning-button-group>
-                      <lightning-button-icon variant="border-filled" icon-name="utility:einstein" tooltip="Request AppAnalytics" onclick={handleAppAnalyticsSubscribers}></lightning-button-icon>
-                      <template if:true={displayLMA}>
-                        <template if:true={orgKey}>
-                          <lightning-button-icon variant="border-filled" icon-name="utility:questions_and_answers" tooltip="Log Into Subscriber Console" onclick={handleLogIntoSubscriberConsole}></lightning-button-icon>
-                        </template>
-                      </template>
-                    </lightning-button-group>
-                </div>
+            {orgName}
+          </h3>
+          <lightning-button-group slot="actions">
+            <lightning-button-icon variant="border-filled" icon-name="utility:einstein" tooltip="Request AppAnalytics" onclick={handleAppAnalyticsSubscribers}></lightning-button-icon>
+            <template if:true={displayLMA}>
+              <template if:true={orgKey}>
+                <lightning-button-icon variant="border-filled" icon-name="utility:questions_and_answers" tooltip="Log Into Subscriber Console" onclick={handleLogIntoSubscriberConsole}></lightning-button-icon>
               </template>
-            </div>
-            <div class="slds-tile__detail">
-              <div class="slds-grid slds-gutters slds-wrap">
-                <div class="slds-col">
-                  <dl class="slds-list_horizontal slds-wrap">
-                    <dt
-                      class="slds-item_label slds-text-color_weak"
-                    >
-                      Type:
-                    </dt>
-                    <dd class="slds-item_detail slds-truncate">
-                      {orgType}
-                    </dd>
-                    <dt
-                      class="slds-item_label slds-text-color_weak"
-                    >
-                      Status:
-                    </dt>
-                    <dd class="slds-item_detail slds-truncate">
-                      {orgStatus}
-                    </dd>
-                  </dl>
-                </div>
-                <div class="slds-col">
-                  <dl class="slds-list_horizontal slds-wrap">
-                    <dt
-                      class="slds-item_label slds-text-color_weak"
-                    >
-                      Instance:
-                    </dt>
-                    <dd class="slds-item_detail slds-truncate">
-                      <lightning-formatted-url
-                        value={trustUrl}
-                        label={instanceName}
-                        target="_blank"
-                      ></lightning-formatted-url>
-                    </dd>
-                    <dt
-                      class="slds-item_label slds-text-color_weak"
-                    >
-                      Org ID:
-                    </dt>
-                    <dd class="slds-item_detail slds-truncate">
-                      {orgKey}
-                    </dd>
-                  </dl>
-                </div>
+            </template>
+          </lightning-button-group>
+          <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-grid slds-gutters slds-wrap">
+              <div class="slds-col">
+                <dl class="slds-list_horizontal slds-wrap">
+                  <dt class="slds-item_label slds-text-color_weak">
+                    Type:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    {orgType}
+                  </dd>
+                  <dt class="slds-item_label slds-text-color_weak">
+                    Status:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    {orgStatus}
+                  </dd>
+                </dl>
+              </div>
+              <div class="slds-col">
+                <dl class="slds-list_horizontal slds-wrap">
+                  <dt class="slds-item_label slds-text-color_weak">
+                    Instance:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    <lightning-formatted-url
+                      value={trustUrl}
+                      label={instanceName}
+                      target="_blank"
+                    ></lightning-formatted-url>
+                  </dd>
+                  <dt class="slds-item_label slds-text-color_weak">
+                    Org ID:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    {orgKey}
+                  </dd>
+                </dl>
               </div>
             </div>
           </div>
-        </article>
+        </lightning-card>
       </div>
       <template if:true={displayLMA}>
         <div class={licenseAccordionClass}>
@@ -106,7 +84,7 @@
                   class="slds-var-p-right_xx-small"
                 ></lightning-icon>
               </template>
-              <span class="slds-truncate" title="All Apps">License</span>
+              <span class="slds-truncate">License</span>
             </button>
           </h3>
           <template if:true={displaySubLicense}>
@@ -129,22 +107,17 @@
                   <c-package-lma-timeline
                     license={license}
                     onrefresh={handleRefresh}
-                  >
-                  </c-package-lma-timeline>
+                  ></c-package-lma-timeline>
                 </div>
               </template>
               <template if:true={displayEmptyLMA}>
-                <div
-                  class="card-style slds-card_boundary slds-var-m-around_small slds-var-p-top_xx-large"
-                >
-                  <c-empty-illustration-with-button
-                    title="Hmm..."
-                    body="Looks like we could not find the associated license for this subscriber or the package is not connected to the LMA..."
-                    button-label="Associate Package with LMA"
-                    size="large"
-                    onselect={navigateToHelpLma}
-                  ></c-empty-illustration-with-button>
-                </div>
+                <div class="card-style slds-card_boundary slds-var-m-around_small slds-var-p-top_xx-large">
+                  <lightning-empty-state title="Hmm..." illustration-name="success:new">
+                      <p slot="description">Looks like we could not find the associated license for this subscriber or the package is not connected to the LMA...</p>
+                    <lightning-button variant="brand" label="Associate Package with LMA" slot="cta" onclick={navigateToHelpLma}>
+                    </lightning-button>
+                  </lightning-empty-state>
+                </div>      
               </template>
             </div>
           </template>
@@ -174,7 +147,7 @@
                     class="slds-var-p-right_xx-small"
                   ></lightning-icon>
                 </template>
-                <span class="slds-truncate" title="All Apps">Push Upgrade</span>
+                <span class="slds-truncate">Push Upgrade</span>
               </button>
             </h3>
             <template if:true={displayPushUpgradeList}>
@@ -205,9 +178,7 @@
                   </template>
                 </template>
                 <template if:true={displayPushUpgradeSection}>
-                  <div
-                    class="slds-var-m-around_small slds-var-p-bottom_small slds-card_boundary card-style"
-                  >
+                  <div class="slds-var-m-around_small slds-var-p-bottom_small slds-card_boundary card-style">
                     <div class="slds-grid slds-var-p-around_small">
                       <lightning-breadcrumbs class="" style="font-weight: 700;">
                         <lightning-breadcrumb label={pushUpgradeBreadCrumbLabel}>
@@ -228,23 +199,50 @@
           </div>
         </template>
       </template>
+      <template if:true={isActiveProductionOrg}>
+        <div class={sandboxAccordionClass}>
+          <h3 class="slds-section__title">
+            <button
+              aria-controls="sandboxContent"
+              aria-expanded="true"
+              class="slds-button slds-section__title-action"
+              onclick={toggleSandboxAccordion}
+            >
+              <template if:true={displaySandboxes}>
+                <lightning-icon
+                  size="x-small"
+                  icon-name="utility:switch"
+                  class="slds-var-p-right_xx-small"
+                ></lightning-icon>
+              </template>
+              <template if:false={displaySandboxes}>
+                <lightning-icon
+                  size="x-small"
+                  icon-name="utility:chevronright"
+                  class="slds-var-p-right_xx-small"
+                ></lightning-icon>
+              </template>
+              <span class="slds-truncate">Sandboxes</span>
+            </button>
+          </h3>
+          <template if:true={displaySandboxes}>
+            <div aria-hidden="false" class="slds-section__content slds-var-p-around_medium slds-card" id="sandboxContent">
+              <c-package-subscriber-sandboxes-view org-key={orgKey}>
+              </c-package-subscriber-sandboxes-view>
+            </div>
+          </template>
+        </div>
+      </template>
     </template>
     <template if:false={orgKey}>
-      <div
-        class="slds-notify slds-notify_alert slds-alert_warning"
-        role="alert"
-      >
+      <div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
         <span class="slds-assistive-text">warning</span>
-        <span
-          class="slds-icon_container slds-icon-utility-warning slds-var-m-right_x-small"
-          title="Description of icon when needed"
-        >
+        <span class="slds-icon_container slds-icon-utility-warning slds-var-m-right_x-small">
           <lightning-icon
             size="small"
             icon-name="utility:warning"
             alternative-text="warning"
             title="warning"
-
           ></lightning-icon>
         </span>
         <h2>

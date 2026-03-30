@@ -192,35 +192,28 @@
             <div
               class="card-style slds-card_boundary slds-var-m-around_small slds-var-p-top_xx-large"
             >
-              <c-empty-large-illustration-view
-                title="Data not available..."
-                body="Looks like we were unable to retrieve any push job requests..."
-              >
-              </c-empty-large-illustration-view>
+              <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+                <p slot="description">Looks like we were unable to retrieve any push job requests...</p>
+              </lightning-empty-state>
             </div>
           </template>
         </template>
         <template if:true={displayPushJobView}>
           <template if:true={displayEmptyView}>
             <template if:true={displayFilterMeta}>
-              <c-empty-illustration-with-button
-                title="Hmm..."
-                body="We could not find any results based on your filters..."
-                button-label="Edit Filters"
-                onselect={handleFilterEdit}
-                size="large"
-              >
-              </c-empty-illustration-with-button>
+              <lightning-empty-state title="Hmm..." illustration-name="success:new">
+                <p slot="description">We could not find any results based on your filters...</p>
+                <lightning-button variant="brand" label="Edit Filters" slot="cta" onclick={handleFilterEdit}>
+                </lightning-button>
+              </lightning-empty-state>
             </template>
             <template if:false={displayFilterMeta}>
               <div
                 class="card-style slds-card_boundary slds-var-m-around_small slds-var-p-top_xx-large"
               >
-                <c-empty-large-illustration-view
-                  title="Hmm..."
-                  body="Looks like we were unable to find any push job requests for this package..."
-                >
-                </c-empty-large-illustration-view>
+                <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+                  <p slot="description">Looks like we were unable to find any push job requests for this package...</p>
+                </lightning-empty-state>
               </div>
             </template>
           </template>
@@ -248,15 +241,6 @@
               </ul>
               <div class="slds-col_bump-left">
                 <div class="slds-grid slds-grid_align-end">
-                  <!--
-                  <lightning-button-icon
-                    icon-name="utility:agent_astro"
-                    variant="border-filled"
-                    tooltip="Ask Agentforce"
-                    onclick={openAskAgentforce}
-                    class="slds-m-left_x-small"
-                  ></lightning-button-icon>
-                  -->
                   <lightning-button-menu
                     icon-name="utility:table_settings"
                     menu-alignment="auto"
@@ -309,9 +293,7 @@
                   aria-hidden="false"
                 >
                   <div class="slds-panel__header">
-                    <h2
-                      class="slds-panel__header-title slds-text-heading_small slds-truncate"
-                    >
+                    <h2 class="slds-panel__header-title slds-text-heading_small slds-truncate">
                       Charts
                     </h2>
                     <button
@@ -341,9 +323,7 @@
                 aria-hidden="false"
               >
                 <div class="slds-panel__header">
-                  <h2
-                    class="slds-panel__header-title slds-text-heading_small slds-truncate"
-                  >
+                  <h2 class="slds-panel__header-title slds-text-heading_small slds-truncate">
                     Filters
                   </h2>
                   <button

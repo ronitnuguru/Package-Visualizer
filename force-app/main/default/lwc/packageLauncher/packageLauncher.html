@@ -127,11 +127,9 @@
           </template>
           <template if:false={packageFilterList}>
               <div class="slds-align_absolute-center slds-text-heading_small">
-                <c-empty-illustration-view
-                  title="Hmm..."
-                  body="We were unable to retrieve any 2GP Packages associated with this org..."
-                >
-                </c-empty-illustration-view>
+                <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+                  <p slot="description">We were unable to retrieve any 2GP Packages associated with this org...</p>
+                </lightning-empty-state>  
               </div>
             </template>
           </div>

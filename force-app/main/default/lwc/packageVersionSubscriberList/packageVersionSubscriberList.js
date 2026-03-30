@@ -23,7 +23,7 @@ const columns = [
     fieldName: "orgName",
     label: "Organization Name",
     sortable: true,
-    iconName: "standard:employee_organization",
+    iconName: "standard:customer",
     wrapText: true
   },
   {

@@ -9,11 +9,9 @@
   <template if:true={packageVersionsData}>
     <template if:false={displaySpinner}>
       <template if:true={displayEmptyResults}>
-        <c-empty-large-illustration-view
-          title="Hmm..."
-          body="Looks like we could not find any eligible package versions for push upgrade..."
-        >
-        </c-empty-large-illustration-view>
+        <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+          <p slot="description">Looks like we could not find any eligible package versions for push upgrade...</p>
+        </lightning-empty-state>
       </template>
       <template if:false={displayEmptyResults}>
         <div
@@ -88,11 +86,9 @@
       </template>
     </template>
     <template if:false={packageVersionsData}>
-      <c-empty-large-illustration-view
-        title="Hmm..."
-        body="Looks like we were unable to retrieve any package versions..."
-      >
-      </c-empty-large-illustration-view>
+      <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+        <p slot="description">Looks like we were unable to retrieve any package versions...</p>
+      </lightning-empty-state>
     </template>
   </template>
   <template if:true={displayScheduleConfirmationModal}>

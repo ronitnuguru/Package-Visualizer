@@ -23,11 +23,10 @@
                     class="slds-show_medium"
                 ></lightning-button>
             </template>
-            <lightning-button-icon
-                icon-name="utility:help_doc_ext"
-                onclick={navigateToScratchHelpDefFile}
-                tooltip="Help - Build Your Own Scratch Org Definition File"
-            ></lightning-button-icon>
+            <lightning-button-menu menu-alignment="auto" icon-name="utility:help_doc_ext">
+                <lightning-menu-item prefix-icon-name="utility:help" label="Build Your Own Scratch Org Definition File" value="Build Your Own Scratch Org Definition File" onclick={navigateToScratchHelpDefFile}></lightning-menu-item>
+                <lightning-menu-item prefix-icon-name="utility:help" label="How Scratch Orgs Fit in the Package Development Workflow" value="How Scratch Orgs Fit in the Package Development Workflow" onclick={navigateToScratchDevWorkflow}></lightning-menu-item>
+            </lightning-button-menu>
             <lightning-button-menu alternative-text="Show menu" menu-alignment="auto" tooltip="Sample Scratch Org Templates" icon-name="utility:insert_tag_field">
                 <lightning-menu-item prefix-icon-name="utility:agent_astro" label="Agentforce" value="Agentforce" onclick={agentforceTemplate}></lightning-menu-item>
                 <lightning-menu-item prefix-icon-name="utility:data_cloud" label="Data Cloud" value="Data Cloud" onclick={dataCloudTemplate}></lightning-menu-item>

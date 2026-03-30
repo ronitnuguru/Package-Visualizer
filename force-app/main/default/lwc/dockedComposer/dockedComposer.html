@@ -219,8 +219,8 @@
                                 ></lightning-combobox>
                               </div>
                               <lightning-button-menu alternative-text="Show menu" variant="border-filled" icon-name="utility:help_doc_ext" class="slds-m-left_small" menu-alignment="auto">
-                                <lightning-menu-item value="DemoDevStation" label='Demo &amp; Dev Station' onclick={navigateToDemoDevStation}></lightning-menu-item>
-                                <lightning-menu-item value="ChooseRightOrg" label="Choose the Right Salesforce Org for the Right Job" onclick={navigateToRightSfdcOrg}></lightning-menu-item>
+                                <lightning-menu-item prefix-icon-name="utility:help" value="DemoDevStation" label='Demo &amp; Dev Station' onclick={navigateToDemoDevStation}></lightning-menu-item>
+                                <lightning-menu-item prefix-icon-name="utility:help" value="ChooseRightOrg" label="Choose the Right Salesforce Org for the Right Job" onclick={navigateToRightSfdcOrg}></lightning-menu-item>
                               </lightning-button-menu>
                             </div>
                               <template if:true={purposeValue}>
@@ -411,11 +411,9 @@
               </template>
               <template if:false={isPackageVisualizerEnabled}>
                 <div class="slds-m-top_xx-large">
-                  <c-empty-illustration-view
-                    title="Hmm..."
-                    body="Looks like you do not have the appropriate permission set to create orgs. Please reach out to your Salesforce Admin..."
-                  >
-                  </c-empty-illustration-view>
+                  <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+                    <p slot="description">Looks like you do not have the appropriate permission set to create orgs. Please reach out to your Salesforce Admin...</p>
+                  </lightning-empty-state>
                 </div>
               </template>
             </lightning-tab>

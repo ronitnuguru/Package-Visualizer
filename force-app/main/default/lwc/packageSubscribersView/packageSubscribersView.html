@@ -19,32 +19,24 @@
     <template if:true={versionSubscribersData}>
       <template if:true={displayEmptyView}>
         <template if:true={displayFilterMeta}>
-          <c-empty-illustration-with-button
-            title="Hmm..."
-            body="We could not find any results based on your filters..."
-            button-label="Edit Filters"
-            onselect={handleFilterEdit}
-            size="large"
-          >
-          </c-empty-illustration-with-button>
+          <lightning-empty-state title="Hmm..." illustration-name="success:new">
+            <p slot="description">We could not find any results based on your filters...</p>
+            <lightning-button variant="brand" label="Edit Filters" slot="cta" onclick={handleFilterEdit}>
+            </lightning-button>
+          </lightning-empty-state>
         </template>
         <template if:false={displayFilterMeta}>
           <template if:true={searchTerm}>
-            <c-empty-illustration-with-button
-              title="Hmm…"
-              body="We could not find any results based on your search..."
-              button-label="Refresh"
-              onselect={handleFilterReset}
-              size="large"
-            >
-            </c-empty-illustration-with-button>
+            <lightning-empty-state title="Hmm…" illustration-name="success:new">
+              <p slot="description">We could not find any results based on your search...</p>
+              <lightning-button variant="brand" label="Refresh" slot="cta" onclick={handleFilterReset}>
+              </lightning-button>
+            </lightning-empty-state>
           </template>
           <template if:false={searchTerm}>
-            <c-empty-large-illustration-view
-              title="Hmm…"
-              body="Looks like you do not have any subscribers for this package..."
-            >
-            </c-empty-large-illustration-view>
+            <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+              <p slot="description">Looks like you do not have any subscribers for this package...</p>
+            </lightning-empty-state>
           </template>
         </template>
       </template>
@@ -317,6 +309,7 @@
               org-status={orgStatus}
               org-type={orgType}
               package-type={packageType}
+              parent-org={parentOrg}
             >
             </c-package-subscriber-detail>
           </div>
@@ -324,11 +317,9 @@
       </template>
     </template>
     <template if:false={versionSubscribersData}>
-      <c-empty-large-illustration-view
-        title="Data not available..."
-        body="Looks like we were unable retrieve or you do not have access to any subscribers for this package..."
-      >
-      </c-empty-large-illustration-view>
+      <lightning-empty-state title="Data not available..." illustration-name="noresults:search">
+        <p slot="description">Looks like we were unable retrieve or you do not have access to any subscribers for this package...</p>
+      </lightning-empty-state>
     </template>
   </template>
   <template if:true={fieldsToDisplayModal}>

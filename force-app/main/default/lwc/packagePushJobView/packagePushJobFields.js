@@ -19,7 +19,7 @@ export default {
       fieldName: "SubscriberOrganizationKey",
       label: "Subscriber Org",
       sortable: true,
-      iconName: "standard:employee_organization"
+      iconName: "standard:customer"
     },
     StartTime: {
       type: "date",

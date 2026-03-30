@@ -4,9 +4,9 @@
       "path": "force-app",
       "default": true,
       "package": "Package Visualizer",
-      "versionName": "Version 8.5",
-      "versionNumber": "8.5.0.NEXT",
-      "ancestorVersion": "8.4.0"
+      "versionName": "Version 8.6",
+      "versionNumber": "8.6.0.NEXT",
+      "ancestorVersion": "8.5.0"
     }
   ],
   "name": "Package Visualizer",
@@ -194,6 +194,7 @@
     "Package Visualizer@8.2.0-1": "04tRh000001RzurIAC",
     "Package Visualizer@8.3.0-1": "04tRh000001Rzy5IAC",
     "Package Visualizer@8.4.0-1": "04tRh000001RzzhIAC",
-    "Package Visualizer@8.5.0-1": "04tRh000001S9J7IAK"
+    "Package Visualizer@8.5.0-1": "04tRh000001S9J7IAK",
+    "Package Visualizer@8.6.0-1": "04tRh000001bHNtIAM"
   }
 }

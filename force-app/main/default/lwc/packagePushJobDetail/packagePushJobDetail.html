@@ -163,13 +163,12 @@
         </template>
         <template if:false={displaySubscriberData}>
           <template if:false={displaySpinner}>
-            <c-empty-illustration-view
-              title="Hmm..."
-              body="Looks like we were unable to retrieve any subscriber's details..."
-            >
-            </c-empty-illustration-view>
+            <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+              <p slot="description">Looks like we were unable to retrieve any subscriber's details...</p>
+            </lightning-empty-state>
+            </template>
           </template>
-        </template>
+        </div>
       </div>
     </div>
   </div>

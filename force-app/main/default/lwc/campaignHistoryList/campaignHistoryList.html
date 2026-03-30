@@ -28,16 +28,14 @@
                     ></c-campaign-tile>
                 </template>
                 <template if:false={campaignData}>
-                    <c-empty-illustration-view 
-                        title="Hmm..."
-                        body="Looks like we were unable to retrieve any campaigns associated with this lead or contact..."
-                    ></c-empty-illustration-view>
+                    <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+                        <p slot="description">Looks like we were unable to retrieve any campaigns associated with this lead or contact...</p>
+                    </lightning-empty-state>
                 </template>
                 <template if:false={displayViewMoreLink}>
-                    <c-empty-illustration-view 
-                        title="Hmm..."
-                        body="Looks like there are no campaigns associated with this lead or contact..."
-                    ></c-empty-illustration-view>
+                    <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+                        <p slot="description">Looks like there are no campaigns associated with this lead or contact...</p>
+                    </lightning-empty-state>
                 </template>
             </template>
 

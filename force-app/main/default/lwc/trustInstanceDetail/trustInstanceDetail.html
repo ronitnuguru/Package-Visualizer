@@ -16,29 +16,6 @@
         <lightning-button-icon variant="border-filled" icon-name="utility:contract_doc" tooltip="Release Notes" onclick={handleReleaseNotes}></lightning-button-icon>
       </lightning-button-group>
       <div class="slds-card__body slds-card__body_inner">
-        <!--
-        <div class="slds-grid slds-gutters slds-wrap">
-          <div class="slds-col">
-            <template if:true={statusTitle}>
-              <lightning-input type="text" label="Status" value={statusTitle} readonly></lightning-input>
-            </template>
-            <template if:true={region}>
-              <lightning-input type="text" label="Region" value={region} readonly></lightning-input>
-            </template>
-            <template if:true={maintenanceWindow}>
-              <lightning-input type="text" label="Maintenance Window" value={maintenanceWindow} readonly field-level-help="Whenever possible, and only as maintenance is necessary, Salesforce will schedule system maintenance the first and third weekends of the calendar month during the window listed. When a calendar month begins on a Sunday, we would hold system maintenance the first and third full weekends of the month."></lightning-input>
-            </template>
-          </div>
-          <div class="slds-col">
-            <template if:true={releaseVersion}>
-              <lightning-input type="text" label="Release Version" value={releaseVersion} readonly></lightning-input>
-            </template>
-            <template if:true={releaseNumber}>
-              <lightning-input type="text" label="Release Number" value={releaseNumber} readonly></lightning-input>
-            </template>
-          </div>
-        </div>
-        -->
         <lightning-tile>
           <dl class="slds-list_horizontal slds-wrap">
             <template if:true={statusTitle}>

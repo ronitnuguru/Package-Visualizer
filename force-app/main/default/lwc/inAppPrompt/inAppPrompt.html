@@ -92,9 +92,9 @@
   </template>
   <template if:false={displaySpinner}>
     <template if:true={displayEmptyContent}>
-      <c-empty-illustration-view
-        body={exceptionMessage}
-      ></c-empty-illustration-view>
+      <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+        <p slot="description">{exceptionMessage}</p>
+      </lightning-empty-state>
     </template>
   </template>
 </template>

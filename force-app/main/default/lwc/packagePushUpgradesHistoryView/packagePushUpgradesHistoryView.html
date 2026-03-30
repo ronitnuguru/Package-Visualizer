@@ -10,31 +10,24 @@
   </template>
   <template if:false={displayPushHistoryView}>
     <template if:false={displaySpinner}>
-      <c-empty-large-illustration-view
-        title="Hmm…"
-        body="Looks like we were unable retrieve any push upgrade requests for this package..."
-      >
-      </c-empty-large-illustration-view>
+      <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+        <p slot="description">Looks like we were unable retrieve any push upgrade requests for this package...</p>
+      </lightning-empty-state>
     </template>
   </template>
   <template if:true={displayPushHistoryView}>
     <template if:true={displayEmptyView}>
       <template if:true={displayFilterMeta}>
-        <c-empty-illustration-with-button
-          title="Hmm..."
-          body="We could not find any results based on your filters..."
-          button-label="Edit Filters"
-          onselect={handleFilterEdit}
-          size="large"
-        >
-        </c-empty-illustration-with-button>
+          <lightning-empty-state title="Hmm..." illustration-name="success:new">
+          <p slot="description">We could not find any results based on your filters...</p>
+          <lightning-button variant="brand" label="Edit Filters" slot="cta" onclick={handleFilterEdit}>
+          </lightning-button>
+        </lightning-empty-state>
       </template>
       <template if:false={displayFilterMeta}>
-        <c-empty-large-illustration-view
-          title="Hmm…"
-          body="Looks like you have not scheduled any prior push upgrade requests for this package..."
-        >
-        </c-empty-large-illustration-view>
+        <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+          <p slot="description">Looks like you have not scheduled any prior push upgrade requests for this package...</p>
+        </lightning-empty-state>
       </template>
     </template>
     <template if:false={displayEmptyView}>
