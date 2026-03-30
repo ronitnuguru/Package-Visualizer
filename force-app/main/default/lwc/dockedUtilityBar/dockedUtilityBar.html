@@ -183,11 +183,9 @@
         </template>
         <template if:true={resourcesNotAvailableView}>
           <div class="slds-align_absolute-center">
-            <c-not-available-illustration
-              body="We were unable to retrieve any resources..."
-            >
-            </c-not-available-illustration>
-            <
+            <lightning-empty-state title="Hmm..." illustration-name="success:new">
+              <p slot="description">We were unable to retrieve any resources...</p>
+            </lightning-empty-state>
           </div>
         </template>
         <template if:true={resourcesData}>
@@ -434,10 +432,9 @@
         </template>
         <template if:true={announcementsNotAvailableView}>
           <div class="slds-align_absolute-center">
-            <c-not-available-illustration
-              body="We were unable to retrieve any announcements..."
-            >
-            </c-not-available-illustration>
+            <lightning-empty-state title="Hmm..." illustration-name="success:new">
+              <p slot="description">We were unable to retrieve any announcements...</p>
+            </lightning-empty-state>
           </div>
         </template>
         <template if:true={announcementsData}>

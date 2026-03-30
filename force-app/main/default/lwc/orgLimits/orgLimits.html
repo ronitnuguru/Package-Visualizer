@@ -36,10 +36,9 @@
     </template>
     <template lwc:elseif={error}>
         <div class="slds-align_absolute-center slds-var-p-around_x-small">
-            <c-not-available-illustration
-              body="We were unable to retrieve any limits for your org..."
-            >
-            </c-not-available-illustration>
-        </div>
+            <lightning-empty-state title="Hmm..." illustration-name="success:new">
+              <p slot="description">We were unable to retrieve any limits for your org...</p>
+            </lightning-empty-state>
+        </div>  
     </template>
 </template>

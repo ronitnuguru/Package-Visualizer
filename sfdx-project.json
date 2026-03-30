@@ -4,9 +4,9 @@
       "path": "force-app",
       "default": true,
       "package": "Package Visualizer",
-      "versionName": "Version 8.6",
-      "versionNumber": "8.6.0.NEXT",
-      "ancestorVersion": "8.5.0"
+      "versionName": "Version 8.7",
+      "versionNumber": "8.7.0.NEXT",
+      "ancestorVersion": "8.6.0"
     }
   ],
   "name": "Package Visualizer",

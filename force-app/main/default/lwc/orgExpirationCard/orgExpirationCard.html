@@ -147,10 +147,9 @@
             </template>
             <template if:false={displaySpinner}>             
                 <template if:false={org}>
-                    <c-not-available-illustration
-                        body="We were unable to retrieve Organization details. Ask your admin to see if you have the appropriate permissions to view this data..."
-                    >
-                    </c-not-available-illustration>
+                    <lightning-empty-state title="Hmm..." illustration-name="success:new">
+                        <p slot="description">We were unable to retrieve Organization details. Ask your admin to see if you have the appropriate permissions to view this data...</p>
+                    </lightning-empty-state>
                 </template>
             </template>
         </div>
