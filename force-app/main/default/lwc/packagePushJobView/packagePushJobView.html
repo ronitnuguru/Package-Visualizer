@@ -190,8 +190,7 @@
         <template if:false={displayPushJobView}>
           <template if:false={displaySpinner}>
             <div
-              class="card-style slds-card_boundary slds-var-m-around_small slds-var-p-top_xx-large"
-            >
+              class="card-style slds-card_boundary slds-p-around_large">
               <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
                 <p slot="description">Looks like we were unable to retrieve any push job requests...</p>
               </lightning-empty-state>
@@ -209,7 +208,7 @@
             </template>
             <template if:false={displayFilterMeta}>
               <div
-                class="card-style slds-card_boundary slds-var-m-around_small slds-var-p-top_xx-large"
+                class="card-style slds-card_boundary slds-p-around_large"
               >
                 <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
                   <p slot="description">Looks like we were unable to find any push job requests for this package...</p>

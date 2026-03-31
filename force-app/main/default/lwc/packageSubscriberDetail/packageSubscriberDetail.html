@@ -111,7 +111,7 @@
                 </div>
               </template>
               <template if:true={displayEmptyLMA}>
-                <div class="card-style slds-card_boundary slds-var-m-around_small slds-var-p-top_xx-large">
+                <div class="card-style slds-card_boundary slds-p-around_large">
                   <lightning-empty-state title="Hmm..." illustration-name="success:new">
                       <p slot="description">Looks like we could not find the associated license for this subscriber or the package is not connected to the LMA...</p>
                     <lightning-button variant="brand" label="Associate Package with LMA" slot="cta" onclick={navigateToHelpLma}>

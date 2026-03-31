@@ -196,23 +196,23 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
 
     get industryTemplateOptions(){
         return [
-            { label: 'Financial Services Cloud' , value: '0TTWs000000yqrl' },
-            { label: 'Financial Services Cloud - Digital Insurance' , value: '0TTWs000000ywNh' },
-            { label: 'Health Cloud' , value: '0TTWs000000zzHt' },
-            { label: 'Life Sciences Cloud' , value: '0TTWs000000zywv' },
-            { label: 'Consumer Goods Cloud (Retail Execution)', value: '0TTWs0000012DAH'},
-            { label: 'Consumer Goods Cloud (Trade Promotion Management)', value: '0TTWs000000xkGX'},
-            { label: 'Manufacturing Cloud', value: '0TTWs000000zbXJ'},
-            { label: 'Automotive Cloud', value: '0TTWs000000zbYv'},
-            { label: `Energy & Utilities Cloud`, value: '0TTWs000000zyNR'},
-            { label: 'Net Zero Cloud', value: '0TTWs0000011xqH'},
-            { label: 'Communications Cloud', value: '0TTWs000000yngz'},
-            { label: 'Education Cloud', value: '0TTWs000000yOCL'},
-            { label: 'Media Cloud', value: '0TTWs0000012y5x'},
-            { label: 'Nonprofit Cloud', value: '0TTWs000000yOIn'},
-            { label: 'Public Sector Cloud', value: '0TTWs000000ynnR'},
-            { label: 'Revenue Cloud', value: '0TTWs00000122Wb'},
-            { label: 'Loyalty Cloud', value: '0TTWs0000011IC1'}
+            { label: 'Financial Services Cloud' , value: '0TTWs000001fVLp' },
+            { label: 'Financial Services Cloud - Digital Insurance' , value: '0TTWs000001fo9x' },
+            { label: 'Health Cloud' , value: '0TTWs000001fVFN' },
+            { label: 'Life Sciences Cloud' , value: '0TTWs000001fWsz' },
+            { label: 'Consumer Goods Cloud (Retail Execution)', value: '0TTWs000001fWUn'},
+            { label: 'Consumer Goods Cloud (Trade Promotion Management)', value: '0TTWs000001fWHt'},
+            { label: 'Manufacturing Cloud', value: '0TTWs000001fVYj'},
+            { label: 'Automotive Cloud', value: '0TTWs000001fWJV'},
+            { label: `Energy & Utilities Cloud`, value: '0TTWs000001gQQX'},
+            { label: 'Net Zero Cloud', value: '0TTWs000001fWBR'},
+            { label: 'Communications Cloud', value: '0TTWs000001gQWz'},
+            { label: 'Education Cloud', value: '0TTWs000001fWbF'},
+            { label: 'Media Cloud', value: '0TTWs000001fVth'},
+            { label: 'Nonprofit Cloud', value: '0TTWs000001fWzR'},
+            { label: 'Public Sector Cloud', value: '0TTWs000001gW7l'},
+            { label: 'Revenue Cloud', value: '0TTWs000001fbpR'},
+            { label: 'Loyalty Cloud', value: '0TTWs000001gPiz'}
         ];
     }
 
