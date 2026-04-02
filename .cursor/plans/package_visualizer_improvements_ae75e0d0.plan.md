@@ -344,7 +344,7 @@ Instructions: "You help ISV partners and DevHub administrators manage their Sale
 - `**GetPackageVersions`** -- Query `Package2Version` for a given package. Inputs: `packageId`, `releasedOnly` (boolean), `versionRange`.
 - `**GetSubscriberDetails`** -- Query `PackageSubscriber` with filters. Inputs: `packageId`, `orgType`, `orgStatus`, `instanceName`, `versionId`.
 - `**CheckCodeCoverage`** -- Call existing `calculatePackageVersionCodeCoverage`. Input: `packageVersionId`.
-- `**CheckSecurityReview**` -- Call existing `verifySecurityReviewApproved`. Input: `subscriberPackageVersionId`.
+- `**CheckSecurityReview`** -- Call existing `verifySecurityReviewApproved`. Input: `subscriberPackageVersionId`.
 - `**GetOrgLimits**` -- Call existing `LimitsController.getLimits`. No inputs.
 - `**CreatePushUpgradeRequest**` -- Wrap `PushUpgradesCtrl.createPackagePushRequest`. Inputs: `packageVersionId`, `scheduledStartTime`.
 - `**GetPushUpgradeStatus**` -- Query `PackagePushJob` status. Input: `pushRequestId`.
@@ -409,7 +409,7 @@ Build a dedicated agent topic for release management workflows:
 - `**ISV_Agent_Subscriber_Health_Report`** -- Generate a health report for a specific subscriber org
 - `**ISV_Agent_Release_Notes_Generator`** -- Generate release notes from version metadata diff
 - `**ISV_Agent_Deprecation_Impact_Report`** -- Assess impact of deprecating a version
-- `**ISV_Agent_AppAnalytics_Summary**` -- Summarize AppAnalytics query results in natural language
+- `**ISV_Agent_AppAnalytics_Summary`** -- Summarize AppAnalytics query results in natural language
 - `**ISV_Agent_Security_Review_Prep**` -- Checklist and guidance for AppExchange security review submission
 - `**ISV_Agent_Upgrade_Communication**` -- Generate subscriber-facing upgrade notification emails
 - `**ISV_Agent_Error_Diagnosis**` -- Diagnose push upgrade errors or API failures from log data

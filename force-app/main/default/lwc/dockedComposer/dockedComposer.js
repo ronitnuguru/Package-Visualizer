@@ -491,7 +491,7 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
       { label: 'Chinese (Simplified)', value: 'zh_CN' },
       { label: 'Chinese (Traditional)', value: 'zh_TW' },
       { label: 'Dutch', value: 'nl_NL' },
-      { label: 'Danish', value: 'zh_TW' },
+      { label: 'Danish', value: 'da_DK' },
       { label: 'Finnish', value: 'fi' },
       { label: 'French', value: 'fr' },
       { label: 'German', value: 'de' },
