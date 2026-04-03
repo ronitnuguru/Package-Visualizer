@@ -109,6 +109,24 @@ private class PushUpgradesInterfaceTest {
         Test.stopTest();
         
     }     
+
+    @isTest
+    public static void testPushUpgradesCalloutMockBranches() {
+        PushUpgradesCalloutMock mock = new PushUpgradesCalloutMock();
+        HttpRequest reqPatch = new HttpRequest();
+        reqPatch.setEndpoint(
+            'https://example.com/services/data/v57.0/sobjects/PackagePushRequest/0Ho000000000000AAA'
+        );
+        System.assertEquals(204, mock.respond(reqPatch).getStatusCode());
+
+        HttpRequest reqPost = new HttpRequest();
+        reqPost.setEndpoint('https://example.com/services/data/v57.0/sobjects/PackagePushRequest');
+        System.assertEquals(400, mock.respond(reqPost).getStatusCode());
+
+        HttpRequest reqComposite = new HttpRequest();
+        reqComposite.setEndpoint('https://example.com/services/data/v57.0/composite/sobjects');
+        System.assertEquals(200, mock.respond(reqComposite).getStatusCode());
+    }
     
 	/**************************************************************************************
 	* @Description  Test class for create filter list

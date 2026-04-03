@@ -21,6 +21,10 @@ export default class PackagePushJobDetail extends LightningElement {
   orgType;
   packageType;
 
+  connectedCallback() {
+    console.log('pushJobDetails', this.pushJobDetails);
+  }
+
   get pushJobError() {
     let errorTitle, errorMessage;
     if(this.pushJobDetails.PackagePushErrors){

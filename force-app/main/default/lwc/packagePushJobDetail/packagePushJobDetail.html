@@ -1,73 +1,82 @@
 <template>
-  <div class="slds-var-p-around_medium slds-page-header">
-    <article class="slds-tile slds-media">
-      <div class="slds-media__figure">
-        <template if:true={displayLoadingIcon}>
-          <lightning-dynamic-icon
-            type="eq"
-            option="play"
-            alternative-text="Request in progress"
-            slot="media"
-          >
-          </lightning-dynamic-icon>
-        </template>
-        <template if:true={displaySuccessIcon}>
-          <lightning-icon
-            icon-name="utility:success"
-            alternative-text="Success!"
-            variant="success"
-            size="medium"
-            slot="media"
-          ></lightning-icon>
-        </template>
-        <template if:true={displayErrorIcon}>
-          <lightning-icon
-            icon-name="utility:error"
-            alternative-text="Error!"
-            variant="error"
-            size="medium"
-            slot="media"
-          ></lightning-icon>
-        </template>
-        <template if:true={displayWarningIcon}>
-          <lightning-icon
-            icon-name="utility:warning"
-            alternative-text="Warning!"
-            variant="warning"
-            size="medium"
-            slot="media"
-          ></lightning-icon>
-        </template>
-      </div>
-      <div class="slds-media__body">
-        <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
-          <h3 class="slds-tile__title slds-truncate">
-            <span class="tile-style"
-              >{pushJobDetails.SubscriberOrganizationKey}</span
+  <div class="slds-var-p-around_medium">
+    <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small">
+      <lightning-card>
+        <h3 slot="title" class="slds-truncate">
+          <template if:true={displayLoadingIcon}>
+            <lightning-dynamic-icon
+              type="eq"
+              option="play"
+              alternative-text="Request in progress"
+              class="slds-m-right_small"
             >
-          </h3>
-        </div>
-        <div class="slds-tile__detail">
-          <div class="slds-grid slds-gutters slds-wrap">
-            <div class="slds-col">
-              <div>{pushJobDetails.Status}</div>
-              <template if:true={pushDurationSeconds}>
-                <div>
-                  Completed in {pushJobDetails.DurationSeconds} seconds
-                </div>
-              </template>
-              <template if:true={pushJobError}>
-                <div class="slds-text-color_destructive">
-                  {pushJobError}
-                </div>
-              </template>
+            </lightning-dynamic-icon>
+          </template>
+          <template if:true={displaySuccessIcon}>
+            <lightning-icon
+              icon-name="utility:success"
+              alternative-text="Success!"
+              variant="success"
+              size="medium"
+              class="slds-m-right_small"
+            ></lightning-icon>
+          </template>
+          <template if:true={displayErrorIcon}>
+            <lightning-icon
+              icon-name="utility:error"
+              alternative-text="Error!"
+              variant="error"
+              size="medium"
+              class="slds-m-right_small"
+            ></lightning-icon>
+          </template>
+          <template if:true={displayWarningIcon}>
+            <lightning-icon
+              icon-name="utility:warning"
+              alternative-text="Warning!"
+              variant="warning"
+              size="medium"
+              class="slds-m-right_small"
+            ></lightning-icon>
+          </template>
+          {pushJobDetails.Status}
+        </h3>
+        <lightning-button-group slot="actions">
+          <template if:true={pushJobError}>
+            <lightning-button 
+              variant="border-filled" 
+              label="Agentforce Assist" 
+              icon-name="utility:sparkles" 
+              onclick={handleAskAgentforce}
+            ></lightning-button>
+          </template>
+        </lightning-button-group>
+        <div class="slds-card__body slds-card__body_inner">
+          <template if:true={pushJobError}>
+            <div class="slds-scoped-notification slds-media slds-media_center slds-theme_error slds-m-bottom_small" role="status">
+              <div class="slds-media__figure">
+                  <lightning-icon
+                      size="small"
+                      icon-name="utility:error"
+                      variant="error"
+                  ></lightning-icon>
+              </div>
+              <div class="slds-media__body">
+                  <div>
+                    <template if:true={pushJobError}>
+                      <div class="">
+                        {pushJobError}
+                      </div>
+                    </template>
+                  </div>
+              </div>
             </div>
+          </template>
+          <div class="slds-grid slds-gutters slds-wrap">
             <div class="slds-col">
               <dl class="slds-list_horizontal slds-wrap">
                 <template if:true={pushJobDetails.StartTime}>
-                  <dt
-                    class="slds-item_label slds-text-color_weak slds-truncate"
-                  >
+                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
                     Start Time:
                   </dt>
                   <dd class="slds-item_detail slds-truncate">
@@ -84,9 +93,7 @@
                   </dd>
                 </template>
                 <template if:true={pushJobDetails.EndTime}>
-                  <dt
-                    class="slds-item_label slds-text-color_weak slds-truncate"
-                  >
+                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
                     End Time:
                   </dt>
                   <dd class="slds-item_detail slds-truncate">
@@ -104,10 +111,43 @@
                 </template>
               </dl>
             </div>
+            <div class="slds-col">
+              <template if:true={pushJobDetails.DurationSeconds}>
+                <dl class="slds-list_horizontal slds-wrap">
+                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                    Completed:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    {pushJobDetails.DurationSeconds} seconds
+                  </dd>
+                </dl>
+              </template>
+            </div>
+          </div>
+          <div class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium card-style">
+            <lightning-card>
+              <template if:true={displaySpinner}>
+                  <div class="slds-p-vertical_medium">
+                      <lightning-spinner
+                          alternative-text="Loading"
+                          size="medium"
+                          variant="brand"
+                      ></lightning-spinner>
+                  </div>
+              </template>
+              <h3 slot="title" class="slds-truncate">
+                  <lightning-icon 
+                      icon-name="standard:agent_astro" 
+                      size="medium" 
+                      class="slds-m-right_small"
+                  ></lightning-icon>
+                  Agentforce Generated
+              </h3>
+            </lightning-card>
           </div>
         </div>
-      </div>
-    </article>
+      </lightning-card>
+    </div>
   </div>
   <div class={packageSubscriberAccordionClass}>
     <h3 class="slds-section__title">

@@ -842,6 +842,79 @@ public static String createSignupTrial(Map<String, String> signupFields)
 - **Purpose:** Welcome/onboarding steps for new users
 - **Fields:** Label, Icon__c, Order__c, Description__c, Link__c, Visibility__c
 
+**Package_Visualizer_Setting__mdt**
+- **Purpose:** Feature toggles and configuration flags for Package Visualizer
+- **Fields:** Label, Enabled__c (Checkbox, Subscriber Editable)
+- **Records:**
+  - `Use_Named_Credentials` - When enabled, API callouts use the `PkgViz_DevHub_API` Named Credential instead of the legacy Visualforce session pattern. Defaults to `false` (legacy pattern active). Requires one-time post-install setup — see [Named Credentials Setup](#named-credentials-setup-optional).
+
+### Named Credentials Setup (Optional)
+
+Package Visualizer includes an optional Named Credentials path for modern OAuth 2.0-based same-org API authentication. This provides an alternative to the legacy Visualforce session pattern (`SessionCreator.page`) with platform-managed token handling and least-privilege scoping.
+
+**Default behavior:** Named Credentials are **disabled** out of the box. The legacy VF session pattern is active by default and requires no setup. Named Credentials are an opt-in upgrade for orgs that restrict Visualforce access, require stricter OAuth scoping, or are Lightning-only.
+
+**Why post-install setup is required:** Due to Salesforce 2GP packaging constraints, External Auth Identity Provider credentials (OAuth client ID/secret) are stripped during package installation. The setup wizard automates the credential wiring after install.
+
+#### Using the Setup Wizard (Recommended)
+
+1. Navigate to the **Package Visualizer** app
+2. Open the **Named Credential Setup** component
+3. Click **Configure Credentials** — this wires the installed External Client App's OAuth credentials to the External Auth Identity Provider
+4. Click **Authenticate** — complete the OAuth authorization flow in the browser popup
+5. Click **Enable** — this flips the Named Credentials toggle on
+6. Click **Test Connection** — verifies end-to-end callout connectivity
+
+If any step fails, the wizard provides diagnostic information and the app continues to work normally on the VF session pattern.
+
+#### Manual Setup (Alternative)
+
+If you prefer manual configuration or the setup wizard encounters issues:
+
+**Step 1: Set the Named Credential URL**
+
+1. Go to **Setup > Named Credentials**
+2. Find **PkgViz DevHub API** and click **Edit**
+3. Set the URL to your org's My Domain: `https://YOUR-ORG.my.salesforce.com`
+4. Click **Save**
+
+**Step 2: Wire External Auth Identity Provider Credentials**
+
+1. Go to **Setup > External Client App Manager**
+2. Find **Package Visualizer API** and open its **OAuth Settings**
+3. Copy the **Consumer Key** and **Consumer Secret**
+4. Go to **Setup > Named Credentials > External Credentials** tab
+5. Find **PkgViz DevHub** and click its name
+6. Under the linked External Auth Identity Provider, populate the **Client ID** (Consumer Key) and **Client Secret** (Consumer Secret)
+
+**Step 3: Authenticate the External Credential**
+
+1. On the **PkgViz DevHub** External Credential page
+2. Under **Principals**, find **PkgViz_NamedPrincipal** and click the action menu > **Authenticate**
+3. Complete the OAuth authorization flow in the browser popup
+4. Verify the status shows **Authenticated**
+
+**Step 4: Verify Permission Set Assignment**
+
+1. Go to **Setup > Permission Sets**
+2. Find **Package Visualizer Permission** and verify it includes:
+   - External Credential Principal Access for `PkgViz_DevHub - PkgViz_NamedPrincipal`
+3. Ensure all Package Visualizer users are assigned this permission set
+
+**Step 5: Enable Named Credentials**
+
+1. Go to **Setup > Custom Metadata Types**
+2. Find **Package Visualizer Setting** and click **Manage Records**
+3. Edit the **Use Named Credentials** record
+4. Check the **Enabled** checkbox
+5. Click **Save**
+
+**Step 6: Verify**
+
+1. Navigate to the Package Visualizer app
+2. Load the package list — it should display packages from your DevHub
+3. If errors occur, uncheck the **Enabled** flag in Step 5 to revert to the legacy session pattern, then review the External Credential authentication status in Step 3
+
 ### Lightning Message Channels
 
 - `PackageMessageChannel` - Package selection and navigation events
@@ -869,7 +942,7 @@ public static String createSignupTrial(Map<String, String> signupFields)
 
 ### Permission Sets
 
-- **Package_VisualizerPS** - Grants access to all Package Visualizer features including custom permissions
+- **Package_VisualizerPS** - Grants access to all Package Visualizer features including custom permissions, and External Credential access for the `PkgViz_DevHub` Named Principal when Named Credentials are enabled
 
 ### Data Security
 
@@ -957,7 +1030,7 @@ A: The D3.js tree is interactive (drag nodes, click for details) but the core vi
 ### Technical Questions
 
 **Q: What APIs does Package Visualizer use?**
-A: Package Visualizer uses Tooling API (v61.0), REST API (v57.0), Limits API, Trust API, and integrates with LMA, AppAnalytics, and Salesforce Models API (Agentforce).
+A: Package Visualizer uses Tooling API, REST API, Limits API, Trust API, and integrates with LMA, AppAnalytics, and Salesforce Models API (Agentforce). Authentication uses the Visualforce session pattern by default (works out of the box). Optionally, admins can enable Named Credentials (OAuth 2.0) for stricter security scoping — this requires one-time post-install setup. See [Named Credentials Setup](#named-credentials-setup-optional).
 
 **Q: Can I extend Package Visualizer with custom features?**
 A: Package Visualizer is a managed package, so you cannot modify the packaged components. However, you can create custom LWC components that integrate with Package Visualizer using Lightning Message Service.

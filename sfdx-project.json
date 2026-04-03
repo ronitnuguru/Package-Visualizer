@@ -4,15 +4,15 @@
       "path": "force-app",
       "default": true,
       "package": "Package Visualizer",
-      "versionName": "Version 8.10",
-      "versionNumber": "8.10.0.NEXT",
-      "ancestorVersion": "8.9.0"
+      "versionName": "Version 8.11",
+      "versionNumber": "8.11.0.NEXT",
+      "ancestorVersion": "8.10.0"
     }
   ],
   "name": "Package Visualizer",
   "namespace": "pkgviz",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "65.0",
+  "sourceApiVersion": "66.0",
   "packageAliases": {
     "Package Visualizer": "0Ho5w000000KyxwCAC",
     "Package Visualizer@4.24.0-1": "04tRh0000002JhhIAE",
@@ -200,6 +200,9 @@
     "Package Visualizer@8.8.0-1": "04tRh000001bHR7IAM",
     "Package Visualizer@8.8.0-2": "04tRh000001bHULIA2",
     "Package Visualizer@8.8.0-3": "04tRh000001bHVxIAM",
-    "Package Visualizer@8.9.0-1": "04tRh000001bHanIAE"
+    "Package Visualizer@8.9.0-1": "04tRh000001bHanIAE",
+    "Package Visualizer@8.10.0-1": "04tRh000001bHm5IAE",
+    "Package Visualizer@8.11.0-1": "04tRh000001bHqvIAE",
+    "Package Visualizer@8.11.0-2": "04tRh000001bHsXIAU"
   }
 }

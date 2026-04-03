@@ -104,7 +104,130 @@ The current architecture relies on a Visualforce page (`SessionCreator.page`) to
 - Session tokens have a broad scope, violating least-privilege principles
 - Breaks if VF page access is revoked or during Lightning Out scenarios
 
-**Recommendation:** Migrate to **Named Credentials** with the "Named Principal" or "Per User" identity type. This is the platform-endorsed approach for org-to-self callouts and eliminates the VF session dependency entirely. For Tooling API specifically, a Named Credential pointing to the org's own domain with OAuth 2.0 (JWT Bearer or Web Server flow) is the modern pattern.
+**Strategy:** A **dual-path coexistence model** where Named Credentials are an optional, subscriber-enabled upgrade path — not a hard replacement. The legacy VF session pattern remains the default and works out of the box. Named Credentials require one-time admin setup post-install.
+
+> **Platform Constraint (as of Spring '26):** Same-org callouts via Named Credentials in 2GP managed packages are a known pain point. External Auth Identity Provider credentials (clientId/clientSecret) are **stripped during package installation** by design. Auth Providers are not packageable in 2GP. This means post-install credential wiring is unavoidable. The strategy below accounts for this limitation.
+
+---
+
+#### Architecture: Dual-Path CalloutService (COMPLETED)
+
+`CalloutService.cls` is already built and deployed. It checks the `Package_Visualizer_Setting__mdt` record `Use_Named_Credentials`:
+
+- **Enabled = false (default):** Uses `SessionCreator.page` VF pattern via `Package2Interface.getSessionId()`
+- **Enabled = true:** Uses `callout:PkgViz_DevHub_API` Named Credential (platform injects OAuth token automatically)
+
+The `applyAuth(HttpRequest)` method is a no-op when Named Credentials are active (the platform handles the `Authorization` header), and injects a `Bearer` token from the VF page when in legacy mode.
+
+---
+
+#### What Gets Packaged (included in the 2GP)
+
+These components are built in source and included in the managed package:
+
+
+| #   | Component                         | Metadata Type                  | Status       | Notes                                                                                                                                                                                                     |
+| --- | --------------------------------- | ------------------------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `Package_Visualizer_API`          | `ExternalClientApp`            | **TO BUILD** | `distributionState: Packageable`. Authorization Code and Credentials Flow. Scopes: `api`, `refresh_token`.                                                                                                |
+| 2   | `PkgViz_AuthProvider`             | `ExternalAuthIdentityProvider` | **TO BUILD** | Authorization URL: `https://login.salesforce.com/services/oauth2/authorize`. Token URL: `https://login.salesforce.com/services/oauth2/token`. **Credentials are stripped on install — this is expected.** |
+| 3   | `PkgViz_DevHub`                   | `ExternalCredential`           | **TO BUILD** | Auth Protocol: OAuth 2.0. Flow: Browser Flow. Identity: Named Principal (`PkgViz_NamedPrincipal`). References `PkgViz_AuthProvider`.                                                                      |
+| 4   | `PkgViz_DevHub_API`               | `NamedCredential`              | **TO BUILD** | References `PkgViz_DevHub` External Credential. URL: placeholder (subscriber-controlled so admins set their My Domain). `generateAuthorizationHeader: true`.                                              |
+| 5   | `Package_VisualizerPS`            | `PermissionSet`                | **DONE**     | Already includes `externalCredentialPrincipalAccesses` for `PkgViz_DevHub - PkgViz_NamedPrincipal`.                                                                                                       |
+| 6   | `Package_Visualizer_Setting__mdt` | `CustomMetadataType`           | **DONE**     | `Use_Named_Credentials` record defaults to `Enabled__c = false`. Field is `SubscriberControlled`.                                                                                                         |
+| 7   | `CalloutService.cls`              | `ApexClass`                    | **DONE**     | Dual-path service. Methods: `getToolingEndpoint`, `getRestEndpoint`, `getLimitsEndpoint`, `applyAuth`, `buildToolingQueryRequest`, etc.                                                                   |
+| 8   | `NamedCredentialSetupService.cls` | `ApexClass`                    | **TO BUILD** | Uses `ConnectApi.NamedCredentials` to wire External Auth Identity Provider credentials post-install. Reads the ECA's Consumer Key/Secret and populates them on the External Auth Identity Provider.       |
+| 9   | `namedCredentialSetup`            | `LightningComponentBundle`     | **TO BUILD** | Admin-facing setup wizard. Shows NC status, one-click credential wiring, authentication trigger, CMDT toggle. Embedded in the Package Visualizer app's setup flow.                                        |
+
+
+---
+
+#### Post-Install Steps (subscriber admin)
+
+These steps are required because the platform strips sensitive credentials during package installation. The setup wizard (item 9 above) automates most of this into a guided flow.
+
+**Step 1 — Open the Setup Wizard**
+Navigate to the Package Visualizer app and open the Named Credential Setup tab/component.
+
+**Step 2 — Set the Named Credential URL**
+The wizard detects the subscriber's My Domain URL (`URL.getOrgDomainUrl()`) and updates the Named Credential endpoint automatically. If the Named Credential is developer-controlled, the admin enters their My Domain URL manually.
+
+**Step 3 — Wire the External Auth Identity Provider Credentials**
+Click the "Configure" button in the wizard. This invokes `NamedCredentialSetupService`, which:
+
+1. Retrieves the installed ECA's Consumer Key and Consumer Secret (via ConnectApi or the ECA setup page)
+2. Calls `ConnectApi.NamedCredentials.createExternalAuthIdentityProviderCredentials()` to populate `clientId` and `clientSecret` on `PkgViz_AuthProvider`
+3. This must run in a **separate transaction** from metadata creation to avoid mixed DML errors
+
+> **Note:** If programmatic retrieval of the ECA Consumer Secret is blocked (it requires the org-wide setting "Allow access to External Client App consumer secrets via REST API"), the wizard falls back to asking the admin to paste the Consumer Key and Consumer Secret from Setup > External Client App Manager > Package Visualizer API > OAuth Settings.
+
+**Step 4 — Authenticate the Named Credential**
+Click "Authenticate" in the wizard. This triggers the OAuth 2.0 Browser Flow:
+
+1. A popup opens to the Salesforce login/authorization page
+2. The admin authorizes the Package Visualizer API app
+3. The External Credential status changes to **Authenticated**
+
+**Step 5 — Enable Named Credentials**
+The wizard flips the `Use_Named_Credentials` CMDT record to `Enabled__c = true`. Alternatively, the admin can do this manually in Setup > Custom Metadata Types > Package Visualizer Setting > Use Named Credentials.
+
+**Step 6 — Verify**
+The wizard runs a test callout (e.g., `GET /services/data/v65.0/limits/`) to confirm end-to-end connectivity. If it fails, the wizard offers to revert the CMDT toggle to `false`, falling back to the VF session pattern.
+
+---
+
+#### Packageability Reference
+
+
+| Component                         | Packageable in 2GP? | Credentials Preserved on Install?       | Post-Install Action Required?     |
+| --------------------------------- | ------------------- | --------------------------------------- | --------------------------------- |
+| External Client App               | Yes                 | N/A (new credentials generated per org) | None — auto-installed             |
+| External Auth Identity Provider   | Yes (metadata only) | **No** — clientId/clientSecret stripped | Wire credentials via setup wizard |
+| External Credential               | Yes                 | **No** — tokens not included            | Authenticate via Browser Flow     |
+| Named Credential                  | Yes                 | N/A                                     | Set URL to subscriber's My Domain |
+| Permission Set (principal access) | Yes                 | N/A                                     | None — auto-installed             |
+| CMDT toggle                       | Yes                 | N/A                                     | Flip to `true` after setup        |
+| CalloutService.cls                | Yes                 | N/A                                     | None — auto-installed             |
+| NamedCredentialSetupService.cls   | Yes                 | N/A                                     | None — invoked by setup wizard    |
+| Setup wizard LWC                  | Yes                 | N/A                                     | None — auto-installed             |
+
+
+---
+
+#### Build Steps (in order)
+
+1. **Create the External Client App metadata** — `force-app/main/default/externalClientApps/Package_Visualizer_API.eca-meta.xml` and its OAuth plugin. Set `distributionState` to `Packageable`. Configure Authorization Code and Credentials Flow with scopes `api` and `refresh_token`.
+2. **Create the External Auth Identity Provider metadata** — `force-app/main/default/externalAuthIdentityProviders/PkgViz_AuthProvider.externalAuthIdentityProvider-meta.xml`. Set authorization and token URLs to `login.salesforce.com`. Do **not** include credentials in the metadata (they won't survive packaging anyway).
+3. **Create the External Credential metadata** — `force-app/main/default/externalCredentials/PkgViz_DevHub.externalCredential-meta.xml`. Reference `PkgViz_AuthProvider`, set Browser Flow, add `PkgViz_NamedPrincipal` as a Named Principal.
+4. **Create the Named Credential metadata** — `force-app/main/default/namedCredentials/PkgViz_DevHub_API.namedCredential-meta.xml`. Reference `PkgViz_DevHub` External Credential. Set URL as subscriber-controlled placeholder.
+5. **Build `NamedCredentialSetupService.cls`** — Apex class that uses `ConnectApi.NamedCredentials` to:
+  - Read the installed ECA's OAuth credentials
+  - Populate the External Auth Identity Provider via `createExternalAuthIdentityProviderCredentials()` or `updateExternalAuthIdentityProviderCredentials()`
+  - Return the authentication URL for the Named Credential Browser Flow
+  - Handle the CMDT toggle via `Metadata.Operations.enqueueDeployment()`
+6. **Build `namedCredentialSetup` LWC** — A setup wizard component with:
+  - Status indicators for each NC component (Not Configured / Configured / Authenticated)
+  - "Configure Credentials" button → calls `NamedCredentialSetupService`
+  - "Authenticate" button → opens Browser Flow popup via the auth URL
+  - "Enable" toggle → flips the CMDT
+  - "Test Connection" button → runs a verification callout
+  - Error handling with fallback instructions for manual setup
+7. **Update tests** — Add test coverage for `NamedCredentialSetupService` using `ConnectApi` test methods and mock patterns.
+8. **Deploy and validate** — Push all metadata to a scratch org, run through the post-install flow manually, verify end-to-end callouts work via both paths.
+9. **Create package version** — Include all new metadata in the package. Verify the ECA `distributionState` is `Packageable` before `sf package version create`.
+
+---
+
+#### Risks and Mitigations
+
+
+| Risk                                                                   | Mitigation                                                                                                                                                                       |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ECA Consumer Secret not queryable programmatically                     | Setup wizard falls back to admin copy/paste from Setup UI. This is a one-time operation.                                                                                         |
+| `ConnectApi` calls fail in Post Install Script context                 | Use a setup wizard (LWC + button click) instead of `PostInstallScript`. The Muzychuk pattern (Feb 2026) confirms this works.                                                     |
+| Subscriber org has My Domain URL different from `login.salesforce.com` | Setup wizard auto-detects via `URL.getOrgDomainUrl()`. External Auth Identity Provider uses `login.salesforce.com` as authorization/token endpoint, which is universal.          |
+| Admin doesn't complete setup                                           | CMDT defaults to `false` — app works normally on VF session pattern. Setup wizard shows a non-blocking reminder.                                                                 |
+| Platform changes to NC packaging model                                 | Dual-path architecture means either path works independently. If Salesforce solves credential preservation, the setup wizard becomes a no-op and the CMDT can default to `true`. |
+
 
 ### 1.3 Test Coverage Gaps
 
@@ -345,9 +468,9 @@ Instructions: "You help ISV partners and DevHub administrators manage their Sale
 - `**GetSubscriberDetails`** -- Query `PackageSubscriber` with filters. Inputs: `packageId`, `orgType`, `orgStatus`, `instanceName`, `versionId`.
 - `**CheckCodeCoverage`** -- Call existing `calculatePackageVersionCodeCoverage`. Input: `packageVersionId`.
 - `**CheckSecurityReview`** -- Call existing `verifySecurityReviewApproved`. Input: `subscriberPackageVersionId`.
-- `**GetOrgLimits**` -- Call existing `LimitsController.getLimits`. No inputs.
-- `**CreatePushUpgradeRequest**` -- Wrap `PushUpgradesCtrl.createPackagePushRequest`. Inputs: `packageVersionId`, `scheduledStartTime`.
-- `**GetPushUpgradeStatus**` -- Query `PackagePushJob` status. Input: `pushRequestId`.
+- `**GetOrgLimits`** -- Call existing `LimitsController.getLimits`. No inputs.
+- `**CreatePushUpgradeRequest`** -- Wrap `PushUpgradesCtrl.createPackagePushRequest`. Inputs: `packageVersionId`, `scheduledStartTime`.
+- `**GetPushUpgradeStatus`** -- Query `PackagePushJob` status. Input: `pushRequestId`.
 
 This enables natural language interactions like:
 
@@ -410,9 +533,9 @@ Build a dedicated agent topic for release management workflows:
 - `**ISV_Agent_Release_Notes_Generator`** -- Generate release notes from version metadata diff
 - `**ISV_Agent_Deprecation_Impact_Report`** -- Assess impact of deprecating a version
 - `**ISV_Agent_AppAnalytics_Summary`** -- Summarize AppAnalytics query results in natural language
-- `**ISV_Agent_Security_Review_Prep**` -- Checklist and guidance for AppExchange security review submission
-- `**ISV_Agent_Upgrade_Communication**` -- Generate subscriber-facing upgrade notification emails
-- `**ISV_Agent_Error_Diagnosis**` -- Diagnose push upgrade errors or API failures from log data
+- `**ISV_Agent_Security_Review_Prep`** -- Checklist and guidance for AppExchange security review submission
+- `**ISV_Agent_Upgrade_Communication`** -- Generate subscriber-facing upgrade notification emails
+- `**ISV_Agent_Error_Diagnosis`** -- Diagnose push upgrade errors or API failures from log data
 
 Each template uses **grounding** via `{!$Input:...}` merge fields that inject live Salesforce record data, making responses contextually accurate rather than generic.
 

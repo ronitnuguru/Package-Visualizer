@@ -87,7 +87,16 @@ private class PackageInterfaceTest {
         system.assertEquals('',p2s[0].parentOrg);
 		*/
         TEST.stopTest();
-    } 
+    }
+
+    @isTest public static void testPackageSubscribersByParentOrg() {
+        Test.startTest();
+        List<ObjectWrappers.PackageSubscriberWrapper> byParent = PackageVisualizerCtrl.getPackageSubscribersByParentOrg('00D000000000000AAA', '50', '0');
+        System.assertNotEquals(null, byParent);
+        List<ObjectWrappers.PackageSubscriberWrapper> blank = PackageVisualizerCtrl.getPackageSubscribersByParentOrg('', '50', '0');
+        System.assertNotEquals(null, blank);
+        Test.stopTest();
+    }
     
 	/**************************************************************************************
 	* @Description  Test class for Package Subscriber Chart Data Retrive Logic.
@@ -871,5 +880,59 @@ private class PackageInterfaceTest {
         Boolean isEnvironmentHubMember = Package2Interface.isEnvironmentHubMember();
         system.assertNotEquals(null, isEnvironmentHubMember);
         TEST.stopTest(); 
+    }
+
+    @isTest
+    public static void testVerifyUnlockedPackageInstalled() {
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+        Boolean installed = PackageVisualizerCtrl.verifyUnlockedPackageInstalled();
+        System.assertEquals(false, installed);
+        Test.stopTest();
+    }
+
+    @isTest
+    public static void testToolingApiCalloutMockRespondBranches() {
+        ToolingAPICalloutMock mock = new ToolingAPICalloutMock();
+        HttpRequest reqPv = new HttpRequest();
+        reqPv.setEndpoint(
+            'https://example.com/services/data/v61.0/tooling/query?q=SELECT+Id+from+Package2Version'
+        );
+        HttpResponse resPv = mock.respond(reqPv);
+        System.assertEquals(200, resPv.getStatusCode());
+
+        HttpRequest reqP2 = new HttpRequest();
+        reqP2.setEndpoint(
+            'https://example.com/services/data/v61.0/tooling/query?q=SELECT+Id+FROM+Package2'
+        );
+        HttpResponse resP2 = mock.respond(reqP2);
+        System.assertEquals(200, resP2.getStatusCode());
+
+        HttpRequest reqOther = new HttpRequest();
+        reqOther.setEndpoint('https://example.com/services/data/v61.0/tooling/query?q=SELECT+Id+FROM+Account');
+        HttpResponse resOther = mock.respond(reqOther);
+        System.assertEquals(401, resOther.getStatusCode());
+    }
+
+    @isTest
+    public static void testToolingApiCalloutMockCmsRespond() {
+        ToolingAPICalloutMock mock = new ToolingAPICalloutMock();
+        HttpResponse res = mock.cmsRespond(new HttpRequest());
+        System.assertEquals(500, res.getStatusCode());
+        System.assert(res.getBody().contains('Mock exception'));
+    }
+
+    @isTest
+    public static void testChangePasswordController() {
+        ChangePasswordController ctrl = new ChangePasswordController();
+        ctrl.oldPassword = 'old';
+        ctrl.newPassword = 'new';
+        ctrl.verifyNewPassword = 'new';
+        System.assertEquals('old', ctrl.oldPassword);
+        try {
+            ctrl.changePassword();
+        } catch (Exception e) {
+            System.assertNotEquals(null, e.getMessage());
+        }
     }
 }

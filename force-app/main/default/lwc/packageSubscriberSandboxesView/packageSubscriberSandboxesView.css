@@ -1,6 +1,15 @@
 .card-style {
-    border-radius: 0.25rem; /* More rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 
-                0 2px 4px rgba(0, 0, 0, 0.06); /* Layered shadows for depth */
-    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Smooth hover effects */
-  }
+  border-radius: 0.25rem;
+  border: 1px solid var(--slds-g-color-border-base-1, #c9c9c9);
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+  background-color: var(--slds-g-color-neutral-base-100, #ffffff);
+}
+
+.table-style {
+  background-color: rgb(250, 250, 249);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  direction: rtl;
+  max-height: 657px;
+}

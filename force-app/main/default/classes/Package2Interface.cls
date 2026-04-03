@@ -48,6 +48,26 @@ public with sharing class Package2Interface { // NOPMD
         if(!filterWrapperList.isEmpty()){ whereClause = getWhereClause(filterWrapperList); if(!String.isBlank(whereClause)){ queryString = queryString + ' WHERE ' + whereClause; }}       queryString = queryString + 'ORDER BY ' + sortedBy + ' ' + sortDirection; queryString = queryString + ' LIMIT ' + String.escapeSingleQuotes(subscriberLimit) + ' OFFSET ' + String.escapeSingleQuotes(subscriberOffset);
         if (Type.forName('PackageSubscriber')!= null) {SObjectAccessDecision  decision = Security.stripInaccessible(AccessType.READABLE,Database.query(queryString));for (sObject o : decision.getRecords()) { ObjectWrappers.PackageSubscriberWrapper ps = (ObjectWrappers.PackageSubscriberWrapper)JSON.deserialize(JSON.serialize(o), ObjectWrappers.PackageSubscriberWrapper.class); packageSubList.add(ps);}}return packageSubList;
     }
+
+	/**************************************************************************************
+	* @Description  PackageSubscriber rows whose ParentOrg matches a production org (sandboxes created from that org).
+	**************************************************************************************/     
+    public static List<ObjectWrappers.PackageSubscriberWrapper> getPackageSubscribersByParentOrg(String parentOrgKey, String subscriberLimit, String subscriberOffset){
+        List<ObjectWrappers.PackageSubscriberWrapper> packageSubList = new List<ObjectWrappers.PackageSubscriberWrapper>();
+        if(String.isBlank(parentOrgKey) || Type.forName('PackageSubscriber') == null){
+            return packageSubList;
+        }
+        String lim = String.isNotBlank(subscriberLimit) ? subscriberLimit : '50';
+        String off = String.isNotBlank(subscriberOffset) ? subscriberOffset : '0';
+        String queryString = 'SELECT Id, MetadataPackageId, MetadataPackageVersionId, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, ParentOrg, SystemModstamp FROM PackageSubscriber WHERE ParentOrg = \'' + String.escapeSingleQuotes(parentOrgKey) + '\' ORDER BY SystemModstamp DESC LIMIT ' + String.escapeSingleQuotes(lim) + ' OFFSET ' + String.escapeSingleQuotes(off);
+        SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, Database.query(queryString));
+        for (sObject o : decision.getRecords()) {
+            ObjectWrappers.PackageSubscriberWrapper ps = (ObjectWrappers.PackageSubscriberWrapper)JSON.deserialize(JSON.serialize(o), ObjectWrappers.PackageSubscriberWrapper.class);
+            ps.id = (String)o.get('Id');
+            packageSubList.add(ps);
+        }
+        return packageSubList;
+    }
     
 	/**************************************************************************************
 	* @Description  Get the list of packages subscriber group by provided field for displaying chart in package subscriber componenet.

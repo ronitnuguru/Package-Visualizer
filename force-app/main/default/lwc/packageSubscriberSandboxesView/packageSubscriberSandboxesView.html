@@ -1,10 +1,77 @@
 <template>
-    <div class="slds-var-m-around_small slds-var-p-bottom_small slds-card_boundary card-style">
-        <div class="slds-grid slds-var-p-around_small">
-            <lightning-breadcrumbs class="" style="font-weight: 700;">
-                <lightning-breadcrumb label={breadCrumbLabel}>
-                </lightning-breadcrumb>
-            </lightning-breadcrumbs>
-        </div>
+    <div
+        class="slds-var-m-around_small slds-var-p-bottom_small slds-card_boundary card-style"
+    >
+        <template if:true={displaySpinner}>
+            <div class="slds-p-bottom_xx-large slds-p-around_x-large">
+                <lightning-spinner
+                    alternative-text="Loading"
+                    size="medium"
+                    variant="brand"
+                ></lightning-spinner>
+            </div>
+        </template>
+        <template if:false={displaySpinner}>
+            <template if:true={displayEmptyView}>
+                <lightning-empty-state
+                    title="Hmm…"
+                    illustration-name="noresults:search"
+                >
+                    <p slot="description">
+                        No sandbox subscriber orgs found for this Production Org.
+                    </p>
+                </lightning-empty-state>
+            </template>
+            <template if:false={displayEmptyView}>
+                <div class="slds-var-p-horizontal_medium slds-var-p-top_small">
+                    <lightning-breadcrumbs style="font-weight: 700;">
+                        <lightning-breadcrumb
+                            label={breadCrumbLabel}
+                        ></lightning-breadcrumb>
+                    </lightning-breadcrumbs>
+                </div>
+                <template if:true={displaySandboxesList}>
+                    <div class="slds-var-p-around_medium">
+                        <div class="slds-grid slds-var-p-bottom_x-small slds-wrap">
+                            <ul
+                                class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small"
+                            >
+                                <template if:true={subscribersLength}>
+                                    <li class="slds-item">
+                                        {subscribersLength} Sandboxes
+                                    </li>
+                                </template>
+                                <li class="slds-item">Sorted by {sortedByLabel}</li>
+                                <li class="slds-item">
+                                    Updated&nbsp;<lightning-relative-date-time
+                                        value={relativeDateTime}
+                                    ></lightning-relative-date-time>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="table-style">
+                            <div style={responsivePanelStyle}>
+                                <lightning-datatable
+                                    data={sandboxesData}
+                                    columns={columns}
+                                    key-field="id"
+                                    hide-checkbox-column
+                                    enable-infinite-loading
+                                    onloadmore={loadMoreData}
+                                    load-more-offset="5"
+                                ></lightning-datatable>
+                                <template if:true={displayDatatableSpinner}>
+                                    <lightning-spinner
+                                        alternative-text="Loading"
+                                        size="medium"
+                                        variant="brand"
+                                    ></lightning-spinner>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </template>
+        </template>
     </div>
 </template>

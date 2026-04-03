@@ -68,6 +68,14 @@ public with sharing class PackageVisualizerCtrl {
     public static List<ObjectWrappers.PackageSubscriberWrapper> get2GPPackageVersionSubscriberList(list<ObjectWrappers.FilterWrapper> filterWrapper, String sortedBy, String sortDirection, String subscriberLimit, String subscriberOffset){
         List <ObjectWrappers.PackageSubscriberWrapper> packageSubList = Package2Interface.get2GPPackageSubscriberList(filterWrapper, sortedBy, sortDirection, subscriberLimit, subscriberOffset); return packageSubList;
     }
+
+	/**************************************************************************************
+	* @Description  PackageSubscriber orgs with ParentOrg equal to the given production org key (e.g. sandboxes).
+	**************************************************************************************/     
+    @AuraEnabled(cacheable=true)
+    public static List<ObjectWrappers.PackageSubscriberWrapper> getPackageSubscribersByParentOrg(String parentOrgKey, String subscriberLimit, String subscriberOffset){
+        return Package2Interface.getPackageSubscribersByParentOrg(parentOrgKey, subscriberLimit, subscriberOffset);
+    }
     
 	/**************************************************************************************
 	* @Description  Get list of all 2GP Packages Subscriber org details group by varios fields
