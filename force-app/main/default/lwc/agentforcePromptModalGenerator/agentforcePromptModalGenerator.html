@@ -1,6 +1,40 @@
 <template>
     <lightning-modal-header class="modal-window" label={label}></lightning-modal-header>
     <lightning-modal-body>
+      <div class="slds-var-m-around_small slds-var-p-bottom_small slds-card_boundary card-style">
+        <lightning-card>
+            <h3 slot="title" class="slds-truncate">
+                <lightning-icon
+                    icon-name="standard:agent_astro"
+                    size="medium"
+                    class="slds-m-right_small"
+                ></lightning-icon>
+                Agentforce Assist
+            </h3>
+            <div class="slds-card__body slds-card__body_inner">
+                <div
+                    class="template-prompt-chips"
+                    role="group"
+                    aria-label="Package GenAI prompt template starters"
+                >
+                    <template for:each={samplePromptTemplates} for:item="tpl">
+                        <lightning-button
+                            key={tpl.id}
+                            variant="neutral"
+                            label={tpl.label}
+                            icon-name={tpl.iconName}
+                            title={tpl.description}
+                            data-template-id={tpl.id}
+                            onclick={handleSampleTemplateClick}
+                        ></lightning-button>
+                    </template>
+                </div>
+            </div>
+        </lightning-card>
+      </div>
+    </lightning-modal-body>
+    <!--
+    <lightning-modal-body>
       <template if:true={displayExtensionIllustration}>
         <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-around_medium" role="status">
             <div class="slds-media__figure">
@@ -71,7 +105,7 @@
             class="text-area-style"
             required
           ></lightning-textarea>
-          <!--
+          
           <lightning-textarea 
             name="prompt" 
             label="System Prompt"
@@ -81,7 +115,7 @@
             class="text-area-style"
             required
           ></lightning-textarea>
-          -->
+          
         </template>
         <template if:false={displayEditPrompt}>
           <li class="slds-chat-listitem slds-chat-listitem_inbound">
@@ -126,6 +160,7 @@
         </template>
       </template>
     </lightning-modal-body>
+    -->
     <template if:false={displayEditPrompt}>
       <lightning-modal-footer>
           <lightning-button

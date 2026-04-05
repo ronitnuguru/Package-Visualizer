@@ -4,9 +4,10 @@
       "path": "force-app",
       "default": true,
       "package": "Package Visualizer",
-      "versionName": "Version 8.11",
-      "versionNumber": "8.11.0.NEXT",
-      "ancestorVersion": "8.10.0"
+      "versionName": "Version 8.12",
+      "versionNumber": "8.12.0.NEXT",
+      "ancestorVersion": "8.11.0",
+      "releaseNotesUrl": "https://salesforce.quip.com/f3SWA340YbFH"
     }
   ],
   "name": "Package Visualizer",

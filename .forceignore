@@ -14,7 +14,6 @@ package.xml
 
 **/*.ts
 
-.claude
-.cursor
-
-.unpackaged-directory
+..cursor
+..claude
+..unpackaged-directory

@@ -1,11 +1,17 @@
 export default {
   fields: {
     Id: {
-      type: "text",
+      type: "button",
       fieldName: "Id",
       label: "Push Request Id",
       sortable: true,
-      iconName: "standard:record"
+      wrapText: true,
+      iconName: "standard:record",
+      typeAttributes: {
+        label: { fieldName: "Id" },
+        name: "show_details",
+        variant: "base"
+      }
     },
     PackageVersionId: {
       type: "text",

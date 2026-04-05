@@ -13,11 +13,17 @@ const actions = [
 
 const columns = [
   {
-    type: "text",
+    type: "button",
     fieldName: "Id",
     label: "Push Request Id",
     sortable: true,
-    iconName: "standard:record"
+    iconName: "standard:record",
+    wrapText: true,
+    typeAttributes: {
+      label: { fieldName: "Id" },
+      name: "show_details",
+      variant: "base"
+    }
   },
   {
     type: "text",

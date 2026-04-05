@@ -69,7 +69,7 @@ public with sharing class PushUpgradesInterface {
     }
 
     public static List<ObjectWrappers.PackagePushJobWrapper> getPushJobs(list<ObjectWrappers.FilterWrapper> filterWrapperList, String sortedBy, String sortDirection, String pushJobsLimit, String pushJobsOffset){
-        String queryString = 'SELECT (SELECT ErrorMessage, ErrorTitle, Id FROM PackagePushErrors), Id, PackagePushRequestId, Status, SubscriberOrganizationKey, SystemModstamp, DurationSeconds, EndTime, StartTime FROM PackagePushJob ';
+        String queryString = 'SELECT (SELECT ErrorMessage, ErrorTitle, ErrorType, ErrorDetails, ErrorSeverity, Id FROM PackagePushErrors), Id, PackagePushRequestId, Status, SubscriberOrganizationKey, SystemModstamp, DurationSeconds, EndTime, StartTime FROM PackagePushJob ';
         String whereClause = '';
         if(!filterWrapperList.isEmpty()){
             whereClause = Package2Interface.getWhereClause(filterWrapperList);

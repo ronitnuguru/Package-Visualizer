@@ -127,6 +127,9 @@ public with sharing class ObjectWrappers{
     public class JobErrorsWrapper {
         @AuraEnabled public String ErrorTitle{get;set;}
         @AuraEnabled public String ErrorMessage{get;set;}
+        @AuraEnabled public String ErrorType{get;set;}
+        @AuraEnabled public String ErrorDetails{get;set;}
+        @AuraEnabled public String ErrorSeverity{get;set;}
     }
 
     public class ObjectAttributes{

@@ -300,6 +300,18 @@ public with sharing class PackageVisualizerCtrl {
 
     @AuraEnabled(continuation=true)
     public static Object invokeGenAiPromptTemplate(String className, String methodName, String recordId, String objectInput, String promptTemplateName){
-        try { String namespacedClass = 'pkgviz.'+className; Callable callableInstance = (Callable) Type.forName(className).newInstance(); Map<String, Object> payload = new Map<String, Object>{ 'recordId' => recordId, 'objectInput' => objectInput, 'promptTemplateName' => promptTemplateName  }; String result = (String) callableInstance.call(methodName, payload); return result; } catch (Exception e) { throw new AuraHandledException(e.getMessage()); }
+        try {
+            String namespacedClass = 'pkgviz.' + className;
+            Callable callableInstance = (Callable) Type.forName(namespacedClass).newInstance();
+            Map<String, Object> payload = new Map<String, Object>{
+                'recordId' => recordId,
+                'objectInput' => objectInput,
+                'promptTemplateName' => promptTemplateName
+            };
+            String result = (String) callableInstance.call(methodName, payload);
+            return result;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
     }
 }

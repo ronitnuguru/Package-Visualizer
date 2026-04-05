@@ -16,11 +16,16 @@ const actions = [
 
 const gridColumns = [
     {
-        type: "text",
+        type: "button",
         fieldName: "company",
         label: "Company",
         sortable: false,
-        iconName: "standard:your_account"
+        iconName: "standard:your_account",
+        typeAttributes: {
+            label: { fieldName: "company" },
+            name: "show_details",
+            variant: "base"
+        }
     },
     {
         type: "text",

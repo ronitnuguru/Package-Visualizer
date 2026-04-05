@@ -1,6 +1,7 @@
 import { LightningElement, api, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getPushJobPackageSubscriber from "@salesforce/apex/PushUpgradesCtrl.getPushJobPackageSubscriber";
+import invokeGenAiPromptTemplate from '@salesforce/apexContinuation/PackageVisualizerCtrl.invokeGenAiPromptTemplate';
 
 export default class PackagePushJobDetail extends LightningElement {
   @api pushJobDetails;
@@ -10,7 +11,7 @@ export default class PackagePushJobDetail extends LightningElement {
 
   displaySubscriberData;
   displaySpinner = true;
-
+  displayAgentforceSpinner = false;
   installedStatus;
   instanceName;
   metadataPackageId;
@@ -20,9 +21,13 @@ export default class PackagePushJobDetail extends LightningElement {
   orgStatus;
   orgType;
   packageType;
+  aiResponse;
+  showAgentforceCard = false;
+  displayAiSuggest = false;
+  aiSuggestion;
 
-  connectedCallback() {
-    console.log('pushJobDetails', this.pushJobDetails);
+  get isAiSuggestionEmpty() {
+    return !this.aiSuggestion;
   }
 
   get pushJobError() {
@@ -30,10 +35,9 @@ export default class PackagePushJobDetail extends LightningElement {
     if(this.pushJobDetails.PackagePushErrors){
       errorTitle = this.pushJobDetails.PackagePushErrors.records[0].ErrorTitle;
       errorMessage = this.pushJobDetails.PackagePushErrors.records[0].ErrorMessage;
-      return `${errorTitle} ${errorMessage}`;
+      return `${errorTitle}: ${errorMessage}`;
     }
     return undefined;
-    
   }
 
   @wire(getPushJobPackageSubscriber, {
@@ -92,5 +96,91 @@ export default class PackagePushJobDetail extends LightningElement {
 
   get displayErrorIcon() {
     return this.pushJobDetails.Status === "Failed" ? true : false;
+  }
+
+  get parsedResponse() {
+    if (!this.aiResponse) return null;
+    try {
+      return JSON.parse(this.aiResponse);
+    } catch (e) {
+      console.error('Failed to parse AI response:', e);
+      return { summary: this.aiResponse };  // Fallback to raw text
+    }
+  }
+
+  get severityVariant() {
+    if (!this.parsedResponse?.severity) return '';
+    const severity = this.parsedResponse.severity.toLowerCase();
+    const variantMap = {
+      'critical': 'slds-theme_error',
+      'high': 'slds-theme_error',
+      'medium': 'slds-theme_warning',
+      'low': 'slds-theme_success'
+    };
+    return variantMap[severity] || '';
+  }
+
+  handleAiSuggestImprovements() {
+    this.displayAiSuggest = true;
+  }
+
+  handlePopoverClose() {
+    this.displayAiSuggest = false;
+  }
+
+  handleAiSuggestionChange(event) {
+    this.aiSuggestion = event.target.value;
+  }
+
+  handleAiSuggestAssist() {
+    this.displayAgentforceSpinner = true;
+    this.generateAiResponse(true);
+    this.handlePopoverClose();
+  }
+
+  getCleanErrorsPayload() {
+    const errorRecords = this.pushJobDetails.PackagePushErrors?.records || [];
+    return errorRecords.map((error) => ({
+      errorTitle: error.ErrorTitle || "",
+      errorMessage: error.ErrorMessage || "",
+      errorType: error.ErrorType || "",
+      errorDetails: error.ErrorDetails || "",
+      errorSeverity: error.ErrorSeverity || ""
+    }));
+  }
+
+  async generateAiResponse(includeUserSuggestion = false) {
+    const cleanErrors = this.getCleanErrorsPayload();
+    const basePayload = JSON.stringify(cleanErrors);
+    const recordId = includeUserSuggestion
+      ? `${this.aiSuggestion} ${basePayload}`
+      : basePayload;
+
+    try {
+      this.aiResponse = await invokeGenAiPromptTemplate({
+        className: "AgentGenAiPromptTemplateController",
+        methodName: "singleFreeText",
+        recordId,
+        objectInput: "Package_Push_Errors",
+        promptTemplateName: "Package_Push_Error_Debugger"
+      });
+      this.displayAgentforceSpinner = false;
+    } catch (error) {
+      this.displayAgentforceSpinner = false;
+      console.error("AI analysis failed:", error);
+      this.dispatchEvent(
+        new ShowToastEvent({
+          title: "AI Analysis Failed",
+          message: error.body?.message || "Unable to analyze errors",
+          variant: "error"
+        })
+      );
+    }
+  }
+
+  handleAskAgentforce() {
+    this.showAgentforceCard = true;
+    this.displayAgentforceSpinner = true;
+    this.generateAiResponse(false);
   }
 }

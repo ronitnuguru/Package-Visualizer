@@ -16,11 +16,16 @@ const actions = [
 
 const columns = [
   {
-    type: "text",
+    type: "button",
     fieldName: "SubscriberOrganizationKey",
     label: "Subscriber Org",
     sortable: true,
-    iconName: "standard:customer"
+    iconName: "standard:customer",
+    typeAttributes: {
+      label: { fieldName: "SubscriberOrganizationKey" },
+      name: "show_details",
+      variant: "base"
+    }
   },
   {
     type: "text",

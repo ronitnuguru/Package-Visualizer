@@ -26,6 +26,63 @@ export default class AgentforcePromptModalGenerator extends LightningModal  {
     modelsValue = 'sfdc_ai__DefaultGPT5';
     currentPkgVersionId = '04tRh000001NBdJIAW';
 
+    /** Aligns with plan §3.6 "Package GenAI Prompt Template Library" (ISV packaging / Agentforce). */
+    promptTemplateCardTitle = 'Package GenAI Prompt Template Library';
+    promptTemplateCardIcon = 'utility:sparkles';
+
+    /**
+     * Sample template prompts aligned with the prompt template library idea
+     * (ISV packaging / Agentforce). Selection wiring comes in a later step.
+     */
+    get samplePromptTemplates() {
+        return [
+            {
+                id: 'push_upgrade_analysis',
+                label: 'Push Upgrade Analysis',
+                description: 'Analyze push job results and suggest remediation',
+                iconName: 'utility:sparkles'
+            },
+            {
+                id: 'subscriber_health',
+                label: 'Subscriber Health Report',
+                description: 'Generate a health snapshot for a subscriber org',
+                iconName: 'utility:sparkles'
+            },
+            {
+                id: 'release_notes',
+                label: 'Release Notes Draft',
+                description: 'Outline release notes from version context',
+                iconName: 'utility:sparkles'
+            },
+            {
+                id: 'deprecation_impact',
+                label: 'Deprecation Impact',
+                description: 'Assess impact of deprecating a version',
+                iconName: 'utility:sparkles'
+            },
+            {
+                id: 'upgrade_communication',
+                label: 'Upgrade Email Draft',
+                description: 'Draft subscriber-facing upgrade communication',
+                iconName: 'utility:sparkles'
+            },
+            {
+                id: 'error_diagnosis',
+                label: 'Error Diagnosis',
+                description: 'Diagnose push or API errors from details you provide',
+                iconName: 'utility:sparkles'
+            }
+        ];
+    }
+
+    handleSampleTemplateClick(event) {
+        const templateId = event?.currentTarget?.dataset?.templateId;
+        if (!templateId) {
+            return;
+        }
+        // Fills user/system prompts from the chosen template in a follow-up step.
+    }
+
     get modelsTypeOptions() {
         return [
             { label: 'Azure OpenAI GPT-5', value: 'sfdc_ai__DefaultGPT5' },

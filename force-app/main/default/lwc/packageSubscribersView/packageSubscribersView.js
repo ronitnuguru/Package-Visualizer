@@ -19,12 +19,17 @@ const actions = [
 
 const columns = [
   {
-    type: "text",
+    type: "button",
     fieldName: "orgName",
     label: "Organization Name",
     sortable: true,
     iconName: "standard:customer",
-    wrapText: true
+    wrapText: true,
+    typeAttributes: {
+      label: { fieldName: "orgName" },
+      name: "show_details",
+      variant: "base"
+    }
   },
   {
     type: "text",

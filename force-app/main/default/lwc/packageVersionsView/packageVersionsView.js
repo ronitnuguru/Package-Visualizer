@@ -22,11 +22,16 @@ const actions = [
 
 const gridColumns = [
   {
-    type: "text",
+    type: "button",
     fieldName: "versionNumber",
     label: "Version Number",
     sortable: true,
-    iconName: "standard:number_input"
+    iconName: "standard:number_input",
+    typeAttributes: {
+      label: { fieldName: "versionNumber" },
+      name: "show_details",
+      variant: "base"
+    }
   },
   {
     type: "text",

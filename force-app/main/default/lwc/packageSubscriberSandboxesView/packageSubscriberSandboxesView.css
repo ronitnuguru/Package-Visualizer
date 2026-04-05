@@ -1,12 +1,9 @@
 .card-style {
   border-radius: 0.25rem;
-  border: 1px solid var(--slds-g-color-border-base-1, #c9c9c9);
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
-  background-color: var(--slds-g-color-neutral-base-100, #ffffff);
 }
 
 .table-style {
-  background-color: rgb(250, 250, 249);
   position: relative;
   overflow: hidden;
   display: flex;

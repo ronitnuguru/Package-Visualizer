@@ -1,5 +1,5 @@
 <template>
-  <div class="slds-var-p-around_medium">
+  <div class="slds-p-around_medium">
     <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small">
       <lightning-card>
         <h3 slot="title" class="slds-truncate">
@@ -43,12 +43,14 @@
         </h3>
         <lightning-button-group slot="actions">
           <template if:true={pushJobError}>
-            <lightning-button 
-              variant="border-filled" 
-              label="Agentforce Assist" 
-              icon-name="utility:sparkles" 
-              onclick={handleAskAgentforce}
-            ></lightning-button>
+            <template if:false={showAgentforceCard}>
+              <lightning-button 
+                variant="brand" 
+                label="Agentforce Assist" 
+                icon-name="utility:sparkles" 
+                onclick={handleAskAgentforce}
+              ></lightning-button>  
+            </template>
           </template>
         </lightning-button-group>
         <div class="slds-card__body slds-card__body_inner">
@@ -124,27 +126,191 @@
               </template>
             </div>
           </div>
-          <div class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium card-style">
-            <lightning-card>
-              <template if:true={displaySpinner}>
-                  <div class="slds-p-vertical_medium">
-                      <lightning-spinner
-                          alternative-text="Loading"
-                          size="medium"
-                          variant="brand"
-                      ></lightning-spinner>
-                  </div>
-              </template>
-              <h3 slot="title" class="slds-truncate">
-                  <lightning-icon 
-                      icon-name="standard:agent_astro" 
-                      size="medium" 
-                      class="slds-m-right_small"
-                  ></lightning-icon>
-                  Agentforce Generated
-              </h3>
-            </lightning-card>
-          </div>
+          <template if:true={showAgentforceCard}>
+            <div class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium card-style">
+              <lightning-card>
+                <template if:true={displayAgentforceSpinner}>
+                    <div class="slds-p-vertical_medium">
+                        <lightning-spinner
+                            alternative-text="Loading"
+                            size="medium"
+                            variant="brand"
+                        ></lightning-spinner>
+                    </div>
+                </template>
+                <h3 slot="title" class="slds-truncate">
+                    <lightning-icon
+                        icon-name="standard:agent_astro"
+                        size="medium"
+                        class="slds-m-right_small"
+                    ></lightning-icon>
+                    Agentforce Generated
+                </h3>
+                <lightning-button-group slot="actions">
+                  <template lwc:if={aiResponse}>
+                    <lightning-button
+                      label="Suggest Improvement"
+                      icon-name="utility:sparkles"
+                      variant="brand"
+                      onclick={handleAiSuggestImprovements}
+                    ></lightning-button>
+                    <template if:true={displayAiSuggest}>
+                      <div class="slds-is-relative">
+                        <section
+                          class="slds-popover slds-nubbin_top-right tf-popover slds-popover_large"
+                          role="dialog"
+                        >
+                          <button
+                            class="slds-button slds-button_icon slds-button_icon-small slds-float_right slds-popover__close slds-button_icon-inverse"
+                            title="Close dialog"
+                            style="color: white"
+                          >
+                            <lightning-button-icon
+                              size="x-small"
+                              icon-name="utility:close"
+                              alternative-text="Close"
+                              title="Close"
+                              value="bare"
+                              class="slds-current-color"
+                              onclick={handlePopoverClose}
+                            ></lightning-button-icon>
+                            <span class="slds-assistive-text">Close</span>
+                          </button>
+                          <header class="slds-popover__header">
+                            <div class="slds-media slds-media_center slds-has-flexi-truncate">
+                              <div class="slds-media__figure">
+                                <lightning-icon
+                                  size="small"
+                                  icon-name="utility:agent_astro"
+                                  class="icon-style"
+                                ></lightning-icon>
+                              </div>
+                              <div class="slds-media__body">
+                                <h2
+                                  class="slds-truncate slds-text-heading_small tf-popover_header"
+                                  title="How can we improve this?"
+                                >
+                                  How can we improve this?
+                                </h2>
+                              </div>
+                            </div>
+                          </header>
+                          <div
+                            class="slds-popover__body slds-popover__body_scrollable tf-popover-body"
+                          >
+                            <lightning-textarea
+                              required
+                              label="Revise AI Response"
+                              placeholder="Add additional context about the errors and the fix you want..."
+                              onchange={handleAiSuggestionChange}
+                            ></lightning-textarea>
+                          </div>
+                          <footer class="slds-popover__footer">
+                            <div
+                              class="slds-grid slds-grid_vertical-align-center slds-grid_align-end"
+                            >
+                              <lightning-button
+                                label="Agentforce Assist"
+                                variant="brand"
+                                icon-name="utility:sparkles"
+                                icon-position="right"
+                                onclick={handleAiSuggestAssist}
+                                disabled={isAiSuggestionEmpty}
+                              ></lightning-button>
+                            </div>
+                          </footer>
+                        </section>
+                      </div>
+                    </template>
+                  </template>
+                </lightning-button-group>
+              <div class="slds-card__body slds-card__body_inner">
+                <template if:false={displayAgentforceSpinner}>
+                  <template if:true={aiResponse}>
+                    <div class="slds-p-around_small">
+                      <div class="slds-grid slds-wrap slds-gutters slds-p-bottom_small">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                          <template if:true={parsedResponse.severity}>
+                            <div class="slds-p-bottom_xx-small">
+                              <strong>Severity:</strong>
+                            </div>
+                            <div>
+                              <lightning-badge label={parsedResponse.severity} class={severityVariant}></lightning-badge>
+                            </div>
+                          </template>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                          <template if:true={parsedResponse.estimatedResolutionTime}>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                              <div class="slds-p-bottom_xx-small">
+                                <strong>Est. Resolution Time:</strong>
+                              </div>
+                              <div>
+                                {parsedResponse.estimatedResolutionTime}
+                              </div>
+                            </div>
+                          </template>
+                        </div>
+                      </div>
+                      <dl class="slds-m-bottom_none">
+                        <dt class="slds-p-bottom_xx-small">
+                          <strong>Summary:</strong>
+                        </dt>
+                        <dd class="slds-var-m-left_none slds-p-bottom_small">
+                          {parsedResponse.summary}
+                        </dd>
+
+                        <template if:true={parsedResponse.rootCause}>
+                          <dt class="slds-p-bottom_xx-small">
+                            <strong>Root Cause:</strong>
+                          </dt>
+                          <dd class="slds-var-m-left_none slds-p-bottom_small">
+                            {parsedResponse.rootCause}
+                          </dd>
+                        </template>
+
+                        <template if:true={parsedResponse.debuggingSteps}>
+                          <dt class="slds-p-bottom_xx-small">
+                            <strong>Debugging Steps:</strong>
+                          </dt>
+                          <dd class="slds-var-m-left_none slds-p-bottom_small">
+                            <ol class="slds-list_ordered">
+                              <template for:each={parsedResponse.debuggingSteps} for:item="step">
+                                <li key={step} class="slds-p-vertical_xx-small">{step}</li>
+                              </template>
+                            </ol>
+                          </dd>
+                        </template>
+
+                        <template if:true={parsedResponse.preventativeMeasures}>
+                          <dt class="slds-p-bottom_xx-small">
+                            <strong>Prevention:</strong>
+                          </dt>
+                          <dd class="slds-var-m-left_none slds-p-bottom_small">
+                            <ul class="slds-list_dotted">
+                              <template for:each={parsedResponse.preventativeMeasures} for:item="measure">
+                                <li key={measure} class="slds-p-vertical_xx-small">{measure}</li>
+                              </template>
+                            </ul>
+                          </dd>
+                        </template>
+                      </dl>
+                    </div>
+                  </template>
+                  <template if:false={aiResponse}>
+                    <div class="slds-p-around_medium">
+                      <lightning-empty-state
+                        title="Analyzing Errors"
+                        illustration-name="noresults:search">
+                        <p slot="description">We were unable to analyze the errors...</p>
+                      </lightning-empty-state>
+                    </div>
+                  </template>
+                </template>
+              </div>
+              </lightning-card>
+            </div>
+          </template>
         </div>
       </lightning-card>
     </div>
@@ -161,14 +327,14 @@
           <lightning-icon
             size="x-small"
             icon-name="utility:switch"
-            class="slds-var-p-right_xx-small"
+            class="slds-p-right_xx-small"
           ></lightning-icon>
         </template>
         <template if:false={displaySubscriber}>
           <lightning-icon
             size="x-small"
             icon-name="utility:chevronright"
-            class="slds-var-p-right_xx-small"
+            class="slds-p-right_xx-small"
           ></lightning-icon>
         </template>
         <span class="slds-truncate" title="All Apps">Subscriber</span>

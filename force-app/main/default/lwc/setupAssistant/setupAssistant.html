@@ -918,6 +918,28 @@
                               </div>
                             </div>
                           </li>
+                          <li class="slds-progress__item">
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
+                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
+                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                              <div class="slds-size_3-of-4">
+                                To <a href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_recommended_version.htm" target="_blank">recommend package version to subscribers</a>: <code>sf package update --package "0Ho..." --target-dev-hub "DevHubOrgAlias" --recommended-version-id "04t..."</code>
+                              </div>
+                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                                <lightning-button-icon
+                                  icon-name="utility:apex"
+                                  variant="brand"
+                                  onclick={navigateToPackageUpdate}
+                                ></lightning-button-icon>
+                              </div>
+                            </div>
+                          </li>
                         </ol>
                         <ol class="list_ordered">
                           <li class="list_item">

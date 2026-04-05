@@ -29,12 +29,17 @@ export default {
       iconName: "standard:record"
     },
     orgName: {
-        type: "text ",
+        type: "button",
         fieldName: "orgName",
         label: "Organization Name",
         sortable: true,
         iconName: "standard:customer",
-        wrapText: true
+        wrapText: true,
+        typeAttributes: {
+          label: { fieldName: "orgName" },
+          name: "show_details",
+          variant: "base"
+        }
       },
     orgStatus: {
       type: "text",
