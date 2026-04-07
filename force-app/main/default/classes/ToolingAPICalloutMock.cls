@@ -19,6 +19,11 @@ public with sharing class ToolingAPICalloutMock implements HttpCalloutMock {
                 res.setBody('{"size":1,"totalSize":1,"done":true,"queryLocator":null,"entityTypeName":"Package2","records":[{"attributes":{"type":"Package2","url":"/services/data/v57.0/tooling/sobjects/Package2/0Ho000000000000AAA"},"Id":"0Ho000000000000AAA","ContainerOptions":"Unlocked","Description":"Dummy App","IsDeprecated":false,"Name":"DummyApp","NamespacePrefix":null,"SubscriberPackageId":"033000000000000AAA"}]}');
                 res.setStatusCode(200);
             }
+            else if (req.getEndpoint().contains('FROM+SubscriberPackageVersion') || req.getEndpoint().contains('Dependencies+FROM+SubscriberPackageVersion')) {
+            //SubscriberPackageVersion with Dependencies Success
+                res.setBody('{"size":1,"totalSize":1,"done":true,"queryLocator":null,"entityTypeName":"SubscriberPackageVersion","records":[{"attributes":{"type":"SubscriberPackageVersion","url":"/services/data/v61.0/tooling/sobjects/SubscriberPackageVersion/04t000000000000AAA"},"Dependencies":{"ids":[{"subscriberPackageVersionId":"04t000000000001BBB"},{"subscriberPackageVersionId":"04t000000000002CCC"}]}}]}');
+                res.setStatusCode(200);
+            }
             else {
                 //Failure
                 res.setStatusCode(401);

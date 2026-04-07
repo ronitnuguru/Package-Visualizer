@@ -300,18 +300,41 @@ public with sharing class PackageVisualizerCtrl {
 
     @AuraEnabled(continuation=true)
     public static Object invokeGenAiPromptTemplate(String className, String methodName, String recordId, String objectInput, String promptTemplateName){
-        try {
-            String namespacedClass = 'pkgviz.' + className;
+        try { 
+            String namespacedClass = 'pkgviz.'+className; 
             Callable callableInstance = (Callable) Type.forName(namespacedClass).newInstance();
-            Map<String, Object> payload = new Map<String, Object>{
-                'recordId' => recordId,
-                'objectInput' => objectInput,
-                'promptTemplateName' => promptTemplateName
-            };
+            Map<String, Object> payload = new Map<String, Object> { 'recordId' => recordId, 'objectInput' => objectInput, 'promptTemplateName' => promptTemplateName };
             String result = (String) callableInstance.call(methodName, payload);
             return result;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
+    }
+
+    /**************************************************************************************
+	* @Description  Get the list of package dependencies for the given subscriber package version ID
+	**************************************************************************************/
+    @AuraEnabled(cacheable=true)
+    public static ObjectWrappers.PackageDependenciesResponse getPackageDependencies(String subscriberPackageVersionId){
+        ObjectWrappers.PackageDependenciesResponse dependencies = Package2Interface.getPackageDependencies(subscriberPackageVersionId);
+        return dependencies;
+    }
+
+    /**************************************************************************************
+	* @Description  Get a single package version by subscriber package version ID (cacheable for dependencies view)
+	**************************************************************************************/
+    @AuraEnabled(cacheable=true)
+    public static ObjectWrappers.PackageVersionWrapper getPackageVersionBySubscriberId(String subscriberPackageVersionId){
+        list<ObjectWrappers.FilterWrapper> filterWrapper = new list<ObjectWrappers.FilterWrapper>();
+        ObjectWrappers.FilterWrapper fw = new ObjectWrappers.FilterWrapper();
+        fw.fieldName = 'SubscriberPackageVersionId';
+        fw.value = subscriberPackageVersionId;
+        fw.dataType = 'STRING';
+        filterWrapper.add(fw);
+        List<ObjectWrappers.PackageVersionWrapper> versions = Package2Interface.getPackage2Versions(filterWrapper, null, null, null, null, 'createdDate', 'desc', '50', '0');
+        if(versions != null && versions.size() > 0){
+            return versions[0];
+        }
+        return null;
     }
 }

@@ -256,4 +256,20 @@ public with sharing class ObjectWrappers{
         @AuraEnabled public string owner {get;set;}
         @AuraEnabled public PackageCreator createdBy{get;set;}
     }
+
+    /**************************************************************************************
+	* @Description  Wrapper Class for Package Dependencies. ObjectWrappers.PackageDependencyWrapper
+	**************************************************************************************/
+    public class PackageDependencyWrapper{
+        @AuraEnabled public String subscriberPackageVersionId {get;set;}
+        @AuraEnabled public String packageName {get;set;}
+        @AuraEnabled public String versionNumber {get;set;}
+    }
+
+    /**************************************************************************************
+	* @Description  Wrapper Class for Package Dependencies Response. ObjectWrappers.PackageDependenciesResponse
+	**************************************************************************************/
+    public class PackageDependenciesResponse{
+        @AuraEnabled public List<PackageDependencyWrapper> dependencies {get;set;}
+    }
 }

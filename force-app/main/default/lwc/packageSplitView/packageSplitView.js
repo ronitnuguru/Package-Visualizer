@@ -10,6 +10,15 @@ import get2GPPackageList from "@salesforce/apexContinuation/PackageVisualizerCtr
 import get1GPPackageList from "@salesforce/apexContinuation/PackageVisualizerCtrl.get1GPPackageList";
 import hasPackageVisualizerCore from "@salesforce/customPermission/Package_Visualizer_Core";
 
+// Debounce utility function
+const debounce = (func, delay) => {
+  let timeoutId;
+  return function debounced(...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(this, args), delay);
+  };
+};
+
 export default class PackageSplitView extends NavigationMixin(LightningElement) {
   containerStyle = `slds-split-view_container slds-is-open slds-show_medium`;
   containerCollapsed = false;
@@ -58,13 +67,17 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
     if (this.packageTypes === undefined) {
       this.packageTypes = '2GP and Unlocked Packages';
     }
+
+    // Initialize debounced search with 300ms delay
+    this.debouncedSearch = debounce(this.searchInputChange.bind(this), 300);
+
     if (this.isPackageVisualizerEnabled) {
       this.getPackages(0, "asc");
     } else {
       this.displaySpinner = false;
       this.packageList = undefined;
     }
-    
+
     this.subscription = subscribe(
       this.messageContext,
       PACAKGEEDITMESSAGECHANNEL,
@@ -101,74 +114,41 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
     this.refreshPackages("asc", false, 0);
   }
 
-  getPackages(packageIndex, sortDirection) {
+  async getPackages(packageIndex, sortDirection) {
     this.displaySpinner = true;
-    if (this.packageTypes === '2GP and Unlocked Packages') {
-      (async () => {
-        await get2GPPackageList({
-          sortDirection: sortDirection
+
+    try {
+      const result = this.packageTypes === '2GP and Unlocked Packages'
+        ? await get2GPPackageList({ sortDirection })
+        : await get1GPPackageList({ sortDirection });
+
+      // Pre-compute searchable text for optimized filtering
+      this.packageList = result.map(pkg => ({
+        ...pkg,
+        _searchText: `${pkg.name || ''}|${pkg.namespacePrefix || ''}|${pkg.description || ''}|${pkg.containerOptions || ''}|${pkg.id || ''}`.toLowerCase()
+      }));
+
+      if (this.packageList.length === 0) {
+        this.packageList = false;
+        this.detailsStyle = ``;
+      } else {
+        this.packageFilterList = this.packageList;
+        this.packageListSize = this.packageFilterList.length;
+        this.currentPackage = this.packageFilterList[packageIndex];
+        this.detailsStyle = `padding-left: 26.5rem;`;
+      }
+    } catch (error) {
+      console.error('Package fetch failed:', error);
+      this.packageList = undefined;
+      this.dispatchEvent(
+        new ShowToastEvent({
+          title: "Failed to load packages",
+          message: error?.body?.message || error?.message || 'An error occurred',
+          variant: "error"
         })
-          .then(result => {
-            this.displaySpinner = false;
-            this.packageList = result;
-            if (this.packageList.length === 0) {
-              this.packageList = false;
-              this.detailsStyle = ``;
-            } else {
-              this.packageFilterList = this.packageList;
-              this.packageListSize = this.packageFilterList.length;
-              this.currentPackage = this.packageFilterList[packageIndex];
-              this.detailsStyle = `padding-left: 26.5rem;`;
-              this.displaySpinner = false;
-            }
-          })
-          .catch(error => {
-            console.error(error);
-            this.displaySpinner = false;
-            this.packageList = undefined;
-            // Toast for Failure
-            this.dispatchEvent(
-              new ShowToastEvent({
-                title: "Something went wrong",
-                message: error,
-                variant: "error"
-              })
-            );
-          });
-      })();
-    } else if (this.packageTypes === '1GP and Unmanaged Packages') {
-      (async () => {
-        await get1GPPackageList({
-          sortDirection: sortDirection
-        })
-          .then(result => {
-            this.displaySpinner = false;
-            this.packageList = result;
-            if (this.packageList.length === 0) {
-              this.packageList = false;
-              this.detailsStyle = ``;
-            } else {
-              this.packageFilterList = this.packageList;
-              this.packageListSize = this.packageFilterList.length;
-              this.currentPackage = this.packageFilterList[packageIndex];
-              this.detailsStyle = `padding-left: 26.5rem;`;
-              this.displaySpinner = false;
-            }
-          })
-          .catch(error => {
-            console.error(error);
-            this.displaySpinner = false;
-            this.packageList = undefined;
-            // Toast for Failure
-            this.dispatchEvent(
-              new ShowToastEvent({
-                title: "Something went wrong",
-                message: error,
-                variant: "error"
-              })
-            );
-          });
-      })();
+      );
+    } finally {
+      this.displaySpinner = false;
     }
   }
 
@@ -317,7 +297,7 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
 
   handleSearchInputChange(event) {
     const searchString = event.target.value;
-    this.searchInputChange(searchString);
+    this.debouncedSearch(searchString);
   }
 
   handlePackageLauncherSearchChange(event) {
@@ -326,19 +306,11 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
 
   searchInputChange(searchString) {
     if (searchString.length >= 3) {
-      {
-        let regex = new RegExp(searchString, "i");
-        let results = this.packageList.filter(
-          row =>
-            regex.test(row.name) ||
-            regex.test(row.namespacePrefix) ||
-            regex.test(row.description) ||
-            regex.test(row.type) ||
-            regex.test(row.id)
-        );
-        this.packageFilterList = results;
-        this.filterLabel = `All Packages`;
-      }
+      const searchLower = searchString.toLowerCase();
+      this.packageFilterList = this.packageList.filter(row =>
+        row._searchText && row._searchText.includes(searchLower)
+      );
+      this.filterLabel = `All Packages`;
     } else {
       this.packageFilterList = this.packageList;
     }

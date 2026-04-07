@@ -504,6 +504,18 @@
                   </c-package-version-subscriber-list>
                 </template>
               </lightning-tab>
+              <lightning-tab
+                label="Dependencies"
+                icon-name="standard:app_form_product_participant"
+                value="version-dependencies"
+                onactive={handleActive}
+                class="slds-p-around_none"
+              >
+                <c-package-dependencies-view
+                  package-subscriber-version-id={packageSubscriberVersionId}
+                  package-type={packageType}
+                ></c-package-dependencies-view>
+              </lightning-tab>
               <template if:true={displayLMA}>
                 <lightning-tab
                   icon-name="custom:custom45"

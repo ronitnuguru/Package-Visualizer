@@ -162,15 +162,15 @@ export default class PackagePushJobDetail extends LightningElement {
         methodName: "singleFreeText",
         recordId,
         objectInput: "Package_Push_Errors",
-        promptTemplateName: "Package_Push_Error_Debugger"
+        promptTemplateName: "pkgviz__Package_Push_Error_Debugger"
       });
       this.displayAgentforceSpinner = false;
     } catch (error) {
       this.displayAgentforceSpinner = false;
-      console.error("AI analysis failed:", error);
+      console.error("Agentforce analysis failed:", error);
       this.dispatchEvent(
         new ShowToastEvent({
-          title: "AI Analysis Failed",
+          title: "Agentforce Analysis Failed",
           message: error.body?.message || "Unable to analyze errors",
           variant: "error"
         })

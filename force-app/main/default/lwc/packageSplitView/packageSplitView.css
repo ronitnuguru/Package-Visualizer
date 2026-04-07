@@ -21,3 +21,8 @@
 .pane-height-open{
   max-height: -webkit-fill-available;
 }
+
+/* Smooth width transition for split view container */
+.slds-split-view_container {
+  transition: width 0.3s ease-in-out;
+}

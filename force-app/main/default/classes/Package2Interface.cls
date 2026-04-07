@@ -239,4 +239,34 @@ public with sharing class Package2Interface { // NOPMD
 
     @AuraEnabled(cacheable=true)
     public static boolean isEnvironmentHubMember(){ return (Type.forName('EnvironmentHubMember') != null); }
+
+    /**************************************************************************************
+	* @Description  Get the list of package dependencies for a given subscriber package version ID
+	**************************************************************************************/
+    public static ObjectWrappers.PackageDependenciesResponse getPackageDependencies(String subscriberPackageVersionId){
+        ObjectWrappers.PackageDependenciesResponse response = new ObjectWrappers.PackageDependenciesResponse();
+        response.dependencies = new List<ObjectWrappers.PackageDependencyWrapper>();
+
+        String queryString = 'SELECT Dependencies FROM SubscriberPackageVersion WHERE Id = \'' + String.escapeSingleQuotes(subscriberPackageVersionId) + '\' LIMIT 50';
+        List<Object> records = submitQuery(queryString);
+
+        if(!records.isEmpty()){
+            Map<String, Object> record = (Map<String, Object>)records[0];
+            if(record.containsKey('Dependencies') && record.get('Dependencies') != null){
+                Map<String, Object> dependenciesObj = (Map<String, Object>)record.get('Dependencies');
+                if(dependenciesObj.containsKey('ids') && dependenciesObj.get('ids') != null){
+                    List<Object> dependencyIds = (List<Object>)dependenciesObj.get('ids');
+                    for(Object depId : dependencyIds){
+                        Map<String, Object> dependency = (Map<String, Object>)depId;
+                        ObjectWrappers.PackageDependencyWrapper depWrapper = new ObjectWrappers.PackageDependencyWrapper();
+                        if(dependency.containsKey('subscriberPackageVersionId')){
+                            depWrapper.subscriberPackageVersionId = (String)dependency.get('subscriberPackageVersionId');
+                        }
+                        response.dependencies.add(depWrapper);
+                    }
+                }
+            }
+        }
+        return response;
+    }
 }

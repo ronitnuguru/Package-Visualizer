@@ -1,0 +1,85 @@
+<template>
+    <template if:true={isLoading}>
+        <div class="slds-p-around_medium">
+            <lightning-spinner
+                size="medium"
+                variant="brand"
+            ></lightning-spinner>
+        </div>
+    </template>
+
+    <template if:false={isLoading}>
+        <template if:true={hasDependencies}>
+            <div class="slds-p-around_medium">
+                <div class="slds-text-heading_small slds-p-bottom_small">
+                    Package Dependencies ({dependenciesCount})
+                </div>
+                <lightning-accordion
+                    active-section-name=""
+                    allow-multiple-sections-open
+                    onsectiontoggle={handleSectionToggle}
+                    class="slds-border_top slds-border_right slds-border_bottom slds-border_left card-style"
+                >
+                    <template for:each={dependencies} for:item="dependency">
+                        <lightning-accordion-section
+                            key={dependency.subscriberPackageVersionId}
+                            name={dependency.subscriberPackageVersionId}
+                            label={dependency.subscriberPackageVersionId}
+                        >
+                            <template if:true={dependency.versionDetails}>
+                                <c-package-version-details
+                                    version-id={dependency.versionDetails.id}
+                                    package-id={dependency.versionDetails.package2Id}
+                                    package-build-number={dependency.versionDetails.buildNumber}
+                                    package-has-passed-code-coverage-check={dependency.versionDetails.hasPassedCodeCoverageCheck}
+                                    package-install-url={dependency.versionDetails.installUrl}
+                                    package-is-deprecated={dependency.versionDetails.isDeprecated}
+                                    package-is-password-protected={dependency.versionDetails.isPasswordProtected}
+                                    package-is-released={dependency.versionDetails.isReleased}
+                                    package-name={dependency.versionDetails.name}
+                                    package-version-number={dependency.versionDetails.versionNumber}
+                                    package-subscriber-version-id={dependency.versionDetails.subscriberPackageVersionId}
+                                    package-validation-skipped={dependency.versionDetails.validationSkipped}
+                                    package-metadata-removed={dependency.versionDetails.hasMetadataRemoved}
+                                    package-ancestor-id={dependency.versionDetails.ancestorId}
+                                    package-branch={dependency.versionDetails.branch}
+                                    package-tag={dependency.versionDetails.tag}
+                                    package-type={packageType}
+                                    package-description={dependency.versionDetails.description}
+                                    package-build-duration-in-seconds={dependency.versionDetails.buildDurationInSeconds}
+                                    package-release-version={dependency.versionDetails.releaseVersion}
+                                    package-language={dependency.versionDetails.language}
+                                    package-created-date={dependency.versionDetails.createdDate}
+                                    package-created-by={dependency.versionDetails.owner}
+                                    package-validated-async={dependency.versionDetails.validatedAsync}
+                                >
+                                </c-package-version-details>
+                            </template>
+                            <template if:false={dependency.versionDetails}>
+                                <div class="slds-p-around_small">
+                                    <lightning-spinner
+                                        size="medium"
+                                        variant="brand"
+                                    ></lightning-spinner>
+                                </div>
+                            </template>
+                        </lightning-accordion-section>
+                    </template>
+                </lightning-accordion>
+            </div>
+        </template>
+
+        <template if:false={hasDependencies}>
+            <div class="slds-p-around_medium">
+                <lightning-empty-state
+                    title="Hmm…"
+                    illustration-name="success:new"
+                >
+                    <p slot="description">
+                        Looks like this package version does not have any associated dependencies...
+                    </p>
+                </lightning-empty-state>
+            </div>
+        </template>
+    </template>
+</template>

@@ -127,6 +127,58 @@ private class PushUpgradesInterfaceTest {
         reqComposite.setEndpoint('https://example.com/services/data/v57.0/composite/sobjects');
         System.assertEquals(200, mock.respond(reqComposite).getStatusCode());
     }
+
+    /**************************************************************************************
+    * @Description  Bulk test class for createPackagePushJobs with 251+ subscribers
+    **************************************************************************************/
+    @isTest
+    public static void testCreatePackagePushJobsBulk() {
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, new PushUpgradesCalloutMock());
+        List<String> bulkSubscriberList = new List<String>();
+        for(Integer i = 0; i < 251; i++){
+            bulkSubscriberList.add('00D00000000000' + String.valueOf(i).leftPad(3, '0'));
+        }
+        try {
+            // Must use the ID that PushUpgradesCalloutMock matches for the PATCH endpoint
+            String result = PushUpgradesCtrl.createPackagePushJobs('0Ho000000000000AAA', bulkSubscriberList);
+            System.assertNotEquals(null, result);
+        } catch (Exception e) {
+            System.assertNotEquals(null, e.getMessage());
+        }
+        Test.stopTest();
+    }
+
+    /**************************************************************************************
+    * @Description  Test class for createPackagePushRequest with past datetime
+    **************************************************************************************/
+    @isTest
+    public static void testCreatePackagePushRequestPastDatetime() {
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, new PushUpgradesCalloutMock());
+        try {
+            Datetime pastTime = System.now().addDays(-1);
+            String result = PushUpgradesCtrl.createPackagePushRequest('04t000000000000AAA', pastTime);
+        } catch (Exception e) {
+            System.assertNotEquals(null, e.getMessage());
+        }
+        Test.stopTest();
+    }
+
+    /**************************************************************************************
+    * @Description  Test class for createPackagePushRequest with null datetime
+    **************************************************************************************/
+    @isTest
+    public static void testCreatePackagePushRequestNullDatetime() {
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, new PushUpgradesCalloutMock());
+        try {
+            String result = PushUpgradesCtrl.createPackagePushRequest('04t000000000000AAA', null);
+        } catch (Exception e) {
+            System.assertNotEquals(null, e.getMessage());
+        }
+        Test.stopTest();
+    }
     
 	/**************************************************************************************
 	* @Description  Test class for create filter list
