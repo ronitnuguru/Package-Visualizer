@@ -24,7 +24,7 @@ export default class AgentforcePromptGenerator extends NavigationMixin(Lightning
     }
 
     modelsValue = 'sfdc_ai__DefaultGPT5';
-    currentPkgVersionId = '04tRh000001NBdJIAW';
+    currentPkgVersionId = '04tRh000001bI8fIAE';
 
     get modelsTypeOptions() {
         return [

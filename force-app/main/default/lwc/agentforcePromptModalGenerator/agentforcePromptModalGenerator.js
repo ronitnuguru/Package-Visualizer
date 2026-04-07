@@ -24,7 +24,7 @@ export default class AgentforcePromptModalGenerator extends LightningModal  {
     }
 
     modelsValue = 'sfdc_ai__DefaultGPT5';
-    currentPkgVersionId = '04tRh000001NBdJIAW';
+    currentPkgVersionId = '04tRh000001bI8fIAE';
 
     /** Aligns with plan §3.6 "Package GenAI Prompt Template Library" (ISV packaging / Agentforce). */
     promptTemplateCardTitle = 'Package GenAI Prompt Template Library';
