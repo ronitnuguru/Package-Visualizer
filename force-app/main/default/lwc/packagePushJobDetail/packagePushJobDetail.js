@@ -26,6 +26,8 @@ export default class PackagePushJobDetail extends LightningElement {
   displayAiSuggest = false;
   aiSuggestion;
 
+  currentPkgVersionId = '04tRh000001bI8fIAE';
+
   get isAiSuggestionEmpty() {
     return !this.aiSuggestion;
   }
@@ -182,5 +184,9 @@ export default class PackagePushJobDetail extends LightningElement {
     this.showAgentforceCard = true;
     this.displayAgentforceSpinner = true;
     this.generateAiResponse(false);
+  }
+
+  handleExtensionInstall(){
+    window.open(`/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`, '_blank');
   }
 }

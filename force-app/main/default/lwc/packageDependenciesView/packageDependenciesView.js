@@ -1,8 +1,9 @@
 import { LightningElement, api } from 'lwc';
 import getPackageDependencies from '@salesforce/apex/PackageVisualizerCtrl.getPackageDependencies';
 import getPackageVersionBySubscriberId from '@salesforce/apex/PackageVisualizerCtrl.getPackageVersionBySubscriberId';
+import { NavigationMixin } from 'lightning/navigation';
 
-export default class PackageDependenciesView extends LightningElement {
+export default class PackageDependenciesView extends NavigationMixin(LightningElement) {
     @api packageSubscriberVersionId;
     @api packageType;
 
@@ -14,10 +15,7 @@ export default class PackageDependenciesView extends LightningElement {
     }
 
     getDependencies() {
-        console.log('packageSubscriberVersionId', this.packageSubscriberVersionId);
-
         if (!this.packageSubscriberVersionId) {
-            console.log('No packageSubscriberVersionId provided');
             return;
         }
 
@@ -25,31 +23,16 @@ export default class PackageDependenciesView extends LightningElement {
 
         getPackageDependencies({ subscriberPackageVersionId: this.packageSubscriberVersionId })
             .then(result => {
-                console.log('Package Dependencies Response:', result);
-                console.log('Dependencies Array:', result.dependencies);
-                console.log('Number of Dependencies:', result.dependencies ? result.dependencies.length : 0);
-
                 if (result.dependencies && result.dependencies.length > 0) {
                     this.dependencies = result.dependencies.map(dep => ({
                         ...dep,
                         versionDetails: null
                     }));
-
-                    result.dependencies.forEach((dep, index) => {
-                        console.log(`Dependency ${index + 1}:`, {
-                            subscriberPackageVersionId: dep.subscriberPackageVersionId,
-                            packageName: dep.packageName,
-                            versionNumber: dep.versionNumber
-                        });
-                    });
                 } else {
-                    console.log('No dependencies found for this package version');
                     this.dependencies = [];
                 }
             })
-            .catch(error => {
-                console.error('Error fetching package dependencies:', error);
-                console.error('Error details:', JSON.stringify(error));
+            .catch(() => {
                 this.dependencies = [];
             })
             .finally(() => {
@@ -59,13 +42,11 @@ export default class PackageDependenciesView extends LightningElement {
 
     handleSectionToggle(event) {
         const openSections = event.detail.openSections;
-        console.log('Open sections:', openSections);
 
         openSections.forEach(subscriberPackageVersionId => {
             const dependency = this.dependencies.find(dep => dep.subscriberPackageVersionId === subscriberPackageVersionId);
 
             if (dependency && !dependency.versionDetails) {
-                console.log('Fetching version details for:', subscriberPackageVersionId);
                 this.loadVersionDetails(subscriberPackageVersionId);
             }
         });
@@ -74,7 +55,6 @@ export default class PackageDependenciesView extends LightningElement {
     loadVersionDetails(subscriberPackageVersionId) {
         getPackageVersionBySubscriberId({ subscriberPackageVersionId: subscriberPackageVersionId })
             .then(result => {
-                console.log('Version details fetched for', subscriberPackageVersionId, ':', result);
                 if (result) {
                     this.dependencies = this.dependencies.map(dep => {
                         if (dep.subscriberPackageVersionId === subscriberPackageVersionId) {
@@ -85,13 +65,9 @@ export default class PackageDependenciesView extends LightningElement {
                         }
                         return dep;
                     });
-
-                    console.log('Updated dependencies with version details:', this.dependencies);
                 }
             })
-            .catch(error => {
-                console.error('Error fetching version details for', subscriberPackageVersionId, ':', error);
-            });
+            .catch(() => {});
     }
 
     get hasDependencies() {
@@ -100,5 +76,14 @@ export default class PackageDependenciesView extends LightningElement {
 
     get dependenciesCount() {
         return this.dependencies ? this.dependencies.length : 0;
+    }
+
+    handleLearnMore() {
+        this[NavigationMixin.Navigate]({
+            type: "standard__webPage",
+            attributes: {
+                url: "https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_dependencies.htm"
+            }
+        });
     }
 }

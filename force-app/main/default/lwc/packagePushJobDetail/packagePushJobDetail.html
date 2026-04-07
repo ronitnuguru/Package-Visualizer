@@ -46,8 +46,9 @@
             <template if:false={showAgentforceCard}>
               <lightning-button 
                 variant="brand" 
-                label="Agentforce Assist" 
-                icon-name="utility:sparkles" 
+                label="Generate" 
+                icon-name="utility:sparkles"
+                icon-position="right"
                 onclick={handleAskAgentforce}
               ></lightning-button>  
             </template>
@@ -210,7 +211,7 @@
                               class="slds-grid slds-grid_vertical-align-center slds-grid_align-end"
                             >
                               <lightning-button
-                                label="Agentforce Assist"
+                                label="Generate"
                                 variant="brand"
                                 icon-name="utility:sparkles"
                                 icon-position="right"
@@ -302,7 +303,11 @@
                       <lightning-empty-state
                         title="Hmm..."
                         illustration-name="noresults:search">
-                        <p slot="description">We were unable to analyze the errors...</p>
+                        <p slot="description">
+                          Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance...
+                        </p>
+                        <lightning-button variant="brand" label="Install Managed Package" slot="cta" onclick={handleExtensionInstall}>
+                        </lightning-button>
                       </lightning-empty-state>
                     </div>
                   </template>
