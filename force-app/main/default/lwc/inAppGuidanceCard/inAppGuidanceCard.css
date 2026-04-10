@@ -2,8 +2,24 @@
     --slds-c-icon-color-foreground-default: #0D9DDA;
 }
 
-.card-style:hover{
-    outline: 0;
-    border: var(--slds-g-sizing-border-1) solid var(--slds-g-color-border-accent-2);
-    box-shadow: 0 0 0 1px var(--slds-g-color-accent-1) inset;
+.agentscript-pre {
+    max-height: 24rem;
+    margin: 0;
+    padding: 0.75rem;
+    background-color: var(--slds-g-color-neutral-base-95, #f3f3f3);
+    border-radius: 0.25rem;
+}
+
+.agentscript-code {
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.card-style {
+    border-radius: 0.25rem;
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.1),
+        0 2px 4px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
 }

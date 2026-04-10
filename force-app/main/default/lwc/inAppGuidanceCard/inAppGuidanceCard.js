@@ -1,12 +1,14 @@
-import { LightningElement, wire, api } from "lwc";
+import { LightningElement } from "lwc";
 import { NavigationMixin } from "lightning/navigation";
-import verifyUnlockedPackageInstalled from "@salesforce/apex/PackageVisualizerCtrl.verifyUnlockedPackageInstalled";
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import { AGENT_SCRIPTS } from "./agentScriptsData.js";
 
 export default class InAppGuidanceCard extends NavigationMixin(LightningElement) {
     displaySpinner;
 
     title = 'AgentExchange Showcase';
     iconName = 'utility:salesforce1';
+    agentScripts = AGENT_SCRIPTS;
     resourcesData = [
         {
             label: 'Agentforce Extension',
@@ -92,5 +94,57 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
                 target: "_blank"
             }
         });
+    }
+
+    handleCopyAgentScript(event) {
+        const scriptId = event.currentTarget.dataset.scriptId;
+        const script = this.agentScripts.find((s) => s.id === scriptId);
+        if (!script || !script.body) {
+            return;
+        }
+        const text = script.body;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard
+                .writeText(text)
+                .then(() => {
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: "Success",
+                            message: "Text copied to clipboard",
+                            variant: "success"
+                        })
+                    );
+                })
+                .catch((err) => {
+                    console.error("Failed to copy AgentScript:", err);
+                    this.fallbackCopyToClipboard(text);
+                });
+        } else {
+            this.fallbackCopyToClipboard(text);
+        }
+    }
+
+    fallbackCopyToClipboard(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand("copy");
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: "Success",
+                    message: "Text copied to clipboard",
+                    variant: "success"
+                })
+            );
+        } catch (err) {
+            console.error("Fallback copy to clipboard failed:", err);
+        }
+        document.body.removeChild(textArea);
     }
 }

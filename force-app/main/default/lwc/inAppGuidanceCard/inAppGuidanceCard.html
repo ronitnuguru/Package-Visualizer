@@ -41,49 +41,78 @@
                     </div>
                 </div>
               </div>
-              <template for:each={resourcesData} for:item="resource" for:index="index">
-                <div class="card-style slds-var-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small" key={resource.label}>
-                  <lightning-card>
-                    <h3 slot="title" class="slds-truncate" title={resource.label}>
-                      <lightning-icon 
-                          icon-name={resource.icon}
-                          size="medium"
-                          class="slds-m-right_small"
-                      ></lightning-icon>
-                      {resource.label}
-                    </h3>
-                    <lightning-button-group slot="actions">
-                      <lightning-button-icon tooltip="AgentExchange Listing" variant="border-filled" icon-name="utility:cart" data-index={index} onclick={navigateToAgentExchangeListing}></lightning-button-icon>
-                      <template lwc:if={resource.helpGuideLink}>
-                        <lightning-button-icon tooltip="Setup Guide" variant="border-filled" icon-name={resource.helpGuideIcon} data-index={index} onclick={navigateToHelpGuide}></lightning-button-icon>
-                      </template>
-                    </lightning-button-group>
-                    <div class="slds-card__body_inner">
-                      <p>{resource.description}</p>
+              <lightning-tabset variant="scoped">
+                <lightning-tab label="Packages" icon-name="standard:shipment">
+                  <template for:each={resourcesData} for:item="resource" for:index="index">
+                    <div class="card-style slds-var-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small" key={resource.label}>
+                      <lightning-card>
+                        <h3 slot="title" class="slds-truncate" title={resource.label}>
+                          <lightning-icon 
+                              icon-name={resource.icon}
+                              size="medium"
+                              class="slds-m-right_small"
+                          ></lightning-icon>
+                          {resource.label}
+                        </h3>
+                        <lightning-button-group slot="actions">
+                          <lightning-button-icon tooltip="AgentExchange Listing" variant="border-filled" icon-name="utility:cart" data-index={index} onclick={navigateToAgentExchangeListing}></lightning-button-icon>
+                          <template lwc:if={resource.helpGuideLink}>
+                            <lightning-button-icon tooltip="Setup Guide" variant="border-filled" icon-name={resource.helpGuideIcon} data-index={index} onclick={navigateToHelpGuide}></lightning-button-icon>
+                          </template>
+                        </lightning-button-group>
+                        <div class="slds-card__body_inner">
+                          <p>{resource.description}</p>
+                        </div>
+                        <div slot="footer">
+                          <lightning-button label="Install" variant="brand" icon-name="utility:download" icon-position="right" data-index={index} onclick={handleInstall}></lightning-button>
+                        </div>
+                      </lightning-card>
                     </div>
-                    <div slot="footer">
-                      <lightning-button label="Install" variant="brand" icon-name="utility:download" icon-position="right" data-index={index} onclick={handleInstall}></lightning-button>
-                    </div>
-                  </lightning-card>
-                </div>
-              </template>
+                  </template>
+                </lightning-tab>
+                <lightning-tab label="AgentScripts" icon-name="standard:code_set_bundle">
+                    <lightning-accordion
+                        active-section-name="card-style slds-border_top slds-border_right slds-border_bottom slds-border_left"
+                        allow-multiple-sections-open
+                        class="slds-border_top slds-border_right slds-border_bottom slds-border_left card-style agentscript-accordion"
+                    >
+                        <template for:each={agentScripts} for:item="script">
+                            <lightning-accordion-section
+                                key={script.id}
+                                name={script.id}
+                                label={script.label}
+                            >
+                                <div class="">
+                                    <lightning-card>
+                                        <h3 slot="title" class="slds-truncate" title={script.label}>
+                                            <lightning-icon
+                                                icon-name="standard:code_set"
+                                                size="small"
+                                                class="slds-m-right_small"
+                                            ></lightning-icon>
+                                            {script.label}
+                                        </h3>
+                                        <lightning-button-group slot="actions">
+                                            <lightning-button-icon
+                                                icon-name="utility:copy"
+                                                variant="border-filled"
+                                                tooltip="Copy to Clipboard"
+                                                data-script-id={script.id}
+                                                onclick={handleCopyAgentScript}
+                                            ></lightning-button-icon>
+                                        </lightning-button-group>
+                                        <div class="slds-card__body slds-card__body_inner slds-p-around_none">
+                                            <pre class="agentscript-pre slds-scrollable_y"><code class="agentscript-code">{script.body}</code></pre>
+                                        </div>
+                                    </lightning-card>
+                                </div>
+                            </lightning-accordion-section>
+                        </template>
+                    </lightning-accordion>
+                </lightning-tab>
+            </lightning-tabset>
+
           </template>
-          <!--
-          <lightning-carousel disable-auto-scroll>
-            <lightning-carousel-image
-                src = "https://appexchange.salesforce.com/image_host/ee46b967-a7dd-4e08-9fa1-4b41777ac022.png"
-                header = "First Card"
-                description = "First card description."
-                href = "javascript:void(0);"
-            ></lightning-carousel-image>
-            <lightning-carousel-image
-                src = "https://appexchange.salesforce.com/image_host/585e6b95-25e8-40c6-9ba9-c935ac2cb90a.png"
-                header = "Second Card"
-                description = "Second card description."
-                href = "javascript:void(0);"
-            ></lightning-carousel-image>
-        </lightning-carousel>
-        -->
       </div>
   </lightning-card>
 </template>
