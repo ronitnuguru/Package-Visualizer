@@ -82,7 +82,7 @@
                                 name={script.id}
                                 label={script.label}
                             >
-                                <div class="">
+                                <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left card-style">
                                     <lightning-card>
                                         <h3 slot="title" class="slds-truncate" title={script.label}>
                                             <lightning-icon
@@ -100,6 +100,12 @@
                                                 data-script-id={script.id}
                                                 onclick={handleCopyAgentScript}
                                             ></lightning-button-icon>
+                                            <lightning-button-icon
+                                                icon-name="utility:prompt"
+                                                variant="border-filled"
+                                                tooltip="In App Guidance"
+                                                onclick={handleInAppPrompt}
+                                            ></lightning-button-icon>
                                         </lightning-button-group>
                                         <div class="slds-card__body slds-card__body_inner slds-p-around_none">
                                             <pre class="agentscript-pre slds-scrollable_y"><code class="agentscript-code">{script.body}</code></pre>
@@ -115,4 +121,11 @@
           </template>
       </div>
   </lightning-card>
+
+  <template if:true={displayInAppPrompt}>
+    <c-in-app-prompt
+      prompt="AgentExchange_Showcase"
+      oncancel={handleInAppPromptCancel}
+    ></c-in-app-prompt>
+  </template>
 </template>

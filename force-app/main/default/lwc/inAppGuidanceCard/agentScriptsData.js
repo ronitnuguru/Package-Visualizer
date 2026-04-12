@@ -210,64 +210,6 @@ topic Agentic_Org_Limits:
                     filter_from_agent: False
                     complex_data_type_name: "pkgviz__limitsResponse"`;
 
-const SERVICE_AGENT_STARTER = `system:
-    instructions: "You are an AI customer-service agent."
-
-    messages:
-        welcome: |
-            Hello! I'm here to help with your service request. How can I assist you today?
-        error: "I'm sorry, something went wrong. Please try again."
-
-config:
-    agent_label: "Service Agent"
-    developer_name: "Service_Agent"
-    agent_type: "AgentforceServiceAgent"
-    description: "Handle inbound customer service requests, search knowledge, and escalate when needed."
-
-language:
-    default_locale: "en_US"
-
-variables:
-    EndUserId: linked string
-        source: @MessagingSession.MessagingEndUserId
-        description: "Messaging end-user identifier"
-        visibility: "External"
-    RoutableId: linked string
-        source: @MessagingSession.Id
-        description: "Messaging session identifier"
-        visibility: "External"
-    ContactId: linked string
-        source: @MessagingEndUser.ContactId
-        description: "Contact record identifier"
-        visibility: "External"
-
-knowledge:
-    citations_enabled: True
-
-start_agent topic_selector:
-    label: "Topic Selector"
-
-    description: "Route to the correct topic based on user intent"
-
-    reasoning:
-        instructions: ->
-            | Analyse the customer message and select the best topic.
-
-        actions:
-            go_to_CaseManagement: @utils.transition to @topic.CaseManagement
-            go_to_off_topic: @utils.transition to @topic.off_topic
-
-topic CaseManagement:
-    label: "Case Management"
-
-    description: "Create, update, or check the status of support cases"
-
-    reasoning:
-        instructions: ->
-            | Help the customer manage their support cases.
-            | Search existing cases before creating duplicates.
-            | Escalate to a live agent when the customer requests it.`;
-
 // ---------------------------------------------------------------------------
 // Exported registry — append new entries here
 // ---------------------------------------------------------------------------
@@ -277,10 +219,5 @@ export const AGENT_SCRIPTS = [
         id: 'isv-employee-agent',
         label: 'ISV Employee Agent',
         body: ISV_EMPLOYEE_AGENT
-    },
-    {
-        id: 'service-agent-starter',
-        label: 'Service Agent (starter)',
-        body: SERVICE_AGENT_STARTER
     }
 ];

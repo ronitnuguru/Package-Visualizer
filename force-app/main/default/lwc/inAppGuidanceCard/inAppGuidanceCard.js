@@ -5,6 +5,7 @@ import { AGENT_SCRIPTS } from "./agentScriptsData.js";
 
 export default class InAppGuidanceCard extends NavigationMixin(LightningElement) {
     displaySpinner;
+    displayInAppPrompt;
 
     title = 'AgentExchange Showcase';
     iconName = 'utility:salesforce1';
@@ -43,6 +44,14 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
                 target: "_blank"
             }
         });
+    }
+
+    handleInAppPrompt() {
+        this.displayInAppPrompt = true;
+    }
+
+    handleInAppPromptCancel() {
+        this.displayInAppPrompt = false;
     }
 
     navigateToAgentExchangeListing(event) {
