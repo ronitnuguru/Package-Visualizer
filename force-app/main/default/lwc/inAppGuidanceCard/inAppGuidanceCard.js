@@ -2,6 +2,14 @@ import { LightningElement } from "lwc";
 import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { AGENT_SCRIPTS } from "./agentScriptsData.js";
+import getInstalledPackages from "@salesforce/apex/PackageVisualizerCtrl.getInstalledPackages";
+
+function normalizeId15(id) {
+    if (!id) {
+        return id;
+    }
+    return id.length >= 15 ? id.substring(0, 15) : id;
+}
 
 export default class InAppGuidanceCard extends NavigationMixin(LightningElement) {
     displaySpinner;
@@ -18,20 +26,58 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
             listingLink: 'https://appexchange.salesforce.com/appxListingDetail?listingId=632af825-58e1-4e61-a2b6-8b008449ca03',
             installLink: '/packaging/installPackage.apexp?p0=04tRh000001NopxIAC',
             helpGuideLink: 'https://salesforce.quip.com/f3SWA340YbFH',
-            helpGuideIcon: 'utility:quip'
+            helpGuideIcon: 'utility:quip',
+            subscriberPackageId: '033Rh000002JY85IAG',
+            subscriberPackageVersionId: '04tRh000001bI8fIAE'
+        },
+        {
+            label: 'Data Kit Extension',
+            description: 'Understand package adoption and feature usage via Data360 and AppAnalytics.',
+            icon: 'standard:data_cloud',
+            installLink: '/packaging/installPackage.apexp?p0=04tRh000001NopxIAC',
+            subscriberPackageId: '0335w000000XqPxAAK',
+            subscriberPackageVersionId: '04t5w000000aveXAAQ'
+        },
+        {
+            label: 'Tableau Next Extension',
+            description: 'Leverage Tableau Next, Agentforce, and Data360 to experience Agentic visualizations.',
+            icon: 'standard:tableau',
+            installLink: '/packaging/installPackage.apexp?p0=04tRh000001NopxIAC',
+            subscriberPackageId: '033Rh000003U3oLIAS',
+            subscriberPackageVersionId: '04tRh000001bIOnIAM',
+            //tooltip: 'Requires Agentforce, Data360 and Tableau Next'
         }
     ];
 
-    handleHelpDoc(){
-        this[NavigationMixin.Navigate]({
-            type: "standard__webPage",
-            attributes: {
-              url: `https://wp-appexchange.salesforce.com/wp-content/uploads/2025/10/DF25-AgentExchange-Build-Station-Instructions.pdf`
-            },
-            state: {
-                target: "_blank"
-            }
-        });
+    connectedCallback(){
+        this.displaySpinner = true;
+        const packageIds = this.resourcesData.map(r => r.subscriberPackageId);
+        getInstalledPackages({ subscriberPackageIds: packageIds })
+            .then((result) => {
+                const installedMap = new Map();
+                for (const row of result) {
+                    installedMap.set(normalizeId15(row.subscriberPackageId), row.subscriberPackageVersionId);
+                }
+                this.resourcesData = this.resourcesData.map((r) => {
+                    const installedVersionId = installedMap.get(normalizeId15(r.subscriberPackageId));
+                    const hasPackage = installedVersionId !== undefined;
+                    const normalizedInstalled = normalizeId15(installedVersionId);
+                    const normalizedTarget = normalizeId15(r.subscriberPackageVersionId);
+                    const versionsMatch = hasPackage && normalizedInstalled === normalizedTarget;
+                    const isUpgradeAvailable = hasPackage && !versionsMatch;
+                    return {
+                        ...r,
+                        isInstalled: versionsMatch,
+                        isUpgradeAvailable
+                    };
+                });
+            })
+            .catch(error => {
+                console.error('Error checking installed packages:', error);
+            })
+            .finally(() => {
+                this.displaySpinner = false;
+            });
     }
 
     handleSlackCommunity(){

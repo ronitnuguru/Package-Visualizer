@@ -16,6 +16,21 @@ public with sharing class Package2Interface { // NOPMD
 
     public static Boolean verifyUnlockedPackageInstalled(){string s = 'SELECT Id, SubscriberPackageId, SubscriberPackage.NamespacePrefix, SubscriberPackage.Name FROM InstalledSubscriberPackage WHERE SubscriberPackageId = \'033Rh000000AYI9IAO\''; List<Object> record = submitQuery(s); if(record.size() == 1){ return true; } return false;}
 
+    public static List<ObjectWrappers.InstalledPackageWrapper> getInstalledPackages(List<String> subscriberPackageIds){
+        List<ObjectWrappers.InstalledPackageWrapper> installedPackages = new List<ObjectWrappers.InstalledPackageWrapper>();
+        if(subscriberPackageIds == null || subscriberPackageIds.isEmpty()){ return installedPackages; }
+        String inClause = '';
+        for(String pkgId : subscriberPackageIds){ inClause = inClause + '\'' + String.escapeSingleQuotes(pkgId) + '\','; }
+        inClause = inClause.substring(0, inClause.length() - 1);
+        String s = 'SELECT Id, SubscriberPackageId, SubscriberPackageVersionId FROM InstalledSubscriberPackage WHERE SubscriberPackageId IN (' + inClause + ')';
+        List<Object> records = submitQuery(s);
+        for(Object record : records){
+            ObjectWrappers.InstalledPackageWrapper p = (ObjectWrappers.InstalledPackageWrapper)JSON.deserialize(JSON.serialize(record), ObjectWrappers.InstalledPackageWrapper.class);
+            installedPackages.add(p);
+        }
+        return installedPackages;
+    }
+
     /**************************************************************************************
 	* @Description  Get the list of 1GP packages using tooling API. 
 	**************************************************************************************/     

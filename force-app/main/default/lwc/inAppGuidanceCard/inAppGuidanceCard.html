@@ -37,6 +37,12 @@
                             <li>
                                 Enable Agentforce in <a href="/lightning/setup/EinsteinGPTSetup/home" target="_blank">Einstein Setup</a> and <a href="/lightning/setup/EinsteinCopilot/home" target="_blank">Agent Studio</a> 
                             </li>
+                            <li>
+                                <a href="https://help.salesforce.com/s/articleView?id=data.c360_a_set_up.htm" target="_blank">Set Up and Maintain</a> Data360
+                            </li>
+                            <li>
+                                <a href="https://help.tableau.com/current/online/en-us/tableau_next_overview.htm" target="_blank">Setup</a> Tableau Next
+                            </li>
                         </ol>
                     </div>
                 </div>
@@ -55,7 +61,9 @@
                           {resource.label}
                         </h3>
                         <lightning-button-group slot="actions">
-                          <lightning-button-icon tooltip="AgentExchange Listing" variant="border-filled" icon-name="utility:cart" data-index={index} onclick={navigateToAgentExchangeListing}></lightning-button-icon>
+                          <template lwc:if={resource.listingLink}>
+                            <lightning-button-icon tooltip="AgentExchange Listing" variant="border-filled" icon-name="utility:cart" data-index={index} onclick={navigateToAgentExchangeListing}></lightning-button-icon>
+                          </template>
                           <template lwc:if={resource.helpGuideLink}>
                             <lightning-button-icon tooltip="Setup Guide" variant="border-filled" icon-name={resource.helpGuideIcon} data-index={index} onclick={navigateToHelpGuide}></lightning-button-icon>
                           </template>
@@ -63,8 +71,19 @@
                         <div class="slds-card__body_inner">
                           <p>{resource.description}</p>
                         </div>
-                        <div slot="footer">
-                          <lightning-button label="Install" variant="brand" icon-name="utility:download" icon-position="right" data-index={index} onclick={handleInstall}></lightning-button>
+                        <div slot="footer" class="slds-grid slds-grid_vertical-align-center">
+                          <template lwc:if={resource.isUpgradeAvailable}>
+                            <lightning-button label="Upgrade" variant="brand" icon-name="utility:forward_up" icon-position="right" data-index={index} onclick={handleInstall}></lightning-button>
+                          </template>
+                          <template lwc:elseif={resource.isInstalled}>
+                            <lightning-button label="Installed" variant="brand" icon-name="utility:success" disabled icon-position="right"></lightning-button>
+                          </template>
+                          <template lwc:else>
+                            <lightning-button label="Install" variant="brand" icon-name="utility:download" icon-position="right" data-index={index} onclick={handleInstall}></lightning-button>
+                          </template>
+                          <template lwc:if={resource.tooltip}>
+                            <lightning-helptext content={resource.tooltip} class="slds-var-m-left_xx-small"></lightning-helptext>
+                          </template>
                         </div>
                       </lightning-card>
                     </div>

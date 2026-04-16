@@ -145,6 +145,11 @@ public with sharing class PackageVisualizerCtrl {
     }
 
     @AuraEnabled(cacheable=true)
+    public static List<ObjectWrappers.InstalledPackageWrapper> getInstalledPackages(List<String> subscriberPackageIds){
+        return Package2Interface.getInstalledPackages(subscriberPackageIds);
+    }
+
+    @AuraEnabled(cacheable=true)
     public static String getEnvHubMemberId(String orgId){
         Boolean isEnvHubMemberAvailable = Package2Interface.isEnvironmentHubMember();if(isEnvHubMemberAvailable == true){String envHubId = Package2Interface.getEnvHubMemberId(orgId); return envHubId;} else { throw new AuraHandledException('We could not find the associated Environment Hub Member in your org...'); }
     }

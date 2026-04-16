@@ -272,4 +272,9 @@ public with sharing class ObjectWrappers{
     public class PackageDependenciesResponse{
         @AuraEnabled public List<PackageDependencyWrapper> dependencies {get;set;}
     }
+
+    public class InstalledPackageWrapper {
+        @AuraEnabled public String subscriberPackageId {get;set;}
+        @AuraEnabled public String subscriberPackageVersionId {get;set;}
+    }
 }
