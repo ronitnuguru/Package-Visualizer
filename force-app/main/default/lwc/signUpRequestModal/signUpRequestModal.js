@@ -2,6 +2,7 @@ import { LightningElement, api } from 'lwc';
 import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getEnvHubMemberId from "@salesforce/apex/PackageVisualizerCtrl.getEnvHubMemberId";
+import invokeGenAiPromptTemplate from '@salesforce/apexContinuation/PackageVisualizerCtrl.invokeGenAiPromptTemplate';
 
 export default class SignUpRequestModal extends NavigationMixin(LightningElement) {
     @api rowData;
@@ -11,6 +12,40 @@ export default class SignUpRequestModal extends NavigationMixin(LightningElement
     displayInstanceSpinner;
     errorMessage;
     displaySpinner;
+
+    displayAgentforceSpinner = false;
+    showAgentforceCard = false;
+    displayAiSuggest = false;
+    aiSuggestion;
+    aiResponse;
+
+    currentPkgVersionId = '04tRh000001bI8fIAE';
+
+    get isAiSuggestionEmpty() {
+        return !this.aiSuggestion;
+    }
+
+    get parsedResponse() {
+        if (!this.aiResponse) return null;
+        try {
+            return JSON.parse(this.aiResponse);
+        } catch (e) {
+            console.error('Failed to parse AI response:', e);
+            return { summary: this.aiResponse };
+        }
+    }
+
+    get severityVariant() {
+        if (!this.parsedResponse?.severity) return '';
+        const severity = this.parsedResponse.severity.toLowerCase();
+        const variantMap = {
+            critical: 'slds-theme_error',
+            high: 'slds-theme_error',
+            medium: 'slds-theme_warning',
+            low: 'slds-theme_success'
+        };
+        return variantMap[severity] || '';
+    }
 
     connectedCallback() {
         this.trustUrl = `https://status.salesforce.com/instances/${this.rowData.createdOrgInstance}`;
@@ -133,5 +168,83 @@ export default class SignUpRequestModal extends NavigationMixin(LightningElement
                 );
               });
           })();
+    }
+
+    getSignupErrorPayload() {
+        const rd = this.rowData || {};
+        const details = {
+            company: rd.company,
+            status: rd.status,
+            subdomain: rd.subdomain,
+            resolvedTemplateId: rd.resolvedTemplateId,
+            edition: rd.edition,
+            signupSource: rd.signupSource,
+            trialDays: rd.trialDays
+        };
+        return [
+            {
+                errorTitle: rd.errorCode || '',
+                errorMessage: this.errorMessage || '',
+                errorType: 'SignupRequest',
+                errorDetails: JSON.stringify(details),
+                errorSeverity: ''
+            }
+        ];
+    }
+
+    async generateAiResponse(includeUserSuggestion = false) {
+        const basePayload = JSON.stringify(this.getSignupErrorPayload());
+        const recordId = includeUserSuggestion
+            ? `${this.aiSuggestion} ${basePayload}`
+            : basePayload;
+
+        try {
+            this.aiResponse = await invokeGenAiPromptTemplate({
+                className: 'AgentGenAiPromptTemplateController',
+                methodName: 'singleFreeText',
+                recordId,
+                objectInput: 'Package_Push_Errors',
+                promptTemplateName: 'pkgviz__Package_Push_Error_Debugger'
+            });
+            this.displayAgentforceSpinner = false;
+        } catch (error) {
+            this.displayAgentforceSpinner = false;
+            console.error('Agentforce analysis failed:', error);
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Agentforce Analysis Failed',
+                    message: error.body?.message || 'Unable to analyze errors',
+                    variant: 'error'
+                })
+            );
+        }
+    }
+
+    handleAskAgentforce() {
+        this.showAgentforceCard = true;
+        this.displayAgentforceSpinner = true;
+        this.generateAiResponse(false);
+    }
+
+    handleAiSuggestImprovements() {
+        this.displayAiSuggest = true;
+    }
+
+    handlePopoverClose() {
+        this.displayAiSuggest = false;
+    }
+
+    handleAiSuggestionChange(event) {
+        this.aiSuggestion = event.target.value;
+    }
+
+    handleAiSuggestAssist() {
+        this.displayAgentforceSpinner = true;
+        this.generateAiResponse(true);
+        this.handlePopoverClose();
+    }
+
+    handleExtensionInstall() {
+        window.open(`/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`, '_blank');
     }
 }
