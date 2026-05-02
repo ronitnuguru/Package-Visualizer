@@ -2,13 +2,13 @@
   <div class="slds-p-around_medium">
     <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small">
       <lightning-card>
-        <h3 slot="title" class="slds-truncate">
+        <h3 slot="title" class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
           <template if:true={displayLoadingIcon}>
             <lightning-dynamic-icon
               type="eq"
               option="play"
               alternative-text="Request in progress"
-              class="slds-m-right_small"
+              class="slds-m-right_small slds-shrink-none"
             >
             </lightning-dynamic-icon>
           </template>
@@ -18,7 +18,7 @@
               alternative-text="Success!"
               variant="success"
               size="medium"
-              class="slds-m-right_small"
+              class="slds-m-right_small slds-shrink-none"
             ></lightning-icon>
           </template>
           <template if:true={displayErrorIcon}>
@@ -27,7 +27,7 @@
               alternative-text="Error!"
               variant="error"
               size="medium"
-              class="slds-m-right_small"
+              class="slds-m-right_small slds-shrink-none"
             ></lightning-icon>
           </template>
           <template if:true={displayWarningIcon}>
@@ -36,10 +36,10 @@
               alternative-text="Warning!"
               variant="warning"
               size="medium"
-              class="slds-m-right_small"
+              class="slds-m-right_small slds-shrink-none"
             ></lightning-icon>
           </template>
-          {pushJobDetails.Status}
+          <span class="slds-truncate">{pushJobDetails.Status}</span>
         </h3>
         <lightning-button-group slot="actions">
           <template if:true={pushJobError}>

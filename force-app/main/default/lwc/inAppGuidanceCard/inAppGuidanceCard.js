@@ -29,7 +29,7 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
             helpGuideIcon: 'utility:quip',
             subscriberPackageId: '033Rh000002JY85IAG',
             subscriberPackageVersionId: '04tRh000001bI8fIAE'
-        },
+        }/*,
         {
             label: 'Data Kit Extension',
             description: 'Understand package adoption and feature usage via Data360 and AppAnalytics.',
@@ -47,6 +47,7 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
             subscriberPackageVersionId: '04tRh000001bIOnIAM',
             //tooltip: 'Requires Agentforce, Data360 and Tableau Next'
         }
+        */
     ];
 
     connectedCallback(){

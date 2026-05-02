@@ -44,6 +44,13 @@ export default class SetupAssistantAgentforce extends NavigationMixin(LightningE
 
     data = [
         {
+            "componentName": 'AgentScript',
+            "metadataName": 'AiAuthoringBundle',
+            "1gp": false,
+            "2gp": false,
+            "metadataUrl": 'https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_aiauthoringbundle.htm'
+        },
+        {
             "componentName": 'Agent Actions',
             "metadataName": 'GenAiFunction',
             "1gp": true,
