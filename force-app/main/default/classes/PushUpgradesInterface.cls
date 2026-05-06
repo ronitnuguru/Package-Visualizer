@@ -1,11 +1,11 @@
-public with sharing class PushUpgradesInterface {
+global with sharing class PushUpgradesInterface {
    
     private static string getBaseURL() {
         String baseURL = URL.getSalesforceBaseUrl().toExternalForm() + '/services/data/v57.0/';
         return baseURL;
     }
 
-    public static string createPushRequest(String packageSubscriberVersionId, Datetime scheduledStartTime){
+    global static string createPushRequest(String packageSubscriberVersionId, Datetime scheduledStartTime){
         Datetime now = datetime.now();
 
         if(scheduledStartTime == null || scheduledStartTime < now){
@@ -90,7 +90,7 @@ public with sharing class PushUpgradesInterface {
         return pushJobsList;
     }
 
-    public static String createPushJobs(String packagePushRequestId, List<String> subscriberList){
+    global static String createPushJobs(String packagePushRequestId, List<String> subscriberList){
        
        Integer subLimit = 200;
        Integer subOffset = 0;

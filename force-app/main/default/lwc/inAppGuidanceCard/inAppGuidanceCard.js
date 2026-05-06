@@ -15,6 +15,9 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
     displaySpinner;
     displayInAppPrompt;
 
+    // Agentforce Extension package version ID
+    currentPkgVersionId = '04tRh000001bLcnIAE';
+
     title = 'AgentExchange Showcase';
     iconName = 'utility:salesforce1';
     agentScripts = AGENT_SCRIPTS;
@@ -24,11 +27,11 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
             description: 'Extend agentic and AI capabilities to help ease your packaging and ISV development cycle.',
             icon: 'standard:agent_astro',
             listingLink: 'https://appexchange.salesforce.com/appxListingDetail?listingId=632af825-58e1-4e61-a2b6-8b008449ca03',
-            installLink: '/packaging/installPackage.apexp?p0=04tRh000001NopxIAC',
+            installLink: `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`,
             helpGuideLink: 'https://salesforce.quip.com/f3SWA340YbFH',
             helpGuideIcon: 'utility:quip',
             subscriberPackageId: '033Rh000002JY85IAG',
-            subscriberPackageVersionId: '04tRh000001bI8fIAE'
+            subscriberPackageVersionId: this.currentPkgVersionId
         }/*,
         {
             label: 'Data Kit Extension',

@@ -3,8 +3,7 @@
 * @Date         11/10/2020
 * @Description  Interface Class for making thats make all call out for 2GP Visualizer application.  
 *******************************************************************************************/
-@NamespaceAccessible
-public with sharing class Package2Interface { // NOPMD
+global with sharing class Package2Interface { // NOPMD
     
 	/**************************************************************************************
 	* @Description  Get the list of packages using tooling API. 
@@ -56,7 +55,7 @@ public with sharing class Package2Interface { // NOPMD
 	/**************************************************************************************
 	* @Description  Get the list of packages subscriber by quering PackageSubscriber object. 
 	**************************************************************************************/    
-    public static List<ObjectWrappers.PackageSubscriberWrapper> get2GPPackageSubscriberList(List<ObjectWrappers.FilterWrapper> filterWrapperList, String sortedBy, String sortDirection, String subscriberLimit, String subscriberOffset){
+    global static List<ObjectWrappers.PackageSubscriberWrapper> get2GPPackageSubscriberList(List<ObjectWrappers.FilterWrapper> filterWrapperList, String sortedBy, String sortDirection, String subscriberLimit, String subscriberOffset){
         List<ObjectWrappers.PackageSubscriberWrapper> packageSubList = new List<ObjectWrappers.PackageSubscriberWrapper>();
 
         String queryString = 'SELECT Id, MetadataPackageId, MetadataPackageVersionId, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, ParentOrg, SystemModstamp FROM PackageSubscriber '; String whereClause = '';
@@ -105,7 +104,7 @@ public with sharing class Package2Interface { // NOPMD
 	/**************************************************************************************
 	* @Description	Get the list of package versions for the given package and additional filters passed through FilterWrapper  
 	**************************************************************************************/     
-    public static List<ObjectWrappers.PackageVersionWrapper> getPackage2Versions(list<ObjectWrappers.FilterWrapper> filterWrapperList, String minMajorVersion, String maxMajorVersion, String minMinorVersion, String maxMinorVersion, String sortedBy, String sortDirection, String versionLimit, String versionOffset) {
+    global static List<ObjectWrappers.PackageVersionWrapper> getPackage2Versions(list<ObjectWrappers.FilterWrapper> filterWrapperList, String minMajorVersion, String maxMajorVersion, String minMinorVersion, String maxMinorVersion, String sortedBy, String sortDirection, String versionLimit, String versionOffset) {
         List<ObjectWrappers.PackageVersionWrapper> packageVersions = new List<ObjectWrappers.PackageVersionWrapper>(); 
         String queryString = 'SELECT Id, Branch, Description, IsPasswordProtected, IsReleased, MajorVersion, MinorVersion, PatchVersion, BuildNumber, Tag, Name, Package2Id, SubscriberPackageVersionId, AncestorId, ValidationSkipped, BuildDurationInSeconds, HasPassedCodeCoverageCheck, HasMetadataRemoved, ReleaseVersion, Language, CreatedBy.Name, CreatedDate, ValidatedAsync FROM Package2Version WHERE IsDeprecated = false '; String whereClause = '';
         if(!filterWrapperList.isEmpty()){whereClause = getWhereClause(filterWrapperList); if(!String.isBlank(whereClause)){ queryString = queryString + ' AND ' + whereClause;}}
@@ -114,7 +113,7 @@ public with sharing class Package2Interface { // NOPMD
         for(Object record : records) {ObjectWrappers.PackageVersionWrapper p = (ObjectWrappers.PackageVersionWrapper)JSON.deserialize(JSON.serialize(record), ObjectWrappers.PackageVersionWrapper.class); p.versionNumber = p.majorVersion + '.' + p.minorVersion + '.' + p.patchVersion + '-' + p.buildNumber;if(p.CreatedBy != null){ p.owner = p.CreatedBy.name; } p.id = p.id; p.buildDurationInSeconds = p.buildDurationInSeconds; p.releaseVersion = p.releaseVersion; p.hasPassedCodeCoverageCheck = p.hasPassedCodeCoverageCheck == true; p.isDeprecated = p.isDeprecated == true; p.isPasswordProtected = p.isPasswordProtected == true; p.isReleased = p.isReleased == true; p.validationSkipped = p.validationSkipped == true; p.hasMetadataRemoved = p.hasMetadataRemoved == true; if (!String.isBlank(p.subscriberPackageVersionId)) { p.installUrl = 'https://login.salesforce.com/packaging/installPackage.apexp?p0=' + p.subscriberPackageVersionId; } packageVersions.add(p);} return packageVersions;
     }
 
-    public static List<String> getLatestPackageVersionsList(String packageId, String versionLimit){String queryString = 'SELECT SubscriberPackageVersionId FROM Package2Version WHERE IsDeprecated = false AND IsReleased = true AND Package2Id = '; queryString = queryString + '\'' + String.escapeSingleQuotes(packageId) + '\'' + ' ORDER BY CreatedDate DESC LIMIT ' + String.escapeSingleQuotes(versionLimit);List<Object> records = submitQuery(queryString); List<String> versions = new List<String>();for(Object record : records) { ObjectWrappers.PackageVersionWrapper p = (ObjectWrappers.PackageVersionWrapper)JSON.deserialize(JSON.serialize(record), ObjectWrappers.PackageVersionWrapper.class); versions.add(p.SubscriberPackageVersionId);} return versions;}
+    global static List<String> getLatestPackageVersionsList(String packageId, String versionLimit){String queryString = 'SELECT SubscriberPackageVersionId FROM Package2Version WHERE IsDeprecated = false AND IsReleased = true AND Package2Id = '; queryString = queryString + '\'' + String.escapeSingleQuotes(packageId) + '\'' + ' ORDER BY CreatedDate DESC LIMIT ' + String.escapeSingleQuotes(versionLimit);List<Object> records = submitQuery(queryString); List<String> versions = new List<String>();for(Object record : records) { ObjectWrappers.PackageVersionWrapper p = (ObjectWrappers.PackageVersionWrapper)JSON.deserialize(JSON.serialize(record), ObjectWrappers.PackageVersionWrapper.class); versions.add(p.SubscriberPackageVersionId);} return versions;}
 
 	/**************************************************************************************
 	* @Description	Invoke the tooling API query passed from parent menthods like Package details, package version etc..  
@@ -124,14 +123,12 @@ public with sharing class Package2Interface { // NOPMD
 	/**************************************************************************************
 	* @Description Method for getting the visualforce session id inorder to invoke tooling API  
 	**************************************************************************************/ 
-    @NamespaceAccessible
-    public static string getSessionId() {Pagereference sidPage = Page.SessionCreator; if(Test.isRunningTest()){ return 'we can not run getContent in test class';} else { Map<String,Object> sidJSON = (Map<String,Object>)JSON.deserializeUntyped(sidPage.getContent().toString()); String sessionID = (String)sidJSON.get('sessionId'); return sessionID;}}
+    global static string getSessionId() {Pagereference sidPage = Page.SessionCreator; if(Test.isRunningTest()){ return 'we can not run getContent in test class';} else { Map<String,Object> sidJSON = (Map<String,Object>)JSON.deserializeUntyped(sidPage.getContent().toString()); String sessionID = (String)sidJSON.get('sessionId'); return sessionID;}}
 
 	/**************************************************************************************
 	* @Description	Method for getting the current org base URL for tooling API  
 	**************************************************************************************/ 
-    @NamespaceAccessible
-    public static string getBaseURL(String apiType) {String baseURL = URL.getSalesforceBaseUrl().toExternalForm() + '/services/data/v61.0/' + String.escapeSingleQuotes(apiType) + '/';return baseURL;}
+    global static string getBaseURL(String apiType) {String baseURL = URL.getSalesforceBaseUrl().toExternalForm() + '/services/data/v61.0/' + String.escapeSingleQuotes(apiType) + '/';return baseURL;}
     
 	/**************************************************************************************
 	* @Description	Method that build where cloud. We are using escapeSingleQuotes in this method.

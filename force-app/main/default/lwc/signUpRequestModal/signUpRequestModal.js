@@ -19,7 +19,7 @@ export default class SignUpRequestModal extends NavigationMixin(LightningElement
     aiSuggestion;
     aiResponse;
 
-    currentPkgVersionId = '04tRh000001bI8fIAE';
+    currentPkgVersionId = '04tRh000001bLcnIAE';
 
     get isAiSuggestionEmpty() {
         return !this.aiSuggestion;

@@ -728,7 +728,7 @@ subagent Agentic_Subscriber_Lookup:
             require_user_confirmation: False
             include_in_progress_indicator: True
             progress_indicator_message: "Looking up subscriber..."
-            target: "apex://AgentSubscriberLookup"
+            target: "apex://pkgviz__AgentSubscriberLookup"
             inputs:
                 orgKey: string
                     description: "15 or 18 character Salesforce OrgKey, or a 6+ character prefix. Pass through exactly as the user provided - do not pad, truncate, or normalize."
@@ -748,7 +748,7 @@ subagent Agentic_Subscriber_Lookup:
             label: "Render Subscriber Summary (Slack)"
             require_user_confirmation: False
             include_in_progress_indicator: False
-            target: "generatePromptResponse://ISV_Agent_Subscriber_Summary_Slack"
+            target: "generatePromptResponse://pkgviz__ISV_Agent_Subscriber_Summary_Slack"
             inputs:
                 "Input:Lookup_Result": string
                     description: "The resultJson output from the Lookup_Subscriber_by_OrgKey action."
@@ -769,7 +769,7 @@ subagent Agentic_Subscriber_Lookup:
             require_user_confirmation: False
             include_in_progress_indicator: True
             progress_indicator_message: "Searching subscribers..."
-            target: "apex://AgentSubscriberSearchByName"
+            target: "apex://pkgviz__AgentSubscriberSearchByName"
             inputs:
                 orgName: string
                     description: "Full or partial organization name (3+ characters). Pass through exactly as the user provided."
@@ -789,7 +789,7 @@ subagent Agentic_Subscriber_Lookup:
             label: "Render Search Results (Slack)"
             require_user_confirmation: False
             include_in_progress_indicator: False
-            target: "generatePromptResponse://ISV_Agent_Subscriber_Search_Slack"
+            target: "generatePromptResponse://pkgviz__ISV_Agent_Subscriber_Search_Slack"
             inputs:
                 "Input:Search_Result": string
                     description: "The resultJson output from the Search_Subscribers_By_OrgName action."
@@ -835,7 +835,7 @@ subagent Push_Upgrade_Confirmation:
             require_user_confirmation: False
             include_in_progress_indicator: True
             progress_indicator_message: "Scheduling push upgrade..."
-            target: "apex://AgentPushUpgrade"
+            target: "apex://pkgviz__AgentPushUpgrade"
             inputs:
                 orgKey: string
                     description: "15 or 18 character Salesforce OrgKey of the subscriber to upgrade."
@@ -855,7 +855,7 @@ subagent Push_Upgrade_Confirmation:
             label: "Render Push Upgrade Result (Slack)"
             require_user_confirmation: False
             include_in_progress_indicator: False
-            target: "generatePromptResponse://ISV_Agent_Push_Upgrade_Result_Slack"
+            target: "generatePromptResponse://pkgviz__ISV_Agent_Push_Upgrade_Result_Slack"
             inputs:
                 "Input:Push_Result": string
                     description: "The resultJson output from the Push_Upgrade_To_Latest action."

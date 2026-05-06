@@ -26,7 +26,7 @@ export default class PackagePushJobDetail extends LightningElement {
   displayAiSuggest = false;
   aiSuggestion;
 
-  currentPkgVersionId = '04tRh000001bI8fIAE';
+  currentPkgVersionId = '04tRh000001bLcnIAE';
 
   get isAiSuggestionEmpty() {
     return !this.aiSuggestion;
