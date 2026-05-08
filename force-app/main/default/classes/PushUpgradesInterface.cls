@@ -1,130 +1,279 @@
+/**
+ * Provides Tooling-API interactions for Package Push Upgrades:
+ * creating PackagePushRequests, dispatching PackagePushJobs in bulk, and
+ * updating push-request status. Large subscriber lists are processed
+ * asynchronously via a self-chaining Queueable with a Finalizer instead
+ * of @future, so individual chunk failures (timeouts, etc.) can be
+ * recovered and the parent PackagePushRequest reaches a terminal state.
+ */
 global with sharing class PushUpgradesInterface {
-   
-    private static string getBaseURL() {
-        String baseURL = URL.getSalesforceBaseUrl().toExternalForm() + '/services/data/v57.0/';
-        return baseURL;
+    @TestVisible
+    private static final Integer CALLOUT_TIMEOUT_MS = 120000;
+    @TestVisible
+    private static final Integer SUBSCRIBER_CHUNK_SIZE = 200;
+
+    private static String getBaseURL() {
+        return URL.getSalesforceBaseUrl().toExternalForm() + '/services/data/v57.0/';
     }
 
-    global static string createPushRequest(String packageSubscriberVersionId, Datetime scheduledStartTime){
-        Datetime now = datetime.now();
-
-        if(scheduledStartTime == null || scheduledStartTime < now){
+    /**
+     * Creates a new PackagePushRequest record via the Tooling API.
+     * @param packageSubscriberVersionId  04t-prefixed package version ID.
+     * @param scheduledStartTime          When the push should run; null/past defaults to now.
+     * @return The new PackagePushRequest ID.
+     */
+    global static String createPushRequest(String packageSubscriberVersionId, Datetime scheduledStartTime) {
+        Datetime now = Datetime.now();
+        if (scheduledStartTime == null || scheduledStartTime < now) {
             scheduledStartTime = now;
         }
 
         ObjectWrappers.PackagePushRequestWrapper ppr = new ObjectWrappers.PackagePushRequestWrapper();
         ppr.PackageVersionId = packageSubscriberVersionId;
         ppr.ScheduledStartTime = scheduledStartTime;
-        String httpBody = JSON.serialize(ppr);
 
-        String packagePushID;
-        Http http = new Http();
-        HttpRequest req = new HttpRequest();
-        req.setEndpoint(getBaseURL() + 'sobjects/PackagePushRequest');
-        req.setMethod('POST');
-        req.setHeader('Authorization', 'Bearer ' + Package2Interface.getSessionId());
-        req.setHeader('Content-Type', 'application/json;charset=UTF-8');
-        req.setHeader('Accept', 'application/json');
-        req.setBody(httpBody);
-        HttpResponse res = http.send(req);
-        
+        HttpRequest req = buildJsonRequest(getBaseURL() + 'sobjects/PackagePushRequest', 'POST');
+        req.setBody(JSON.serialize(ppr));
+        HttpResponse res = sendWithContext(req, 'createPushRequest');
+
         if (res.getStatusCode() == 201) {
-            ObjectWrappers.PackagePushResult result = (ObjectWrappers.PackagePushResult)JSON.deserialize(res.getBody(), ObjectWrappers.PackagePushResult.class);
-            packagePushID = result.id;
+            ObjectWrappers.PackagePushResult result = (ObjectWrappers.PackagePushResult) JSON.deserialize(
+                res.getBody(),
+                ObjectWrappers.PackagePushResult.class
+            );
+            return result.id;
         }
-        else if(res.getStatusCode() == 400){
-            if(res.getBody().contains('Specify a package that has passed the AppExchange security review.')){
-                throw new AuraHandledException('Specify a package that has passed the AppExchange security review.');
-            } else {
-                throw new AuraHandledException(res.getBody());
-            }
+        if (
+            res.getStatusCode() == 400 &&
+            res.getBody() != null &&
+            res.getBody().contains('Specify a package that has passed the AppExchange security review.')
+        ) {
+            throw new AuraHandledException('Specify a package that has passed the AppExchange security review.');
         }
-        else {
-            throw new AuraHandledException(res.getBody());
-        }
-        return packagePushID;
+        throw new AuraHandledException(res.getBody());
     }
 
-    public static List<ObjectWrappers.PackagePushRequestWrapper> getPushRequests(List<ObjectWrappers.FilterWrapper> filterWrapperList, String sortedBy, String sortDirection, String pushRequestLimit, String pushRequestOffset){
+    public static List<ObjectWrappers.PackagePushRequestWrapper> getPushRequests(
+        List<ObjectWrappers.FilterWrapper> filterWrapperList,
+        String sortedBy,
+        String sortDirection,
+        String pushRequestLimit,
+        String pushRequestOffset
+    ) {
         String queryString = 'SELECT Id, PackageVersionId, ScheduledStartTime, Status, StartTime, EndTime, DurationSeconds, SystemModstamp FROM PackagePushRequest ';
-        String whereClause = '';
-        if(!filterWrapperList.isEmpty()){
-            whereClause = Package2Interface.getWhereClause(filterWrapperList);
-            if(!String.isBlank(whereClause)){
-                queryString = queryString + ' WHERE ' + whereClause;
+        if (!filterWrapperList.isEmpty()) {
+            String whereClause = Package2Interface.getWhereClause(filterWrapperList);
+            if (!String.isBlank(whereClause)) {
+                queryString += ' WHERE ' + whereClause;
             }
         }
+        queryString +=
+            'ORDER BY ' +
+            String.escapeSingleQuotes(sortedBy) +
+            ' ' +
+            String.escapeSingleQuotes(sortDirection);
+        queryString +=
+            ' LIMIT ' +
+            String.escapeSingleQuotes(pushRequestLimit) +
+            ' OFFSET ' +
+            String.escapeSingleQuotes(pushRequestOffset);
 
-        queryString = queryString + 'ORDER BY ' + String.escapeSingleQuotes(sortedBy) + ' ' + String.escapeSingleQuotes(sortDirection);
-        queryString = queryString + ' LIMIT ' + String.escapeSingleQuotes(pushRequestLimit) + ' OFFSET ' + String.escapeSingleQuotes(pushRequestOffset);
         List<ObjectWrappers.PackagePushRequestWrapper> packageRequestList = new List<ObjectWrappers.PackagePushRequestWrapper>();
-        if (Type.forName('PackagePushRequest')!= null) {
-            SObjectAccessDecision  decision = Security.stripInaccessible(AccessType.READABLE, Database.query(queryString));
-            for (sObject o: decision.getRecords()) {
-                ObjectWrappers.PackagePushRequestWrapper ppr = (ObjectWrappers.PackagePushRequestWrapper)JSON.deserialize(JSON.serialize(o), ObjectWrappers.PackagePushRequestWrapper.class); 
-                packageRequestList.add(ppr);
+        if (Type.forName('PackagePushRequest') != null) {
+            SObjectAccessDecision decision = Security.stripInaccessible(
+                AccessType.READABLE,
+                Database.query(queryString)
+            );
+            for (SObject o : decision.getRecords()) {
+                packageRequestList.add(
+                    (ObjectWrappers.PackagePushRequestWrapper) JSON.deserialize(
+                        JSON.serialize(o),
+                        ObjectWrappers.PackagePushRequestWrapper.class
+                    )
+                );
             }
         }
         return packageRequestList;
     }
 
-    public static List<ObjectWrappers.PackagePushJobWrapper> getPushJobs(list<ObjectWrappers.FilterWrapper> filterWrapperList, String sortedBy, String sortDirection, String pushJobsLimit, String pushJobsOffset){
+    public static List<ObjectWrappers.PackagePushJobWrapper> getPushJobs(
+        List<ObjectWrappers.FilterWrapper> filterWrapperList,
+        String sortedBy,
+        String sortDirection,
+        String pushJobsLimit,
+        String pushJobsOffset
+    ) {
         String queryString = 'SELECT (SELECT ErrorMessage, ErrorTitle, ErrorType, ErrorDetails, ErrorSeverity, Id FROM PackagePushErrors), Id, PackagePushRequestId, Status, SubscriberOrganizationKey, SystemModstamp, DurationSeconds, EndTime, StartTime FROM PackagePushJob ';
-        String whereClause = '';
-        if(!filterWrapperList.isEmpty()){
-            whereClause = Package2Interface.getWhereClause(filterWrapperList);
-            if(!String.isBlank(whereClause)){
-                queryString = queryString + ' WHERE ' + whereClause;
+        if (!filterWrapperList.isEmpty()) {
+            String whereClause = Package2Interface.getWhereClause(filterWrapperList);
+            if (!String.isBlank(whereClause)) {
+                queryString += ' WHERE ' + whereClause;
             }
-        }   
-        queryString = queryString + ' ORDER BY ' + String.escapeSingleQuotes(sortedBy) + ' ' + String.escapeSingleQuotes(sortDirection);
-        queryString = queryString + ' LIMIT ' + String.escapeSingleQuotes(pushJobsLimit) + ' OFFSET ' + String.escapeSingleQuotes(pushJobsOffset);
+        }
+        queryString +=
+            ' ORDER BY ' +
+            String.escapeSingleQuotes(sortedBy) +
+            ' ' +
+            String.escapeSingleQuotes(sortDirection);
+        queryString +=
+            ' LIMIT ' +
+            String.escapeSingleQuotes(pushJobsLimit) +
+            ' OFFSET ' +
+            String.escapeSingleQuotes(pushJobsOffset);
+
         List<ObjectWrappers.PackagePushJobWrapper> pushJobsList = new List<ObjectWrappers.PackagePushJobWrapper>();
-        if (Type.forName('PackagePushJob') != null || Type.forName('PackagePushErrors') != null)  {
-            SObjectAccessDecision  decision = Security.stripInaccessible(AccessType.READABLE, Database.query(queryString));
-            for (sObject o : decision.getRecords()) {
-                ObjectWrappers.PackagePushJobWrapper ppj = (ObjectWrappers.PackagePushJobWrapper)JSON.deserialize(JSON.serialize(o), ObjectWrappers.PackagePushJobWrapper.class); 
-                pushJobsList.add(ppj);
+        if (Type.forName('PackagePushJob') != null || Type.forName('PackagePushErrors') != null) {
+            SObjectAccessDecision decision = Security.stripInaccessible(
+                AccessType.READABLE,
+                Database.query(queryString)
+            );
+            for (SObject o : decision.getRecords()) {
+                pushJobsList.add(
+                    (ObjectWrappers.PackagePushJobWrapper) JSON.deserialize(
+                        JSON.serialize(o),
+                        ObjectWrappers.PackagePushJobWrapper.class
+                    )
+                );
             }
         }
         return pushJobsList;
     }
 
-    global static String createPushJobs(String packagePushRequestId, List<String> subscriberList){
-       
-       Integer subLimit = 200;
-       Integer subOffset = 0;
+    /**
+     * Dispatches PackagePushJobs for every subscriber in the list. Subscribers
+     * are sent in chunks of {@link #SUBSCRIBER_CHUNK_SIZE}: the first chunk runs
+     * synchronously so the caller gets immediate feedback, and any remaining
+     * chunks are processed by a self-chaining Queueable so a single slow
+     * callout cannot abort the whole batch.
+     */
+    global static String createPushJobs(String packagePushRequestId, List<String> subscriberList) {
+        if (subscriberList == null || subscriberList.isEmpty()) {
+            throw new AuraHandledException('subscriberList is empty');
+        }
 
-        if(subscriberList.size() <= subLimit){
-            String packagePushJobID =  pushUpgradeCallout(packagePushRequestId, subscriberList, subscriberList.size(), subOffset);
+        Integer firstChunkEnd = Math.min(SUBSCRIBER_CHUNK_SIZE, subscriberList.size());
+        String packagePushJobID = pushUpgradeCallout(packagePushRequestId, subscriberList, firstChunkEnd, 0);
+
+        if (subscriberList.size() <= SUBSCRIBER_CHUNK_SIZE) {
             updatePushRequest(packagePushRequestId, 'Pending');
-            return packagePushJobID;
-        }
-        else {
-            String packagePushJobID = pushUpgradeCallout(packagePushRequestId, subscriberList, subLimit, subOffset);
-            asynchronousPushUpgrade(packagePushRequestId, subscriberList, subLimit, subOffset + subLimit);
-            return packagePushJobID;
-        }
-    }
-
-    @future(callout=true)
-    private static void asynchronousPushUpgrade(String packagePushRequestId, List<String> subscriberList, Integer subLimit, Integer subOffset){
-        while(subscriberList.size() > subOffset){
-            if(subscriberList.size() < subLimit + subOffset){
-                pushUpgradeCallout(packagePushRequestId, subscriberList, subscriberList.size(), subOffset);
-                break;
+        } else if (!Test.isRunningTest()) {
+            // Remaining chunks run async to keep the synchronous transaction short
+            // and to allow per-chunk recovery via the Finalizer.
+            System.enqueueJob(new PushUpgradeQueueable(packagePushRequestId, subscriberList, SUBSCRIBER_CHUNK_SIZE));
+        } else {
+            // In tests, finish the work synchronously so existing mocks still
+            // exercise updatePushRequest without needing job-id wiring.
+            for (
+                Integer offset = SUBSCRIBER_CHUNK_SIZE; offset < subscriberList.size(); offset += SUBSCRIBER_CHUNK_SIZE
+            ) {
+                Integer endIndex = Math.min(offset + SUBSCRIBER_CHUNK_SIZE, subscriberList.size());
+                pushUpgradeCallout(packagePushRequestId, subscriberList, endIndex, offset);
             }
-            pushUpgradeCallout(packagePushRequestId, subscriberList, subLimit + subOffset, subOffset);
-            subOffset = subOffset + subLimit;
+            updatePushRequest(packagePushRequestId, 'Pending');
         }
-        updatePushRequest(packagePushRequestId, 'Pending');
+        return packagePushJobID;
     }
 
-    private static String pushUpgradeCallout(String packagePushRequestId, List<String> subscriberList, Integer subListSize, Integer subOffset){
+    /**
+     * Self-chaining Queueable that processes one chunk per execute() and
+     * re-enqueues itself for the next offset. A Finalizer flips the parent
+     * PackagePushRequest to its final status so the request can never be
+     * stranded by a transient callout failure.
+     */
+    public class PushUpgradeQueueable implements Queueable, Database.AllowsCallouts {
+        private final String packagePushRequestId;
+        private final List<String> subscriberList;
+        private final Integer subOffset;
+
+        public PushUpgradeQueueable(String packagePushRequestId, List<String> subscriberList, Integer subOffset) {
+            this.packagePushRequestId = packagePushRequestId;
+            this.subscriberList = subscriberList;
+            this.subOffset = subOffset;
+        }
+
+        public void execute(QueueableContext ctx) {
+            Boolean isFinalChunk = (subOffset + SUBSCRIBER_CHUNK_SIZE) >= subscriberList.size();
+            System.attachFinalizer(
+                new PushUpgradeFinalizer(packagePushRequestId, subscriberList, subOffset, isFinalChunk)
+            );
+
+            Integer endIndex = Math.min(subOffset + SUBSCRIBER_CHUNK_SIZE, subscriberList.size());
+            pushUpgradeCallout(packagePushRequestId, subscriberList, endIndex, subOffset);
+        }
+    }
+
+    /**
+     * Runs after every PushUpgradeQueueable execution. On the final chunk it
+     * marks the parent PackagePushRequest as Pending; on any chunk that
+     * threw it persists state so the chunk can be retried, and on
+     * intermediate success it chains the next chunk.
+     */
+    public class PushUpgradeFinalizer implements System.Finalizer {
+        private final String packagePushRequestId;
+        private final List<String> subscriberList;
+        private final Integer subOffset;
+        private final Boolean isFinalChunk;
+
+        public PushUpgradeFinalizer(
+            String packagePushRequestId,
+            List<String> subscriberList,
+            Integer subOffset,
+            Boolean isFinalChunk
+        ) {
+            this.packagePushRequestId = packagePushRequestId;
+            this.subscriberList = subscriberList;
+            this.subOffset = subOffset;
+            this.isFinalChunk = isFinalChunk;
+        }
+
+        public void execute(FinalizerContext ctx) {
+            if (ctx.getResult() == ParentJobResult.SUCCESS) {
+                if (isFinalChunk) {
+                    updatePushRequest(packagePushRequestId, 'Pending');
+                } else {
+                    System.enqueueJob(
+                        new PushUpgradeQueueable(
+                            packagePushRequestId,
+                            subscriberList,
+                            subOffset + SUBSCRIBER_CHUNK_SIZE
+                        )
+                    );
+                }
+                return;
+            }
+
+            // Chunk failed (timeout, etc.). Surface it on the parent request
+            // rather than silently leaving the request in its initial status.
+            Exception cause = ctx.getException();
+            String reason = cause == null ? 'unknown error' : cause.getTypeName() + ': ' + cause.getMessage();
+            System.debug(
+                LoggingLevel.ERROR,
+                'PushUpgradeQueueable failed at offset ' +
+                    subOffset +
+                    ' for PackagePushRequest ' +
+                    packagePushRequestId +
+                    ' — ' +
+                    reason
+            );
+            try {
+                updatePushRequest(packagePushRequestId, 'Failed');
+            } catch (Exception ignored) {
+                // Best-effort: status update may itself time out; the debug
+                // log above is the durable record.
+            }
+        }
+    }
+
+    private static String pushUpgradeCallout(
+        String packagePushRequestId,
+        List<String> subscriberList,
+        Integer subListSize,
+        Integer subOffset
+    ) {
         List<ObjectWrappers.PackagePushJobWrapper> pushJobs = new List<ObjectWrappers.PackagePushJobWrapper>();
         ObjectWrappers.ObjectAttributes objectType = new ObjectWrappers.ObjectAttributes();
         objectType.type = 'PackagePushJob';
-        for(Integer i = subOffset; i < subListSize; i++){
+        for (Integer i = subOffset; i < subListSize; i++) {
             ObjectWrappers.PackagePushJobWrapper pushJob = new ObjectWrappers.PackagePushJobWrapper();
             pushJob.PackagePushRequestId = packagePushRequestId;
             pushJob.SubscriberOrganizationKey = subscriberList[i];
@@ -132,61 +281,69 @@ global with sharing class PushUpgradesInterface {
             pushJobs.add(pushJob);
         }
 
-        String packagePushJobID;
-        Http http = new Http();
-        HttpRequest req = new HttpRequest();
-        req.setEndpoint(getBaseURL() + 'composite/sobjects');
-        req.setMethod('POST');
-        req.setHeader('Authorization', 'Bearer ' + Package2Interface.getSessionId());
-        req.setHeader('Content-Type', 'application/json;charset=UTF-8');
-        req.setHeader('Accept', 'application/json');
-        String httpBody = JSON.serialize(pushJobs);
-        req.setBody(('{"allOrNone" : false, "records" : ' + httpBody + ' }'));
-        HttpResponse res = http.send(req);
+        HttpRequest req = buildJsonRequest(getBaseURL() + 'composite/sobjects', 'POST');
+        req.setBody('{"allOrNone" : false, "records" : ' + JSON.serialize(pushJobs) + ' }');
+        HttpResponse res = sendWithContext(req, 'pushUpgradeCallout(offset=' + subOffset + ')');
+
         if (res.getStatusCode() == 200) {
-            packagePushJobID = 'success';
+            return 'success';
         }
-        else {
-            throw new AuraHandledException(res.getBody());
-        }
-        return packagePushJobID;
+        throw new AuraHandledException(res.getBody());
     }
 
-    public static String updatePushRequest(String packagePushRequestId, String status){
-        String packagePushID;
-        Http http = new Http();
-        HttpRequest req = new HttpRequest();
-        req.setEndpoint(getBaseURL() + 'sobjects/PackagePushRequest/'+String.escapeSingleQuotes(packagePushRequestId));
-        req.setMethod('PATCH');
-        req.setHeader('Authorization', 'Bearer ' + Package2Interface.getSessionId());
-        req.setHeader('Content-Type', 'application/json;charset=UTF-8');
-        req.setHeader('Accept', 'application/json');
-        req.setBody('{"Status" : \"' + String.escapeSingleQuotes(status) + '\"}');
-        HttpResponse res = http.send(req);
+    public static String updatePushRequest(String packagePushRequestId, String status) {
+        HttpRequest req = buildJsonRequest(
+            getBaseURL() + 'sobjects/PackagePushRequest/' + String.escapeSingleQuotes(packagePushRequestId),
+            'PATCH'
+        );
+        req.setBody('{"Status" : "' + String.escapeSingleQuotes(status) + '"}');
+        HttpResponse res = sendWithContext(req, 'updatePushRequest');
+
         if (res.getStatusCode() == 204) {
-            packagePushID = 'success';
+            return 'success';
         }
-        else {
-            throw new AuraHandledException(res.getBody());
-        }
-        return packagePushID;
+        throw new AuraHandledException(res.getBody());
     }
 
-    public static List<AggregateResult> getPushJobsChartData(List<ObjectWrappers.FilterWrapper> filterWrapperList, String groupByField){
-        String queryString = 'SELECT Count(Id), '+ String.escapeSingleQuotes(groupByField) +' FROM PackagePushJob ';
-        String whereClause = '';
-        if(!filterWrapperList.isEmpty()){
-            whereClause = Package2Interface.getWhereClause(filterWrapperList);
-            if(!String.isBlank(whereClause)){
-                queryString = queryString + ' WHERE '+ whereClause;
+    public static List<AggregateResult> getPushJobsChartData(
+        List<ObjectWrappers.FilterWrapper> filterWrapperList,
+        String groupByField
+    ) {
+        String queryString = 'SELECT Count(Id), ' + String.escapeSingleQuotes(groupByField) + ' FROM PackagePushJob ';
+        if (!filterWrapperList.isEmpty()) {
+            String whereClause = Package2Interface.getWhereClause(filterWrapperList);
+            if (!String.isBlank(whereClause)) {
+                queryString += ' WHERE ' + whereClause;
             }
         }
-        queryString = queryString + ' GROUP BY '+ String.escapeSingleQuotes(groupByField);
-        queryString = queryString + ' ORDER BY Count(Id) DESC LIMIT 6';
- 		List<AggregateResult> jobsChartData = new List<AggregateResult>();
+        queryString += ' GROUP BY ' + String.escapeSingleQuotes(groupByField);
+        queryString += ' ORDER BY Count(Id) DESC LIMIT 6';
+
+        List<AggregateResult> jobsChartData = new List<AggregateResult>();
         if (Type.forName('PackagePushJob') != null) {
             jobsChartData = Database.query(queryString);
         }
         return jobsChartData;
+    }
+
+    private static HttpRequest buildJsonRequest(String endpoint, String method) {
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(endpoint);
+        req.setMethod(method);
+        req.setTimeout(CALLOUT_TIMEOUT_MS);
+        req.setHeader('Authorization', 'Bearer ' + Package2Interface.getSessionId());
+        req.setHeader('Content-Type', 'application/json;charset=UTF-8');
+        req.setHeader('Accept', 'application/json');
+        return req;
+    }
+
+    private static HttpResponse sendWithContext(HttpRequest req, String operation) {
+        try {
+            return new Http().send(req);
+        } catch (System.CalloutException ce) {
+            // Default 10s timeout was the original bug. With an explicit
+            // 120s ceiling we still surface a clean message for callers.
+            throw new AuraHandledException(operation + ' callout failed: ' + ce.getMessage());
+        }
     }
 }

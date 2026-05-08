@@ -4,9 +4,9 @@
       "path": "force-app",
       "default": true,
       "package": "Package Visualizer",
-      "versionName": "Version 8.31",
-      "versionNumber": "8.31.0.NEXT",
-      "ancestorVersion": "8.30.0",
+      "versionName": "Version 8.32",
+      "versionNumber": "8.32.0.NEXT",
+      "ancestorVersion": "8.31.0",
       "releaseNotesUrl": "https://salesforce.quip.com/f3SWA340YbFH"
     }
   ],
@@ -226,6 +226,7 @@
     "Package Visualizer@8.28.0-1": "04tRh000001bLZZIA2",
     "Package Visualizer@8.29.0-1": "04tRh000001bLcnIAE",
     "Package Visualizer@8.30.0-1": "04tRh000001bLjFIAU",
-    "Package Visualizer@8.31.0-3": "04tRh000001bLo5IAE"
+    "Package Visualizer@8.31.0-3": "04tRh000001bLo5IAE",
+    "Package Visualizer@8.32.0-1": "04tRh000001bMPBIA2"
   }
 }
