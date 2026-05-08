@@ -4,9 +4,9 @@
       "path": "force-app",
       "default": true,
       "package": "Package Visualizer",
-      "versionName": "Version 8.32",
-      "versionNumber": "8.32.0.NEXT",
-      "ancestorVersion": "8.31.0",
+      "versionName": "Version 8.33",
+      "versionNumber": "8.33.0.NEXT",
+      "ancestorVersion": "8.32.0",
       "releaseNotesUrl": "https://salesforce.quip.com/f3SWA340YbFH"
     }
   ],
@@ -14,6 +14,7 @@
   "namespace": "pkgviz",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "66.0",
+  "defaultLwcLanguage": "javascript",
   "packageAliases": {
     "Package Visualizer": "0Ho5w000000KyxwCAC",
     "Package Visualizer@4.24.0-1": "04tRh0000002JhhIAE",
