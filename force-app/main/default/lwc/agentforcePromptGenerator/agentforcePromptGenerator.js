@@ -24,22 +24,65 @@ export default class AgentforcePromptGenerator extends NavigationMixin(Lightning
     }
 
     modelsValue = 'sfdc_ai__DefaultGPT5';
-    currentPkgVersionId = '04tRh000001bLcnIAE';
+    providerValue = 'OpenAI';
+    currentPkgVersionId = '04tRh000001bMQnIAM';
+
+    get modelProviderOptions() {
+        return [
+            { label: 'OpenAI', value: 'OpenAI' },
+            { label: 'Anthropic', value: 'Anthropic' },
+            { label: 'Google', value: 'Google' },
+            { label: 'Amazon', value: 'Amazon' },
+            { label: 'NVIDIA', value: 'NVIDIA' },
+        ];
+    }
+
+    get allModelsTypeOptions() {
+        return [
+            { provider: 'OpenAI', label: 'OpenAI / Azure OpenAI GPT 5.5 (Beta)', value: 'sfdc_ai__DefaultGPT55' },
+            { provider: 'OpenAI', label: 'OpenAI / Azure OpenAI GPT 5.4 Mini (Beta)', value: 'sfdc_ai__DefaultGPT54Mini' },
+            { provider: 'OpenAI', label: 'OpenAI / Azure OpenAI GPT 5.4', value: 'sfdc_ai__DefaultGPT54' },
+            { provider: 'OpenAI', label: 'OpenAI / Azure OpenAI GPT 5.2', value: 'sfdc_ai__DefaultGPT52' },
+            { provider: 'OpenAI', label: 'OpenAI / Azure OpenAI GPT 5.1', value: 'sfdc_ai__DefaultGPT51' },
+            { provider: 'OpenAI', label: 'OpenAI / Azure OpenAI GPT 5', value: 'sfdc_ai__DefaultGPT5' },
+            { provider: 'OpenAI', label: 'OpenAI / Azure OpenAI GPT 5 Mini', value: 'sfdc_ai__DefaultGPT5Mini' },
+            { provider: 'OpenAI', label: 'OpenAI / Azure OpenAI GPT 4.1', value: 'sfdc_ai__DefaultGPT41' },
+            { provider: 'OpenAI', label: 'OpenAI / Azure OpenAI GPT 4.1 Mini', value: 'sfdc_ai__DefaultGPT41Mini' },
+            { provider: 'OpenAI', label: 'OpenAI / Azure OpenAI GPT 4 Omni (GPT-4o)', value: 'sfdc_ai__DefaultGPT4Omni' },
+            { provider: 'OpenAI', label: 'OpenAI / Azure OpenAI GPT 4 Omni Mini (GPT-4o mini)', value: 'sfdc_ai__DefaultGPT4OmniMini' },
+            { provider: 'OpenAI', label: 'OpenAI GPT 4 Omni Mini (GPT-4o mini)', value: 'sfdc_ai__DefaultOpenAIGPT4OmniMini' },
+            { provider: 'OpenAI', label: 'OpenAI / Azure OpenAI O4 Mini', value: 'sfdc_ai__DefaultO4Mini' },
+            { provider: 'OpenAI', label: 'OpenAI / Azure OpenAI O3', value: 'sfdc_ai__DefaultO3' },
+            { provider: 'Anthropic', label: 'Anthropic Claude Opus 4.7 on Amazon Bedrock (Beta)', value: 'sfdc_ai__DefaultBedrockAnthropicClaude47Opus' },
+            { provider: 'Anthropic', label: 'Anthropic Claude Opus 4.6 on Amazon Bedrock (Beta)', value: 'sfdc_ai__DefaultBedrockAnthropicClaude46Opus' },
+            { provider: 'Anthropic', label: 'Anthropic Claude Opus 4.5 on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAnthropicClaude45Opus' },
+            { provider: 'Anthropic', label: 'Anthropic Claude Sonnet 4.6 on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAnthropicClaude46Sonnet' },
+            { provider: 'Anthropic', label: 'Anthropic Claude Sonnet 4.5 on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAnthropicClaude45Sonnet' },
+            { provider: 'Anthropic', label: 'Anthropic Claude Sonnet 4 on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAnthropicClaude4Sonnet' },
+            { provider: 'Anthropic', label: 'Anthropic Claude Haiku 4.5 on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAnthropicClaude45Haiku' },
+            { provider: 'Google', label: 'Vertex AI (Google) Gemini 3.1 Pro (Beta)', value: 'sfdc_ai__DefaultVertexAIGeminiPro31' },
+            { provider: 'Google', label: 'Vertex AI (Google) Gemini 3.1 Flash Lite (Beta)', value: 'sfdc_ai__DefaultVertexAIGemini31FlashLite' },
+            { provider: 'Google', label: 'Vertex AI (Google) Gemini 3 Pro (Beta)', value: 'sfdc_ai__DefaultVertexAIGeminiPro30' },
+            { provider: 'Google', label: 'Vertex AI (Google) Gemini 3 Flash', value: 'sfdc_ai__DefaultVertexAIGemini30Flash' },
+            { provider: 'Google', label: 'Vertex AI (Google) Gemini 2.5 Pro', value: 'sfdc_ai__DefaultVertexAIGeminiPro25' },
+            { provider: 'Google', label: 'Vertex AI (Google) Gemini 2.5 Flash', value: 'sfdc_ai__DefaultVertexAIGemini25Flash001' },
+            { provider: 'Google', label: 'Vertex AI (Google) Gemini 2.5 Flash Lite', value: 'sfdc_ai__DefaultVertexAIGemini25FlashLite001' },
+            { provider: 'Amazon', label: 'Amazon Nova Pro on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAmazonNovaPro' },
+            { provider: 'Amazon', label: 'Amazon Nova Lite on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAmazonNovaLite' },
+            { provider: 'NVIDIA', label: 'NVIDIA Nemotron 3 Nano 30B (Beta) on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockNvidiaNemotronNano330b' },
+        ];
+    }
 
     get modelsTypeOptions() {
-        return [
-            { label: 'Azure OpenAI GPT-5', value: 'sfdc_ai__DefaultGPT5' },
-            { label: 'Azure OpenAI GPT-4.1', value: 'sfdc_ai__DefaultGPT41Mini' },
-            { label: 'Azure OpenAI GPT-5 Mini', value: 'sfdc_ai__DefaultGPT5Mini' },
-            { label: 'Azure OpenAI GPT-4.1 Mini', value: 'sfdc_ai__DefaultGPT41Mini' },
-            { label: 'Anthropic Claude 4 Sonnet on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAnthropicClaude4Sonnet' },
-            { label: 'Amazon Nova Pro on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAmazonNovaPro' },
-            { label: 'Amazon Nova Lite on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAmazonNovaLite' },
-            { label: 'Anthropic Claude 3.7 Sonnet on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAnthropicClaude37Sonnet' },
-            { label: 'Anthropic Claude 3 Haiku on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAnthropicClaude3Haiku' },
-            { label: 'Vertex AI (Google) Gemini 2.5 Flash', value: 'sfdc_ai__DefaultVertexAIGemini25Flash001' },
-            { label: 'Vertex AI (Google) Gemini 2.5 Flash Lite', value: 'sfdc_ai__DefaultVertexAIGemini25FlashLite001' },
-        ];
+        return this.allModelsTypeOptions
+            .filter((model) => model.provider === this.providerValue)
+            .map(({ label, value }) => ({ label, value }));
+    }
+
+    handleProviderTypeChange(event) {
+        this.providerValue = event.detail.value;
+        const selectedProviderModels = this.modelsTypeOptions;
+        this.modelsValue = selectedProviderModels.length ? selectedProviderModels[0].value : null;
     }
 
     handleModelsTypeChange(event) {

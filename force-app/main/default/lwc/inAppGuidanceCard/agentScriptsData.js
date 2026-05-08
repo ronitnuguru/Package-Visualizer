@@ -885,11 +885,13 @@ export const AGENT_SCRIPTS = [
         label: 'ISV Agent (Employee)',
         body: ISV_EMPLOYEE_AGENT
     },
+    /*
     {
         id: 'app-analytics-agent-employee',
         label: 'AppAnalytics Agent (Employee)',
         body: APP_ANALYTICS_EMPLOYEE_AGENT
     },
+    */
     {
         id: 'subscriber-agent-employee',
         label: 'Subscriber Agent (Employee)',

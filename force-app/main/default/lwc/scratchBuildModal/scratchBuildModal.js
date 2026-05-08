@@ -14,7 +14,7 @@ export default class ScratchBuildModal extends LightningModal {
     displayAiSuggest;
     aiSuggestion;
 
-    currentPkgVersionId = '04tRh000001bLcnIAE';
+    currentPkgVersionId = '04tRh000001bMQnIAM';
 
     get isAiSuggestionEmpty(){
         return !this.aiSuggestion;

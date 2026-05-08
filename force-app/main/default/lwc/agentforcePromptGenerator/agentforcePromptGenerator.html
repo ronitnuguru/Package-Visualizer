@@ -62,6 +62,16 @@
                 </template>
     
                 <lightning-combobox
+                    name="modelProviders"
+                    label="Model Providers"
+                    value={providerValue}
+                    placeholder="Select Model Provider"
+                    dropdown-alignment="auto"
+                    options={modelProviderOptions}
+                    onchange={handleProviderTypeChange}
+                ></lightning-combobox>
+
+                <lightning-combobox
                     name="models"
                     label="Models"
                     value={modelsValue}
@@ -76,6 +86,7 @@
                     name="prompt" 
                     label="Prompt"
                     placeholder="Ask Agentforce..."
+                    oninput={handlePromptChange}
                     onchange={handlePromptChange} 
                     value={prompt}
                     required

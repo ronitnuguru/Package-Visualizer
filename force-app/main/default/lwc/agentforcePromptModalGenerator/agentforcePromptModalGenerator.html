@@ -73,6 +73,15 @@
       <template if:false={displayExtensionIllustration}>
         <template if:true={displayModels}>
           <lightning-combobox
+            name="modelProviders"
+            label="Model Providers"
+            value={providerValue}
+            placeholder="Select Model Provider"
+            dropdown-alignment="auto"
+            options={modelProviderOptions}
+            onchange={handleProviderTypeChange}
+          ></lightning-combobox>
+          <lightning-combobox
             name="models"
             label="Models"
             value={modelsValue}
@@ -85,6 +94,15 @@
         </template>
         <template if:true={displayEditPrompt}>
           <template if:false={displayModels}>
+            <lightning-combobox
+              name="modelProviders"
+              label="Model Providers"
+              value={providerValue}
+              placeholder="Select Model Provider"
+              dropdown-alignment="auto"
+              options={modelProviderOptions}
+              onchange={handleProviderTypeChange}
+            ></lightning-combobox>
             <lightning-combobox
               name="models"
               label="Models"
@@ -100,6 +118,7 @@
             name="prompt" 
             label="User Prompt"
             placeholder="Messsage Agentforce..."
+            oninput={handleUserPromptChange}
             onchange={handleUserPromptChange} 
             value={userPrompt}
             class="text-area-style"
@@ -110,6 +129,7 @@
             name="prompt" 
             label="System Prompt"
             placeholder="Messsage Agentforce..."
+            oninput={handleSystemPromptChange}
             onchange={handleSystemPromptChange} 
             value={systemPrompt}
             class="text-area-style"
