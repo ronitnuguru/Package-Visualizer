@@ -43,3 +43,10 @@ $RECYCLE.BIN/
 **/__pycache__/
 **/.venv/
 **/venv/
+
+# Local AI tooling
+.claude/
+.cursor/
+
+# Local project configuration
+sfdx-project.json
