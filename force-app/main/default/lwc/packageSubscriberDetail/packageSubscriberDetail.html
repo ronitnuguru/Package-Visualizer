@@ -12,6 +12,15 @@
             {orgName}
           </h3>
           <lightning-button-group slot="actions">
+            <template if:false={showAgentforceCard}>
+              <lightning-button
+                variant="brand"
+                label="Generate"
+                icon-name="utility:sparkles"
+                icon-position="right"
+                onclick={handleAskAgentforce}
+              ></lightning-button>
+            </template>
             <lightning-button-icon variant="border-filled" icon-name="utility:einstein" tooltip="Request AppAnalytics" onclick={handleAppAnalyticsSubscribers}></lightning-button-icon>
             <template if:true={displayLMA}>
               <template if:true={orgKey}>
@@ -58,6 +67,150 @@
                 </dl>
               </div>
             </div>
+            <template if:true={showAgentforceCard}>
+              <div class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium card-style">
+                <lightning-card>
+                  <template if:true={displayAgentforceSpinner}>
+                    <div class="slds-p-vertical_medium">
+                      <lightning-spinner
+                        alternative-text="Loading"
+                        size="medium"
+                        variant="brand"
+                      ></lightning-spinner>
+                    </div>
+                  </template>
+                  <h3 slot="title" class="slds-truncate">
+                    <lightning-icon
+                      icon-name="standard:agent_astro"
+                      size="medium"
+                      class="slds-m-right_small"
+                    ></lightning-icon>
+                    Agentforce Generated
+                  </h3>
+                  <div class="slds-card__body slds-card__body_inner">
+                    <template if:false={displayAgentforceSpinner}>
+                      <template if:true={displayExtensionIllustration}>
+                        <div class="slds-p-around_medium">
+                          <lightning-empty-state
+                            title="Hmm..."
+                            illustration-name="noresults:search">
+                            <p slot="description">
+                              Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance...
+                            </p>
+                            <lightning-button variant="brand" label="Install Managed Package" slot="cta" onclick={handleExtensionInstall}>
+                            </lightning-button>
+                          </lightning-empty-state>
+                        </div>
+                      </template>
+                      <template if:false={displayExtensionIllustration}>
+                        <template if:true={parsedResponse}>
+                          <div class="slds-p-around_small">
+                            <div class="slds-grid slds-wrap slds-gutters slds-p-bottom_small">
+                              <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <template if:true={parsedResponse.companyName}>
+                                  <div class="slds-text-heading_small slds-p-bottom_x-small">
+                                    {parsedResponse.companyName}
+                                  </div>
+                                </template>
+                                <template if:true={parsedResponse.industry}>
+                                  <lightning-badge label={parsedResponse.industry} class="slds-m-right_xx-small"></lightning-badge>
+                                </template>
+                                <template if:true={parsedResponse.confidence}>
+                                  <lightning-badge label={parsedResponse.confidence} class={parsedResponse.confidenceClass}></lightning-badge>
+                                </template>
+                              </div>
+                              <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <template if:true={parsedResponse.headquarters}>
+                                  <div class="slds-p-bottom_xx-small">
+                                    <strong>Headquarters:</strong>
+                                  </div>
+                                  <div class="slds-p-bottom_x-small">
+                                    {parsedResponse.headquarters}
+                                  </div>
+                                </template>
+                                <template if:true={parsedResponse.companySize}>
+                                  <div class="slds-p-bottom_xx-small">
+                                    <strong>Company Size:</strong>
+                                  </div>
+                                  <div>
+                                    {parsedResponse.companySize}
+                                  </div>
+                                </template>
+                              </div>
+                            </div>
+                            <dl class="slds-m-bottom_none">
+                              <template if:true={parsedResponse.companyOverview}>
+                                <dt class="slds-p-bottom_xx-small">
+                                  <strong>Company Overview:</strong>
+                                </dt>
+                                <dd class="slds-var-m-left_none slds-p-bottom_small">
+                                  {parsedResponse.companyOverview}
+                                </dd>
+                              </template>
+
+                              <template if:true={parsedResponse.marketPosition}>
+                                <dt class="slds-p-bottom_xx-small">
+                                  <strong>Market Position:</strong>
+                                </dt>
+                                <dd class="slds-var-m-left_none slds-p-bottom_small">
+                                  {parsedResponse.marketPosition}
+                                </dd>
+                              </template>
+
+                              <template if:true={parsedResponse.whySalesforce}>
+                                <dt class="slds-p-bottom_xx-small">
+                                  <strong>Why Salesforce:</strong>
+                                </dt>
+                                <dd class="slds-var-m-left_none slds-p-bottom_small">
+                                  {parsedResponse.whySalesforce}
+                                </dd>
+                              </template>
+
+                              <template if:true={parsedResponse.likelySalesforceClouds}>
+                                <dt class="slds-p-bottom_xx-small">
+                                  <strong>Likely Salesforce Clouds:</strong>
+                                </dt>
+                                <dd class="slds-var-m-left_none slds-p-bottom_small">
+                                  <template for:each={parsedResponse.likelySalesforceClouds} for:item="cloud">
+                                    <lightning-badge key={cloud} label={cloud} class="slds-m-right_xx-small slds-m-bottom_xx-small slds-theme_success"></lightning-badge>
+                                  </template>
+                                </dd>
+                              </template>
+
+                              <template if:true={parsedResponse.idealUseCases}>
+                                <dt class="slds-p-bottom_xx-small">
+                                  <strong>Ideal Use Cases:</strong>
+                                </dt>
+                                <dd class="slds-var-m-left_none slds-p-bottom_small">
+                                  <ul class="slds-list_dotted">
+                                    <template for:each={parsedResponse.idealUseCases} for:item="useCase">
+                                      <li key={useCase} class="slds-p-vertical_xx-small">{useCase}</li>
+                                    </template>
+                                  </ul>
+                                </dd>
+                              </template>
+
+                              <template if:true={parsedResponse.isvOpportunities}>
+                                <dt class="slds-p-bottom_xx-small">
+                                  <strong>ISV Opportunities:</strong>
+                                </dt>
+                                <dd class="slds-var-m-left_none slds-p-bottom_small">
+                                  <ul class="slds-list_dotted">
+                                    <template for:each={parsedResponse.isvOpportunities} for:item="opportunity">
+                                      <li key={opportunity} class="slds-p-vertical_xx-small">{opportunity}</li>
+                                    </template>
+                                  </ul>
+                                </dd>
+                              </template>
+                            </dl>
+                          </div>
+                        </template>
+                      </template>
+                    </template>
+                  </div>
+                </lightning-card>
+              </div>
+            </template>
           </div>
         </lightning-card>
       </div>
