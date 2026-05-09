@@ -124,20 +124,24 @@ private class PushUpgradesInterfaceTest {
     }
 
     /**************************************************************************************
-     * @Description  Test class for createPackagePushJobs
+     * @Description  Test class for createPackagePushJobs.
+     *               After job insertion, createPushJobs must PATCH the parent
+     *               request Status to Pending to dispatch the upgrade. The
+     *               capturing mock asserts that PATCH was issued.
      **************************************************************************************/
     @isTest
     public static void testCreatePackagePushJobs() {
-        try {
-            Test.startTest();
-            Test.setMock(HttpCalloutMock.class, new PushUpgradesCalloutMock());
-            List<String> slist = new List<String>();
-            slist.add('0Ho000000000000AAA');
-            String data = PushUpgradesCtrl.createPackagePushJobs('0Ho000000000000AAA', slist);
-            Test.stopTest();
-        } catch (exception e) {
-            System.debug('# E:' + e);
-        }
+        Test.startTest();
+        CapturingCalloutMock mock = new CapturingCalloutMock();
+        Test.setMock(HttpCalloutMock.class, mock);
+        List<String> slist = new List<String>();
+        slist.add('0Ho000000000000AAA');
+        String data = PushUpgradesCtrl.createPackagePushJobs('0Ho000000000000AAA', slist);
+        Test.stopTest();
+        System.assert(
+            mock.sawPendingPatch,
+            'createPushJobs must PATCH PackagePushRequest.Status to Pending after inserting jobs'
+        );
     }
 
     /**************************************************************************************
@@ -168,24 +172,25 @@ private class PushUpgradesInterfaceTest {
     }
 
     /**************************************************************************************
-     * @Description  Bulk test class for createPackagePushJobs with 251+ subscribers
+     * @Description  Bulk test for createPackagePushJobs with 251+ subscribers.
+     *               Exercises the chunk loop and asserts the Created -> Pending
+     *               PATCH still fires after every chunk has been inserted.
      **************************************************************************************/
     @isTest
     public static void testCreatePackagePushJobsBulk() {
         Test.startTest();
-        Test.setMock(HttpCalloutMock.class, new PushUpgradesCalloutMock());
+        CapturingCalloutMock mock = new CapturingCalloutMock();
+        Test.setMock(HttpCalloutMock.class, mock);
         List<String> bulkSubscriberList = new List<String>();
         for (Integer i = 0; i < 251; i++) {
             bulkSubscriberList.add('00D00000000000' + String.valueOf(i).leftPad(3, '0'));
         }
-        try {
-            // Must use the ID that PushUpgradesCalloutMock matches for the PATCH endpoint
-            String result = PushUpgradesCtrl.createPackagePushJobs('0Ho000000000000AAA', bulkSubscriberList);
-            System.assertNotEquals(null, result);
-        } catch (Exception e) {
-            System.assertNotEquals(null, e.getMessage());
-        }
+        // Must use the ID that the mock matches for the PATCH endpoint
+        String result = PushUpgradesCtrl.createPackagePushJobs('0Ho000000000000AAA', bulkSubscriberList);
         Test.stopTest();
+        System.assertNotEquals(null, result);
+        System.assert(mock.compositePostCount >= 2, 'Bulk run must POST at least two composite chunks');
+        System.assert(mock.sawPendingPatch, 'After all chunks complete, createPushJobs must PATCH Status=Pending');
     }
 
     /**************************************************************************************
@@ -284,6 +289,48 @@ private class PushUpgradesInterfaceTest {
     private class ThrowingCalloutMock implements HttpCalloutMock {
         public HttpResponse respond(HttpRequest req) {
             throw new CalloutException('Read timed out');
+        }
+    }
+
+    /**
+     * Mock that returns happy-path responses and records whether the
+     * Status=Pending PATCH was issued. Lets bulk and single-chunk tests
+     * assert that createPushJobs flips Created -> Pending after every
+     * job has been inserted.
+     */
+    private class CapturingCalloutMock implements HttpCalloutMock {
+        public Boolean sawPendingPatch = false;
+        public Integer compositePostCount = 0;
+
+        public HttpResponse respond(HttpRequest req) {
+            HttpResponse res = new HttpResponse();
+            res.setHeader('Content-Type', 'application/json');
+            String endpoint = req.getEndpoint();
+            String method = req.getMethod();
+            String body = req.getBody();
+
+            if (endpoint.contains('composite/sobjects')) {
+                compositePostCount++;
+                res.setBody('[{"id":"0DX000000000001AAA","success":true,"errors":[]}]');
+                res.setStatusCode(200);
+                return res;
+            }
+            if (endpoint.contains('sobjects/PackagePushRequest/0Ho000000000000AAA') && method == 'PATCH') {
+                if (body != null && body.contains('"Pending"')) {
+                    sawPendingPatch = true;
+                }
+                res.setBody('');
+                res.setStatusCode(204);
+                return res;
+            }
+            if (endpoint.contains('sobjects/PackagePushRequest') && method == 'POST') {
+                res.setBody('{"id":"0DV000000000001AAA","success":true}');
+                res.setStatusCode(201);
+                return res;
+            }
+            res.setBody('');
+            res.setStatusCode(200);
+            return res;
         }
     }
 

@@ -1,10 +1,11 @@
 /**
- * Provides Tooling-API interactions for Package Push Upgrades:
- * creating PackagePushRequests, dispatching PackagePushJobs in bulk, and
- * updating push-request status. Large subscriber lists are processed
- * asynchronously via a self-chaining Queueable with a Finalizer instead
- * of @future, so individual chunk failures (timeouts, etc.) can be
- * recovered and the parent PackagePushRequest reaches a terminal state.
+ * Provides REST API interactions for Package Push Upgrades against the
+ * standard PackagePushRequest and PackagePushJob sObjects: creating a
+ * push request, inserting one PackagePushJob per subscriber org in bulk,
+ * and PATCHing the request status to Pending (to dispatch) or Canceled
+ * (to abort). Large subscriber lists are processed asynchronously via a
+ * self-chaining Queueable with a Finalizer so individual chunk failures
+ * can be recovered and the parent request never strands at Created.
  */
 global with sharing class PushUpgradesInterface {
     @TestVisible
@@ -155,14 +156,17 @@ global with sharing class PushUpgradesInterface {
         String packagePushJobID = pushUpgradeCallout(packagePushRequestId, subscriberList, firstChunkEnd, 0);
 
         if (subscriberList.size() <= SUBSCRIBER_CHUNK_SIZE) {
+            // All jobs inserted synchronously; flip Created -> Pending now to
+            // signal the platform to start the upgrade.
             updatePushRequest(packagePushRequestId, 'Pending');
         } else if (!Test.isRunningTest()) {
-            // Remaining chunks run async to keep the synchronous transaction short
-            // and to allow per-chunk recovery via the Finalizer.
+            // Larger pushes finish in the Queueable chain; the final-chunk
+            // Finalizer issues the Created -> Pending PATCH once every job
+            // has been inserted.
             System.enqueueJob(new PushUpgradeQueueable(packagePushRequestId, subscriberList, SUBSCRIBER_CHUNK_SIZE));
         } else {
             // In tests, finish the work synchronously so existing mocks still
-            // exercise updatePushRequest without needing job-id wiring.
+            // exercise the full chunk loop without needing job-id wiring.
             for (
                 Integer offset = SUBSCRIBER_CHUNK_SIZE; offset < subscriberList.size(); offset += SUBSCRIBER_CHUNK_SIZE
             ) {
@@ -229,6 +233,8 @@ global with sharing class PushUpgradesInterface {
         public void execute(FinalizerContext ctx) {
             if (ctx.getResult() == ParentJobResult.SUCCESS) {
                 if (isFinalChunk) {
+                    // Every job inserted; flip Created -> Pending so the
+                    // platform can start the upgrade.
                     updatePushRequest(packagePushRequestId, 'Pending');
                 } else {
                     System.enqueueJob(
@@ -256,10 +262,14 @@ global with sharing class PushUpgradesInterface {
                     reason
             );
             try {
-                updatePushRequest(packagePushRequestId, 'Failed');
+                // PackagePushRequest can be Canceled only while Status is
+                // Created or Pending (per object reference). When a chunk
+                // fails we have not yet issued the Created -> Pending PATCH,
+                // so the request is still Created and Cancel is valid.
+                updatePushRequest(packagePushRequestId, 'Canceled');
             } catch (Exception ignored) {
-                // Best-effort: status update may itself time out; the debug
-                // log above is the durable record.
+                // Best-effort: the status update may itself time out. The
+                // ERROR debug above is the durable record.
             }
         }
     }
@@ -285,10 +295,59 @@ global with sharing class PushUpgradesInterface {
         req.setBody('{"allOrNone" : false, "records" : ' + JSON.serialize(pushJobs) + ' }');
         HttpResponse res = sendWithContext(req, 'pushUpgradeCallout(offset=' + subOffset + ')');
 
-        if (res.getStatusCode() == 200) {
-            return 'success';
+        if (res.getStatusCode() != 200) {
+            throw new AuraHandledException(res.getBody());
         }
-        throw new AuraHandledException(res.getBody());
+
+        // composite/sobjects with allOrNone=false returns HTTP 200 even when
+        // every record failed. Each element has success + errors[]; surface
+        // a partial failure instead of silently swallowing it.
+        Integer successCount = countSuccesses(res.getBody());
+        Integer attempted = subListSize - subOffset;
+        if (successCount == 0) {
+            throw new AuraHandledException(
+                'pushUpgradeCallout: all ' +
+                    attempted +
+                    ' records failed at offset ' +
+                    subOffset +
+                    '. Response: ' +
+                    res.getBody()
+            );
+        }
+        if (successCount < attempted) {
+            System.debug(
+                LoggingLevel.WARN,
+                'pushUpgradeCallout partial success at offset ' +
+                    subOffset +
+                    ': ' +
+                    successCount +
+                    '/' +
+                    attempted +
+                    '. Response: ' +
+                    res.getBody()
+            );
+        }
+        return 'success';
+    }
+
+    private static Integer countSuccesses(String body) {
+        if (String.isBlank(body)) {
+            return 0;
+        }
+        Integer count = 0;
+        Object parsed = JSON.deserializeUntyped(body);
+        if (!(parsed instanceof List<Object>)) {
+            return 0;
+        }
+        for (Object row : (List<Object>) parsed) {
+            if (row instanceof Map<String, Object>) {
+                Object ok = ((Map<String, Object>) row).get('success');
+                if (ok == true) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     public static String updatePushRequest(String packagePushRequestId, String status) {
