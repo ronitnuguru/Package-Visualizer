@@ -133,17 +133,15 @@
                                   icon-name="utility:warning"
                                   variant="warning"
                                   size="x-small"
-                                  class="success-icon-style"
                                 ></lightning-icon>
                               </span>
                             </template>
                             <template if:true={isPBO}>
-                              <span class="slds-icon_container slds-icon-utility-success slds-progress__marker slds-progress__marker_icon slds-progress__marker_icon-success">
+                              <span class="slds-progress__marker">
                                 <lightning-icon
                                   icon-name="utility:success"
                                   variant="success"
                                   size="x-small"
-                                  class="success-icon-style"
                                 ></lightning-icon>
                               </span>
                             </template>
@@ -184,12 +182,11 @@
                             </div>
                           </template>
                           <template if:true={isPackageVisualizerEnabled}>
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker slds-progress__marker_icon slds-progress__marker_icon-success">
+                            <span class="slds-progress__marker">
                               <lightning-icon
                                 icon-name="utility:success"
                                 variant="success"
                                 size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                           </template>
@@ -222,12 +219,11 @@
                               </div>
                             </template>
                             <template if:true={isPushUpgradeEnabled}>
-                              <span class="slds-icon_container slds-icon-utility-success slds-progress__marker slds-progress__marker_icon slds-progress__marker_icon-success">
+                              <span class="slds-progress__marker">
                                 <lightning-icon
                                   icon-name="utility:success"
                                   variant="success"
                                   size="x-small"
-                                  class="success-icon-style"
                                 ></lightning-icon>
                               </span>
                             </template>
@@ -351,8 +347,8 @@
                       </p>
                         Required Feature Toggles:
                         <ul class="slds-list_dotted">
-                          <li>Enable Dev Hub</li>
-                          <li>Enable Unlocked Packages and Second-Generation Managed Packages</li>
+                          <li><a href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_pkg_enable_devhub.htm" target="_blank">Enable Dev Hub</a></li>
+                          <li><a href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_enable_secondgen_pkg.htm" target="_blank">Enable Unlocked Packages and Second-Generation Managed Packages</a></li>
                           <li><a href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_enable_einstein.htm" target="_blank">Enable Einstein Features</a></li>
                         </ul>
                     </div>
@@ -365,14 +361,6 @@
                           onclick={navigateToDevHub}
                           disabled={isSetupEnabled}
                         ></lightning-button>
-                        <!--
-                        <lightning-button-icon 
-                          icon-name="utility:agent_astro"
-                          tooltip="Ask Agentforce"
-                          value="enableDevHub"
-                          onclick={openAskAgentforce}
-                        ></lightning-button-icon>
-                        -->
                       </lightning-button-group> 
                     </div>
                   </div>
@@ -411,7 +399,6 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -442,7 +429,6 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -522,7 +508,6 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -546,7 +531,6 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -568,7 +552,6 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -638,34 +621,6 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
-                              ></lightning-icon>
-                            </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
-                              <div class="slds-size_3-of-4">
-                                Agentforce Vibes IDE is a web-based integrated development environment that delivers the full power and flexibility of Visual Studio Code in your browser.&nbsp;
-                                <a
-                                  href="https://developer.salesforce.com/docs/platform/code-builder/guide/codebuilder-overview.html"
-                                  target="_blank"
-                                  >Learn More</a
-                                >
-                              </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
-                                <lightning-button-icon
-                                  icon-name="utility:builder"
-                                  variant="brand"
-                                  onclick={navigateToCodeBuilder}
-                                ></lightning-button-icon>
-                              </div>
-                            </div>
-                          </li>
-                          <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
-                              <lightning-icon
-                                icon-name="utility:info"
-                                variant="info"
-                                size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -692,7 +647,6 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -719,7 +673,41 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
+                              ></lightning-icon>
+                            </span>
+                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                              <div class="slds-size_3-of-4">
+                                Skills are reusable AI capabilities that teach your coding agent Salesforce-specific patterns, best practices, and workflows. Install them with one command to enhance any supported AI coding tool.&nbsp;
+                                <span class="slds-text-body_small">
+                                  Explore on GitHub:&nbsp;
+                                  <a
+                                    href="https://github.com/SalesforceAIResearch/agentforce-adlc"
+                                    target="_blank"
+                                    >agentforce-adlc</a
+                                  >
+                                  &nbsp;|&nbsp;
+                                  <a
+                                    href="https://github.com/forcedotcom/afv-library"
+                                    target="_blank"
+                                    >afv-library</a
+                                  >
+                                </span>
+                              </div>
+                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                                <lightning-button-icon
+                                  icon-name="utility:agent_astro"
+                                  variant="brand"
+                                  onclick={navigateToAgentforceSkillsDocs}
+                                ></lightning-button-icon>
+                              </div>
+                            </div>
+                          </li>
+                          <li class="slds-progress__item">
+                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:info"
+                                variant="info"
+                                size="x-small"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -741,7 +729,6 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -763,7 +750,6 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -785,7 +771,6 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -858,7 +843,6 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -880,7 +864,6 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -902,7 +885,6 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -924,7 +906,6 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
-                                class="success-icon-style"
                               ></lightning-icon>
                             </span>
                             <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -1029,7 +1010,6 @@
                               icon-name="utility:info"
                               variant="info"
                               size="x-small"
-                              class="success-icon-style"
                             ></lightning-icon>
                           </span>
                           <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -1051,7 +1031,6 @@
                               icon-name="utility:info"
                               variant="info"
                               size="x-small"
-                              class="success-icon-style"
                             ></lightning-icon>
                           </span>
                           <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -1073,7 +1052,6 @@
                               icon-name="utility:info"
                               variant="info"
                               size="x-small"
-                              class="success-icon-style"
                             ></lightning-icon>
                           </span>
                           <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
@@ -1097,19 +1075,16 @@
                                   icon-name="utility:warning"
                                   variant="warning"
                                   size="x-small"
-                                  class="success-icon-style"
                                 ></lightning-icon>
                               </span>
                             </template>
                             <template if:false={numOfDays}>
-                              <span
-                                class="slds-icon_container slds-icon-utility-success slds-progress__marker slds-progress__marker_icon slds-progress__marker_icon-success">
+                              <span class="slds-progress__marker">
                                 <lightning-icon
                                   icon-name="utility:success"
                                   alternative-text="Success!"
                                   variant="success"
                                   size="x-small"
-                                  class="success-icon-style"
                                 ></lightning-icon>
                               </span>
                             </template>

@@ -1,242 +1,87 @@
-import { LightningElement, api, wire } from 'lwc';
+import { LightningElement, api } from 'lwc';
+import {
+    OPERATOR_OPTIONS,
+    BOOLEAN_OPTIONS,
+    DEFAULT_FIELDS,
+    castFieldValue
+} from 'c/scratchOrgConfig';
 
-export default class ScratchRowMetaExperession extends LightningElement {
+const EMPTY_FIELD = {
+    fieldName: '',
+    fieldOperator: 'boolean',
+    fieldValue: ''
+};
 
+const decorate = (row, index) => ({
+    autoNumber: index,
+    fieldName: row.fieldName ?? '',
+    fieldOperator: row.fieldOperator ?? 'boolean',
+    fieldValue: row.fieldValue ?? '',
+    displayBoolean: (row.fieldOperator ?? 'boolean') === 'boolean',
+    displayString: row.fieldOperator === 'string',
+    displayInteger: row.fieldOperator === 'integer'
+});
+
+export default class ScratchRowMetaExpression extends LightningElement {
     @api confirmSelected;
     @api rowIndex;
     @api settingValue;
-    
-    operatorValue;
-    dynamicRowMetaExpression;
 
-    displayBoolean = true;
-    displayString;
-    displayInteger;
-
-    count = 0;
     fieldSettings = [];
-    confirmedFieldSettings;
 
-    @api getMetaRows(){
-        let rows;
-        this.fieldSettings.forEach(row => {
-            rows = { ...rows, [row.fieldName]: row.fieldValue};
-        });
-        return `"${[this.settingValue]}": ${JSON.stringify(rows)}`;
+    operatorOptions = OPERATOR_OPTIONS;
+    booleanOptions = BOOLEAN_OPTIONS;
+
+    connectedCallback() {
+        const seed = DEFAULT_FIELDS[this.settingValue] ?? [{ ...EMPTY_FIELD }];
+        this.fieldSettings = seed.map((row, index) => decorate(row, index));
     }
 
-    connectedCallback(){
-        if(this.settingValue === 'lightningExperienceSettings'){
-            this.fieldSettings = [
-                {
-                    autoNumber: 0,
-                    fieldName: 'enableS1DesktopEnabled',
-                    displayBoolean: true,
-                    displayString: false,
-                    displayInteger: false,
-                    fieldOperator: 'boolean',
-                    fieldValue: 'true'
-                },
-                {
-                    autoNumber: 1,
-                    fieldName: 'enableUsersAreLightningOnly',
-                    displayBoolean: true,
-                    displayString: false,
-                    displayInteger: false,
-                    fieldOperator: 'boolean',
-                    fieldValue: 'true'
-                },
-                {
-                    autoNumber: 2,
-                    fieldName: 'enableLexEndUsersNoSwitching',
-                    displayBoolean: true,
-                    displayString: false,
-                    displayInteger: false,
-                    fieldOperator: 'boolean',
-                    fieldValue: 'true'
-                }
-            ];
-        }
-        else if (this.settingValue == 'mobileSettings'){
-            this.fieldSettings = [
-                {
-                    autoNumber: 0,
-                    fieldName: 'enableS1EncryptedStoragePref2',
-                    displayBoolean: true,
-                    displayString: false,
-                    displayInteger: false,
-                    fieldOperator: 'boolean',
-                    fieldValue: 'false'
-                }
-            ];
-        } 
-        else if (this.settingValue == 'einsteinGptSettings'){
-            this.fieldSettings = [
-                {
-                    autoNumber: 0,
-                    fieldName: 'enableEinsteinGptPlatform',
-                    displayBoolean: true,
-                    displayString: false,
-                    displayInteger: false,
-                    fieldOperator: 'boolean',
-                    fieldValue: 'true'
-                }
-            ];
-        }
-        else if (this.settingValue == 'botSettings'){
-            this.fieldSettings = [
-                {
-                    autoNumber: 0,
-                    fieldName: 'enableBots',
-                    displayBoolean: true,
-                    displayString: false,
-                    displayInteger: false,
-                    fieldOperator: 'boolean',
-                    fieldValue: 'true'
-                }
-            ];
-        }
-        else if (this.settingValue == 'customerDataPlatformSettings'){
-            this.fieldSettings = [
-                {
-                    autoNumber: 0,
-                    fieldName: 'enableCustomerDataPlatform',
-                    displayBoolean: true,
-                    displayString: false,
-                    displayInteger: false,
-                    fieldOperator: 'boolean',
-                    fieldValue: 'true'
-                }
-            ];
-        }
-        else if (this.settingValue == 'analyticsSettings'){
-            this.fieldSettings = [
-                {
-                    autoNumber: 0,
-                    fieldName: 'enableInsights',
-                    displayBoolean: true,
-                    displayString: false,
-                    displayInteger: false,
-                    fieldOperator: 'boolean',
-                    fieldValue: 'true'
-                }
-            ];
-        }
-        else if (this.settingValue == 'devHubSettings'){
-            this.fieldSettings = [
-                {
-                    autoNumber: 0,
-                    fieldName: 'enableDevOpsCenterGA',
-                    displayBoolean: true,
-                    displayString: false,
-                    displayInteger: false,
-                    fieldOperator: 'boolean',
-                    fieldValue: 'true'
-                }
-            ];
-        }
-        else {
-            this.fieldSettings = [
-                {
-                    autoNumber: 0,
-                    fieldName: '',
-                    displayBoolean: true,
-                    displayString: false,
-                    displayInteger: false,
-                    fieldOperator: 'boolean',
-                    fieldValue: ''
-                }
-            ];
-        }
+    /**
+     * Returns the row data for this setting as `{ [settingName]: { field: typedValue, ... } }`.
+     * Boolean and integer values are cast to their real runtime types (not strings).
+     */
+    @api
+    getMetaRows() {
+        const rows = this.fieldSettings.reduce((acc, row) => {
+            if (!row.fieldName) return acc;
+            return { ...acc, [row.fieldName]: castFieldValue(row.fieldOperator, row.fieldValue) };
+        }, {});
+        return { [this.settingValue]: rows };
     }
 
-    handleAddMetaSetting(){
-        this.count++;
-        this.fieldSettings = [
-            ...this.fieldSettings, 
-            {
-                autoNumber: this.count, 
-                fieldName: '',
-                displayBoolean: true,
-                displayString: false,
-                displayInteger: false,
-                fieldOperator: 'boolean',
-                fieldValue: ''
-            }
-        ];
+    handleAddMetaSetting() {
+        const nextIndex = this.fieldSettings.length;
+        this.fieldSettings = [...this.fieldSettings, decorate({ ...EMPTY_FIELD }, nextIndex)];
     }
 
-
-
-    handleDeleteMetaSetting(event){
-        let index = event.target.dataset.index;
-        this.fieldSettings.splice(index, 1);
-        this.fieldSettings = [...this.fieldSettings];
+    handleDeleteMetaSetting(event) {
+        const index = Number(event.target.dataset.index);
+        this.fieldSettings = this.fieldSettings
+            .filter((_, i) => i !== index)
+            .map((row, i) => decorate(row, i));
     }
 
-    get operatorOptions(){
-        return [
-            { label: 'Boolean', value: 'boolean' },
-            { label: 'String', value: 'string' },
-            { label: 'Integer', value: 'integer' }
-        ];
+    handleMetadataValueChange(event) {
+        const index = Number(event.target.dataset.index);
+        this.fieldSettings = this.fieldSettings.map((row, i) =>
+            i === index ? decorate({ ...row, fieldValue: event.target.value }, i) : row
+        );
     }
 
-    get booleanOptions(){
-        return [
-            { label: 'TRUE', value: 'true' },
-            { label: 'FALSE', value: 'false' }
-        ];
+    handleMetadataFieldChange(event) {
+        const index = Number(event.target.dataset.index);
+        this.fieldSettings = this.fieldSettings.map((row, i) =>
+            i === index ? decorate({ ...row, fieldName: event.target.value }, i) : row
+        );
     }
 
-    handleMetadataValueChange(event){
-        let index = event.target.dataset.index;
-        let value = event.target.value;
-        this.fieldSettings[index].fieldValue = value;
-    }
-
-    handleMetadataFieldChange(event){
-        let index = event.target.dataset.index;
-        let name = event.target.value;
-        this.fieldSettings[index].fieldName = name;
-    }
-
-    handleOperatorChange(event){
-        let index = event.target.dataset.index;
-        let operatorVal = event.target.value;
-        this.operatorChange(index, operatorVal);
-    }
-
-    operatorChange(index, operatorVal){
-        switch (operatorVal) {
-            case 'boolean':
-                this.fieldSettings[index].fieldOperator = operatorVal;
-                this.fieldSettings[index].displayBoolean = true;
-                this.fieldSettings[index].displayString = false;
-                this.fieldSettings[index].displayInteger = false;
-                this.fieldSettings = [...this.fieldSettings];
-            break;
-            case 'string':
-                this.fieldSettings[index].fieldOperator = operatorVal;
-                this.fieldSettings[index].displayBoolean = false;
-                this.fieldSettings[index].displayString = true;
-                this.fieldSettings[index].displayInteger = false;
-                this.fieldSettings = [...this.fieldSettings];
-            break;
-            case 'integer':
-                this.fieldSettings[index].fieldOperator = operatorVal;
-                this.fieldSettings[index].displayBoolean = false;
-                this.fieldSettings[index].displayString = false;
-                this.fieldSettings[index].displayInteger = true;
-                this.fieldSettings = [...this.fieldSettings];
-            break;
-            default:
-                this.fieldSettings[index].fieldOperator = 'boolean';
-                this.fieldSettings[index].displayBoolean = true;
-                this.fieldSettings[index].displayString = false;
-                this.fieldSettings[index].displayInteger = false;
-                this.fieldSettings = [...this.fieldSettings];
-            break;
-        }
+    handleOperatorChange(event) {
+        const index = Number(event.target.dataset.index);
+        const operator = event.target.value;
+        // Reset value when operator switches to avoid carrying stale strings (e.g. "true") into a number field.
+        this.fieldSettings = this.fieldSettings.map((row, i) =>
+            i === index ? decorate({ ...row, fieldOperator: operator, fieldValue: '' }, i) : row
+        );
     }
 }

@@ -62,7 +62,6 @@ export default class AgentforcePromptGenerator extends NavigationMixin(Lightning
             { provider: 'Anthropic', label: 'Anthropic Claude Haiku 4.5 on Amazon Bedrock', value: 'sfdc_ai__DefaultBedrockAnthropicClaude45Haiku' },
             { provider: 'Google', label: 'Vertex AI (Google) Gemini 3.1 Pro (Beta)', value: 'sfdc_ai__DefaultVertexAIGeminiPro31' },
             { provider: 'Google', label: 'Vertex AI (Google) Gemini 3.1 Flash Lite (Beta)', value: 'sfdc_ai__DefaultVertexAIGemini31FlashLite' },
-            { provider: 'Google', label: 'Vertex AI (Google) Gemini 3 Pro (Beta)', value: 'sfdc_ai__DefaultVertexAIGeminiPro30' },
             { provider: 'Google', label: 'Vertex AI (Google) Gemini 3 Flash', value: 'sfdc_ai__DefaultVertexAIGemini30Flash' },
             { provider: 'Google', label: 'Vertex AI (Google) Gemini 2.5 Pro', value: 'sfdc_ai__DefaultVertexAIGeminiPro25' },
             { provider: 'Google', label: 'Vertex AI (Google) Gemini 2.5 Flash', value: 'sfdc_ai__DefaultVertexAIGemini25Flash001' },

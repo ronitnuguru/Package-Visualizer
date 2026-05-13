@@ -28,21 +28,21 @@
                 <lightning-menu-item prefix-icon-name="utility:help" label="How Scratch Orgs Fit in the Package Development Workflow" value="How Scratch Orgs Fit in the Package Development Workflow" onclick={navigateToScratchDevWorkflow}></lightning-menu-item>
             </lightning-button-menu>
             <lightning-button-menu alternative-text="Show menu" menu-alignment="auto" tooltip="Sample Scratch Org Templates" icon-name="utility:insert_tag_field">
-                <lightning-menu-item prefix-icon-name="utility:agent_astro" label="Agentforce" value="Agentforce" onclick={agentforceTemplate}></lightning-menu-item>
-                <lightning-menu-item prefix-icon-name="utility:data_cloud" label="Data360" value="Data Cloud" onclick={dataCloudTemplate}></lightning-menu-item>
-                <lightning-menu-item prefix-icon-name="utility:tableau" label="CRM Analytics" value="CRM Analytics" onclick={crmAnalyticsTemplate}></lightning-menu-item>
-                <lightning-menu-item prefix-icon-name="utility:advertising" label="Marketing Cloud" value="Marketing Cloud" onclick={marketingCloudTemplate}></lightning-menu-item>
-                <lightning-menu-item prefix-icon-name="utility:lightning_extension" label="DevOps Center" value="DevOps Center" onclick={devOpsCenterTemplate}></lightning-menu-item>
+                <lightning-menu-item prefix-icon-name="utility:agent_astro" label="Agentforce" value="Agentforce" data-template="agentforce" onclick={applyTemplate}></lightning-menu-item>
+                <lightning-menu-item prefix-icon-name="utility:data_cloud" label="Data360" value="Data Cloud" data-template="dataCloud" onclick={applyTemplate}></lightning-menu-item>
+                <lightning-menu-item prefix-icon-name="utility:tableau" label="CRM Analytics" value="CRM Analytics" data-template="crmAnalytics" onclick={applyTemplate}></lightning-menu-item>
+                <lightning-menu-item prefix-icon-name="utility:advertising" label="Marketing Cloud" value="Marketing Cloud" data-template="marketingCloud" onclick={applyTemplate}></lightning-menu-item>
+                <lightning-menu-item prefix-icon-name="utility:lightning_extension" label="DevOps Center" value="DevOps Center" data-template="devOpsCenter" onclick={applyTemplate}></lightning-menu-item>
                 <lightning-menu-divider></lightning-menu-divider>
                 <lightning-menu-subheader label="Industries"></lightning-menu-subheader>
-                <lightning-menu-item prefix-icon-name="utility:money" label="Financial Service Cloud" value="Financial Service Cloud" onclick={fscTemplate}></lightning-menu-item>
-                <lightning-menu-item prefix-icon-name="utility:heart" label="Health Cloud" value="Health Cloud" onclick={hlsTemplate}></lightning-menu-item>
-                <lightning-menu-item prefix-icon-name="utility:fulfillment_order" label="Consumer Goods Cloud" value="Consumer Goods Cloud" onclick={cgTemplate}></lightning-menu-item>
-                <lightning-menu-item prefix-icon-name="utility:co_insurance" label="Revenue Cloud" value="Revenue Cloud" onclick={revCloudTemplate}></lightning-menu-item>
-                <lightning-menu-item prefix-icon-name="utility:world" label="Net Zero Cloud" value="Net Zero Cloud" onclick={netZeroTemplate}></lightning-menu-item>
-                <lightning-menu-item prefix-icon-name="utility:fallback" label="Energy and Utilities Cloud" value="Energy and Utilities Cloud" onclick={euTemplate} ></lightning-menu-item>
-                <lightning-menu-item prefix-icon-name="utility:education" label="Education Cloud" value="Education Cloud" onclick={eduTemplate}></lightning-menu-item>
-                <lightning-menu-item prefix-icon-name="utility:tax_policy" label="Public Sector Cloud" value="Public Sector Cloud" onclick={pubSecTemplate}></lightning-menu-item>
+                <lightning-menu-item prefix-icon-name="utility:money" label="Financial Service Cloud" value="Financial Service Cloud" data-template="fsc" onclick={applyTemplate}></lightning-menu-item>
+                <lightning-menu-item prefix-icon-name="utility:heart" label="Health Cloud" value="Health Cloud" data-template="hls" onclick={applyTemplate}></lightning-menu-item>
+                <lightning-menu-item prefix-icon-name="utility:fulfillment_order" label="Consumer Goods Cloud" value="Consumer Goods Cloud" data-template="cg" onclick={applyTemplate}></lightning-menu-item>
+                <lightning-menu-item prefix-icon-name="utility:co_insurance" label="Revenue Cloud" value="Revenue Cloud" data-template="revCloud" onclick={applyTemplate}></lightning-menu-item>
+                <lightning-menu-item prefix-icon-name="utility:world" label="Net Zero Cloud" value="Net Zero Cloud" data-template="netZero" onclick={applyTemplate}></lightning-menu-item>
+                <lightning-menu-item prefix-icon-name="utility:fallback" label="Energy and Utilities Cloud" value="Energy and Utilities Cloud" data-template="eu" onclick={applyTemplate}></lightning-menu-item>
+                <lightning-menu-item prefix-icon-name="utility:education" label="Education Cloud" value="Education Cloud" data-template="edu" onclick={applyTemplate}></lightning-menu-item>
+                <lightning-menu-item prefix-icon-name="utility:tax_policy" label="Public Sector Cloud" value="Public Sector Cloud" data-template="pubSec" onclick={applyTemplate}></lightning-menu-item>
             </lightning-button-menu>
             
         </lightning-button-group>
@@ -67,6 +67,7 @@
                                 name="description" 
                                 label="Description" 
                                 max-length="2000"
+                                value={orgDescription}
                                 onchange={handleDescriptionChange}
                             ></lightning-textarea>
                             <lightning-input 
@@ -74,7 +75,7 @@
                                     label="Has Sample Data" 
                                     name="hasSampleData"
                                     onchange={handleHasSampleDataChange}
-                                    checked={hasSamepleData}
+                                    checked={hasSampleData}
                                     message-toggle-active="Has Sample Data"
                                     message-toggle-inactive="Does Not Have Sample Data"
                                     class="slds-m-top_x-small"
@@ -138,14 +139,14 @@
                                         type="text" 
                                         label="Source Org Id" 
                                         onchange={handleSourceOrgChange} 
-                                        field-level-help="Org Id of your Dev Hub where Org Shape is enabled"
+                                        field-level-help="The org ID for the org whose shape you created. Use only the first 15 characters rather than the full 18-character org ID. The Dev Hub where Org Shape is enabled."
                                         maxlength="15"
                                         value={sourceOrgId}
                                         required
                                         class="slds-col"
                                         pattern="^00D.{12}$"
                                         placeholder="00D..."
-                                        message-when-pattern-mismatch="The Source Org Id is the org ID for the org whose shape you created. Use only the first 15 characters rather than the full 18-character org Id"
+                                        message-when-pattern-mismatch="Source Org Id must be the 15-character org ID starting with 00D."
                                     ></lightning-input>
                                     <lightning-button-icon
                                         icon-name="utility:help_doc_ext"
@@ -209,7 +210,7 @@
                                 placeholder="Add Feature"
                                 value={featureValue}
                                 onchange={handleFeatureValueChange} 
-                                onkeydown={handeFeatureValueChangeOnKeyDown}
+                                onkeydown={handleFeatureValueChangeOnKeyDown}
                                 field-level-help="The list of configuration features that determine the shape of the scratch org"
                             ></lightning-input>
                         </div>
@@ -220,7 +221,7 @@
                             
                         </div>
                     </div>
-                    <template if:true={featuresList}>
+                    <template if:true={hasFeatures}>
                         <div class="slds-m-top_xx-small">
                             <lightning-pill-container items={featuresList} onitemremove={handleFeatureRemove}></lightning-pill-container>
                         </div>
@@ -271,6 +272,13 @@
                             class="slds-m-right_x-small"
                         ></lightning-icon>
                     </template>
+                    <lightning-button 
+                        variant="neutral" 
+                        label="Reset"
+                        title="Clear all form values and start over" 
+                        onclick={handleResetForm}
+                        class="slds-m-right_x-small"
+                    ></lightning-button>
                     <lightning-button 
                         variant="brand" 
                         label="Build"

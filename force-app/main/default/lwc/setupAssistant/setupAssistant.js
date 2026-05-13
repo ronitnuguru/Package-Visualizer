@@ -227,6 +227,10 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     window.open("https://trailhead.salesforce.com/content/learn/projects/quickstart-vscode-salesforce", "_blank");
   }
 
+  navigateToAgentforceSkillsDocs(){
+    window.open("https://labs.agentforce.com/docs/skills", "_blank");
+  }
+
   navigateToCLITrailhead(){
     window.open("https://trailhead.salesforce.com/content/learn/trails/set-up-your-workspace-and-install-developer-tools", "_blank");
   }
