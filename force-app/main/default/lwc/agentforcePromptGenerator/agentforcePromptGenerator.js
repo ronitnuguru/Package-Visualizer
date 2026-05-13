@@ -15,17 +15,26 @@ export default class AgentforcePromptGenerator extends NavigationMixin(Lightning
     displayResult;
     displayExtensionIllustration = false;
 
-    connectedCallback(){
-        if(this.templatePrompts){
-            if(typeof this.templatePrompts === 'string'){
-                this.templatePrompts = JSON.parse(this.templatePrompts);
+    get normalizedTemplatePrompts() {
+        if (!this.templatePrompts) {
+            return null;
+        }
+        if (Array.isArray(this.templatePrompts)) {
+            return this.templatePrompts;
+        }
+        if (typeof this.templatePrompts === 'string') {
+            try {
+                return JSON.parse(this.templatePrompts);
+            } catch (error) {
+                console.error('Invalid templatePrompts JSON', error);
             }
         }
+        return null;
     }
 
     modelsValue = 'sfdc_ai__DefaultGPT5';
     providerValue = 'OpenAI';
-    currentPkgVersionId = '04tRh000001bMQnIAM';
+    currentPkgVersionId = '04tRh000001bMYrIAM';
 
     get modelProviderOptions() {
         return [

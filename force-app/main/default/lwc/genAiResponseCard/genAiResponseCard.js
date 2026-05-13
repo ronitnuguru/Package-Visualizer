@@ -17,7 +17,7 @@ export default class GenAiResponseCard extends NavigationMixin(LightningElement)
     aiResponse;
     error;
 
-    currentPkgVersionId = '04tRh000001bMQnIAM';
+    currentPkgVersionId = '04tRh000001bMYrIAM';
 
     connectedCallback(){
         this.generateAiResponse();

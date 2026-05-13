@@ -92,10 +92,10 @@
                     required
                 ></lightning-textarea>
 
-                <template lwc:if={templatePrompts}>
+                <template lwc:if={normalizedTemplatePrompts}>
                     <template if:true={enableGenerate}>
                         <div class="slds-grid slds-wrap">
-                            <template for:each={templatePrompts} for:item="prompt">
+                            <template for:each={normalizedTemplatePrompts} for:item="prompt">
                                 <lightning-button 
                                     label={prompt.label}
                                     value={prompt.label}

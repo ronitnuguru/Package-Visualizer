@@ -5,6 +5,8 @@ import Package2SubscribersData from "./packageSubscribersFields";
 import getEligibleLowerPackageVersions from "@salesforce/apex/PushUpgradesCtrl.getEligibleLowerPackageVersions";
 import get2GPPackageVersionSubscriberList from "@salesforce/apex/PackageVisualizerCtrl.get2GPPackageVersionSubscriberList";
 
+const MAX_SUBSCRIBER_CAP = 2050;
+
 const actions = [
   {
     label: "Show Details",
@@ -138,6 +140,8 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
 
   filteredSubscriberPackageVersionID;
   filteredRecordPickerSubscriberPackageVersionID;
+
+  disableExpandButton = false;
 
   /*
   packageVersionFilter = {
@@ -347,50 +351,49 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
         });
       }
     }
-    (async () => {
-      await get2GPPackageVersionSubscriberList({
-        filterWrapper: wrapper,
-        sortedBy: this.sortedBy,
-        sortDirection: this.sortDirection,
-        subscriberLimit: this.subscriberLimit,
-        subscriberOffset: this.subscriberOffset
-      })
-        .then(result => {
-          this.displaySpinner = false;
-          this.displayDatatableSpinner = false;
-          this.versionSubscribersList = true;
+    return get2GPPackageVersionSubscriberList({
+      filterWrapper: wrapper,
+      sortedBy: this.sortedBy,
+      sortDirection: this.sortDirection,
+      subscriberLimit: this.subscriberLimit,
+      subscriberOffset: this.subscriberOffset
+    })
+      .then(result => {
+        this.displaySpinner = false;
+        this.displayDatatableSpinner = false;
+        this.versionSubscribersList = true;
 
-          if (isViewMore) {
-            if (result.length === 0) {
-              this.disableInfiniteLoad = false;
-            } else {
-              this.versionSubscribersData = this.versionSubscribersData.concat(
-                result
-              );
-            }
+        if (isViewMore) {
+          if (result.length === 0) {
+            this.disableInfiniteLoad = false;
           } else {
-            this.versionSubscribersData = result;
+            this.versionSubscribersData = this.versionSubscribersData.concat(
+              result
+            );
           }
-          this.relativeDateTime = Date.now();
-          this.subscribersLength = this.versionSubscribersData.length;
-          this.displayEmptyView =
-            this.versionSubscribersData.length === 0 ? true : false;
-        })
-        .catch(error => {
-          console.error(error);
-          this.versionSubscribersData = undefined;
-          this.displaySpinner = false;
-          this.displayDatatableSpinner = false;
-          // Toast for Failure
-          this.dispatchEvent(
-            new ShowToastEvent({
-              title: "Something went wrong",
-              message: error,
-              variant: "error"
-            })
-          );
-        });
-    })();
+        } else {
+          this.versionSubscribersData = result;
+        }
+        this.relativeDateTime = Date.now();
+        this.subscribersLength = this.versionSubscribersData.length;
+        this.displayEmptyView =
+          this.versionSubscribersData.length === 0 ? true : false;
+        return result;
+      })
+      .catch(error => {
+        console.error(error);
+        this.versionSubscribersData = undefined;
+        this.displaySpinner = false;
+        this.displayDatatableSpinner = false;
+        this.dispatchEvent(
+          new ShowToastEvent({
+            title: "Something went wrong",
+            message: error,
+            variant: "error"
+          })
+        );
+        throw error;
+      });
   }
 
   handleRowAction(event) {
@@ -522,6 +525,9 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
     this.sortDirection = this.sortDirection === "asc" ? "desc" : "asc";
     this.sortedByLabel = Package2SubscribersData.fields[this.sortedBy].label;
     this.subscriberOffset = 0;
+    this.subscriberLimit = 50;
+    this.disableExpandButton = false;
+    this.disableInfiniteLoad = true;
     this.getSubscribersFromVersions(this.displayFilterMeta, false);
   }
 
@@ -540,6 +546,51 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
     }
   }
 
+  handleExpandMaxSubscribersPerRequest() {
+    if (this.disableExpandButton) {
+      return;
+    }
+    this.disableExpandButton = true;
+    this.disableInfiniteLoad = false;
+
+    const currentTotal = this.versionSubscribersData
+      ? this.versionSubscribersData.length
+      : 0;
+
+    this.subscriberOffset = currentTotal;
+    this.subscriberLimit = MAX_SUBSCRIBER_CAP - currentTotal;
+
+    this.getSubscribersFromVersions(this.displayFilterMeta, true)
+      .then(() => {
+        const totalLoaded = this.versionSubscribersData
+          ? this.versionSubscribersData.length
+          : 0;
+        if (totalLoaded >= MAX_SUBSCRIBER_CAP) {
+          this.dispatchEvent(
+            new ShowToastEvent({
+              title: "Push Upgrades Limit",
+              message: `Loaded the maximum of ${MAX_SUBSCRIBER_CAP} subscribers for push upgrade requests`,
+              variant: "info"
+            })
+          );
+        } else {
+          this.dispatchEvent(
+            new ShowToastEvent({
+              title: "All Subscribers Loaded",
+              message: `Loaded all ${totalLoaded} available subscribers`,
+              variant: "success"
+            })
+          );
+        }
+      })
+      .finally(() => {
+        this.subscriberLimit = 50;
+        this.subscriberOffset = this.versionSubscribersData
+          ? this.versionSubscribersData.length
+          : 0;
+      });
+  }
+
   handleFilterReset() {
     this.selectedOrgStatusOptions = [];
     this.selectedOrgTypeOptions = [];
@@ -549,7 +600,9 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
     this.selectedInstancesString = undefined;
     this.displayFilterMeta = false;
     this.subscriberOffset = 0;
+    this.subscriberLimit = 50;
     this.disableInfiniteLoad = true;
+    this.disableExpandButton = false;
     this.filteredSubscriberPackageVersionID = undefined;
     this.filteredRecordPickerSubscriberPackageVersionID = undefined;
     this.getSubscribersFromVersions(true, false);
@@ -585,6 +638,8 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
       this.selectedInstancesString = undefined;
     }
     this.disableInfiniteLoad = true;
+    this.disableExpandButton = false;
+    this.subscriberLimit = 50;
     this.getSubscribersFromVersions(true, false);
     this.displayUpgradeButton = true;
   }

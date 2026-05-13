@@ -81,7 +81,7 @@ export default class PackageSubscriberDetail extends NavigationMixin(LightningEl
   displayAgentforceSpinner = false;
   aiResponse;
   displayExtensionIllustration = false;
-  currentPkgVersionId = '04tRh000001bMQnIAM';
+  currentPkgVersionId = '04tRh000001bMYrIAM';
   modelsValue = 'sfdc_ai__DefaultBedrockAnthropicClaude46Sonnet';
 
   get managedPackageType() {

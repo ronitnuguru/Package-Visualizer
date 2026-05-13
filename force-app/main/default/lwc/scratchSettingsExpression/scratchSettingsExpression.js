@@ -89,7 +89,7 @@ export default class ScratchSettingsExpression extends NavigationMixin(Lightning
     handleMetadataSettingsChange(event) {
         const index = Number(event.target.dataset.index);
         this.metadataSettings = this.metadataSettings.map((s, i) =>
-            i === index ? { ...s, setting: event.detail.value } : s
+            (i === index ? { ...s, setting: event.detail.value } : s)
         );
         this.resetConfirmation();
     }

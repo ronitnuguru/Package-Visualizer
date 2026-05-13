@@ -331,7 +331,7 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
     this.displayError = false;
   }
 
-  handleStartTrial(event) {
+  handleStartTrial() {
     this.displaySpinner = true;
     const allValid = [...this.template.querySelectorAll('lightning-input'), ...this.template.querySelectorAll('lightning-combobox'), ...this.template.querySelectorAll('lightning-radio-group')].reduce((validSoFar, inputCmp) => {
       inputCmp.reportValidity();
@@ -404,7 +404,7 @@ export default class DockedComposer extends NavigationMixin(LightningElement) {
         isSignupEmailSuppressed: this.isSignupEmailSuppressed,
         shouldConnectToEnvHub: this.shouldConnectToEnvHub,
       })
-        .then(result => {
+        .then(() => {
           this.handleSuccessSignup(email, company);
         })
         .catch(error => {

@@ -125,6 +125,14 @@
                     onclick={handleInAppPrompt}
                     class="slds-var-p-right_x-small"
                   ></lightning-button-icon>
+                  <lightning-button-icon
+                    icon-name="utility:expand_all"
+                    variant="border-filled"
+                    tooltip="Expand Max Subscribers Per Request"
+                    onclick={handleExpandMaxSubscribersPerRequest}
+                    disabled={disableExpandButton}
+                    class="slds-var-p-right_x-small"
+                  ></lightning-button-icon>
                   <lightning-button-menu
                     icon-name="utility:table_settings"
                     menu-alignment="auto"

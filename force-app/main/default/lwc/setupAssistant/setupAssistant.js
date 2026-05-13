@@ -6,7 +6,7 @@ import hasPackageVisualizerPushUpgrade from "@salesforce/customPermission/Packag
 import hasViewSetup from "@salesforce/userPermission/ViewSetup";
 import CREATEORGMESSAGECHANNEL from "@salesforce/messageChannel/CreateOrgMessageChannel__c";
 import DOCKEDUTILITYBARMESSAGECHANNEL from "@salesforce/messageChannel/DockedUtilityBarMessageChannel__c";
-import { publish, subscribe, unsubscribe, MessageContext } from "lightning/messageService";
+import { publish, MessageContext } from "lightning/messageService";
 import getProfileId from "@salesforce/apex/PackageVisualizerCtrl.getProfileId";
 import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
 import getOrgDetails from '@salesforce/apex/PackageVisualizerCtrl.getOrgDetails';
@@ -335,7 +335,7 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   }
 
   async openModal(details){
-    const result = await agentforcePromptModalGenerator.open({
+    await agentforcePromptModalGenerator.open({
       label: details.headerLabel,
       size: 'medium',
       content: {

@@ -65,14 +65,14 @@ export default class ScratchRowMetaExpression extends LightningElement {
     handleMetadataValueChange(event) {
         const index = Number(event.target.dataset.index);
         this.fieldSettings = this.fieldSettings.map((row, i) =>
-            i === index ? decorate({ ...row, fieldValue: event.target.value }, i) : row
+            (i === index ? decorate({ ...row, fieldValue: event.target.value }, i) : row)
         );
     }
 
     handleMetadataFieldChange(event) {
         const index = Number(event.target.dataset.index);
         this.fieldSettings = this.fieldSettings.map((row, i) =>
-            i === index ? decorate({ ...row, fieldName: event.target.value }, i) : row
+            (i === index ? decorate({ ...row, fieldName: event.target.value }, i) : row)
         );
     }
 
@@ -81,7 +81,7 @@ export default class ScratchRowMetaExpression extends LightningElement {
         const operator = event.target.value;
         // Reset value when operator switches to avoid carrying stale strings (e.g. "true") into a number field.
         this.fieldSettings = this.fieldSettings.map((row, i) =>
-            i === index ? decorate({ ...row, fieldOperator: operator, fieldValue: '' }, i) : row
+            (i === index ? decorate({ ...row, fieldOperator: operator, fieldValue: '' }, i) : row)
         );
     }
 }

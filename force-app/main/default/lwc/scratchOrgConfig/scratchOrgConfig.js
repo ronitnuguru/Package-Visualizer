@@ -357,6 +357,7 @@ export const SETTING_OPTIONS = [
     { label: 'Conversation Channel Definition', value: 'conversationChannelDefinition' },
     { label: 'Currency Settings', value: 'currencySettings' },
     { label: 'Custom Address Field Settings', value: 'customAddressFieldSettings' },
+    { label: 'Customer Data Platform Settings', value: 'customerDataPlatformSettings' },
     { label: 'Data Dot Com Settings', value: 'dataDotComSettings' },
     { label: 'Data Import Management Settings', value: 'dataImportManagementSettings' },
     { label: 'Deployment Settings', value: 'deploymentSettings' },

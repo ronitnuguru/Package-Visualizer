@@ -9,7 +9,7 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import createSignupTrial from "@salesforce/apexContinuation/PackageVisualizerCtrl.createSignupTrial";
 import hasPackageVisualizerCore from "@salesforce/customPermission/Package_Visualizer_Core";
 import SIGNUPLISTMESSAGECHANNEL from "@salesforce/messageChannel/SignupListMessageChannel__c";
-import { publish, subscribe, unsubscribe, MessageContext } from "lightning/messageService";
+import { publish, MessageContext } from "lightning/messageService";
 import FirstName from '@salesforce/schema/User.FirstName'; 
 import LastName from '@salesforce/schema/User.LastName'; 
 import Email from '@salesforce/schema/User.Email';
@@ -38,7 +38,6 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
     }
 
     connectedCallback(){
-        
         if (this.purposeValue) {
             this.handlePurposeChange(this.purposeValue);
         }
@@ -222,6 +221,7 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
     }
 
     handleIndustryTemplateChange(value) {
+        // eslint-disable-next-line @lwc/lwc/no-api-reassignments
         this.industryTemplateValue = value;
                 
         // Find the label from the options based on the value
@@ -287,6 +287,7 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
     }
 
     handleEditionChange(value) {
+        // eslint-disable-next-line @lwc/lwc/no-api-reassignments
         this.editionValue = value;
     }
 
@@ -312,11 +313,13 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
     }
 
     handlePurposeChange(purposeValue) {
+        // eslint-disable-next-line @lwc/lwc/no-api-reassignments
         this.purposeValue = purposeValue;
         if (this.purposeValue === 'Development' || this.purposeValue === 'tso') {
             this.displayCreateUsingOptions = false;
             this.createUsingValue = 'standard';
             if (this.purposeValue === 'Development') {
+                // eslint-disable-next-line @lwc/lwc/no-api-reassignments
                 this.editionValue = 'Partner Developer';
                 this.displayDevelopmentOptions = true;
                 this.displayTestDemoOptions = false;
@@ -353,7 +356,7 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
         this.displayError = false;
     }
 
-    handleStartTrial(event) {
+    handleStartTrial() {
         this.displaySpinner = true;
         const allValid = [...this.template.querySelectorAll('lightning-input'), ...this.template.querySelectorAll('lightning-combobox'), ...this.template.querySelectorAll('lightning-radio-group')].reduce((validSoFar, inputCmp) => {
             inputCmp.reportValidity();
@@ -378,6 +381,7 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
         this.template.querySelector('.userName').value = null;
         this.template.querySelector('.company').value = null;
         this.template.querySelector('.myDomain').value = null;
+        // eslint-disable-next-line @lwc/lwc/no-api-reassignments
         this.purposeValue = null;
         this.trialDays = 30;
         this.shouldConnectToEnvHub = true;
@@ -404,6 +408,7 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
             this.templateId = this.template.querySelector('.templateId').value
         } else if(this.purposeValue === 'Industry Development'){
             this.templateId = this.industryTemplateValue;
+            // eslint-disable-next-line @lwc/lwc/no-api-reassignments
             this.editionValue = null;
         } else {
             this.templateId = '';
@@ -425,7 +430,7 @@ export default class CreateSignupOrg extends NavigationMixin(LightningElement) {
                 isSignupEmailSuppressed: this.isSignupEmailSuppressed,
                 shouldConnectToEnvHub: this.shouldConnectToEnvHub,
             })
-                .then(result => {
+                .then(() => {
                     this.handleSuccessSignup(email, company);
                 })
                 .catch(error => {

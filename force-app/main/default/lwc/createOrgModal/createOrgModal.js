@@ -1,4 +1,4 @@
-import { LightningElement, api, wire } from 'lwc';
+import { api, wire } from 'lwc';
 import LightningModal from 'lightning/modal';
 import isSignupRequest from "@salesforce/apex/DemoTrialsController.isSignupRequest";
 import createSignupTrial from "@salesforce/apex/DemoTrialsController.createSignupTrial";
@@ -40,7 +40,7 @@ export default class CreateOrgModal extends LightningModal {
         this.close();
     }
 
-    handleBrandButtonClick(event) {
+    handleBrandButtonClick() {
         this.displaySpinner = true;
         const allValid = [...this.template.querySelectorAll('lightning-input'), ...this.template.querySelectorAll('lightning-combobox'), ...this.template.querySelectorAll('lightning-radio-group')].reduce((validSoFar, inputCmp) => {
             inputCmp.reportValidity();
@@ -99,7 +99,7 @@ export default class CreateOrgModal extends LightningModal {
                 shouldConnectToEnvHub: this.content.shouldConnectToEnvHub,
                 signupSource: this.content.signupSource
             })
-                .then(result => {
+                .then(() => {
                     this.handleSuccessSignup(email, company);
                 })
                 .catch(error => {

@@ -7,123 +7,246 @@
         variant="brand"
       ></lightning-spinner>
     </template>
-    <div class="slds-var-p-around_medium slds-page-header">
-      <article class="slds-tile slds-media">
-        <div class="slds-media__figure">
+    <div
+      class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
+    >
+      <lightning-card>
+        <h3 slot="title" class="slds-truncate">
           <lightning-icon
             icon-name="custom:custom45"
             size="medium"
-            slot="media"
+            class="slds-m-right_small"
           ></lightning-icon>
-        </div>
-        <div class="slds-media__body">
-          <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
-            <h3 class="slds-tile__title slds-truncate">
-              <a href={license.id} target="_blank" class="tile-style"
-                >{license.name}</a
-              >
-            </h3>
-            <div class="slds-shrink-none">
-              <lightning-button-group>
-                <lightning-button label="Send Email" onclick={handleSendEmailClick} variant="border-filled"></lightning-button>
-              </lightning-button-group>
+          <a href={license.id} target="_blank" class="tile-style">{license.name}</a>
+        </h3>
+        <lightning-button-group slot="actions">
+          <template if:false={showAgentforceCard}>
+            <lightning-button
+              variant="brand"
+              label="Generate"
+              icon-name="utility:sparkles"
+              icon-position="right"
+              onclick={handleAskAgentforce}
+            ></lightning-button>
+          </template>
+          <lightning-button
+            label="Send Email"
+            onclick={handleSendEmailClick}
+            variant="border-filled"
+          ></lightning-button>
+        </lightning-button-group>
+        <div class="slds-card__body slds-card__body_inner">
+          <div class="slds-grid slds-gutters slds-wrap">
+            <div class="slds-col">
+              <dl class="slds-list_horizontal slds-wrap">
+                <template if:true={license.leadName}>
+                  <dt class="slds-item_label slds-text-color_weak">
+                    Lead:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    <a href={license.leadId} target="_blank"
+                      >{license.leadName}</a
+                    >
+                  </dd>
+                </template>
+                <template if:true={license.accountName}>
+                  <dt class="slds-item_label slds-text-color_weak">
+                    Account:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    <a href={license.accountId} target="_blank"
+                      >{license.accountName}</a
+                    >
+                  </dd>
+                </template>
+                <template if:true={license.contactName}>
+                  <dt class="slds-item_label slds-text-color_weak">
+                    Contact:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    <a href={license.contactId} target="_blank"
+                      >{license.contactName}</a
+                    >
+                  </dd>
+                </template>
+              </dl>
+            </div>
+            <div class="slds-col">
+              <dl class="slds-list_horizontal slds-wrap">
+                <template if:true={license.leadSource}>
+                  <dt class="slds-item_label slds-text-color_weak">
+                    Lead Source:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    {license.leadSource}
+                  </dd>
+                </template>
+                <template if:true={license.licenseStatus}>
+                  <dt class="slds-item_label slds-text-color_weak">
+                    Status:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    {license.licenseStatus}
+                  </dd>
+                </template>
+                <template if:true={license.installDate}>
+                  <dt class="slds-item_label slds-text-color_weak">
+                    Install Date:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    <lightning-formatted-date-time
+                      value={license.installDate}
+                    ></lightning-formatted-date-time>
+                  </dd>
+                </template>
+                <template if:true={license.lmaExpirationDate}>
+                  <dt class="slds-item_label slds-text-color_weak">
+                    Expiration Date:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    <lightning-formatted-date-time
+                      value={license.lmaExpirationDate}
+                    ></lightning-formatted-date-time>
+                  </dd>
+                </template>
+              </dl>
             </div>
           </div>
-          <div class="slds-tile__detail">
-            <div class="slds-grid slds-gutters slds-wrap">
-              <div class="slds-col slds-truncate">
-                <dl class="slds-list_horizontal slds-wrap">
-                  <template if:true={license.leadName}>
-                    <dt
-                      class="slds-item_label slds-text-color_weak"
-                    >
-                      Lead:
-                    </dt>
-                    <dd class="slds-item_detail slds-truncate">
-                      <a href={license.leadId} target="_blank"
-                        >{license.leadName}</a
-                      >
-                    </dd>
+          <template if:true={showAgentforceCard}>
+            <div class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium card-style">
+              <lightning-card>
+                <template if:true={displayAgentforceSpinner}>
+                  <div class="slds-p-vertical_medium">
+                    <lightning-spinner
+                      alternative-text="Loading"
+                      size="medium"
+                      variant="brand"
+                    ></lightning-spinner>
+                  </div>
+                </template>
+                <h3 slot="title" class="slds-truncate">
+                  <lightning-icon
+                    icon-name="standard:agent_astro"
+                    size="medium"
+                    class="slds-m-right_small"
+                  ></lightning-icon>
+                  Agentforce Generated
+                </h3>
+                <div class="slds-card__body slds-card__body_inner">
+                  <template if:false={displayAgentforceSpinner}>
+                    <template if:true={displayExtensionIllustration}>
+                      <div class="slds-p-around_medium">
+                        <lightning-empty-state
+                          title="Hmm..."
+                          illustration-name="noresults:search">
+                          <p slot="description">
+                            Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance...
+                          </p>
+                          <lightning-button variant="brand" label="Install Managed Package" slot="cta" onclick={handleExtensionInstall}>
+                          </lightning-button>
+                        </lightning-empty-state>
+                      </div>
+                    </template>
+                    <template if:false={displayExtensionIllustration}>
+                      <template if:true={parsedResponse}>
+                        <div class="slds-p-around_small">
+                          <div class="slds-p-bottom_small">
+                            <div class="slds-grid slds-grid_vertical-align-center slds-p-bottom_xx-small">
+                              <template lwc:if={license.accountName}>
+                                <span class="slds-text-heading_small slds-p-right_x-small">{license.accountName}</span>
+                              </template>
+                              <template lwc:elseif={license.leadName}>
+                                <span class="slds-text-heading_small slds-p-right_x-small">{license.leadName}</span>
+                              </template>
+                              <template if:true={parsedResponse.healthScore}>
+                                <lightning-badge label={parsedResponse.healthScore} class={parsedResponse.healthScoreClass}></lightning-badge>
+                              </template>
+                            </div>
+                            <template if:true={parsedResponse.seatUtilization}>
+                              <div class="slds-text-body_regular slds-p-top_xx-small">
+                                {parsedResponse.seatUtilization}
+                              </div>
+                            </template>
+                          </div>
+                          <template if:true={parsedResponse.healthRationale}>
+                            <div class="slds-p-bottom_small">
+                              <div class="slds-text-body_regular">{parsedResponse.healthRationale}</div>
+                            </div>
+                          </template>
+
+                          <template if:true={parsedResponse.expirationOutlook}>
+                            <div class="slds-p-bottom_small">
+                              <dt class="slds-p-bottom_xx-small">
+                                <strong>Expiration Outlook:</strong>
+                              </dt>
+                              <dd class="slds-var-m-left_none">{parsedResponse.expirationOutlook}</dd>
+                            </div>
+                          </template>
+
+                          <div class="slds-grid slds-wrap slds-gutters slds-p-bottom_small">
+                            <template if:true={parsedResponse.churnRiskFactors}>
+                              <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <dt class="slds-p-bottom_xx-small">
+                                  <strong>Churn Risk Factors:</strong>
+                                </dt>
+                                <dd class="slds-var-m-left_none">
+                                  <ul class="slds-list_dotted">
+                                    <template for:each={parsedResponse.churnRiskFactors} for:item="risk">
+                                      <li key={risk} class="slds-p-vertical_xx-small">{risk}</li>
+                                    </template>
+                                  </ul>
+                                </dd>
+                              </div>
+                            </template>
+                            <template if:true={parsedResponse.recommendedActions}>
+                              <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <dt class="slds-p-bottom_xx-small">
+                                  <strong>Recommended Actions:</strong>
+                                </dt>
+                                <dd class="slds-var-m-left_none">
+                                  <ul class="slds-list_dotted">
+                                    <template for:each={parsedResponse.recommendedActions} for:item="action">
+                                      <li key={action} class="slds-p-vertical_xx-small">{action}</li>
+                                    </template>
+                                  </ul>
+                                </dd>
+                              </div>
+                            </template>
+                          </div>
+
+                          <template if:true={parsedResponse.engagementSuggestions}>
+                            <dt class="slds-p-bottom_xx-small">
+                              <strong>Engagement Suggestions:</strong>
+                            </dt>
+                            <dd class="slds-var-m-left_none slds-p-bottom_small">
+                              <ul class="slds-list_dotted">
+                                <template for:each={parsedResponse.engagementSuggestions} for:item="suggestion">
+                                  <li key={suggestion} class="slds-p-vertical_xx-small">{suggestion}</li>
+                                </template>
+                              </ul>
+                            </dd>
+                          </template>
+
+                          <template if:true={parsedResponse.customerProfile}>
+                            <div class="slds-p-bottom_small">
+                              <dt class="slds-p-bottom_xx-small">
+                                <strong>Customer Profile:</strong>
+                              </dt>
+                              <dd class="slds-var-m-left_none">{parsedResponse.customerProfile}</dd>
+                            </div>
+                          </template>
+                        </div>
+                      </template>
+                    </template>
                   </template>
-                  <template if:true={license.accountName}>
-                    <dt
-                      class="slds-item_label slds-text-color_weak"
-                    >
-                      Account:
-                    </dt>
-                    <dd class="slds-item_detail slds-truncate">
-                      <a href={license.accountId} target="_blank"
-                        >{license.accountName}</a
-                      >
-                    </dd>
-                  </template>
-                  <template if:true={license.contactName}>
-                    <dt
-                      class="slds-item_label slds-text-color_weak"
-                    >
-                      Contact:
-                    </dt>
-                    <dd class="slds-item_detail slds-truncate">
-                      <a href={license.contactId} target="_blank"
-                        >{license.contactName}</a
-                      >
-                    </dd>
-                  </template>
-                </dl>
-              </div>
-              <div class="slds-col">
-                <dl class="slds-list_horizontal slds-wrap">
-                  <template if:true={license.leadSource}>
-                    <dt
-                      class="slds-item_label slds-text-color_weak"
-                    >
-                      Lead Source:
-                    </dt>
-                    <dd class="slds-item_detail slds-truncate">
-                      {license.leadSource}
-                    </dd>
-                  </template>
-                  <template if:true={license.licenseStatus}>
-                    <dt
-                      class="slds-item_label slds-text-color_weak"
-                    >
-                      Status:
-                    </dt>
-                    <dd class="slds-item_detail slds-truncate">
-                      {license.licenseStatus}
-                    </dd>
-                  </template>
-                  <template if:true={license.installDate}>
-                    <dt
-                      class="slds-item_label slds-text-color_weak"
-                    >
-                      Install Date:
-                    </dt>
-                    <dd class="slds-item_detail slds-truncate">
-                      <lightning-formatted-date-time
-                        value={license.installDate}
-                      ></lightning-formatted-date-time>
-                    </dd>
-                  </template>
-                  <template if:true={license.lmaExpirationDate}>
-                    <dt
-                      class="slds-item_label slds-text-color_weak"
-                    >
-                      Expiration Date:
-                    </dt>
-                    <dd class="slds-item_detail slds-truncate">
-                      <lightning-formatted-date-time
-                        value={license.lmaExpirationDate}
-                      ></lightning-formatted-date-time>
-                    </dd>
-                  </template>
-                </dl>
-              </div>
+                </div>
+              </lightning-card>
             </div>
-          </div>
+          </template>
         </div>
-      </article>
+      </lightning-card>
     </div>
+
     <div class="slds-grid slds-gutters slds-show_large">
       <div class="slds-col slds-grow-none">
         <lightning-vertical-navigation selected-item={selectedItem}>
@@ -219,12 +342,12 @@
           <div
             class="slds-border_left slds-border_bottom slds-border_right slds-border_top slds-var-m-top_medium timeline-card-style"
           >
-            <lightning-card  class="card-style">
+            <lightning-card class="card-style">
               <h3 slot="title" class="slds-truncate">
-                <lightning-icon 
-                    icon-name="standard:record_update"
-                    size="medium"
-                    class="slds-m-right_small"
+                <lightning-icon
+                  icon-name="standard:record_update"
+                  size="medium"
+                  class="slds-m-right_small"
                 ></lightning-icon>
                 License Editor
               </h3>
@@ -235,7 +358,12 @@
                   onclick={handleEdit}
                   disabled={displayEditView}
                 ></lightning-button>
-                <lightning-button-icon icon-name="utility:help_doc_ext" variant="border-filled" alternative-text="Modify License Documentation" onclick={handleHelpDoc}></lightning-button-icon>
+                <lightning-button-icon
+                  icon-name="utility:help_doc_ext"
+                  variant="border-filled"
+                  alternative-text="Modify License Documentation"
+                  onclick={handleHelpDoc}
+                ></lightning-button-icon>
               </lightning-button-group>
               <div></div>
               <div
@@ -425,11 +553,11 @@
           <div
             class="slds-border_left slds-border_bottom slds-border_right slds-border_top slds-var-m-top_medium timeline-card-style"
           >
-              <c-agentforce-prompt-generator
-                title-header="What can I help with?"
-                title-icon="standard:agent_astro"
-                template-prompts={templatePrompts}
-              ></c-agentforce-prompt-generator>
+            <c-agentforce-prompt-generator
+              title-header="What can I help with?"
+              title-icon="standard:agent_astro"
+              template-prompts={templatePrompts}
+            ></c-agentforce-prompt-generator>
           </div>
         </template>
 
