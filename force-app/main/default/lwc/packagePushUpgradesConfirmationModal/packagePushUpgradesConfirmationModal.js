@@ -51,6 +51,33 @@ export default class PackagePushUpgradesConfirmationModal extends LightningEleme
     this.displayInvalidSchedulePopover = false;
   }
 
+  getFirstErrorMessage(error) {
+    const fallbackMessage = "Something went wrong while Push Upgrade...";
+    const rawMessage = error?.body?.message;
+
+    if (!rawMessage || typeof rawMessage !== "string") {
+      return fallbackMessage;
+    }
+
+    const responseToken = "Response:";
+    const responseIndex = rawMessage.indexOf(responseToken);
+    const responseBody =
+      responseIndex >= 0
+        ? rawMessage.slice(responseIndex + responseToken.length).trim()
+        : rawMessage.trim();
+
+    try {
+      const parsed = JSON.parse(responseBody);
+      const firstEntry = Array.isArray(parsed) ? parsed[0] : parsed;
+      const nestedErrorMessage = firstEntry?.errors?.[0]?.message;
+      const directMessage = firstEntry?.message;
+
+      return nestedErrorMessage || directMessage || rawMessage;
+    } catch (parseError) {
+      return rawMessage;
+    }
+  }
+
   handleSchedule() {
     const scheduleStartInput = this.template.querySelector(
       ".scheduleStartInput"
@@ -74,23 +101,20 @@ export default class PackagePushUpgradesConfirmationModal extends LightningEleme
             packageSubscriberVersionId: this.packageSubscriberVersionId,
             scheduledStartTime: scheduleStartTime
           })
-            .then(result => {
+            .then((result) => {
               this.createPushJobs(result);
             })
-            .catch(error => {
+            .catch((error) => {
               this.displaySpinner = false;
-              console.error(error.body.message);
+              const firstErrorMessage = this.getFirstErrorMessage(error);
+              console.error(firstErrorMessage);
               this.displayInvalidSchedulePopover = true;
-              if (error.body.message) {
-                this.popoverBody = error.body.message;
-              } else {
-                this.popoverBody = 'Something went wrong while Push Upgrade...';
-              }
+              this.popoverBody = firstErrorMessage;
               this.displaySpinner = false;
               this.dispatchEvent(
                 new ShowToastEvent({
                   title: "Something went wrong",
-                  message: error,
+                  message: firstErrorMessage,
                   variant: "error"
                 })
               );
@@ -114,7 +138,7 @@ export default class PackagePushUpgradesConfirmationModal extends LightningEleme
         packagePushRequestId: packagePushRequestId,
         subscriberList: this.selectedSubscribers
       })
-        .then(result => {
+        .then(() => {
           this.displaySpinner = false;
           this.dispatchEvent(new CustomEvent("cancel"));
           this.dispatchEvent(
@@ -124,23 +148,19 @@ export default class PackagePushUpgradesConfirmationModal extends LightningEleme
                 "Your pushed upgrade request has been successfully queued",
               variant: "success"
             })
-            //Create FMA Set Date 
+            //Create FMA Set Date
           );
         })
-        .catch(error => {
+        .catch((error) => {
           this.displaySpinner = false;
-          console.error(error.body.message);
+          const firstErrorMessage = this.getFirstErrorMessage(error);
+          console.error(firstErrorMessage);
           this.displayInvalidSchedulePopover = true;
-          let errorMessage = JSON.parse(error.body.message);
-          if (errorMessage[0]) {
-            this.popoverBody = errorMessage[0].message;
-          } else {
-            this.popoverBody = error.body.message;
-          }
+          this.popoverBody = firstErrorMessage;
           this.dispatchEvent(
             new ShowToastEvent({
               title: "Something went wrong",
-              message: error,
+              message: firstErrorMessage,
               variant: "error"
             })
           );
@@ -154,7 +174,7 @@ export default class PackagePushUpgradesConfirmationModal extends LightningEleme
         packagePushRequestId: packagePushRequestId,
         status: status
       })
-        .then(result => {
+        .then(() => {
           this.displaySpinner = false;
           this.dispatchEvent(new CustomEvent("cancel"));
           this.dispatchEvent(
@@ -166,16 +186,17 @@ export default class PackagePushUpgradesConfirmationModal extends LightningEleme
             })
           );
         })
-        .catch(error => {
-          console.error(error.body.message);
+        .catch((error) => {
+          const firstErrorMessage = this.getFirstErrorMessage(error);
+          console.error(firstErrorMessage);
           this.displaySpinner = false;
           this.displayInvalidSchedulePopover = true;
-          this.popoverBody = error.body.message;
+          this.popoverBody = firstErrorMessage;
           this.displaySpinner = false;
           this.dispatchEvent(
             new ShowToastEvent({
               title: "Something went wrong",
-              message: error,
+              message: firstErrorMessage,
               variant: "error"
             })
           );
