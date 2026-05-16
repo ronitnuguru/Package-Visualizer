@@ -1,0 +1,68 @@
+<template>
+  <lightning-modal-header label="Block Push Upgrade"> </lightning-modal-header>
+
+  <lightning-modal-body>
+    <p class="slds-var-p-bottom_small">
+      The PushUpgradeCustomizationRepository Apex Class can only be run from
+      within your Org via Anonymous Apex and beyond the scope of this Managed
+      Package. Because of these current platform limitations, this functionality
+      cannot be automated. Use the snippet below in Developer Console to
+      complete the update
+    </p>
+    <div
+      class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-var-p-bottom_x-small card-style"
+    >
+      <lightning-card>
+        <h3 slot="title" class="slds-truncate">
+          <lightning-icon
+            icon-name="standard:apex"
+            size="medium"
+            class="slds-m-right_small"
+          ></lightning-icon>
+          Execute Anonymous Apex
+        </h3>
+        <lightning-button-group slot="actions">
+          <lightning-button-icon
+            icon-name="utility:copy"
+            tooltip="Copy to Clipboard"
+            onclick={handleCopy}
+          ></lightning-button-icon>
+          <lightning-button
+            variant="neutral"
+            label="Open Developer Console"
+            icon-name="utility:new_window"
+            icon-position="right"
+            onclick={handleOpenDeveloperConsole}
+          ></lightning-button>
+        </lightning-button-group>
+        <div class="slds-card__body slds-card__body_inner">
+          <pre
+            class="agentscript-pre slds-scrollable_y"
+          ><code class="agentscript-code">{apexSnippet}</code></pre>
+          <textarea
+            id="snippet"
+            class="snippet-fallback slds-assistive-text"
+            readonly
+            aria-hidden="true"
+          >
+{apexSnippet}</textarea
+          >
+        </div>
+      </lightning-card>
+    </div>
+  </lightning-modal-body>
+
+  <lightning-modal-footer>
+    <lightning-button
+      variant="neutral"
+      label="Close"
+      onclick={handleClose}
+    ></lightning-button>
+    <lightning-button
+      class="slds-m-left_x-small"
+      variant="neutral"
+      label="Learn More"
+      onclick={handleLearnMore}
+    ></lightning-button>
+  </lightning-modal-footer>
+</template>

@@ -29,18 +29,18 @@ export default {
       iconName: "standard:record"
     },
     orgName: {
-        type: "button",
-        fieldName: "orgName",
-        label: "Organization Name",
-        sortable: true,
-        iconName: "standard:customer",
-        wrapText: true,
-        typeAttributes: {
-          label: { fieldName: "orgName" },
-          name: "show_details",
-          variant: "base"
-        }
-      },
+      type: "button",
+      fieldName: "orgName",
+      label: "Organization Name",
+      sortable: true,
+      iconName: "standard:customer",
+      wrapText: true,
+      typeAttributes: {
+        label: { fieldName: "orgName" },
+        name: "show_details",
+        variant: "base"
+      }
+    },
     orgStatus: {
       type: "text",
       fieldName: "orgStatus",
@@ -59,6 +59,27 @@ export default {
       label: "Parent Org",
       sortable: true,
       iconName: "standard:record"
+    },
+    customUpgradeType: {
+      type: "text",
+      fieldName: "customUpgradeType",
+      label: "Custom Upgrade Type",
+      sortable: true,
+      iconName: "standard:activation_target"
+    },
+    hasRestrictionEnabled: {
+      type: "boolean",
+      fieldName: "hasRestrictionEnabled",
+      label: "Restriction Enabled",
+      iconName: "standard:task2",
+      sortable: true
+    },
+    isCustomUpgradeAllowed: {
+      type: "boolean",
+      fieldName: "isCustomUpgradeAllowed",
+      label: "Custom Upgrade Allowed",
+      iconName: "standard:task2",
+      sortable: true
     },
     SystemModstamp: {
       type: "date",
