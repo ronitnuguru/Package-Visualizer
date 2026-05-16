@@ -30,7 +30,9 @@
         class="slds-modal__content slds-var-p-around_medium"
         id="modal-content-id-1"
       >
-        <p class="slds-align_absolute-center">{body}</p>
+        <p class="slds-align_absolute-center">
+          {body}
+        </p>
       </div>
       <footer class="slds-modal__footer">
         <button
@@ -47,7 +49,7 @@
             {learnMoreButtonLabel}
           </button>
         </template>
-        <template if:true={brandButtonLabel}>
+        <template if:true={brandButtonLabel}> 
           <button
             class="slds-button slds-button_brand"
             onclick={handleBrandClick}

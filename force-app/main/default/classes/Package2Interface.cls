@@ -219,7 +219,7 @@ global with sharing class Package2Interface { // NOPMD
   ) {
     List<ObjectWrappers.PackageSubscriberWrapper> packageSubList = new List<ObjectWrappers.PackageSubscriberWrapper>();
 
-    String queryString = 'SELECT Id, MetadataPackageId, MetadataPackageVersionId, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, ParentOrg, SystemModstamp FROM PackageSubscriber ';
+    String queryString = 'SELECT Id, MetadataPackageId, MetadataPackageVersionId, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, ParentOrg, CustomUpgradeType, HasRestrictionEnabled, IsCustomUpgradeAllowed, SystemModstamp FROM PackageSubscriber ';
     String whereClause = '';
     if (!filterWrapperList.isEmpty()) {
       whereClause = getWhereClause(filterWrapperList);
@@ -267,7 +267,7 @@ global with sharing class Package2Interface { // NOPMD
     String lim = String.isNotBlank(subscriberLimit) ? subscriberLimit : '50';
     String off = String.isNotBlank(subscriberOffset) ? subscriberOffset : '0';
     String queryString =
-      'SELECT Id, MetadataPackageId, MetadataPackageVersionId, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, ParentOrg, SystemModstamp FROM PackageSubscriber WHERE ParentOrg = \'' +
+      'SELECT Id, MetadataPackageId, MetadataPackageVersionId, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, ParentOrg, CustomUpgradeType, HasRestrictionEnabled, IsCustomUpgradeAllowed, SystemModstamp FROM PackageSubscriber WHERE ParentOrg = \'' +
       String.escapeSingleQuotes(parentOrgKey) +
       '\' ORDER BY SystemModstamp DESC LIMIT ' +
       String.escapeSingleQuotes(lim) +
@@ -289,8 +289,24 @@ global with sharing class Package2Interface { // NOPMD
   }
 
   /**************************************************************************************
+   * @Description  Get a single PackageSubscriber by OrgKey.
+   **************************************************************************************/
+  global static ObjectWrappers.PackageSubscriberWrapper getPackageSubscriberByOrgKey(String orgKey) {
+    ObjectWrappers.PackageSubscriberWrapper subscriber = new ObjectWrappers.PackageSubscriberWrapper();
+    if (String.isBlank(orgKey) || Type.forName('PackageSubscriber') == null) {
+      return subscriber;
+    }
+    String queryString = 'SELECT Id, MetadataPackageId, MetadataPackageVersionId, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, ParentOrg, CustomUpgradeType, HasRestrictionEnabled, IsCustomUpgradeAllowed FROM PackageSubscriber WHERE OrgKey = :orgKey LIMIT 1';
+    SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, Database.query(queryString));
+    for (sObject o : decision.getRecords()) {
+      subscriber = (ObjectWrappers.PackageSubscriberWrapper) JSON.deserialize(JSON.serialize(o), ObjectWrappers.PackageSubscriberWrapper.class);
+    }
+    return subscriber;
+  }
+
+  /**************************************************************************************
 	* @Description  Get the list of packages subscriber group by provided field for displaying chart in package subscriber componenet.
-					Additional filters can be handled by filter class 
+					Additional filters can be handled by filter class
 	**************************************************************************************/
   public static List<AggregateResult> getSubscriberChartData(
     list<ObjectWrappers.FilterWrapper> filterWrapperList,

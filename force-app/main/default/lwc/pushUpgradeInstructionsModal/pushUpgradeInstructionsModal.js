@@ -36,9 +36,7 @@ export default class PushUpgradeInstructionsModal extends LightningModal {
       if (navigator?.clipboard?.writeText) {
         await navigator.clipboard.writeText(snippet);
       } else {
-        const textarea = this.template.querySelector(
-          "textarea.snippet-fallback"
-        );
+        const textarea = this.template.querySelector("textarea.snippet-fallback");
         if (textarea) {
           textarea.removeAttribute("readonly");
           textarea.select();

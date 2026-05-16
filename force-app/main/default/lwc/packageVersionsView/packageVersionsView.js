@@ -305,7 +305,7 @@ export default class PackageVersionsView extends LightningElement {
 
     if (applyFilters === true) {
       if (this.checkBoxFilterValues.length > 0) {
-        this.checkBoxFilterValues.forEach((field) => {
+        this.checkBoxFilterValues.forEach(field => {
           wrapper.push({
             fieldName: field,
             value: true,
@@ -346,7 +346,7 @@ export default class PackageVersionsView extends LightningElement {
         versionLimit: this.versionLimit,
         versionOffset: this.versionOffset
       })
-        .then((result) => {
+        .then(result => {
           this.displaySpinner = false;
           this.displayDatatableSpinner = false;
           if (isViewMore) {
@@ -362,7 +362,7 @@ export default class PackageVersionsView extends LightningElement {
           this.versionsLength = this.data.length;
           this.displayEmptyView = this.data.length === 0 ? true : false;
         })
-        .catch((error) => {
+        .catch(error => {
           console.error(error);
           this.displaySpinner = false;
           this.displayDatatableSpinner = false;
@@ -403,7 +403,7 @@ export default class PackageVersionsView extends LightningElement {
         versionLimit: "2000",
         versionOffset: "0"
       })
-        .then((result) => {
+        .then(result => {
           this.displaySpinner = false;
           this.isReleasedData = result;
           if (isAncestry) {
@@ -422,7 +422,7 @@ export default class PackageVersionsView extends LightningElement {
               : `direction:ltr;width:100%;`;
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.error(error);
           this.displaySpinner = false;
           // Toast for Failure
@@ -824,9 +824,9 @@ export default class PackageVersionsView extends LightningElement {
   }
 
   handleEdit() {
-    this.sortedBy = "SystemModstamp";
-    this.sortedByLabel = "Last Modified Date";
-    this.sortDirection = "desc";
+    this.sortedBy = 'SystemModstamp';
+    this.sortedByLabel = 'Last Modified Date';
+    this.sortDirection = 'desc';
     this.checkBoxFilterValues = [];
     this.displayFilterMeta = false;
     this.displayEmptyView = false;
@@ -846,14 +846,14 @@ export default class PackageVersionsView extends LightningElement {
     this.displaySecurityReviewInAppPrompt = false;
   }
 
-  handlePackageVersioningCancel() {
+  handlePackageVersioningCancel(){
     this.displayPackageVersioningInAppPrompt = false;
   }
 
   handleInAppPrompt(event) {
-    if (event.detail.value === "in-app-guidance-security-review") {
+    if(event.detail.value === 'in-app-guidance-security-review'){
       this.displaySecurityReviewInAppPrompt = true;
-    } else if (event.detail.value === "in-app-guidance-package-versions") {
+    } else if (event.detail.value === 'in-app-guidance-package-versions'){
       this.displayPackageVersioningInAppPrompt = true;
     }
   }

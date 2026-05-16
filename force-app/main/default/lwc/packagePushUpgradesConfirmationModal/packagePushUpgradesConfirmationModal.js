@@ -101,10 +101,10 @@ export default class PackagePushUpgradesConfirmationModal extends LightningEleme
             packageSubscriberVersionId: this.packageSubscriberVersionId,
             scheduledStartTime: scheduleStartTime
           })
-            .then((result) => {
+            .then(result => {
               this.createPushJobs(result);
             })
-            .catch((error) => {
+            .catch(error => {
               this.displaySpinner = false;
               const firstErrorMessage = this.getFirstErrorMessage(error);
               console.error(firstErrorMessage);
@@ -148,10 +148,10 @@ export default class PackagePushUpgradesConfirmationModal extends LightningEleme
                 "Your pushed upgrade request has been successfully queued",
               variant: "success"
             })
-            //Create FMA Set Date
+            //Create FMA Set Date 
           );
         })
-        .catch((error) => {
+        .catch(error => {
           this.displaySpinner = false;
           const firstErrorMessage = this.getFirstErrorMessage(error);
           console.error(firstErrorMessage);
@@ -186,7 +186,7 @@ export default class PackagePushUpgradesConfirmationModal extends LightningEleme
             })
           );
         })
-        .catch((error) => {
+        .catch(error => {
           const firstErrorMessage = this.getFirstErrorMessage(error);
           console.error(firstErrorMessage);
           this.displaySpinner = false;

@@ -41,9 +41,7 @@ Hard rules:
 - Never invent precise numbers (revenue, headcount, ARR) you are not confident about - say "Unknown" or use a qualitative band.
 - Keep each string field under 400 characters.`;
 
-export default class PackageSubscriberDetail extends NavigationMixin(
-  LightningElement
-) {
+export default class PackageSubscriberDetail extends NavigationMixin(LightningElement) {
   @api installedStatus;
   @api instanceName;
   @api metadataPackageId;
@@ -87,44 +85,35 @@ export default class PackageSubscriberDetail extends NavigationMixin(
   displayAgentforceSpinner = false;
   aiResponse;
   displayExtensionIllustration = false;
-  currentPkgVersionId = "04tRh000001bMYrIAM";
-  modelsValue = "sfdc_ai__DefaultBedrockAnthropicClaude46Sonnet";
+  currentPkgVersionId = '04tRh000001bMYrIAM';
+  modelsValue = 'sfdc_ai__DefaultBedrockAnthropicClaude46Sonnet';
 
   get managedPackageType() {
     return this.packageType === "Managed" ? true : false;
   }
 
   get isActiveProductionOrg() {
-    return this.orgType === "Production" && this.orgStatus === "Active"
-      ? true
-      : false;
+    return this.orgType === "Production" && this.orgStatus === "Active" ? true : false;
   }
 
   get customUpgradeTypeLabel() {
-    if (!this.customUpgradeType || this.customUpgradeType === "None")
-      return null;
+    if (!this.customUpgradeType || this.customUpgradeType === "None") return null;
     return this.customUpgradeType.replace(/([A-Z])/g, " $1").trim();
   }
 
   get displayHasRestrictionEnabled() {
-    return (
-      this.hasRestrictionEnabled !== undefined &&
-      this.hasRestrictionEnabled !== null
-    );
+    return this.hasRestrictionEnabled !== undefined && this.hasRestrictionEnabled !== null;
   }
 
   get displayIsCustomUpgradeAllowed() {
-    return (
-      this.isCustomUpgradeAllowed !== undefined &&
-      this.isCustomUpgradeAllowed !== null
-    );
+    return this.isCustomUpgradeAllowed !== undefined && this.isCustomUpgradeAllowed !== null;
   }
 
   connectedCallback() {
     this.trustUrl = `https://status.salesforce.com/instances/${this.instanceName}`;
     if (hasPackageVisualizerPushUpgrade) {
       this.loadInstanceFromTrust()
-        .then((result) => {
+        .then(result => {
           if (result.message === "Instance not found") {
             this.instance = undefined;
           } else {
@@ -140,7 +129,7 @@ export default class PackageSubscriberDetail extends NavigationMixin(
         orgKey: this.orgKey,
         orgName: this.orgName
       }
-    ];
+    ]
   }
 
   async loadInstanceFromTrust() {
@@ -224,7 +213,7 @@ export default class PackageSubscriberDetail extends NavigationMixin(
         versionLimit: 1,
         versionOffset: 0
       })
-        .then((result) => {
+        .then(result => {
           this.displayUpgradeSpinner = false;
           this.displayPushUpgradeSection = true;
           const pkgVersion = result[0];
@@ -232,7 +221,7 @@ export default class PackageSubscriberDetail extends NavigationMixin(
           this.packageVersionNumber = pkgVersion.versionNumber;
           this.subscriberPackageId = pkgVersion.subscriberPackageVersionId;
         })
-        .catch((error) => {
+        .catch(error => {
           console.error(error);
           this.displayUpgradeSpinner = false;
           // Toast for Failure
@@ -270,12 +259,12 @@ export default class PackageSubscriberDetail extends NavigationMixin(
         lmaLicensesLimit: "1",
         lmaLicensesOffset: "0"
       })
-        .then((result) => {
+        .then(result => {
           this.license = result[0];
           this.displaySpinner = false;
           this.displayEmptyLMA = result.length === 0 ? true : false;
         })
-        .catch((error) => {
+        .catch(error => {
           this.displayEmptyLMA = true;
           console.error(error);
           this.displaySpinner = false;
@@ -320,8 +309,7 @@ export default class PackageSubscriberDetail extends NavigationMixin(
       this.dispatchEvent(
         new ShowToastEvent({
           title: error.statusText || "Agentforce Generation Failed",
-          message:
-            error.body?.message || "Unable to generate subscriber insight",
+          message: error.body?.message || "Unable to generate subscriber insight",
           variant: "error"
         })
       );
@@ -331,54 +319,38 @@ export default class PackageSubscriberDetail extends NavigationMixin(
   get parsedResponse() {
     if (!this.aiResponse) return null;
     try {
-      const cleaned = this.aiResponse.replace(/```json\s*|\s*```/g, "").trim();
+      const cleaned = this.aiResponse.replace(/```json\s*|\s*```/g, '').trim();
       const parsed = JSON.parse(cleaned);
       parsed.confidenceClass = this.getConfidenceClass(parsed.confidence);
       const isMeaningfulString = (v) =>
-        typeof v === "string" &&
-        v.trim() &&
-        v.trim().toLowerCase() !== "unknown";
+        typeof v === 'string' && v.trim() && v.trim().toLowerCase() !== 'unknown';
       const isMeaningfulArray = (v) => Array.isArray(v) && v.length > 0;
-      [
-        "industry",
-        "headquarters",
-        "companySize",
-        "marketPosition",
-        "whySalesforce",
-        "companyOverview"
-      ].forEach((k) => {
-        if (!isMeaningfulString(parsed[k])) parsed[k] = null;
-      });
-      ["likelySalesforceClouds", "idealUseCases", "isvOpportunities"].forEach(
-        (k) => {
-          if (!isMeaningfulArray(parsed[k])) parsed[k] = null;
-        }
-      );
+      ['industry', 'headquarters', 'companySize', 'marketPosition', 'whySalesforce', 'companyOverview']
+        .forEach((k) => { if (!isMeaningfulString(parsed[k])) parsed[k] = null; });
+      ['likelySalesforceClouds', 'idealUseCases', 'isvOpportunities']
+        .forEach((k) => { if (!isMeaningfulArray(parsed[k])) parsed[k] = null; });
       return parsed;
     } catch (e) {
-      console.error("Failed to parse AI response:", e);
+      console.error('Failed to parse AI response:', e);
       return { companyOverview: this.aiResponse };
     }
   }
 
   getConfidenceClass(confidence) {
-    switch ((confidence || "").toLowerCase()) {
-      case "high":
-        return "slds-theme_success";
-      case "medium":
-        return "slds-theme_warning";
-      case "low":
-        return "slds-theme_error";
+    switch ((confidence || '').toLowerCase()) {
+      case 'high':
+        return 'slds-theme_success';
+      case 'medium':
+        return 'slds-theme_warning';
+      case 'low':
+        return 'slds-theme_error';
       default:
-        return "";
+        return '';
     }
   }
 
   handleExtensionInstall() {
-    window.open(
-      `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`,
-      "_blank"
-    );
+    window.open(`/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`, '_blank');
   }
 
   handleBlockPushUpgrade() {
@@ -396,7 +368,7 @@ export default class PackageSubscriberDetail extends NavigationMixin(
     this.displayAppAnalyticsModal = false;
   }
 
-  handleLogIntoSubscriberConsole() {
+  handleLogIntoSubscriberConsole(){
     this[NavigationMixin.Navigate]({
       type: "standard__webPage",
       attributes: {
@@ -405,7 +377,7 @@ export default class PackageSubscriberDetail extends NavigationMixin(
     });
   }
 
-  navigateToHelpLma() {
+  navigateToHelpLma(){
     this[NavigationMixin.Navigate]({
       type: "standard__webPage",
       attributes: {

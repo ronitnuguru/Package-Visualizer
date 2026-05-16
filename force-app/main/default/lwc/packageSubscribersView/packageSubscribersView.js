@@ -8,12 +8,12 @@ const actions = [
     label: "Show Details",
     name: "show_details",
     iconName: "utility:display_text",
-    iconPosition: "left"
+    iconPosition:"left"
   },
   {
     label: "Trust Status",
     name: "trust_status",
-    iconName: "utility:salesforce1"
+    iconName: "utility:salesforce1",
   }
 ];
 
@@ -149,7 +149,7 @@ export default class PackageSubscribersView extends LightningElement {
     return [
       { label: "Americas", value: "NA" },
       { label: "EMEA", value: "EMEA" },
-      { label: "Asia Pacific", value: "APAC" }
+      { label: "Asia Pacific", value: "APAC" },
     ];
   }
 
@@ -183,7 +183,7 @@ export default class PackageSubscribersView extends LightningElement {
       "instanceName",
       "SystemModstamp"
     ];
-    this.loadInstancesFromTrust().then((result) => {
+    this.loadInstancesFromTrust().then(result => {
       this.instanceList = result;
     });
   }
@@ -196,7 +196,7 @@ export default class PackageSubscribersView extends LightningElement {
       const response = await fetch(trustEndPoint);
       instances = await response.json();
       this.displayInstanceSpinner = false;
-      return instances.map((instance) => ({
+      return instances.map(instance => ({
         key: instance.key,
         location: instance.location
       }));
@@ -270,7 +270,7 @@ export default class PackageSubscribersView extends LightningElement {
         subscriberLimit: this.subscriberLimit,
         subscriberOffset: this.subscriberOffset
       })
-        .then((result) => {
+        .then(result => {
           this.displaySpinner = false;
           this.displayDatatableSpinner = false;
           this.displaySubscribersList = true;
@@ -278,8 +278,9 @@ export default class PackageSubscribersView extends LightningElement {
             if (result.length === 0) {
               this.disableInfiniteLoad = false;
             } else {
-              this.versionSubscribersData =
-                this.versionSubscribersData.concat(result);
+              this.versionSubscribersData = this.versionSubscribersData.concat(
+                result
+              );
             }
           } else {
             this.versionSubscribersData = result;
@@ -289,7 +290,7 @@ export default class PackageSubscribersView extends LightningElement {
           this.displayEmptyView =
             this.versionSubscribersData.length === 0 ? true : false;
         })
-        .catch((error) => {
+        .catch(error => {
           console.error(error);
           this.versionSubscribersData = undefined;
           this.displaySpinner = false;
@@ -456,7 +457,7 @@ export default class PackageSubscribersView extends LightningElement {
       ? `direction:ltr; width:calc(100% - 320px);`
       : `direction:ltr;width:100%;`;
     this.subscriberOffset = 0;
-    if (this.regionsValues.length !== 0 && this.regionsValues.length !== 5) {
+    if(this.regionsValues.length !== 0 && this.regionsValues.length !== 5){
       this.getFilteredInstanceList();
     } else {
       this.selectedInstancesString = undefined;
@@ -467,14 +468,14 @@ export default class PackageSubscribersView extends LightningElement {
   }
 
   getFilteredInstanceList() {
-    const instances = this.instanceList.filter((instance) =>
-      this.regionsValues.includes(instance.location)
-    );
-    this.selectedInstancesString = instances
-      .map((instance) => {
-        return instance.key;
-      })
-      .join("~");
+      const instances = this.instanceList.filter(instance =>
+        this.regionsValues.includes(instance.location)
+      );
+      this.selectedInstancesString = instances
+        .map(instance => {
+          return instance.key;
+        })
+        .join("~");
   }
 
   handleSearchTermChange(event) {

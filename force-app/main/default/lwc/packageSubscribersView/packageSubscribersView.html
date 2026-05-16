@@ -20,41 +20,22 @@
       <template if:true={displayEmptyView}>
         <template if:true={displayFilterMeta}>
           <lightning-empty-state title="Hmm..." illustration-name="success:new">
-            <p slot="description">
-              We could not find any results based on your filters...
-            </p>
-            <lightning-button
-              variant="brand"
-              label="Edit Filters"
-              slot="cta"
-              onclick={handleFilterEdit}
-            >
+            <p slot="description">We could not find any results based on your filters...</p>
+            <lightning-button variant="brand" label="Edit Filters" slot="cta" onclick={handleFilterEdit}>
             </lightning-button>
           </lightning-empty-state>
         </template>
         <template if:false={displayFilterMeta}>
           <template if:true={searchTerm}>
             <lightning-empty-state title="Hmm…" illustration-name="success:new">
-              <p slot="description">
-                We could not find any results based on your search...
-              </p>
-              <lightning-button
-                variant="brand"
-                label="Refresh"
-                slot="cta"
-                onclick={handleFilterReset}
-              >
+              <p slot="description">We could not find any results based on your search...</p>
+              <lightning-button variant="brand" label="Refresh" slot="cta" onclick={handleFilterReset}>
               </lightning-button>
             </lightning-empty-state>
           </template>
           <template if:false={searchTerm}>
-            <lightning-empty-state
-              title="Hmm…"
-              illustration-name="noresults:search"
-            >
-              <p slot="description">
-                Looks like you do not have any subscribers for this package...
-              </p>
+            <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+              <p slot="description">Looks like you do not have any subscribers for this package...</p>
             </lightning-empty-state>
           </template>
         </template>
@@ -62,7 +43,7 @@
       <template if:false={displayEmptyView}>
         <lightning-breadcrumbs
           class="slds-var-p-horizontal_medium slds-var-p-top_small"
-          style="font-weight: 700"
+          style="font-weight: 700;"
         >
           <lightning-breadcrumb
             label="All Subscribers"
@@ -76,18 +57,22 @@
         <template if:true={displaySubscribersList}>
           <div class="slds-var-p-around_medium">
             <div class="slds-grid slds-var-p-bottom_x-small slds-wrap">
-              <ul
-                class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small"
-              >
+              <ul class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small">
                 <template if:true={subscribersLength}>
-                  <li class="slds-item">{subscribersLength} Subscribers</li>
-                </template>
-                <li class="slds-item">Sorted by {sortedByLabel}</li>
-                <template if:true={displayFilterMeta}>
-                  <li class="slds-item">Filters Enabled</li>
+                  <li class="slds-item">
+                    {subscribersLength} Subscribers
+                  </li>
                 </template>
                 <li class="slds-item">
-                  Updated&nbsp;<lightning-relative-date-time
+                  Sorted by {sortedByLabel}
+                </li>
+                <template if:true={displayFilterMeta}>
+                  <li class="slds-item">
+                    Filters Enabled
+                  </li>
+                </template>
+                <li class="slds-item">
+                    Updated&nbsp;<lightning-relative-date-time
                     value={relativeDateTime}
                   ></lightning-relative-date-time>
                 </li>
@@ -165,7 +150,7 @@
               <div if:true={chartInit}>
                 <div
                   class={displayChartDockPanel}
-                  style="direction: ltr"
+                  style="direction:ltr;"
                   aria-hidden="false"
                 >
                   <div class="slds-panel__header">
@@ -201,7 +186,7 @@
               </div>
               <div
                 class={displayFilterDockPanel}
-                style="direction: ltr"
+                style="direction:ltr;"
                 aria-hidden="false"
               >
                 <div class="slds-panel__header">
@@ -248,9 +233,7 @@
                     ></lightning-dual-listbox>
                   </div>
                   <div>
-                    <fieldset
-                      class="slds-form-element slds-var-p-bottom_xx-small"
-                    >
+                    <fieldset class="slds-form-element slds-var-p-bottom_xx-small">
                       <legend
                         class="slds-form-element__legend slds-form-element__label"
                       >
@@ -337,14 +320,8 @@
       </template>
     </template>
     <template if:false={versionSubscribersData}>
-      <lightning-empty-state
-        title="Data not available..."
-        illustration-name="noresults:search"
-      >
-        <p slot="description">
-          Looks like we were unable retrieve or you do not have access to any
-          subscribers for this package...
-        </p>
+      <lightning-empty-state title="Data not available..." illustration-name="noresults:search">
+        <p slot="description">Looks like we were unable retrieve or you do not have access to any subscribers for this package...</p>
       </lightning-empty-state>
     </template>
   </template>

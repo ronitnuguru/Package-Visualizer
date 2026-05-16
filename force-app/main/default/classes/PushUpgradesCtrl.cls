@@ -68,7 +68,7 @@ public with sharing class PushUpgradesCtrl {
 
     @AuraEnabled(cacheable=true)
     public static ObjectWrappers.PackageSubscriberWrapper getPushJobPackageSubscriber(String orgId){
-        String queryString = 'SELECT Id, MetadataPackageId, MetadataPackageVersionId, InstalledStatus, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, ParentOrg FROM PackageSubscriber WHERE OrgKey = :orgId';
+        String queryString = 'SELECT Id, MetadataPackageId, MetadataPackageVersionId, InstalledStatus, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, ParentOrg, CustomUpgradeType, HasRestrictionEnabled, IsCustomUpgradeAllowed FROM PackageSubscriber WHERE OrgKey = :orgId';
         ObjectWrappers.PackageSubscriberWrapper subscriber = new ObjectWrappers.PackageSubscriberWrapper();
         if(Type.forName('PackageSubscriber') != null){
         	SObjectAccessDecision  decision = Security.stripInaccessible(AccessType.READABLE,Database.query(queryString));

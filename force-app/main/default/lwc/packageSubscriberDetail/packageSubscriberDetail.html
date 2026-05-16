@@ -1,9 +1,7 @@
 <template>
   <div class="slds-var-p-around_small">
     <template if:true={orgKey}>
-      <div
-        class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
-      >
+      <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small">
         <lightning-card>
           <h3 slot="title" class="slds-truncate">
             <lightning-icon
@@ -30,20 +28,10 @@
               icon-position="right"
               onclick={handleBlockPushUpgrade}
             ></lightning-button>
-            <lightning-button-icon
-              variant="border-filled"
-              icon-name="utility:einstein"
-              tooltip="Request AppAnalytics"
-              onclick={handleAppAnalyticsSubscribers}
-            ></lightning-button-icon>
+            <lightning-button-icon variant="border-filled" icon-name="utility:einstein" tooltip="Request AppAnalytics" onclick={handleAppAnalyticsSubscribers}></lightning-button-icon>
             <template if:true={displayLMA}>
               <template if:true={orgKey}>
-                <lightning-button-icon
-                  variant="border-filled"
-                  icon-name="utility:questions_and_answers"
-                  tooltip="Log Into Subscriber Console"
-                  onclick={handleLogIntoSubscriberConsole}
-                ></lightning-button-icon>
+                <lightning-button-icon variant="border-filled" icon-name="utility:questions_and_answers" tooltip="Log Into Subscriber Console" onclick={handleLogIntoSubscriberConsole}></lightning-button-icon>
               </template>
             </template>
           </lightning-button-group>
@@ -51,10 +39,18 @@
             <div class="slds-grid slds-gutters slds-wrap">
               <div class="slds-col slds-size_5-of-12">
                 <dl class="slds-list_horizontal slds-wrap">
-                  <dt class="slds-item_label slds-text-color_weak">Type:</dt>
-                  <dd class="slds-item_detail slds-truncate">{orgType}</dd>
-                  <dt class="slds-item_label slds-text-color_weak">Status:</dt>
-                  <dd class="slds-item_detail slds-truncate">{orgStatus}</dd>
+                  <dt class="slds-item_label slds-text-color_weak">
+                    Type:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    {orgType}
+                  </dd>
+                  <dt class="slds-item_label slds-text-color_weak">
+                    Status:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    {orgStatus}
+                  </dd>
                   <dt class="slds-item_label slds-text-color_weak">
                     Instance:
                   </dt>
@@ -65,13 +61,19 @@
                       target="_blank"
                     ></lightning-formatted-url>
                   </dd>
-                  <dt class="slds-item_label slds-text-color_weak">Org ID:</dt>
-                  <dd class="slds-item_detail slds-truncate">{orgKey}</dd>
+                  <dt class="slds-item_label slds-text-color_weak">
+                    Org ID:
+                  </dt>
+                  <dd class="slds-item_detail slds-truncate">
+                    {orgKey}
+                  </dd>
                   <template if:true={parentOrg}>
                     <dt class="slds-item_label slds-text-color_weak">
                       Parent Org ID:
                     </dt>
-                    <dd class="slds-item_detail slds-truncate">{parentOrg}</dd>
+                    <dd class="slds-item_detail slds-truncate">
+                      {parentOrg}
+                    </dd>
                   </template>
                 </dl>
               </div>
@@ -107,9 +109,7 @@
               </div>
             </div>
             <template if:true={showAgentforceCard}>
-              <div
-                class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium card-style"
-              >
+              <div class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium card-style">
                 <lightning-card>
                   <template if:true={displayAgentforceSpinner}>
                     <div class="slds-p-vertical_medium">
@@ -134,22 +134,11 @@
                         <div class="slds-p-around_medium">
                           <lightning-empty-state
                             title="Hmm..."
-                            illustration-name="noresults:search"
-                          >
+                            illustration-name="noresults:search">
                             <p slot="description">
-                              Looks like you may have not installed the
-                              Agentforce dependent extension managed package. Or
-                              you don't have the necessary permissions or
-                              configuration to perform Agentforce related
-                              functionalities. Please contact your admin for
-                              further assistance...
+                              Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance...
                             </p>
-                            <lightning-button
-                              variant="brand"
-                              label="Install Managed Package"
-                              slot="cta"
-                              onclick={handleExtensionInstall}
-                            >
+                            <lightning-button variant="brand" label="Install Managed Package" slot="cta" onclick={handleExtensionInstall}>
                             </lightning-button>
                           </lightning-empty-state>
                         </div>
@@ -157,35 +146,21 @@
                       <template if:false={displayExtensionIllustration}>
                         <template if:true={parsedResponse}>
                           <div class="slds-p-around_small">
-                            <div
-                              class="slds-grid slds-wrap slds-gutters slds-p-bottom_small"
-                            >
-                              <div
-                                class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"
-                              >
+                            <div class="slds-grid slds-wrap slds-gutters slds-p-bottom_small">
+                              <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
                                 <template if:true={parsedResponse.companyName}>
-                                  <div
-                                    class="slds-text-heading_small slds-p-bottom_x-small"
-                                  >
+                                  <div class="slds-text-heading_small slds-p-bottom_x-small">
                                     {parsedResponse.companyName}
                                   </div>
                                 </template>
                                 <template if:true={parsedResponse.industry}>
-                                  <lightning-badge
-                                    label={parsedResponse.industry}
-                                    class="slds-m-right_xx-small"
-                                  ></lightning-badge>
+                                  <lightning-badge label={parsedResponse.industry} class="slds-m-right_xx-small"></lightning-badge>
                                 </template>
                                 <template if:true={parsedResponse.confidence}>
-                                  <lightning-badge
-                                    label={parsedResponse.confidence}
-                                    class={parsedResponse.confidenceClass}
-                                  ></lightning-badge>
+                                  <lightning-badge label={parsedResponse.confidence} class={parsedResponse.confidenceClass}></lightning-badge>
                                 </template>
                               </div>
-                              <div
-                                class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"
-                              >
+                              <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
                                 <template if:true={parsedResponse.headquarters}>
                                   <div class="slds-p-bottom_xx-small">
                                     <strong>Headquarters:</strong>
@@ -198,20 +173,18 @@
                                   <div class="slds-p-bottom_xx-small">
                                     <strong>Company Size:</strong>
                                   </div>
-                                  <div>{parsedResponse.companySize}</div>
+                                  <div>
+                                    {parsedResponse.companySize}
+                                  </div>
                                 </template>
                               </div>
                             </div>
                             <dl class="slds-m-bottom_none">
-                              <template
-                                if:true={parsedResponse.companyOverview}
-                              >
+                              <template if:true={parsedResponse.companyOverview}>
                                 <dt class="slds-p-bottom_xx-small">
                                   <strong>Company Overview:</strong>
                                 </dt>
-                                <dd
-                                  class="slds-var-m-left_none slds-p-bottom_small"
-                                >
+                                <dd class="slds-var-m-left_none slds-p-bottom_small">
                                   {parsedResponse.companyOverview}
                                 </dd>
                               </template>
@@ -220,9 +193,7 @@
                                 <dt class="slds-p-bottom_xx-small">
                                   <strong>Market Position:</strong>
                                 </dt>
-                                <dd
-                                  class="slds-var-m-left_none slds-p-bottom_small"
-                                >
+                                <dd class="slds-var-m-left_none slds-p-bottom_small">
                                   {parsedResponse.marketPosition}
                                 </dd>
                               </template>
@@ -231,31 +202,18 @@
                                 <dt class="slds-p-bottom_xx-small">
                                   <strong>Why Salesforce:</strong>
                                 </dt>
-                                <dd
-                                  class="slds-var-m-left_none slds-p-bottom_small"
-                                >
+                                <dd class="slds-var-m-left_none slds-p-bottom_small">
                                   {parsedResponse.whySalesforce}
                                 </dd>
                               </template>
 
-                              <template
-                                if:true={parsedResponse.likelySalesforceClouds}
-                              >
+                              <template if:true={parsedResponse.likelySalesforceClouds}>
                                 <dt class="slds-p-bottom_xx-small">
                                   <strong>Likely Salesforce Clouds:</strong>
                                 </dt>
-                                <dd
-                                  class="slds-var-m-left_none slds-p-bottom_small"
-                                >
-                                  <template
-                                    for:each={parsedResponse.likelySalesforceClouds}
-                                    for:item="cloud"
-                                  >
-                                    <lightning-badge
-                                      key={cloud}
-                                      label={cloud}
-                                      class="slds-m-right_xx-small slds-m-bottom_xx-small slds-theme_success"
-                                    ></lightning-badge>
+                                <dd class="slds-var-m-left_none slds-p-bottom_small">
+                                  <template for:each={parsedResponse.likelySalesforceClouds} for:item="cloud">
+                                    <lightning-badge key={cloud} label={cloud} class="slds-m-right_xx-small slds-m-bottom_xx-small slds-theme_success"></lightning-badge>
                                   </template>
                                 </dd>
                               </template>
@@ -264,45 +222,23 @@
                                 <dt class="slds-p-bottom_xx-small">
                                   <strong>Ideal Use Cases:</strong>
                                 </dt>
-                                <dd
-                                  class="slds-var-m-left_none slds-p-bottom_small"
-                                >
+                                <dd class="slds-var-m-left_none slds-p-bottom_small">
                                   <ul class="slds-list_dotted">
-                                    <template
-                                      for:each={parsedResponse.idealUseCases}
-                                      for:item="useCase"
-                                    >
-                                      <li
-                                        key={useCase}
-                                        class="slds-p-vertical_xx-small"
-                                      >
-                                        {useCase}
-                                      </li>
+                                    <template for:each={parsedResponse.idealUseCases} for:item="useCase">
+                                      <li key={useCase} class="slds-p-vertical_xx-small">{useCase}</li>
                                     </template>
                                   </ul>
                                 </dd>
                               </template>
 
-                              <template
-                                if:true={parsedResponse.isvOpportunities}
-                              >
+                              <template if:true={parsedResponse.isvOpportunities}>
                                 <dt class="slds-p-bottom_xx-small">
                                   <strong>ISV Opportunities:</strong>
                                 </dt>
-                                <dd
-                                  class="slds-var-m-left_none slds-p-bottom_small"
-                                >
+                                <dd class="slds-var-m-left_none slds-p-bottom_small">
                                   <ul class="slds-list_dotted">
-                                    <template
-                                      for:each={parsedResponse.isvOpportunities}
-                                      for:item="opportunity"
-                                    >
-                                      <li
-                                        key={opportunity}
-                                        class="slds-p-vertical_xx-small"
-                                      >
-                                        {opportunity}
-                                      </li>
+                                    <template for:each={parsedResponse.isvOpportunities} for:item="opportunity">
+                                      <li key={opportunity} class="slds-p-vertical_xx-small">{opportunity}</li>
                                     </template>
                                   </ul>
                                 </dd>
@@ -370,24 +306,12 @@
               </template>
               <template if:true={displayEmptyLMA}>
                 <div class="card-style slds-card_boundary slds-p-around_large">
-                  <lightning-empty-state
-                    title="Hmm..."
-                    illustration-name="success:new"
-                  >
-                    <p slot="description">
-                      Looks like we could not find the associated license for
-                      this subscriber or the package is not connected to the
-                      LMA...
-                    </p>
-                    <lightning-button
-                      variant="brand"
-                      label="Associate Package with LMA"
-                      slot="cta"
-                      onclick={navigateToHelpLma}
-                    >
+                  <lightning-empty-state title="Hmm..." illustration-name="success:new">
+                      <p slot="description">Looks like we could not find the associated license for this subscriber or the package is not connected to the LMA...</p>
+                    <lightning-button variant="brand" label="Associate Package with LMA" slot="cta" onclick={navigateToHelpLma}>
                     </lightning-button>
                   </lightning-empty-state>
-                </div>
+                </div>      
               </template>
             </div>
           </template>
@@ -435,9 +359,7 @@
                 </template>
                 <template if:true={instance}>
                   <template if:true={displayInstance}>
-                    <div
-                      class="slds-var-m-around_small slds-var-p-bottom_small"
-                    >
+                    <div class="slds-var-m-around_small slds-var-p-bottom_small">
                       <c-trust-instance-detail
                         instance-key={instance.key}
                         location={instance.location}
@@ -450,14 +372,10 @@
                   </template>
                 </template>
                 <template if:true={displayPushUpgradeSection}>
-                  <div
-                    class="slds-var-m-around_small slds-var-p-bottom_small slds-card_boundary card-style"
-                  >
+                  <div class="slds-var-m-around_small slds-var-p-bottom_small slds-card_boundary card-style">
                     <div class="slds-grid slds-var-p-around_small">
-                      <lightning-breadcrumbs class="" style="font-weight: 700">
-                        <lightning-breadcrumb
-                          label={pushUpgradeBreadCrumbLabel}
-                        >
+                      <lightning-breadcrumbs class="" style="font-weight: 700;">
+                        <lightning-breadcrumb label={pushUpgradeBreadCrumbLabel}>
                         </lightning-breadcrumb>
                       </lightning-breadcrumbs>
                     </div>
@@ -502,11 +420,7 @@
             </button>
           </h3>
           <template if:true={displaySandboxes}>
-            <div
-              aria-hidden="false"
-              class="slds-section__content slds-var-p-around_medium slds-card"
-              id="sandboxContent"
-            >
+            <div aria-hidden="false" class="slds-section__content slds-var-p-around_medium slds-card" id="sandboxContent">
               <c-package-subscriber-sandboxes-view org-key={orgKey}>
               </c-package-subscriber-sandboxes-view>
             </div>
@@ -515,14 +429,9 @@
       </template>
     </template>
     <template if:false={orgKey}>
-      <div
-        class="slds-notify slds-notify_alert slds-alert_warning"
-        role="alert"
-      >
+      <div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
         <span class="slds-assistive-text">warning</span>
-        <span
-          class="slds-icon_container slds-icon-utility-warning slds-var-m-right_x-small"
-        >
+        <span class="slds-icon_container slds-icon-utility-warning slds-var-m-right_x-small">
           <lightning-icon
             size="small"
             icon-name="utility:warning"
@@ -531,8 +440,7 @@
           ></lightning-icon>
         </span>
         <h2>
-          Oh no! It looks like the org does not exist or the subscriber has
-          uninstalled your package!
+          Oh no! It looks like the org does not exist or the subscriber has uninstalled your package!
         </h2>
       </div>
     </template>

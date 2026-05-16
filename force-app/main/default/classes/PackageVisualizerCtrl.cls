@@ -169,6 +169,11 @@ public with sharing class PackageVisualizerCtrl {
     );
   }
 
+  @AuraEnabled(cacheable=true)
+  public static ObjectWrappers.PackageSubscriberWrapper getPackageSubscriberByOrgKey(String orgKey) {
+    return Package2Interface.getPackageSubscriberByOrgKey(orgKey);
+  }
+
   /**************************************************************************************
 	* @Description  Get list of all 2GP Packages Subscriber org details group by varios fields
 					for the given package or package version.
