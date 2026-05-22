@@ -1,7 +1,7 @@
 import { LightningElement, api, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getPushJobPackageSubscriber from "@salesforce/apex/PushUpgradesCtrl.getPushJobPackageSubscriber";
-import invokeGenAiPromptTemplate from '@salesforce/apexContinuation/PackageVisualizerCtrl.invokeGenAiPromptTemplate';
+import invokeGenAiPromptTemplate from "@salesforce/apexContinuation/PackageVisualizerCtrl.invokeGenAiPromptTemplate";
 
 export default class PackagePushJobDetail extends LightningElement {
   @api pushJobDetails;
@@ -29,7 +29,7 @@ export default class PackagePushJobDetail extends LightningElement {
   displayAiSuggest = false;
   aiSuggestion;
 
-  currentPkgVersionId = '04tRh000001bMYrIAM';
+  currentPkgVersionId = "04tRh000001bOxFIAU";
 
   get isAiSuggestionEmpty() {
     return !this.aiSuggestion;
@@ -37,9 +37,10 @@ export default class PackagePushJobDetail extends LightningElement {
 
   get pushJobError() {
     let errorTitle, errorMessage;
-    if(this.pushJobDetails.PackagePushErrors){
+    if (this.pushJobDetails.PackagePushErrors) {
       errorTitle = this.pushJobDetails.PackagePushErrors.records[0].ErrorTitle;
-      errorMessage = this.pushJobDetails.PackagePushErrors.records[0].ErrorMessage;
+      errorMessage =
+        this.pushJobDetails.PackagePushErrors.records[0].ErrorMessage;
       return `${errorTitle}: ${errorMessage}`;
     }
     return undefined;
@@ -111,21 +112,21 @@ export default class PackagePushJobDetail extends LightningElement {
     try {
       return JSON.parse(this.aiResponse);
     } catch (e) {
-      console.error('Failed to parse AI response:', e);
-      return { summary: this.aiResponse };  // Fallback to raw text
+      console.error("Failed to parse AI response:", e);
+      return { summary: this.aiResponse }; // Fallback to raw text
     }
   }
 
   get severityVariant() {
-    if (!this.parsedResponse?.severity) return '';
+    if (!this.parsedResponse?.severity) return "";
     const severity = this.parsedResponse.severity.toLowerCase();
     const variantMap = {
-      'critical': 'slds-theme_error',
-      'high': 'slds-theme_error',
-      'medium': 'slds-theme_warning',
-      'low': 'slds-theme_success'
+      critical: "slds-theme_error",
+      high: "slds-theme_error",
+      medium: "slds-theme_warning",
+      low: "slds-theme_success"
     };
-    return variantMap[severity] || '';
+    return variantMap[severity] || "";
   }
 
   handleAiSuggestImprovements() {
@@ -192,7 +193,10 @@ export default class PackagePushJobDetail extends LightningElement {
     this.generateAiResponse(false);
   }
 
-  handleExtensionInstall(){
-    window.open(`/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`, '_blank');
+  handleExtensionInstall() {
+    window.open(
+      `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`,
+      "_blank"
+    );
   }
 }

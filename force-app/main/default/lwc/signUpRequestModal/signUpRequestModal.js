@@ -21,7 +21,7 @@ export default class SignUpRequestModal extends NavigationMixin(
   aiSuggestion;
   aiResponse;
 
-  currentPkgVersionId = "04tRh000001bMYrIAM";
+  currentPkgVersionId = "04tRh000001bOxFIAU";
 
   get isAiSuggestionEmpty() {
     return !this.aiSuggestion;

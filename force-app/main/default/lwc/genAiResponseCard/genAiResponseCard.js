@@ -17,7 +17,7 @@ export default class GenAiResponseCard extends NavigationMixin(
   aiResponse;
   error;
 
-  currentPkgVersionId = "04tRh000001bMYrIAM";
+  currentPkgVersionId = "04tRh000001bOxFIAU";
 
   connectedCallback() {
     this.generateAiResponse();

@@ -61,7 +61,7 @@ export default class PackageLmaTimeline extends NavigationMixin(
   displayAgentforceSpinner = false;
   aiResponse;
   displayExtensionIllustration = false;
-  currentPkgVersionId = "04tRh000001bMYrIAM";
+  currentPkgVersionId = "04tRh000001bOxFIAU";
   modelsValue = "sfdc_ai__DefaultBedrockAnthropicClaude46Sonnet";
 
   expirationToggle;

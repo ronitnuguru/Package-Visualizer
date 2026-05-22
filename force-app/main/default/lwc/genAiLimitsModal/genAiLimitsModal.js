@@ -1,47 +1,48 @@
-import { api } from 'lwc';
-import LightningModal from 'lightning/modal';
-import invokeGenAiPromptTemplate from '@salesforce/apexContinuation/PackageVisualizerCtrl.invokeGenAiPromptTemplate';
+import { api } from "lwc";
+import LightningModal from "lightning/modal";
+import invokeGenAiPromptTemplate from "@salesforce/apexContinuation/PackageVisualizerCtrl.invokeGenAiPromptTemplate";
 
 export default class GenAiLimitsModal extends LightningModal {
-    @api content;
-    @api label;
+  @api content;
+  @api label;
 
-    displaySpinner = true;
+  displaySpinner = true;
 
-    aiResponse;
-    error;
+  aiResponse;
+  error;
 
-    currentPkgVersionId = '04tRh000001bMYrIAM';
+  currentPkgVersionId = "04tRh000001bOxFIAU";
 
-    connectedCallback(){
-        this.generateAiResponse();
+  connectedCallback() {
+    this.generateAiResponse();
+  }
+  handleExtensionInstall() {
+    window.open(
+      `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`,
+      "_blank"
+    );
+  }
+
+  handleClose() {
+    this.close();
+  }
+
+  async generateAiResponse() {
+    try {
+      this.aiResponse = await invokeGenAiPromptTemplate({
+        className: "AgentGenAiPromptTemplateController",
+        methodName: `singleFreeText`,
+        recordId: this.content,
+        objectInput: "Limits_Data",
+        promptTemplateName: "pkgviz__ISV_Agent_Org_Limits_Summary"
+      });
+      this.error = undefined;
+      this.displaySpinner = false;
+    } catch (error) {
+      this.aiResponse = undefined;
+      this.error = error;
+      console.error(this.error);
+      this.displaySpinner = false;
     }
-    handleExtensionInstall(){
-        window.open(`/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`, "_blank");
-    }
-
-    handleClose(){
-        this.close();
-    }
-
-    async generateAiResponse() {
-        try {
-            this.aiResponse = await invokeGenAiPromptTemplate({
-                className: 'AgentGenAiPromptTemplateController',
-                methodName: `singleFreeText`,
-                recordId: this.content,
-                objectInput: 'Limits_Data',
-                promptTemplateName: 'pkgviz__ISV_Agent_Org_Limits_Summary'
-            });
-            this.error = undefined;
-            this.displaySpinner = false;
-        } catch (error) {
-            this.aiResponse = undefined;
-            this.error = error;
-            console.error(this.error);
-            this.displaySpinner = false;
-        }
-    }
-
-   
+  }
 }

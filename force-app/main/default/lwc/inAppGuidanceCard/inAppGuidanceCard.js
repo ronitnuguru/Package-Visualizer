@@ -19,7 +19,7 @@ export default class InAppGuidanceCard extends NavigationMixin(
   displayInAppPrompt;
 
   // Agentforce Extension package version ID
-  currentPkgVersionId = "04tRh000001bMYrIAM";
+  currentPkgVersionId = "04tRh000001bOxFIAU";
 
   title = "AgentExchange Showcase";
   iconName = "utility:salesforce1";
