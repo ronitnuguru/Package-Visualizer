@@ -1,7 +1,7 @@
 import { LightningElement, api, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { NavigationMixin } from "lightning/navigation";
-import { encodeDefaultFieldValues } from 'lightning/pageReferenceUtils';
+import { encodeDefaultFieldValues } from "lightning/pageReferenceUtils";
 import getLmaTimeline from "@salesforce/apexContinuation/PackageVisualizerCtrl.getLmaTimeline";
 import modifyLicense from "@salesforce/apexContinuation/PackageVisualizerCtrl.modifyLicense";
 import isFmaParameter from "@salesforce/apex/PackageVisualizerCtrl.isFmaParameter";
@@ -38,7 +38,9 @@ Hard rules:
 - Keep each string field under 400 characters.
 - churnRiskFactors should be empty array [] only if the license is genuinely healthy with no identifiable risks.`;
 
-export default class PackageLmaTimeline extends NavigationMixin(LightningElement) {
+export default class PackageLmaTimeline extends NavigationMixin(
+  LightningElement
+) {
   @api license;
 
   licenseId;
@@ -59,8 +61,8 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
   displayAgentforceSpinner = false;
   aiResponse;
   displayExtensionIllustration = false;
-  currentPkgVersionId = '04tRh000001bMYrIAM';
-  modelsValue = 'sfdc_ai__DefaultBedrockAnthropicClaude46Sonnet';
+  currentPkgVersionId = "04tRh000001bMYrIAM";
+  modelsValue = "sfdc_ai__DefaultBedrockAnthropicClaude46Sonnet";
 
   expirationToggle;
   seatsToggle;
@@ -141,13 +143,13 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
       await getLmaTimeline({
         licenseId: this.licenseId
       })
-        .then(result => {
+        .then((result) => {
           this.displaySpinner = false;
           this.timelineDisplay = true;
           this.licenseTimelineData = result;
           this.viewMoreLink = `/lightning/r/${this.licenseId}/related/Histories/view`;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           this.displaySpinner = false;
           this.timelineDisplay = false;
@@ -177,7 +179,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
     this.displayGenAiSummary = false;
   }
 
-  handleGenerativeAi(){
+  handleGenerativeAi() {
     this.selectedItem = `generative_ai`;
     this.timelineDisplay = false;
     this.modifyLicenseDisplay = false;
@@ -187,7 +189,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
     this.displayGenAiSummary = false;
   }
 
-  handleAiSummary(){
+  handleAiSummary() {
     this.selectedItem = `summary_ai`;
     this.timelineDisplay = false;
     this.modifyLicenseDisplay = false;
@@ -277,7 +279,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
           seats: seatsInput.value,
           status: this.modifyStatusValue
         })
-          .then(result => {
+          .then((result) => {
             this.displaySpinner = false;
             if (result === this.licenseId) {
               this.dispatchEvent(
@@ -291,7 +293,7 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
             this.displayEditView = false;
             this.dispatchEvent(new CustomEvent("refresh"));
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error);
             this.displaySpinner = false;
             this.dispatchEvent(
@@ -305,35 +307,33 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
       })();
     }
   }
-  
+
   handleEditorChange(event) {
     this.editorValue = event.detail.value;
   }
 
   handleSendEmailClick() {
-    let _licencseId = this.extractIdFromUrl(this.license.id);
     let _sendToId;
     let _relatedToId;
 
     if (this.license.leadId) {
       _sendToId = this.extractIdFromUrl(this.license.leadId);
-    }else if (this.license.contactId) {
+    } else if (this.license.contactId) {
       _sendToId = this.extractIdFromUrl(this.license.contactId);
       _relatedToId = _sendToId;
     } else {
       _sendToId = null;
     }
-    var pageRef = {
+    const pageRef = {
       type: "standard__quickAction",
       attributes: {
         apiName: "Global.SendEmail"
       },
       state: {
         recordId: _sendToId,
-        defaultFieldValues:
-          encodeDefaultFieldValues({
-            RelatedToId: _relatedToId
-          })
+        defaultFieldValues: encodeDefaultFieldValues({
+          RelatedToId: _relatedToId
+        })
       }
     };
     this[NavigationMixin.Navigate](pageRef);
@@ -393,38 +393,54 @@ export default class PackageLmaTimeline extends NavigationMixin(LightningElement
   get parsedResponse() {
     if (!this.aiResponse) return null;
     try {
-      const cleaned = this.aiResponse.replace(/```json\s*|\s*```/g, '').trim();
+      const cleaned = this.aiResponse.replace(/```json\s*|\s*```/g, "").trim();
       const parsed = JSON.parse(cleaned);
       parsed.healthScoreClass = this.getHealthScoreClass(parsed.healthScore);
       const isMeaningfulString = (v) =>
-        typeof v === 'string' && v.trim() && v.trim().toLowerCase() !== 'unknown';
+        typeof v === "string" &&
+        v.trim() &&
+        v.trim().toLowerCase() !== "unknown";
       const isMeaningfulArray = (v) => Array.isArray(v) && v.length > 0;
-      ['healthRationale', 'seatUtilization', 'expirationOutlook', 'customerProfile']
-        .forEach((k) => { if (!isMeaningfulString(parsed[k])) parsed[k] = null; });
-      ['churnRiskFactors', 'recommendedActions', 'engagementSuggestions']
-        .forEach((k) => { if (!isMeaningfulArray(parsed[k])) parsed[k] = null; });
+      [
+        "healthRationale",
+        "seatUtilization",
+        "expirationOutlook",
+        "customerProfile"
+      ].forEach((k) => {
+        if (!isMeaningfulString(parsed[k])) parsed[k] = null;
+      });
+      [
+        "churnRiskFactors",
+        "recommendedActions",
+        "engagementSuggestions"
+      ].forEach((k) => {
+        if (!isMeaningfulArray(parsed[k])) parsed[k] = null;
+      });
       return parsed;
     } catch (e) {
-      console.error('Failed to parse AI response:', e);
+      console.error("Failed to parse AI response:", e);
       return { healthRationale: this.aiResponse };
     }
   }
 
   getHealthScoreClass(healthScore) {
-    switch ((healthScore || '').toLowerCase()) {
-      case 'healthy':
-        return 'slds-theme_success';
-      case 'at risk':
-        return 'slds-theme_warning';
-      case 'critical':
-        return 'slds-theme_error';
+    switch ((healthScore || "").toLowerCase()) {
+      case "healthy":
+        return "slds-theme_success";
+      case "at risk":
+        return "slds-theme_warning";
+      case "critical":
+        return "slds-theme_error";
       default:
-        return '';
+        return "";
     }
   }
 
   handleExtensionInstall() {
-    window.open(`/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`, '_blank');
+    window.open(
+      `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`,
+      "_blank"
+    );
   }
 
   extractIdFromUrl(url) {

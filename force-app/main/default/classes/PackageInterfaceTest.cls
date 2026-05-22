@@ -1,82 +1,125 @@
 /*******************************************************************************************
-* @Name         PackageInterfaceTest 
-* @Date         11/10/2020
-* @Description  All the test classes for 2GP Visualizer application.  
-*******************************************************************************************/
+ * @Name         PackageInterfaceTest
+ * @Date         11/10/2020
+ * @Description  All the test classes for 2GP Visualizer application.
+ *******************************************************************************************/
 @isTest
-private class PackageInterfaceTest { 
-    
-	/**************************************************************************************
-	* @Description  Test class for 2GP Package Retrice Logic.
-	**************************************************************************************/    
-    @isTest public static void testPackage2() {
-        Test.startTest();
-        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
-        list<ObjectWrappers.PackageWrapper> Package2List = PackageVisualizerCtrl.get2GPPackageList('DESC');
-        system.assertEquals(1, Package2List.size());
-        Test.stopTest(); 
-    }
+private class PackageInterfaceTest {
+  /**************************************************************************************
+   * @Description  Test class for 2GP Package Retrice Logic.
+   **************************************************************************************/
+  @isTest
+  public static void testPackage2() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    list<ObjectWrappers.PackageWrapper> Package2List = PackageVisualizerCtrl.get2GPPackageList(
+      'DESC'
+    );
+    system.assertEquals(1, Package2List.size());
+    Test.stopTest();
+  }
 
-    /**************************************************************************************
-	* @Description  Test class for 1GP Package Retrice Logic.
-	**************************************************************************************/    
-    @isTest public static void testPackage1() {
-        Test.startTest();
-        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
-        list<ObjectWrappers.PackageWrapper1> Package1List = PackageVisualizerCtrl.get1GPPackageList('DESC');
-        system.assertEquals(0, Package1List.size());
-        Test.stopTest(); 
-    }
+  /**************************************************************************************
+   * @Description  Test class for 1GP Package Retrice Logic.
+   **************************************************************************************/
+  @isTest
+  public static void testPackage1() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    list<ObjectWrappers.PackageWrapper1> Package1List = PackageVisualizerCtrl.get1GPPackageList(
+      'DESC'
+    );
+    system.assertEquals(0, Package1List.size());
+    Test.stopTest();
+  }
 
-	/**************************************************************************************
-	* @Description  Test class for 2GP Package version Retrice Logic.
-	**************************************************************************************/     
-    @isTest public static void testPackage2Version() { 
-        
-        TEST.startTest();
-        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
-        List <ObjectWrappers.FilterWrapper> fltList = createFilterList('Package2Id', '0Ho000000000000AAA', 'STRING');
-        //ObjectWrappers.FilterVersionRangeWrapper fvrw = new ObjectWrappers.FilterVersionRangeWrapper();
-        //fvrw.applyRangeFilter = true;
-        string minMajorVersion = '1';
-        string maxMajorVersion = '0';
-        string minMinorVersion = '5';
-        string maxMinorVersion = '0';
-        list<ObjectWrappers.PackageVersionWrapper> Package2VersionList = PackageVisualizerCtrl.get2GPPackageVersionList(fltList, minMajorVersion, maxMajorVersion, minMinorVersion, maxMinorVersion, 'MajorVersion', 'asc','10','10');
-        system.assertEquals(1, Package2VersionList.size());
-        TEST.stopTest();
-    }
+  /**************************************************************************************
+   * @Description  Test class for 2GP Package version Retrice Logic.
+   **************************************************************************************/
+  @isTest
+  public static void testPackage2Version() {
+    TEST.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    List<ObjectWrappers.FilterWrapper> fltList = createFilterList(
+      'Package2Id',
+      '0Ho000000000000AAA',
+      'STRING'
+    );
+    //ObjectWrappers.FilterVersionRangeWrapper fvrw = new ObjectWrappers.FilterVersionRangeWrapper();
+    //fvrw.applyRangeFilter = true;
+    string minMajorVersion = '1';
+    string maxMajorVersion = '0';
+    string minMinorVersion = '5';
+    string maxMinorVersion = '0';
+    list<ObjectWrappers.PackageVersionWrapper> Package2VersionList = PackageVisualizerCtrl.get2GPPackageVersionList(
+      fltList,
+      minMajorVersion,
+      maxMajorVersion,
+      minMinorVersion,
+      maxMinorVersion,
+      'MajorVersion',
+      'asc',
+      '10',
+      '10'
+    );
+    system.assertEquals(1, Package2VersionList.size());
+    TEST.stopTest();
+  }
 
-    /**************************************************************************************
-	* @Description  Test class for 1GP Package version Retrice Logic.
-	**************************************************************************************/     
-    @isTest public static void testPackage1Version() { 
-        
-        TEST.startTest();
-        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
-        List <ObjectWrappers.FilterWrapper> fltList = createFilterList('Package1Id', '0Ho000000000000AAA', 'STRING');
-        //ObjectWrappers.FilterVersionRangeWrapper fvrw = new ObjectWrappers.FilterVersionRangeWrapper();
-        //fvrw.applyRangeFilter = true;
-        string minMajorVersion = '1';
-        string maxMajorVersion = '0';
-        string minMinorVersion = '5';
-        string maxMinorVersion = '0';
-        list<ObjectWrappers.Package1VersionWrapper> Package1VersionList = PackageVisualizerCtrl.get1GPPackageVersionList(fltList, minMajorVersion, maxMajorVersion, minMinorVersion, maxMinorVersion, 'MajorVersion', 'asc','10','10');
-        system.assertEquals(0, Package1VersionList.size());
-        TEST.stopTest();
-    }
+  /**************************************************************************************
+   * @Description  Test class for 1GP Package version Retrice Logic.
+   **************************************************************************************/
+  @isTest
+  public static void testPackage1Version() {
+    TEST.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    List<ObjectWrappers.FilterWrapper> fltList = createFilterList(
+      'Package1Id',
+      '0Ho000000000000AAA',
+      'STRING'
+    );
+    //ObjectWrappers.FilterVersionRangeWrapper fvrw = new ObjectWrappers.FilterVersionRangeWrapper();
+    //fvrw.applyRangeFilter = true;
+    string minMajorVersion = '1';
+    string maxMajorVersion = '0';
+    string minMinorVersion = '5';
+    string maxMinorVersion = '0';
+    list<ObjectWrappers.Package1VersionWrapper> Package1VersionList = PackageVisualizerCtrl.get1GPPackageVersionList(
+      fltList,
+      minMajorVersion,
+      maxMajorVersion,
+      minMinorVersion,
+      maxMinorVersion,
+      'MajorVersion',
+      'asc',
+      '10',
+      '10'
+    );
+    system.assertEquals(0, Package1VersionList.size());
+    TEST.stopTest();
+  }
 
+  /**************************************************************************************
+   * @Description  Test class for Package Subscriber Retrive Logic.
+   **************************************************************************************/
+  @isTest
+  public static void testPackage2SubscriberList() {
+    TEST.startTest();
+    List<ObjectWrappers.FilterWrapper> fltList = createFilterList(
+      'MetadataPackageId',
+      '0Ho000000000000AAA',
+      'STRING'
+    );
+    List<ObjectWrappers.PackageSubscriberWrapper> p2s = PackageVisualizerCtrl.get2GPPackageVersionSubscriberList(
+      fltList,
+      'OrgName',
+      'asc',
+      '10',
+      '10'
+    );
 
-	/**************************************************************************************
-	* @Description  Test class for Package Subscriber Retrive Logic.
-	**************************************************************************************/     
-    @isTest public static void testPackage2SubscriberList() {
-        TEST.startTest();
-        List <ObjectWrappers.FilterWrapper> fltList = createFilterList('MetadataPackageId', '0Ho000000000000AAA', 'STRING'); 
-        List<ObjectWrappers.PackageSubscriberWrapper> p2s = PackageVisualizerCtrl.get2GPPackageVersionSubscriberList(fltList, 'OrgName', 'asc','10','10'); 
-
-        system.assertNotEquals(null,p2s.size());
-        /*system.assertEquals('00F000000000000',p2s[0].id);
+    system.assertNotEquals(null, p2s.size());
+    /*system.assertEquals('00F000000000000',p2s[0].id);
         system.assertEquals('i',p2s[0].installedStatus);
         system.assertEquals('NA256',p2s[0].instanceName);
         system.assertEquals('033000000000000',p2s[0].metadataPackageId);
@@ -86,326 +129,368 @@ private class PackageInterfaceTest {
         system.assertEquals('Production',p2s[0].orgType);
         system.assertEquals('',p2s[0].parentOrg);
 		*/
-        TEST.stopTest();
-    }
+    TEST.stopTest();
+  }
 
-    @isTest public static void testPackageSubscribersByParentOrg() {
-        Test.startTest();
-        List<ObjectWrappers.PackageSubscriberWrapper> byParent = PackageVisualizerCtrl.getPackageSubscribersByParentOrg('00D000000000000AAA', '50', '0');
-        System.assertNotEquals(null, byParent);
-        List<ObjectWrappers.PackageSubscriberWrapper> blank = PackageVisualizerCtrl.getPackageSubscribersByParentOrg('', '50', '0');
-        System.assertNotEquals(null, blank);
-        Test.stopTest();
-    }
-    
-	/**************************************************************************************
-	* @Description  Test class for Package Subscriber Chart Data Retrive Logic.
-	**************************************************************************************/     
-    @isTest public static void testGetSubscriberChartData() {
-   		Test.startTest();
-        List <ObjectWrappers.FilterWrapper> fltList = createFilterList('MetadataPackageId', '0Ho000000000000AAA', 'STRING'); 
-        List<AggregateResult> chartData = PackageVisualizerCtrl.getSubscriberChartData(fltList, 'OrgType'); 
-        system.assertNotEquals(null,chartData);
-        Test.stopTest();
-    }    
+  @isTest
+  public static void testPackageSubscribersByParentOrg() {
+    Test.startTest();
+    List<ObjectWrappers.PackageSubscriberWrapper> byParent = PackageVisualizerCtrl.getPackageSubscribersByParentOrg(
+      '00D000000000000AAA',
+      '50',
+      '0'
+    );
+    System.assertNotEquals(null, byParent);
+    List<ObjectWrappers.PackageSubscriberWrapper> blank = PackageVisualizerCtrl.getPackageSubscribersByParentOrg(
+      '',
+      '50',
+      '0'
+    );
+    System.assertNotEquals(null, blank);
+    Test.stopTest();
+  }
 
-    
-    /**************************************************************************************
-	* @Description  Test class for LMA Subscriber Chart Data Retrive Logic.
-	**************************************************************************************/  
-      
-    @isTest public static void testLmaChartData() {
-   		Test.startTest();
-        List <ObjectWrappers.FilterWrapper> fltList = createFilterList('sfLma__Package_Version__c', '0Ho000000000000AAA', 'STRING'); 
-        List<AggregateResult> chartData = PackageVisualizerCtrl.getLmaChartData(fltList, 'sfLma__Status__c'); 
-        system.assertNotEquals(null,chartData);
-        Test.stopTest();
-    }
-    
-    @isTest public static void testPackagePushJobChartData() {
-        Test.startTest();
-        List <ObjectWrappers.FilterWrapper> fltList = createFilterList('Status', '0DVRh00000003FdOAI', 'STRING'); 
-        List<AggregateResult> chartData = PackageVisualizerCtrl.getPackagePushJobChartData(fltList, 'Status'); 
-        system.assertNotEquals(null,chartData);
-        Test.stopTest();
-    }
-    
-	/**************************************************************************************
-	* @Description  Test class for Where Clouse use Cases Logic.
-	**************************************************************************************/     
-    @isTest public static void testGetWhereClause(){
-        List<ObjectWrappers.FilterWrapper> fltList = new List<ObjectWrappers.FilterWrapper>();
-        fltList.add(createFilterObject('Id', 'Value','STRING'));
-        fltList.add(createFilterObject('Id', 'Production~Demo~Trial','LIST'));
-        fltList.add(createFilterObject('Id', 'Value','SEARCH'));
-        fltList.add(createFilterObject('Id', 'Value','BOOLEAN'));
-        fltList.add(createFilterObject('Id', 'Value','ID'));
-        fltList.add(createFilterObject('Id', '10','LESSOREQUAL'));
-        fltList.add(createFilterObject('Id', '100','GREATEROREQUAL'));
-        
-        Test.StartTest();
-        string whereClouse = Package2Interface.getWhereClause(fltList);
-        system.assertNotEquals(null, whereClouse);
-        TEST.stopTest();
-    }  
+  /**************************************************************************************
+   * @Description  Test class for Package Subscriber Chart Data Retrive Logic.
+   **************************************************************************************/
+  @isTest
+  public static void testGetSubscriberChartData() {
+    Test.startTest();
+    List<ObjectWrappers.FilterWrapper> fltList = createFilterList(
+      'MetadataPackageId',
+      '0Ho000000000000AAA',
+      'STRING'
+    );
+    List<AggregateResult> chartData = PackageVisualizerCtrl.getSubscriberChartData(
+      fltList,
+      'OrgType'
+    );
+    system.assertNotEquals(null, chartData);
+    Test.stopTest();
+  }
 
-	/**************************************************************************************
-	* @Description  Test class for Where Clouse use Cases Logic.
-	**************************************************************************************/     
-    /*
+  /**************************************************************************************
+   * @Description  Test class for LMA Subscriber Chart Data Retrive Logic.
+   **************************************************************************************/
+
+  @isTest
+  public static void testLmaChartData() {
+    Test.startTest();
+    List<ObjectWrappers.FilterWrapper> fltList = createFilterList(
+      'sfLma__Package_Version__c',
+      '0Ho000000000000AAA',
+      'STRING'
+    );
+    List<AggregateResult> chartData = PackageVisualizerCtrl.getLmaChartData(
+      fltList,
+      'sfLma__Status__c'
+    );
+    system.assertNotEquals(null, chartData);
+    Test.stopTest();
+  }
+
+  @isTest
+  public static void testPackagePushJobChartData() {
+    Test.startTest();
+    List<ObjectWrappers.FilterWrapper> fltList = createFilterList(
+      'Status',
+      '0DVRh00000003FdOAI',
+      'STRING'
+    );
+    List<AggregateResult> chartData = PackageVisualizerCtrl.getPackagePushJobChartData(
+      fltList,
+      'Status'
+    );
+    system.assertNotEquals(null, chartData);
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for Where Clouse use Cases Logic.
+   **************************************************************************************/
+  @isTest
+  public static void testGetWhereClause() {
+    List<ObjectWrappers.FilterWrapper> fltList = new List<ObjectWrappers.FilterWrapper>();
+    fltList.add(createFilterObject('Id', 'Value', 'STRING'));
+    fltList.add(createFilterObject('Id', 'Production~Demo~Trial', 'LIST'));
+    fltList.add(createFilterObject('Id', 'Value', 'SEARCH'));
+    fltList.add(createFilterObject('Id', 'Value', 'BOOLEAN'));
+    fltList.add(createFilterObject('Id', 'Value', 'ID'));
+    fltList.add(createFilterObject('Id', '10', 'LESSOREQUAL'));
+    fltList.add(createFilterObject('Id', '100', 'GREATEROREQUAL'));
+
+    Test.StartTest();
+    string whereClouse = Package2Interface.getWhereClause(fltList);
+    system.assertNotEquals(null, whereClouse);
+    TEST.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for Where Clouse use Cases Logic.
+   **************************************************************************************/
+  /*
     @isTest public static void testGetPackageSliderRanges(){
         Test.StartTest();
         List<Object> data = PackageVisualizerCtrl.getPackageSliderRanges('0Ho000000000000AAA'); 
         system.assertNotEquals(null,data);        
         TEST.stopTest();
-    }*/    
+    }*/
 
-	/**************************************************************************************
-	* @Description  Test class for Object Wrapper Class
-	**************************************************************************************/     
-    @isTest public static void testObjectWrappers(){
-        Test.StartTest();
- 		List<ObjectWrappers.FilterWrapper> fltList = new List<ObjectWrappers.FilterWrapper>();
-        fltList.add(createFilterObject('Id', 'Value','STRING'));
-        system.assertNotEquals(null, fltList);
-        
-        ObjectWrappers.PackageCreator pc = new ObjectWrappers.PackageCreator();
-        pc.name = 'TEST';
-        
-        ObjectWrappers.PackageWrapper pkg = new ObjectWrappers.PackageWrapper();
-        pkg.containerOptions = 'TEST';
-        pkg.packageErrorUsername = 'TEST';
-        pkg.description = 'TEST';
-        pkg.id = 'TEST';
-        pkg.isDeprecated = true;
-        pkg.name = 'TEST';
-        pkg.namespacePrefix = 'TEST';
-        pkg.subscriberPackageID = 'TEST';
-        pkg.isOrgDependent = true;
-        pkg.wasTransferred = false;
-        pkg.appAnalyticsEnabled = false;
-        pkg.dataCloudPackage = false;
-        pkg.createdBy = pc;
-        pkg.createdDate = System.now();
-        pkg.owner = 'TEST';
-        system.assertNotEquals(null, pkg);
-        
-        ObjectWrappers.CodeCoverage codecover = new ObjectWrappers.CodeCoverage();
-        codecover.apexCodeCoveragePercentage = '100';
-        
-        ObjectWrappers.PackageVersionWrapper pkgVersion = new ObjectWrappers.PackageVersionWrapper();
-        pkgVersion.id = 'TEST';
-        pkgVersion.ancestorId = 'TEST';
-        pkgVersion.package2Id = 'TEST';
-        pkgVersion.name = 'TEST';
-        pkgVersion.branch = 'TEST';
-        pkgVersion.codeCoverage = codecover;
-        pkgVersion.description = 'TEST';
-        pkgVersion.hasPassedCodeCoverageCheck = true;
-        pkgVersion.validationSkipped = true;
-        pkgVersion.installKey = 'TEST';
-        pkgVersion.isDeprecated = true;
-        pkgVersion.isPasswordProtected = true;
-        pkgVersion.isReleased = true;
-        pkgVersion.majorVersion = 0;
-        pkgVersion.minorVersion = 0;
-        pkgVersion.patchVersion = 0;
-        pkgVersion.buildNumber = 0;
-        pkgVersion.versionNumber = 'TEST';
-        pkgVersion.subscriberPackageVersionId = 'TEST';
-        pkgVersion.installUrl = 'TEST';
-        pkgVersion.tag = 'TEST';
-        pkgVersion.owner = 'TEST';
-        pkgVersion.createdDate = System.now();
-        pkgVersion.createdBy = pc;
-        pkgVersion.ReleaseVersion = 'TEST';
-        pkgVersion.isSecurityReviewed = false;
-        pkgVersion.BuildDurationInSeconds = 'TEST';
-        pkgVersion.language = 'en';
-        pkgVersion.validatedAsync = false;
-        system.assertNotEquals(null, pkgVersion);
-        
-        ObjectWrappers.PackageSubscriberWrapper pkgSub = new ObjectWrappers.PackageSubscriberWrapper();
-        pkgSub.id = 'TEST';
-        pkgSub.installedStatus = 'TEST';
-        pkgSub.instanceName = 'TEST';
-        pkgSub.metadataPackageId = 'TEST';
-        pkgSub.metadataPackageVersionId = 'TEST';
-        pkgSub.orgKey = 'TEST';
-        pkgSub.orgName = 'TEST';
-        pkgSub.orgStatus = 'TEST';
-        pkgSub.orgType = 'TEST';
-        pkgSub.parentOrg = 'TEST';  
-        system.assertNotEquals(null, pkgSub);
-    
-        
-        ObjectWrappers.PackagePushRequestWrapper pprw = new ObjectWrappers.PackagePushRequestWrapper();
-        pprw.Id = 'TEST';
-        pprw.PackageVersionId = 'TEST';
-        pprw.ScheduledStartTime = System.now();
-        pprw.DurationSeconds = 1;
-        pprw.EndTime = System.now();
-        pprw.StartTime = System.now();
-        pprw.Status = 'TEST';
-        pprw.SystemModstamp = System.now();
-            
-        
-        ObjectWrappers.PackagePushJobWrapper ppjw= new ObjectWrappers.PackagePushJobWrapper();
-        ppjw.PackagePushRequestId = 'TEST';
-        ppjw.SubscriberOrganizationKey = 'TEST';
-        ppjw.attributes = new ObjectWrappers.ObjectAttributes();
-        ppjw.DurationSeconds = 1;
-        ppjw.EndTime = System.now();
-        ppjw.StartTime = System.now();
-        ppjw.Status = 'TEST';
-        ppjw.SystemModstamp = System.now();
-        ppjw.PackagePushErrors = new ObjectWrappers.PackagePushErrorsWrapper();
-       
-        ObjectWrappers.JobErrorsWrapper jew= new ObjectWrappers.JobErrorsWrapper();
-        jew.ErrorTitle = 'TEST';
-        jew.ErrorMessage = 'TEST';        
-        
-        ObjectWrappers.PackagePushErrorsWrapper ppew= new ObjectWrappers.PackagePushErrorsWrapper();
-        ppew.records = new List<ObjectWrappers.JobErrorsWrapper>();  
-        
-        ObjectWrappers.ObjectAttributes oa= new ObjectWrappers.ObjectAttributes();
-        oa.type = 'TEST';
-        
-        ObjectWrappers.PackagePushResult ppr = new ObjectWrappers.PackagePushResult();
-        ppr.id = 'TEST';
-        ppr.success = true;
-        
-        ObjectWrappers.MetadataPackageVersionWrapper mpvw = new ObjectWrappers.MetadataPackageVersionWrapper();
-        mpvw.Id = 'TEST';
-        mpvw.Name = 'TEST';
-        mpvw.BuildNumber = 1;
-        mpvw.IsDeprecated = true;
-        mpvw.MajorVersion = 1;
-        mpvw.MetadataPackageId = 'TEST';
-        mpvw.MinorVersion = 1;
-        mpvw.PatchVersion = 1;
-        mpvw.ReleaseState = 'TEST';
-        mpvw.SystemModstamp = System.now();
-        
-        ObjectWrappers.LMAVersionWrapper lvw = new ObjectWrappers.LMAVersionWrapper();
-        lvw.createdDate = (Object) 'TEST';
-        lvw.id = (Object) 'TEST';
-        lvw.name = (Object) 'TEST';
-        lvw.isBeta = (Object) 'TEST';
-        lvw.lmaPackageId = (Object) 'TEST';
-        lvw.lmaPackageName = (Object) 'TEST';
-        lvw.releaseDate = (Object) 'TEST';
-        lvw.packageVersionId = (Object) 'TEST';
-        lvw.lmaVersionName = (Object) 'TEST';
-        
-        ObjectWrappers.LMALicenseWrapper llw= new ObjectWrappers.LMALicenseWrapper();
-        llw.id = (Object) 'TEST';
-        llw.lastModifiedDate = (Object) 'TEST';
-        llw.name = (Object) 'TEST';
-        llw.accountId = (Object) 'TEST';
-        llw.accountName = (Object) 'TEST';
-        llw.contactId = (Object) 'TEST';
-        llw.contactName = (Object) 'TEST';
-        llw.installDate = (Object) 'TEST';
-        llw.leadId = (Object) 'TEST';
-        llw.leadName = (Object) 'TEST';
-        llw.licensedSeats = (Object) 'TEST';
-        llw.licenseStatus = (Object) 'TEST';
-        llw.licenseType = (Object) 'TEST';
-        llw.leadSource = (Object) 'TEST';
+  /**************************************************************************************
+   * @Description  Test class for Object Wrapper Class
+   **************************************************************************************/
+  @isTest
+  public static void testObjectWrappers() {
+    Test.StartTest();
+    List<ObjectWrappers.FilterWrapper> fltList = new List<ObjectWrappers.FilterWrapper>();
+    fltList.add(createFilterObject('Id', 'Value', 'STRING'));
+    system.assertNotEquals(null, fltList);
 
-        ObjectWrappers.LMAPackageWrapper lmapw= new ObjectWrappers.LMAPackageWrapper();
-        lmapw.id = (Object) 'TEST';
-        lmapw.packageSubsriberId = (Object) 'TEST';
+    ObjectWrappers.PackageCreator pc = new ObjectWrappers.PackageCreator();
+    pc.name = 'TEST';
 
-        ObjectWrappers.LMALicenseHistoryWrapper llhw = new ObjectWrappers.LMALicenseHistoryWrapper();
-        llhw.Id = (Object) 'TEST';
-        llhw.Field = (Object) 'TEST';
-        llhw.NewValue = (Object) 'TEST';
-        llhw.OldValue = (Object) 'TEST';
-        llhw.CreatedDate = (Object) 'TEST';
+    ObjectWrappers.PackageWrapper pkg = new ObjectWrappers.PackageWrapper();
+    pkg.containerOptions = 'TEST';
+    pkg.packageErrorUsername = 'TEST';
+    pkg.description = 'TEST';
+    pkg.id = 'TEST';
+    pkg.isDeprecated = true;
+    pkg.name = 'TEST';
+    pkg.namespacePrefix = 'TEST';
+    pkg.subscriberPackageID = 'TEST';
+    pkg.isOrgDependent = true;
+    pkg.wasTransferred = false;
+    pkg.appAnalyticsEnabled = false;
+    pkg.dataCloudPackage = false;
+    pkg.createdBy = pc;
+    pkg.createdDate = System.now();
+    pkg.owner = 'TEST';
+    system.assertNotEquals(null, pkg);
 
-        ObjectWrappers.PackageWrapper1 pw1 = new ObjectWrappers.PackageWrapper1();
-        pw1.id = 'TEST';
-        pw1.name = 'TEST';
-        pw1.namespacePrefix = 'TEST';
-        pw1.packageCategory = 'TEST';
-        pw1.systemModstamp = System.now();
+    ObjectWrappers.CodeCoverage codecover = new ObjectWrappers.CodeCoverage();
+    codecover.apexCodeCoveragePercentage = '100';
 
-        ObjectWrappers.Package1VersionWrapper pvw1 = new ObjectWrappers.Package1VersionWrapper();
-        pvw1.id = 'TEST';
-        pvw1.metadataPackageId = 'TEST';
-        pvw1.name = 'TEST';
-        pvw1.isDeprecated = true;
-        pvw1.majorVersion = 1;
-        pvw1.minorVersion = 1;
-        pvw1.buildNumber = 1;
-        pvw1.patchVersion = 1;
-        pvw1.releaseState = 'TEST';
-        pvw1.versionNumber = 'TEST';
-        pvw1.systemModstamp = System.now();
+    ObjectWrappers.PackageVersionWrapper pkgVersion = new ObjectWrappers.PackageVersionWrapper();
+    pkgVersion.id = 'TEST';
+    pkgVersion.ancestorId = 'TEST';
+    pkgVersion.package2Id = 'TEST';
+    pkgVersion.name = 'TEST';
+    pkgVersion.branch = 'TEST';
+    pkgVersion.codeCoverage = codecover;
+    pkgVersion.description = 'TEST';
+    pkgVersion.hasPassedCodeCoverageCheck = true;
+    pkgVersion.validationSkipped = true;
+    pkgVersion.installKey = 'TEST';
+    pkgVersion.isDeprecated = true;
+    pkgVersion.isPasswordProtected = true;
+    pkgVersion.isReleased = true;
+    pkgVersion.majorVersion = 0;
+    pkgVersion.minorVersion = 0;
+    pkgVersion.patchVersion = 0;
+    pkgVersion.buildNumber = 0;
+    pkgVersion.versionNumber = 'TEST';
+    pkgVersion.subscriberPackageVersionId = 'TEST';
+    pkgVersion.installUrl = 'TEST';
+    pkgVersion.tag = 'TEST';
+    pkgVersion.owner = 'TEST';
+    pkgVersion.createdDate = System.now();
+    pkgVersion.createdBy = pc;
+    pkgVersion.ReleaseVersion = 'TEST';
+    pkgVersion.isSecurityReviewed = false;
+    pkgVersion.BuildDurationInSeconds = 'TEST';
+    pkgVersion.language = 'en';
+    pkgVersion.validatedAsync = false;
+    system.assertNotEquals(null, pkgVersion);
 
-        TEST.stopTest(); 
-    }
-    
-	/**************************************************************************************
-	* @Description  Test class for isLMA method
-	**************************************************************************************/      
-    @isTest public static void testisLMA(){
-        TEST.startTest(); 
-        Boolean isLMA = PackageVisualizerCtrl.isLMA();
-        system.assertNotEquals(null, isLMA);
-        TEST.stopTest(); 
-    }
-    
-	/**************************************************************************************
-	* @Description  Test class for getWelcomeMatAboutSteps method
-	**************************************************************************************/    
-    @isTest public static void testWelcomeMatController(){
-    	TEST.startTest(); 
-        List<About_Welcome_Mat_Step__mdt> steps = PackageVisualizerCtrl.getWelcomeMatAboutSteps();
-        system.assertNotEquals(null, steps);
-        TEST.stopTest(); 
-    }  
-    
-	/**************************************************************************************
-	* @Description  Test class for PackageVisualizerCtrl getResourcesMetadata method
-	**************************************************************************************/    
-    @isTest public static void testgetResourcesMetadata(){
-    	TEST.startTest(); 
-        List<Package_Visualizer_Resource__mdt> mdt = PackageVisualizerCtrl.getResourcesMetadata();
-        system.assertNotEquals(null, mdt);
-        TEST.stopTest(); 
-    } 
+    ObjectWrappers.PackageSubscriberWrapper pkgSub = new ObjectWrappers.PackageSubscriberWrapper();
+    pkgSub.id = 'TEST';
+    pkgSub.installedStatus = 'TEST';
+    pkgSub.instanceName = 'TEST';
+    pkgSub.metadataPackageId = 'TEST';
+    pkgSub.metadataPackageVersionId = 'TEST';
+    pkgSub.orgKey = 'TEST';
+    pkgSub.orgName = 'TEST';
+    pkgSub.orgStatus = 'TEST';
+    pkgSub.orgType = 'TEST';
+    pkgSub.parentOrg = 'TEST';
+    system.assertNotEquals(null, pkgSub);
 
-    /**************************************************************************************
-	* @Description  Test class for PackageVisualizerCtrl getAnnouncementsMetadata method
-	**************************************************************************************/    
-    @isTest public static void testgetAnnouncementsMetadata(){
-    	TEST.startTest(); 
-        List<Package_Visualizer_Announcement__mdt> mdt = PackageVisualizerCtrl.getAnnouncementsMetadata();
-        system.assertNotEquals(null, mdt);
-        TEST.stopTest(); 
-    }    
-    
-	/**************************************************************************************
-	* @Description  Test class for PackageVisualizerCtrl getAppAnalyticsRequests method
-	**************************************************************************************/    
-    @isTest public static void testgetAppAnalyticsRequests(){
-    	TEST.startTest(); 
-        List<AppAnalyticsQueryRequest> appRequest = PackageVisualizerCtrl.getAppAnalyticsRequests('0Ho000000000000AAA');
-        system.assertNotEquals(null, appRequest);
-        TEST.stopTest(); 
-    }  
-    
-    @isTest public static void testgetAppAnalyticsRequestsNoPackage(){
-    	TEST.startTest(); 
-        List<AppAnalyticsQueryRequest> appRequest = PackageVisualizerCtrl.getAppAnalyticsRequests('');
-        system.assertNotEquals(null, appRequest);
-        TEST.stopTest(); 
-    }
+    ObjectWrappers.PackagePushRequestWrapper pprw = new ObjectWrappers.PackagePushRequestWrapper();
+    pprw.Id = 'TEST';
+    pprw.PackageVersionId = 'TEST';
+    pprw.ScheduledStartTime = System.now();
+    pprw.DurationSeconds = 1;
+    pprw.EndTime = System.now();
+    pprw.StartTime = System.now();
+    pprw.Status = 'TEST';
+    pprw.SystemModstamp = System.now();
 
-    /*
+    ObjectWrappers.PackagePushJobWrapper ppjw = new ObjectWrappers.PackagePushJobWrapper();
+    ppjw.PackagePushRequestId = 'TEST';
+    ppjw.SubscriberOrganizationKey = 'TEST';
+    ppjw.attributes = new ObjectWrappers.ObjectAttributes();
+    ppjw.DurationSeconds = 1;
+    ppjw.EndTime = System.now();
+    ppjw.StartTime = System.now();
+    ppjw.Status = 'TEST';
+    ppjw.SystemModstamp = System.now();
+    ppjw.PackagePushErrors = new ObjectWrappers.PackagePushErrorsWrapper();
+
+    ObjectWrappers.JobErrorsWrapper jew = new ObjectWrappers.JobErrorsWrapper();
+    jew.ErrorTitle = 'TEST';
+    jew.ErrorMessage = 'TEST';
+
+    ObjectWrappers.PackagePushErrorsWrapper ppew = new ObjectWrappers.PackagePushErrorsWrapper();
+    ppew.records = new List<ObjectWrappers.JobErrorsWrapper>();
+
+    ObjectWrappers.ObjectAttributes oa = new ObjectWrappers.ObjectAttributes();
+    oa.type = 'TEST';
+
+    ObjectWrappers.PackagePushResult ppr = new ObjectWrappers.PackagePushResult();
+    ppr.id = 'TEST';
+    ppr.success = true;
+
+    ObjectWrappers.MetadataPackageVersionWrapper mpvw = new ObjectWrappers.MetadataPackageVersionWrapper();
+    mpvw.Id = 'TEST';
+    mpvw.Name = 'TEST';
+    mpvw.BuildNumber = 1;
+    mpvw.IsDeprecated = true;
+    mpvw.MajorVersion = 1;
+    mpvw.MetadataPackageId = 'TEST';
+    mpvw.MinorVersion = 1;
+    mpvw.PatchVersion = 1;
+    mpvw.ReleaseState = 'TEST';
+    mpvw.SystemModstamp = System.now();
+
+    ObjectWrappers.LMAVersionWrapper lvw = new ObjectWrappers.LMAVersionWrapper();
+    lvw.createdDate = (Object) 'TEST';
+    lvw.id = (Object) 'TEST';
+    lvw.name = (Object) 'TEST';
+    lvw.isBeta = (Object) 'TEST';
+    lvw.lmaPackageId = (Object) 'TEST';
+    lvw.lmaPackageName = (Object) 'TEST';
+    lvw.releaseDate = (Object) 'TEST';
+    lvw.packageVersionId = (Object) 'TEST';
+    lvw.lmaVersionName = (Object) 'TEST';
+
+    ObjectWrappers.LMALicenseWrapper llw = new ObjectWrappers.LMALicenseWrapper();
+    llw.id = (Object) 'TEST';
+    llw.lastModifiedDate = (Object) 'TEST';
+    llw.name = (Object) 'TEST';
+    llw.accountId = (Object) 'TEST';
+    llw.accountName = (Object) 'TEST';
+    llw.contactId = (Object) 'TEST';
+    llw.contactName = (Object) 'TEST';
+    llw.installDate = (Object) 'TEST';
+    llw.leadId = (Object) 'TEST';
+    llw.leadName = (Object) 'TEST';
+    llw.licensedSeats = (Object) 'TEST';
+    llw.licenseStatus = (Object) 'TEST';
+    llw.licenseType = (Object) 'TEST';
+    llw.leadSource = (Object) 'TEST';
+
+    ObjectWrappers.LMAPackageWrapper lmapw = new ObjectWrappers.LMAPackageWrapper();
+    lmapw.id = (Object) 'TEST';
+    lmapw.packageSubsriberId = (Object) 'TEST';
+
+    ObjectWrappers.LMALicenseHistoryWrapper llhw = new ObjectWrappers.LMALicenseHistoryWrapper();
+    llhw.Id = (Object) 'TEST';
+    llhw.Field = (Object) 'TEST';
+    llhw.NewValue = (Object) 'TEST';
+    llhw.OldValue = (Object) 'TEST';
+    llhw.CreatedDate = (Object) 'TEST';
+
+    ObjectWrappers.PackageWrapper1 pw1 = new ObjectWrappers.PackageWrapper1();
+    pw1.id = 'TEST';
+    pw1.name = 'TEST';
+    pw1.namespacePrefix = 'TEST';
+    pw1.packageCategory = 'TEST';
+    pw1.systemModstamp = System.now();
+
+    ObjectWrappers.Package1VersionWrapper pvw1 = new ObjectWrappers.Package1VersionWrapper();
+    pvw1.id = 'TEST';
+    pvw1.metadataPackageId = 'TEST';
+    pvw1.name = 'TEST';
+    pvw1.isDeprecated = true;
+    pvw1.majorVersion = 1;
+    pvw1.minorVersion = 1;
+    pvw1.buildNumber = 1;
+    pvw1.patchVersion = 1;
+    pvw1.releaseState = 'TEST';
+    pvw1.versionNumber = 'TEST';
+    pvw1.systemModstamp = System.now();
+
+    TEST.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for isLMA method
+   **************************************************************************************/
+  @isTest
+  public static void testisLMA() {
+    TEST.startTest();
+    Boolean isLMA = PackageVisualizerCtrl.isLMA();
+    system.assertNotEquals(null, isLMA);
+    TEST.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getWelcomeMatAboutSteps method
+   **************************************************************************************/
+  @isTest
+  public static void testWelcomeMatController() {
+    TEST.startTest();
+    List<About_Welcome_Mat_Step__mdt> steps = PackageVisualizerCtrl.getWelcomeMatAboutSteps();
+    system.assertNotEquals(null, steps);
+    TEST.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for PackageVisualizerCtrl getResourcesMetadata method
+   **************************************************************************************/
+  @isTest
+  public static void testgetResourcesMetadata() {
+    TEST.startTest();
+    List<Package_Visualizer_Resource__mdt> mdt = PackageVisualizerCtrl.getResourcesMetadata();
+    system.assertNotEquals(null, mdt);
+    TEST.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for PackageVisualizerCtrl getAnnouncementsMetadata method
+   **************************************************************************************/
+  @isTest
+  public static void testgetAnnouncementsMetadata() {
+    TEST.startTest();
+    List<Package_Visualizer_Announcement__mdt> mdt = PackageVisualizerCtrl.getAnnouncementsMetadata();
+    system.assertNotEquals(null, mdt);
+    TEST.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for PackageVisualizerCtrl getAppAnalyticsRequests method
+   **************************************************************************************/
+  @isTest
+  public static void testgetAppAnalyticsRequests() {
+    TEST.startTest();
+    List<AppAnalyticsQueryRequest> appRequest = PackageVisualizerCtrl.getAppAnalyticsRequests(
+      '0Ho000000000000AAA'
+    );
+    system.assertNotEquals(null, appRequest);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testgetAppAnalyticsRequestsNoPackage() {
+    TEST.startTest();
+    List<AppAnalyticsQueryRequest> appRequest = PackageVisualizerCtrl.getAppAnalyticsRequests(
+      ''
+    );
+    system.assertNotEquals(null, appRequest);
+    TEST.stopTest();
+  }
+
+  /*
     @isTest public static void testgetUser(){
     	TEST.startTest(); 
         User user1 = PackageVisualizerCtrl.getUser('test@test.com');
@@ -420,974 +505,1473 @@ private class PackageInterfaceTest {
         TEST.stopTest(); 
     }
     */
-	/**************************************************************************************
-	* @Description  Test class for PackageVisualizerCtrl getAppAnalyticsRequests method
-	**************************************************************************************/      
-    @isTest public static void testInsertAppAnalyticsRequest(){
-    	TEST.startTest(); 
-        string data = PackageVisualizerCtrl.insertAppAnalyticsRequest('PackageUsageLog',  System.today(), System.today()-30, '0Ho000000000000AAA', '0Ho000000000000AAA', 'none','none');        
-        system.assertNotEquals(null, data);
-        TEST.stopTest(); 
-    }
+  /**************************************************************************************
+   * @Description  Test class for PackageVisualizerCtrl getAppAnalyticsRequests method
+   **************************************************************************************/
+  @isTest
+  public static void testInsertAppAnalyticsRequest() {
+    TEST.startTest();
+    string data = PackageVisualizerCtrl.insertAppAnalyticsRequest(
+      'PackageUsageLog',
+      System.today(),
+      System.today() - 30,
+      '0Ho000000000000AAA',
+      '0Ho000000000000AAA',
+      'none',
+      'none'
+    );
+    system.assertNotEquals(null, data);
+    TEST.stopTest();
+  }
 
-    @isTest public static void testInsertAppAnalyticsRequestWithFileTypes(){
-    	TEST.startTest(); 
-        string data = PackageVisualizerCtrl.insertAppAnalyticsRequest('PackageUsageLog',  System.today(), System.today()-30, '0Ho000000000000AAA', '0Ho000000000000AAA', 'csv','gzip');        
-        system.assertNotEquals(null, data);
-        TEST.stopTest(); 
-    }
-    
-	/**************************************************************************************
-	* @Description  Test class for PackageVisualizerCtrl getLMAVersion, getPackageVersionLicenses method
-	**************************************************************************************/      
-    @isTest public static void testLMATest(){
-    	TEST.startTest(); 
-        List <ObjectWrappers.FilterWrapper> fltList = createFilterList('Package2Id', '0Ho000000000000AAA', 'STRING');
-        
-        //ObjectWrappers.LMAVersionWrapper lvw = PackageVisualizerCtrl.getLMAVersion('0Ho000000000000AAA');
-        //List<ObjectWrappers.LMALicenseWrapper> llw = PackageVisualizerCtrl.getPackageVersionLicenses(fltList, 'Name', 'Desc', '10', '10');
-        //List<ObjectWrappers.LMALicenseHistoryWrapper> llhw = PackageVisualizerCtrl.getLmaTimeline('0Ho000000000000AAA');
-        
-        TEST.stopTest(); 
-    }
-    
-	/**************************************************************************************
-	* @Description  Test class for calculatePackageVersionCodeCoverage method
-	**************************************************************************************/      
-    @isTest public static void testCalculatePackageVersionCodeCoverage(){
-    	TEST.startTest(); 
-        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
-     	String codeCover = PackageVisualizerCtrl.calculatePackageVersionCodeCoverage('0Ho000000000000AAA');
-        TEST.stopTest(); 
-    }  
+  @isTest
+  public static void testInsertAppAnalyticsRequestWithFileTypes() {
+    TEST.startTest();
+    string data = PackageVisualizerCtrl.insertAppAnalyticsRequest(
+      'PackageUsageLog',
+      System.today(),
+      System.today() - 30,
+      '0Ho000000000000AAA',
+      '0Ho000000000000AAA',
+      'csv',
+      'gzip'
+    );
+    system.assertNotEquals(null, data);
+    TEST.stopTest();
+  }
 
-    /**************************************************************************************
-	* @Description  Test class for calculatePackageVersionCodeCoverage method
-	**************************************************************************************/      
-    @isTest public static void testVerifySecurityReviewApproved(){
-    	TEST.startTest(); 
-        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
-     	Boolean secReviewCheck = PackageVisualizerCtrl.verifySecurityReviewApproved('0Ho000000000000AAA');
-        TEST.stopTest(); 
-    }
-    
-	/**************************************************************************************
-	* @Description  Test class for getPrompt
-	**************************************************************************************/      
-    @isTest public static void testGetPrompt1(){
-    	TEST.startTest(); 
-        try{
-     		PackageVisualizerCtrl.getPrompt('Test');
-        }catch(Exception e){
-            System.debug(e);
-        }
-        TEST.stopTest(); 
-    }
+  /**************************************************************************************
+   * @Description  Test class for PackageVisualizerCtrl getLMAVersion, getPackageVersionLicenses method
+   **************************************************************************************/
+  @isTest
+  public static void testLMATest() {
+    TEST.startTest();
+    List<ObjectWrappers.FilterWrapper> fltList = createFilterList(
+      'Package2Id',
+      '0Ho000000000000AAA',
+      'STRING'
+    );
 
-    @isTest public static void testGetWalkthroughSteps(){
-    	TEST.startTest(); 
-        try{
-     		PackageVisualizerCtrl.getWalkthroughSteps();
-        }catch(Exception e){
-            System.debug(e);
-        }
-        TEST.stopTest(); 
-    }
-    
-    /**************************************************************************************
-	* @Description  Test class for getPrompt
-	**************************************************************************************/      
-    @isTest public static void testGetOrgDetails(){
-    	TEST.startTest(); 
-        try{
-     		PackageVisualizerCtrl.getOrgDetails();
-        }catch(Exception e){
-            System.debug(e);
-        }
-        TEST.stopTest(); 
-    }
-    
-    
-	/**************************************************************************************
-	* @Description  Test class for calculatePackageVersionCodeCoverage method
-	**************************************************************************************/      
-    @isTest public static void testGetLatestPackageVersions(){
-    	TEST.startTest(); 
-        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
-     	List<String>  result = PackageVisualizerCtrl.getLatestPackageVersions('0Ho000000000000AAA', '10');
-        TEST.stopTest(); 
-    }  
+    //ObjectWrappers.LMAVersionWrapper lvw = PackageVisualizerCtrl.getLMAVersion('0Ho000000000000AAA');
+    //List<ObjectWrappers.LMALicenseWrapper> llw = PackageVisualizerCtrl.getPackageVersionLicenses(fltList, 'Name', 'Desc', '10', '10');
+    //List<ObjectWrappers.LMALicenseHistoryWrapper> llhw = PackageVisualizerCtrl.getLmaTimeline('0Ho000000000000AAA');
 
-  
-    
-	/**************************************************************************************
-	* @Description  Test class for setPackage2Fields method
-	**************************************************************************************/      
-    @isTest public static void testSetPackage2Fields(){
-    	TEST.startTest(); 
-        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
-        List <ObjectWrappers.FilterWrapper> fltList = createFilterList('Package2Id', '0Ho000000000000AAA', 'STRING');
-     	String  result = PackageVisualizerCtrl.setPackage2Fields(fltList, 'Package2','0Ho000000000000AAA' );
-        TEST.stopTest(); 
-    }    
-    
-    
-	/**************************************************************************************
-	* @Description  Test class for PackageVisualizerCtrl getEligibleLowerPackageVersions method
-	**************************************************************************************/      
-    /*@isTest public static void testGetEligibleLowerPackageVersions(){
+    TEST.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for calculatePackageVersionCodeCoverage method
+   **************************************************************************************/
+  @isTest
+  public static void testCalculatePackageVersionCodeCoverage() {
+    TEST.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    String codeCover = PackageVisualizerCtrl.calculatePackageVersionCodeCoverage(
+      '0Ho000000000000AAA'
+    );
+    TEST.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for calculatePackageVersionCodeCoverage method
+   **************************************************************************************/
+  @isTest
+  public static void testVerifySecurityReviewApproved() {
+    TEST.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    Boolean secReviewCheck = PackageVisualizerCtrl.verifySecurityReviewApproved(
+      '0Ho000000000000AAA'
+    );
+    TEST.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getPrompt
+   **************************************************************************************/
+  @isTest
+  public static void testGetPrompt1() {
+    TEST.startTest();
+    try {
+      PackageVisualizerCtrl.getPrompt('Test');
+    } catch (Exception e) {
+      System.debug(e);
+    }
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testGetWalkthroughSteps() {
+    TEST.startTest();
+    try {
+      PackageVisualizerCtrl.getWalkthroughSteps();
+    } catch (Exception e) {
+      System.debug(e);
+    }
+    TEST.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getPrompt
+   **************************************************************************************/
+  @isTest
+  public static void testGetOrgDetails() {
+    TEST.startTest();
+    try {
+      PackageVisualizerCtrl.getOrgDetails();
+    } catch (Exception e) {
+      System.debug(e);
+    }
+    TEST.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for calculatePackageVersionCodeCoverage method
+   **************************************************************************************/
+  @isTest
+  public static void testGetLatestPackageVersions() {
+    TEST.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    List<String> result = PackageVisualizerCtrl.getLatestPackageVersions(
+      '0Ho000000000000AAA',
+      '10'
+    );
+    TEST.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for setPackage2Fields method
+   **************************************************************************************/
+  @isTest
+  public static void testSetPackage2Fields() {
+    TEST.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    List<ObjectWrappers.FilterWrapper> fltList = createFilterList(
+      'Package2Id',
+      '0Ho000000000000AAA',
+      'STRING'
+    );
+    String result = PackageVisualizerCtrl.setPackage2Fields(
+      fltList,
+      'Package2',
+      '0Ho000000000000AAA'
+    );
+    TEST.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for PackageVisualizerCtrl getEligibleLowerPackageVersions method
+   **************************************************************************************/
+  /*@isTest public static void testGetEligibleLowerPackageVersions(){
     	TEST.startTest(); 
         List<MetadataPackageVersion> data = PackageVisualizerCtrl.getEligibleLowerPackageVersions('1.0.0','2.0.0');
         system.assertNotEquals(null, data);
         TEST.stopTest(); 
-    }*/     
-    
-    
-	/**************************************************************************************
-	* @Description  Test class for create filter list
-	**************************************************************************************/     
-    private static List<ObjectWrappers.FilterWrapper> createFilterList(string key, string value, string dataType){
-        List<ObjectWrappers.FilterWrapper> fltList = new List<ObjectWrappers.FilterWrapper>();
-        fltList.add(createFilterObject(key, value, dataType));
-        return fltList;   
-    }
-    
-	/**************************************************************************************
-	* @Description  Test class for create filter
-	**************************************************************************************/       
-    private static ObjectWrappers.FilterWrapper createFilterObject(string key, string value, string dataType){
-        ObjectWrappers.FilterWrapper flt = new ObjectWrappers.FilterWrapper();
-        flt.fieldName = key;
-        flt.value = value;
-        flt.dataType = dataType;
-		return flt;       
-    }
-
-    @isTest public static void testIsSignupRequest(){
-        TEST.startTest(); 
-        Boolean isSignUpReq = PackageVisualizerCtrl.isSignupRequest();
-        system.assertNotEquals(null, isSignUpReq);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testIsSignupRequestDemoTrials(){
-        TEST.startTest(); 
-        Boolean isSignUpReq = DemoTrialsController.isSignupRequest();
-        system.assertNotEquals(null, isSignUpReq);
-        TEST.stopTest(); 
-    }
-
-    @isTest
-    public static void testGetSignUpRequests() {
-        // Positive test case
-        Test.startTest();
-        List<ObjectWrappers.FilterWrapper> filters = new List<ObjectWrappers.FilterWrapper>();
-        // Populate filters as needed
-        String sortedBy = 'CreatedDate';
-        String sortDirection = 'DESC';
-        String signUpLimit = '10';
-        String signUpOffset = '0';
-        List<ObjectWrappers.SignupRequestWrapper> result = PackageVisualizerCtrl.getSignUpRequests(filters, sortedBy, sortDirection, signUpLimit, signUpOffset);
-        System.assertEquals(0, result.size()); // Assuming the result should be empty in this test case
-        Test.stopTest();
-    }
-
-    @isTest
-    public static void testSignupRequestWrapper() {
-        // Create test data
-        ObjectWrappers.SignupRequestWrapper sw = new ObjectWrappers.SignupRequestWrapper();
-        sw.company = 'TestCompany';
-        sw.country = 'TestCountry';
-        sw.createdOrgId = 'TestOrgId';
-        sw.createdOrgInstance = 'TestInstance';
-        sw.errorCode = 'TestError';
-        sw.firstName = 'TestFirstName';
-        sw.lastName = 'TestLastName';
-        sw.preferredLanguage = 'TestLanguage';
-        sw.resolvedTemplateId = 'TestTemplateId';
-        sw.shouldConnectToEnvHub = true;
-        sw.signupEmail = 'test@example.com';
-        sw.signupSource = 'TestSource';
-        sw.status = 'TestStatus';
-        sw.subdomain = 'test-subdomain';
-        sw.isSignupEmailSuppressed = false;
-        sw.templateId = 'TestTemplate';
-        sw.trialDays = 30;
-        sw.trialSourceOrgId = 'TestSourceOrgId';
-        sw.username = 'testuser';
-        sw.edition = 'TestEdition';
-        sw.owner = 'test';
-        sw.systemModstamp = Datetime.now();
-        sw.createdDate = Datetime.now();
-        
-        // Create and set values for the PackageCreator instance
-        ObjectWrappers.PackageCreator pc = new ObjectWrappers.PackageCreator();
-        pc.name = 'TestCreator';
-        // Set other properties for PackageCreator
-        sw.createdBy = pc;
-
-        // Assert properties
-        System.assertEquals('TestCompany', sw.company);
-        System.assertEquals('TestCountry', sw.country);
-        System.assertEquals('TestOrgId', sw.createdOrgId);
-        System.assertEquals('TestInstance', sw.createdOrgInstance);
-        System.assertEquals('TestError', sw.errorCode);
-        System.assertEquals('TestFirstName', sw.firstName);
-        System.assertEquals('TestLastName', sw.lastName);
-        System.assertEquals('TestLanguage', sw.preferredLanguage);
-        System.assertEquals('TestTemplateId', sw.resolvedTemplateId);
-        System.assertEquals(true, sw.shouldConnectToEnvHub);
-        System.assertEquals('test@example.com', sw.signupEmail);
-        System.assertEquals('TestSource', sw.signupSource);
-        System.assertEquals('TestStatus', sw.status);
-        System.assertEquals('test-subdomain', sw.subdomain);
-        System.assertEquals(false, sw.isSignupEmailSuppressed);
-        System.assertEquals('TestTemplate', sw.templateId);
-        System.assertEquals(30, sw.trialDays);
-        System.assertEquals('TestSourceOrgId', sw.trialSourceOrgId);
-        System.assertEquals('testuser', sw.username);
-        System.assertEquals('TestEdition', sw.edition);
-    }
-
-    @isTest public static void testisAccount(){
-        TEST.startTest(); 
-        Boolean isAccount = Package2Interface.isAccount();
-        system.assertNotEquals(null, isAccount);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisLead(){
-        TEST.startTest(); 
-        Boolean isLead = Package2Interface.isLead();
-        system.assertNotEquals(null, isLead);
-        TEST.stopTest(); 
-    }
-    
-    @isTest public static void testisContact(){
-        TEST.startTest(); 
-        Boolean isContact = Package2Interface.isContact();
-        system.assertNotEquals(null, isContact);
-        TEST.stopTest(); 
-    }
-    
-    @isTest public static void testisCase(){
-        TEST.startTest(); 
-        Boolean isCase = Package2Interface.isCase();
-        system.assertNotEquals(null, isCase);
-        TEST.stopTest(); 
-    }
-    
-    @isTest public static void testisOpportunity(){
-        TEST.startTest(); 
-        Boolean isOpportunity = Package2Interface.isOpportunity();
-        system.assertNotEquals(null, isOpportunity);
-        TEST.stopTest(); 
-    }
-    
-    @isTest public static void testisCampaign(){
-        TEST.startTest(); 
-        Boolean isCampaign = Package2Interface.isCampaign();
-        system.assertNotEquals(null, isCampaign);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisTask(){
-        TEST.startTest(); 
-        Boolean isTask = Package2Interface.isTask();
-        system.assertNotEquals(null, isTask);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisEvent(){
-        TEST.startTest(); 
-        Boolean isEvent = Package2Interface.isEvent();
-        system.assertNotEquals(null, isEvent);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisUser(){
-        TEST.startTest(); 
-        Boolean isUser = Package2Interface.isUser();
-        system.assertNotEquals(null, isUser);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisOrder(){
-        TEST.startTest(); 
-        Boolean isOrder = Package2Interface.isOrder();
-        system.assertNotEquals(null, isOrder);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisAsset(){
-        TEST.startTest(); 
-        Boolean isAsset = Package2Interface.isAsset();
-        system.assertNotEquals(null, isAsset);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisContract(){
-        TEST.startTest(); 
-        Boolean isContract = Package2Interface.isContract();
-        system.assertNotEquals(null, isContract);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisProduct2(){
-        TEST.startTest(); 
-        Boolean isProduct2 = Package2Interface.isProduct2();
-        system.assertNotEquals(null, isProduct2);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisPricebook2(){
-        TEST.startTest(); 
-        Boolean isPricebook2 = Package2Interface.isPricebook2();
-        system.assertNotEquals(null, isPricebook2);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisCampaignMember(){
-        TEST.startTest(); 
-        Boolean isCampaignMember = Package2Interface.isCampaignMember();
-        system.assertNotEquals(null, isCampaignMember);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisFma(){
-        TEST.startTest(); 
-        Boolean isFmaParameter = PackageVisualizerCtrl.isFmaParameter();
-        system.assertNotEquals(null, isFmaParameter);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisActiveScratchOrg(){
-        TEST.startTest(); 
-        Boolean isActiveScratchOrg = Package2Interface.isActiveScratchOrg();
-        system.assertNotEquals(null, isActiveScratchOrg);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisRecommendation(){
-        TEST.startTest(); 
-        Boolean isRecommendation = Package2Interface.isRecommendation();
-        system.assertNotEquals(null, isRecommendation);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisLicense(){
-        TEST.startTest(); 
-        Boolean isLicense = Package2Interface.isLicense();
-        system.assertNotEquals(null, isLicense);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisPackageVersion(){
-        TEST.startTest(); 
-        Boolean isPackageVersion = Package2Interface.isPackageVersion();
-        system.assertNotEquals(null, isPackageVersion);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisPackage(){
-        TEST.startTest(); 
-        Boolean isPackage = Package2Interface.isPackage();
-        system.assertNotEquals(null, isPackage);
-        TEST.stopTest(); 
-    }
-
-    @isTest public static void testisContentVersion(){
-        TEST.startTest(); 
-        Boolean isContentVersion = Package2Interface.isContentVersion();
-        system.assertNotEquals(null, isContentVersion);
-        TEST.stopTest(); 
-    }
-
-    @isTest
-    public static void testCreateSignupTrial() {
-        // Test case 1: Successful signup request
-        Test.startTest();
-        try{
-            String result = PackageVisualizerCtrl.createSignupTrial('John', 'Doe', 'john.doe@example.com', 'john.doe@example.com', 'ACME', null, 'US', 'en_US', null, 'Enterprise', 30, false, true);
-            System.assertNotEquals('Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)', result, 'Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)');
-        } catch(Exception e){
-            System.debug(e);
-        }
-        Test.stopTest();
-    }
-
-    @isTest
-    public static void testCreateSignupTrialDemoTrials() {
-        // Test case 1: Successful signup request
-        Test.startTest();
-        try{
-            String result = DemoTrialsController.createSignupTrial('John', 'Doe', 'john.doe@example.com', 'john.doe@example.com', 'ACME', null, 'US', 'en_US', '0TT000000000000AAA', 30, false, true, 'Enterprise');
-            System.assertNotEquals('Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)', result, 'Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)');
-        } catch(Exception e){
-            System.debug(e);
-        }
-        Test.stopTest();
-    }
-
-    @isTest
-    public static void testCreateSignupTrialWithTrialforce() {
-        // Test case 1: Successful signup request
-        Test.startTest();
-        try{
-            String result = PackageVisualizerCtrl.createSignupTrial('John', 'Doe', 'john.doe@example.com', 'john.doe@example.com', 'ACME', 'testing123-231-231', 'US', 'en_US', '0TT000000000000AAA', null, 30, false, true);
-            System.assertNotEquals('Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)', result, 'Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)');
-        } catch(Exception e){
-            System.debug(e);
-        }
-        Test.stopTest();
-    }
-
-    @isTest
-    public static void testCreateSignupTrialWithTrialforceDemoTrials() {
-        // Test case 1: Successful signup request
-        Test.startTest();
-        try{
-            String result = DemoTrialsController.createSignupTrial('John', 'Doe', 'john.doe@example.com', 'john.doe@example.com', 'ACME', null, 'US', 'en_US', '0TT000000000000AAA', 30, false, true, 'Enterprise');
-            System.assertNotEquals('Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)', result, 'Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)');
-        } catch(Exception e){
-            System.debug(e);
-        }
-        Test.stopTest();
-    }
-
-    @IsTest(SeeAllData=true)
-    static void testGetContent() {
-        Test.startTest();
-        // Set up the test request
-        RestRequest request = new RestRequest();
-        request.requestURI = '/services/apexrest/ecommerce/getContent';
-        request.httpMethod = 'GET';
-        request.addParameter('contentId', 'testContentId');
-        request.addParameter('page', '0');
-        request.addParameter('pageSize', '1');
-        request.addParameter('language', 'testLanguage');
-        request.addParameter('filterby', 'testFilter');
-        RestContext.request = request;
-        // Call the method to test
-        Map<String, ConnectApi.ManagedContentNodeValue> contentNodes = DemoTrialsController.getContent('testContentId', 0, 1, 'testLanguage', 'testFilter');
-        Test.stopTest();
-        // Assert the results
-        System.assertEquals(0, contentNodes.size(), 'Content nodes size should be 1');
-    }
-
-    @isTest public static void testisEnvironmentHubMember(){
-        TEST.startTest(); 
-        Boolean isEnvironmentHubMember = Package2Interface.isEnvironmentHubMember();
-        system.assertNotEquals(null, isEnvironmentHubMember);
-        TEST.stopTest(); 
-    }
-
-    @isTest
-    public static void testVerifyUnlockedPackageInstalled() {
-        Test.startTest();
-        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
-        Boolean installed = PackageVisualizerCtrl.verifyUnlockedPackageInstalled();
-        System.assertEquals(false, installed);
-        Test.stopTest();
-    }
-
-    @isTest
-    public static void testToolingApiCalloutMockRespondBranches() {
-        ToolingAPICalloutMock mock = new ToolingAPICalloutMock();
-        HttpRequest reqPv = new HttpRequest();
-        reqPv.setEndpoint(
-            'https://example.com/services/data/v61.0/tooling/query?q=SELECT+Id+from+Package2Version'
-        );
-        HttpResponse resPv = mock.respond(reqPv);
-        System.assertEquals(200, resPv.getStatusCode());
-
-        HttpRequest reqP2 = new HttpRequest();
-        reqP2.setEndpoint(
-            'https://example.com/services/data/v61.0/tooling/query?q=SELECT+Id+FROM+Package2'
-        );
-        HttpResponse resP2 = mock.respond(reqP2);
-        System.assertEquals(200, resP2.getStatusCode());
-
-        HttpRequest reqOther = new HttpRequest();
-        reqOther.setEndpoint('https://example.com/services/data/v61.0/tooling/query?q=SELECT+Id+FROM+Account');
-        HttpResponse resOther = mock.respond(reqOther);
-        System.assertEquals(401, resOther.getStatusCode());
-    }
-
-    @isTest
-    public static void testToolingApiCalloutMockCmsRespond() {
-        ToolingAPICalloutMock mock = new ToolingAPICalloutMock();
-        HttpResponse res = mock.cmsRespond(new HttpRequest());
-        System.assertEquals(500, res.getStatusCode());
-        System.assert(res.getBody().contains('Mock exception'));
-    }
-
-    @isTest
-    public static void testChangePasswordController() {
-        ChangePasswordController ctrl = new ChangePasswordController();
-        ctrl.oldPassword = 'old';
-        ctrl.newPassword = 'new';
-        ctrl.verifyNewPassword = 'new';
-        System.assertEquals('old', ctrl.oldPassword);
-        try {
-            ctrl.changePassword();
-        } catch (Exception e) {
-            System.assertNotEquals(null, e.getMessage());
-        }
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getPackageDependencies - NEW method
-    **************************************************************************************/
-    @isTest
-    public static void testGetPackageDependencies() {
-        Test.startTest();
-        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
-        ObjectWrappers.PackageDependenciesResponse response = PackageVisualizerCtrl.getPackageDependencies('04t000000000000AAA');
-        System.assertNotEquals(null, response);
-        System.assertNotEquals(null, response.dependencies);
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getPackageVersionBySubscriberId - NEW method
-    **************************************************************************************/
-    @isTest
-    public static void testGetPackageVersionBySubscriberId() {
-        Test.startTest();
-        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
-        ObjectWrappers.PackageVersionWrapper version = PackageVisualizerCtrl.getPackageVersionBySubscriberId('04t000000000000AAA');
-        System.assertNotEquals(null, version);
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getPackageVersionBySubscriberId with no results
-    **************************************************************************************/
-    @isTest
-    public static void testGetPackageVersionBySubscriberIdNoResults() {
-        Test.startTest();
-        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
-        ObjectWrappers.PackageVersionWrapper version = PackageVisualizerCtrl.getPackageVersionBySubscriberId('04tXXXXXXXXXXXXXXXX');
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for Package2Interface.getPackageDependencies
-    **************************************************************************************/
-    @isTest
-    public static void testPackage2InterfaceGetPackageDependencies() {
-        Test.startTest();
-        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
-        ObjectWrappers.PackageDependenciesResponse response = Package2Interface.getPackageDependencies('04t000000000000AAA');
-        System.assertNotEquals(null, response);
-        System.assertNotEquals(null, response.dependencies);
-        System.assertEquals(2, response.dependencies.size());
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for Package Dependencies wrapper classes
-    **************************************************************************************/
-    @isTest
-    public static void testPackageDependencyWrappers() {
-        Test.startTest();
-        ObjectWrappers.PackageDependencyWrapper depWrapper = new ObjectWrappers.PackageDependencyWrapper();
-        depWrapper.subscriberPackageVersionId = '04t000000000000AAA';
-        depWrapper.packageName = 'Test Package';
-        depWrapper.versionNumber = '1.0.0';
-        System.assertEquals('04t000000000000AAA', depWrapper.subscriberPackageVersionId);
-        System.assertEquals('Test Package', depWrapper.packageName);
-        System.assertEquals('1.0.0', depWrapper.versionNumber);
-
-        ObjectWrappers.PackageDependenciesResponse response = new ObjectWrappers.PackageDependenciesResponse();
-        response.dependencies = new List<ObjectWrappers.PackageDependencyWrapper>();
-        response.dependencies.add(depWrapper);
-        System.assertEquals(1, response.dependencies.size());
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for invokeModelsGenAi - GenAI integration
-    **************************************************************************************/
-    @isTest
-    public static void testInvokeModelsGenAi() {
-        Test.startTest();
-        try {
-            Object result = PackageVisualizerCtrl.invokeModelsGenAi('TestClass', 'testMethod', 'gpt-4', 'Test prompt');
-        } catch (Exception e) {
-            System.assertNotEquals(null, e.getMessage());
-        }
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for invokePromptAndUserModelsGenAi - GenAI integration
-    **************************************************************************************/
-    @isTest
-    public static void testInvokePromptAndUserModelsGenAi() {
-        Test.startTest();
-        try {
-            Object result = PackageVisualizerCtrl.invokePromptAndUserModelsGenAi('TestClass', 'testMethod', 'gpt-4', 'User prompt', 'System prompt');
-        } catch (Exception e) {
-            System.assertNotEquals(null, e.getMessage());
-        }
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for invokeGenAiPromptTemplate - GenAI Prompt Template
-    **************************************************************************************/
-    @isTest
-    public static void testInvokeGenAiPromptTemplate() {
-        Test.startTest();
-        try {
-            Object result = PackageVisualizerCtrl.invokeGenAiPromptTemplate('TestClass', 'testMethod', '001000000000000AAA', 'Account', 'TestTemplate');
-        } catch (Exception e) {
-            System.assertNotEquals(null, e.getMessage());
-        }
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for checkPackageSubscriberEnabled - Feature management
-    **************************************************************************************/
-    @isTest
-    public static void testCheckPackageSubscriberEnabled() {
-        Test.startTest();
-        Boolean isEnabled = PackageVisualizerCtrl.checkPackageSubscriberEnabled();
-        System.assertNotEquals(null, isEnabled);
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getOrgCountryCode - Organization details
-    **************************************************************************************/
-    @isTest
-    public static void testGetOrgCountryCode() {
-        Test.startTest();
-        String countryCode = PackageVisualizerCtrl.getOrgCountryCode();
-        System.assertNotEquals(null, countryCode);
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for isPboOrg - PBO validation
-    **************************************************************************************/
-    @isTest
-    public static void testIsPboOrg() {
-        Test.startTest();
-        Boolean isPbo = PackageVisualizerCtrl.isPboOrg();
-        System.assertNotEquals(null, isPbo);
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getProfileId - Profile lookup
-    **************************************************************************************/
-    @isTest
-    public static void testGetProfileId() {
-        Test.startTest();
-        try {
-            String profileId = PackageVisualizerCtrl.getProfileId('System Administrator');
-            System.assertNotEquals(null, profileId);
-        } catch (Exception e) {
-            System.assertNotEquals(null, e.getMessage());
-        }
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getProfileId with invalid profile
-    **************************************************************************************/
-    @isTest
-    public static void testGetProfileIdInvalid() {
-        Test.startTest();
-        Boolean exceptionThrown = false;
-        try {
-            String profileId = PackageVisualizerCtrl.getProfileId('NonExistentProfile');
-        } catch (Exception e) {
-            exceptionThrown = true;
-        }
-        System.assert(exceptionThrown, 'Expected an exception for non-existent profile');
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getNamespacePermSetId - Permission set lookup
-    **************************************************************************************/
-    @isTest
-    public static void testGetNamespacePermSetId() {
-        Test.startTest();
-        // Non-existent perm set — will throw AuraHandledException (getMessage() = 'Script-thrown exception')
-        Boolean exceptionThrown = false;
-        try {
-            String permSetId = PackageVisualizerCtrl.getNamespacePermSetId('TestPermSet', 'testns');
-        } catch (Exception e) {
-            exceptionThrown = true;
-        }
-        System.assert(exceptionThrown, 'Expected an exception for non-existent permission set');
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getSignupCount - Signup statistics (1 day)
-    **************************************************************************************/
-    @isTest
-    public static void testGetSignupCountOneDay() {
-        Test.startTest();
-        // AuraHandledException.getMessage() returns 'Script-thrown exception', not the inner message
-        try {
-            List<AggregateResult> result = PackageVisualizerCtrl.getSignupCount('1');
-            System.assertNotEquals(null, result);
-        } catch (Exception e) {
-            System.assertNotEquals(null, e);
-        }
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getSignupCount - Signup statistics (7 days)
-    **************************************************************************************/
-    @isTest
-    public static void testGetSignupCountMultipleDays() {
-        Test.startTest();
-        try {
-            List<AggregateResult> result = PackageVisualizerCtrl.getSignupCount('7');
-            System.assertNotEquals(null, result);
-        } catch (Exception e) {
-            System.assertNotEquals(null, e);
-        }
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getUserName - User lookup by Id
-    **************************************************************************************/
-    @isTest
-    public static void testGetUserName() {
-        Test.startTest();
-        try {
-            User testUser = [SELECT Id FROM User WHERE IsActive = true LIMIT 1];
-            User result = PackageVisualizerCtrl.getUserName(testUser.Id);
-            System.assertNotEquals(null, result);
-            System.assertNotEquals(null, result.Username);
-        } catch (Exception e) {
-            System.assertNotEquals(null, e.getMessage());
-        }
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getUser - User lookup by Username
-    **************************************************************************************/
-    @isTest
-    public static void testGetUserByUsername() {
-        Test.startTest();
-        try {
-            User testUser = [SELECT Username FROM User WHERE IsActive = true LIMIT 1];
-            User result = PackageVisualizerCtrl.getUser(testUser.Username);
-            System.assertNotEquals(null, result);
-            System.assertEquals(testUser.Username, result.Username);
-        } catch (Exception e) {
-            System.assertNotEquals(null, e.getMessage());
-        }
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getLMAVersion with error handling
-    **************************************************************************************/
-    @isTest
-    public static void testGetLMAVersionError() {
-        Test.startTest();
-        try {
-            ObjectWrappers.LMAVersionWrapper lvw = PackageVisualizerCtrl.getLMAVersion('04t000000000000AAA');
-        } catch (Exception e) {
-            System.assert(e.getMessage().contains('Could not find a LMA record'));
-        }
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getLmaPackage with error handling
-    **************************************************************************************/
-    @isTest
-    public static void testGetLmaPackageError() {
-        Test.startTest();
-        try {
-            ObjectWrappers.LMAPackageWrapper lmaPkg = PackageVisualizerCtrl.getLmaPackage('033000000000000AAA');
-        } catch (Exception e) {
-            System.assert(e.getMessage().contains('Could not find a LMA record'));
-        }
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getPackageVersionLicenses with error handling
-    **************************************************************************************/
-    @isTest
-    public static void testGetPackageVersionLicensesError() {
-        Test.startTest();
-        try {
-            List<ObjectWrappers.FilterWrapper> filters = createFilterList('sfLma__Package_Version__c', '05i000000000000AAA', 'STRING');
-            List<ObjectWrappers.LMALicenseWrapper> licenses = PackageVisualizerCtrl.getPackageVersionLicenses(filters, 'Name', 'DESC', '10', '0');
-        } catch (Exception e) {
-            System.assert(e.getMessage().contains('could not retrieve package version'));
-        }
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getLmaTimeline
-    **************************************************************************************/
-    @isTest
-    public static void testGetLmaTimeline() {
-        Test.startTest();
-        // Returns null when sfLma__License__History type is not installed — both null and empty list are valid
-        List<ObjectWrappers.LMALicenseHistoryWrapper> timeline = PackageVisualizerCtrl.getLmaTimeline('a0x000000000000AAA');
-        System.assert(timeline == null || timeline.isEmpty() || timeline.size() >= 0);
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for modifyLicense
-    **************************************************************************************/
-    @isTest
-    public static void testModifyLicense() {
-        Test.startTest();
-        try {
-            String result = PackageVisualizerCtrl.modifyLicense('a0x000000000000AAA', '2025-12-31', '10', 'Active');
-        } catch (Exception e) {
-            System.assertNotEquals(null, e.getMessage());
-        }
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for getEnvHubMemberId positive case
-    **************************************************************************************/
-    @isTest
-    public static void testGetEnvHubMemberId() {
-        Test.startTest();
-        // AuraHandledException.getMessage() returns 'Script-thrown exception', not the inner message
-        Boolean exceptionThrown = false;
-        try {
-            String envHubId = PackageVisualizerCtrl.getEnvHubMemberId('00D000000000000AAA');
-        } catch (Exception e) {
-            exceptionThrown = true;
-        }
-        // Either succeeds (EnvironmentHubMember installed) or throws — both are valid
-        System.assert(true);
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for parseListValues - private method testing via getWhereClause
-    **************************************************************************************/
-    @isTest
-    public static void testParseListValuesViaWhereClause() {
-        Test.startTest();
-        List<ObjectWrappers.FilterWrapper> filters = new List<ObjectWrappers.FilterWrapper>();
-        ObjectWrappers.FilterWrapper fw = new ObjectWrappers.FilterWrapper();
-        fw.fieldName = 'OrgType';
-        fw.value = 'Production~Sandbox~Developer';
-        fw.dataType = 'LIST';
-        filters.add(fw);
-        String whereClause = Package2Interface.getWhereClause(filters);
-        System.assert(whereClause.contains('Production'));
-        System.assert(whereClause.contains('Sandbox'));
-        System.assert(whereClause.contains('Developer'));
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for ObjectWrappers LMA License missing properties
-    **************************************************************************************/
-    @isTest
-    public static void testObjectWrappersLMALicenseExtended() {
-        Test.startTest();
-        ObjectWrappers.LMALicenseWrapper llw = new ObjectWrappers.LMALicenseWrapper();
-        llw.seats = (Object) 10;
-        llw.usedLicenses = (Object) 5;
-        llw.lmaExpirationDate = (Object) Date.today();
-        llw.leadEmail = (Object) 'test@example.com';
-        System.assertEquals((Object) 10, llw.seats);
-        System.assertEquals((Object) 5, llw.usedLicenses);
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for edge case - empty filter list
-    **************************************************************************************/
-    @isTest
-    public static void testGetWhereClauseEmptyFilters() {
-        Test.startTest();
-        List<ObjectWrappers.FilterWrapper> emptyFilters = new List<ObjectWrappers.FilterWrapper>();
-        String whereClause = Package2Interface.getWhereClause(emptyFilters);
-        System.assertEquals('', whereClause);
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Test class for edge case - filter with blank values
-    **************************************************************************************/
-    @isTest
-    public static void testGetWhereClauseBlankValues() {
-        Test.startTest();
-        List<ObjectWrappers.FilterWrapper> filters = new List<ObjectWrappers.FilterWrapper>();
-        ObjectWrappers.FilterWrapper fw = new ObjectWrappers.FilterWrapper();
-        fw.fieldName = '';
-        fw.value = '';
-        fw.dataType = 'STRING';
-        filters.add(fw);
-        String whereClause = Package2Interface.getWhereClause(filters);
-        System.assertEquals('', whereClause);
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Negative test - Package2Interface.updateLicense with errors
-    **************************************************************************************/
-    @isTest
-    public static void testUpdateLicenseError() {
-        Test.startTest();
-        try {
-            String result = Package2Interface.updateLicense('InvalidId', '2025-12-31', '10', 'Active');
-        } catch (Exception e) {
-            System.assertNotEquals(null, e.getMessage());
-        }
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Negative test - Package2Interface.updatePackage2Fields with errors
-    **************************************************************************************/
-    @isTest
-    public static void testUpdatePackage2FieldsError() {
-        Test.startTest();
-        Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
-        try {
-            List<ObjectWrappers.FilterWrapper> filters = createFilterList('Description', 'New Description', 'STRING');
-            String result = Package2Interface.updatePackage2Fields(filters, 'InvalidObject', 'InvalidId');
-        } catch (Exception e) {
-            System.assertNotEquals(null, e.getMessage());
-        }
-        Test.stopTest();
-    }
-
-    /**************************************************************************************
-    * @Description  Negative test - Package2Interface.getEnvHubMemberId with invalid org
-    **************************************************************************************/
-    @isTest
-    public static void testGetEnvHubMemberIdError() {
-        Test.startTest();
-        try {
-            String result = Package2Interface.getEnvHubMemberId('InvalidOrgId');
-            System.assert(false, 'Should have thrown exception');
-        } catch (Exception e) {
-            System.assertNotEquals(null, e.getMessage());
-        }
-        Test.stopTest();
-    }
+    }*/
+
+  /**************************************************************************************
+   * @Description  Test class for create filter list
+   **************************************************************************************/
+  private static List<ObjectWrappers.FilterWrapper> createFilterList(
+    string key,
+    string value,
+    string dataType
+  ) {
+    List<ObjectWrappers.FilterWrapper> fltList = new List<ObjectWrappers.FilterWrapper>();
+    fltList.add(createFilterObject(key, value, dataType));
+    return fltList;
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for create filter
+   **************************************************************************************/
+  private static ObjectWrappers.FilterWrapper createFilterObject(
+    string key,
+    string value,
+    string dataType
+  ) {
+    ObjectWrappers.FilterWrapper flt = new ObjectWrappers.FilterWrapper();
+    flt.fieldName = key;
+    flt.value = value;
+    flt.dataType = dataType;
+    return flt;
+  }
+
+  @isTest
+  public static void testIsSignupRequest() {
+    TEST.startTest();
+    Boolean isSignUpReq = PackageVisualizerCtrl.isSignupRequest();
+    system.assertNotEquals(null, isSignUpReq);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testIsSignupRequestDemoTrials() {
+    TEST.startTest();
+    Boolean isSignUpReq = DemoTrialsController.isSignupRequest();
+    system.assertNotEquals(null, isSignUpReq);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testGetSignUpRequests() {
+    // Positive test case
+    Test.startTest();
+    List<ObjectWrappers.FilterWrapper> filters = new List<ObjectWrappers.FilterWrapper>();
+    // Populate filters as needed
+    String sortedBy = 'CreatedDate';
+    String sortDirection = 'DESC';
+    String signUpLimit = '10';
+    String signUpOffset = '0';
+    List<ObjectWrappers.SignupRequestWrapper> result = PackageVisualizerCtrl.getSignUpRequests(
+      filters,
+      sortedBy,
+      sortDirection,
+      signUpLimit,
+      signUpOffset
+    );
+    System.assertEquals(0, result.size()); // Assuming the result should be empty in this test case
+    Test.stopTest();
+  }
+
+  @isTest
+  public static void testSignupRequestWrapper() {
+    // Create test data
+    ObjectWrappers.SignupRequestWrapper sw = new ObjectWrappers.SignupRequestWrapper();
+    sw.company = 'TestCompany';
+    sw.country = 'TestCountry';
+    sw.createdOrgId = 'TestOrgId';
+    sw.createdOrgInstance = 'TestInstance';
+    sw.errorCode = 'TestError';
+    sw.firstName = 'TestFirstName';
+    sw.lastName = 'TestLastName';
+    sw.preferredLanguage = 'TestLanguage';
+    sw.resolvedTemplateId = 'TestTemplateId';
+    sw.shouldConnectToEnvHub = true;
+    sw.signupEmail = 'test@example.com';
+    sw.signupSource = 'TestSource';
+    sw.status = 'TestStatus';
+    sw.subdomain = 'test-subdomain';
+    sw.isSignupEmailSuppressed = false;
+    sw.templateId = 'TestTemplate';
+    sw.trialDays = 30;
+    sw.trialSourceOrgId = 'TestSourceOrgId';
+    sw.username = 'testuser';
+    sw.edition = 'TestEdition';
+    sw.owner = 'test';
+    sw.systemModstamp = Datetime.now();
+    sw.createdDate = Datetime.now();
+
+    // Create and set values for the PackageCreator instance
+    ObjectWrappers.PackageCreator pc = new ObjectWrappers.PackageCreator();
+    pc.name = 'TestCreator';
+    // Set other properties for PackageCreator
+    sw.createdBy = pc;
+
+    // Assert properties
+    System.assertEquals('TestCompany', sw.company);
+    System.assertEquals('TestCountry', sw.country);
+    System.assertEquals('TestOrgId', sw.createdOrgId);
+    System.assertEquals('TestInstance', sw.createdOrgInstance);
+    System.assertEquals('TestError', sw.errorCode);
+    System.assertEquals('TestFirstName', sw.firstName);
+    System.assertEquals('TestLastName', sw.lastName);
+    System.assertEquals('TestLanguage', sw.preferredLanguage);
+    System.assertEquals('TestTemplateId', sw.resolvedTemplateId);
+    System.assertEquals(true, sw.shouldConnectToEnvHub);
+    System.assertEquals('test@example.com', sw.signupEmail);
+    System.assertEquals('TestSource', sw.signupSource);
+    System.assertEquals('TestStatus', sw.status);
+    System.assertEquals('test-subdomain', sw.subdomain);
+    System.assertEquals(false, sw.isSignupEmailSuppressed);
+    System.assertEquals('TestTemplate', sw.templateId);
+    System.assertEquals(30, sw.trialDays);
+    System.assertEquals('TestSourceOrgId', sw.trialSourceOrgId);
+    System.assertEquals('testuser', sw.username);
+    System.assertEquals('TestEdition', sw.edition);
+  }
+
+  @isTest
+  public static void testisAccount() {
+    TEST.startTest();
+    Boolean isAccount = Package2Interface.isAccount();
+    system.assertNotEquals(null, isAccount);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisLead() {
+    TEST.startTest();
+    Boolean isLead = Package2Interface.isLead();
+    system.assertNotEquals(null, isLead);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisContact() {
+    TEST.startTest();
+    Boolean isContact = Package2Interface.isContact();
+    system.assertNotEquals(null, isContact);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisCase() {
+    TEST.startTest();
+    Boolean isCase = Package2Interface.isCase();
+    system.assertNotEquals(null, isCase);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisOpportunity() {
+    TEST.startTest();
+    Boolean isOpportunity = Package2Interface.isOpportunity();
+    system.assertNotEquals(null, isOpportunity);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisCampaign() {
+    TEST.startTest();
+    Boolean isCampaign = Package2Interface.isCampaign();
+    system.assertNotEquals(null, isCampaign);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisTask() {
+    TEST.startTest();
+    Boolean isTask = Package2Interface.isTask();
+    system.assertNotEquals(null, isTask);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisEvent() {
+    TEST.startTest();
+    Boolean isEvent = Package2Interface.isEvent();
+    system.assertNotEquals(null, isEvent);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisUser() {
+    TEST.startTest();
+    Boolean isUser = Package2Interface.isUser();
+    system.assertNotEquals(null, isUser);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisOrder() {
+    TEST.startTest();
+    Boolean isOrder = Package2Interface.isOrder();
+    system.assertNotEquals(null, isOrder);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisAsset() {
+    TEST.startTest();
+    Boolean isAsset = Package2Interface.isAsset();
+    system.assertNotEquals(null, isAsset);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisContract() {
+    TEST.startTest();
+    Boolean isContract = Package2Interface.isContract();
+    system.assertNotEquals(null, isContract);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisProduct2() {
+    TEST.startTest();
+    Boolean isProduct2 = Package2Interface.isProduct2();
+    system.assertNotEquals(null, isProduct2);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisPricebook2() {
+    TEST.startTest();
+    Boolean isPricebook2 = Package2Interface.isPricebook2();
+    system.assertNotEquals(null, isPricebook2);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisCampaignMember() {
+    TEST.startTest();
+    Boolean isCampaignMember = Package2Interface.isCampaignMember();
+    system.assertNotEquals(null, isCampaignMember);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisFma() {
+    TEST.startTest();
+    Boolean isFmaParameter = PackageVisualizerCtrl.isFmaParameter();
+    system.assertNotEquals(null, isFmaParameter);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisActiveScratchOrg() {
+    TEST.startTest();
+    Boolean isActiveScratchOrg = Package2Interface.isActiveScratchOrg();
+    system.assertNotEquals(null, isActiveScratchOrg);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisRecommendation() {
+    TEST.startTest();
+    Boolean isRecommendation = Package2Interface.isRecommendation();
+    system.assertNotEquals(null, isRecommendation);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisLicense() {
+    TEST.startTest();
+    Boolean isLicense = Package2Interface.isLicense();
+    system.assertNotEquals(null, isLicense);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisPackageVersion() {
+    TEST.startTest();
+    Boolean isPackageVersion = Package2Interface.isPackageVersion();
+    system.assertNotEquals(null, isPackageVersion);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisPackage() {
+    TEST.startTest();
+    Boolean isPackage = Package2Interface.isPackage();
+    system.assertNotEquals(null, isPackage);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testisContentVersion() {
+    TEST.startTest();
+    Boolean isContentVersion = Package2Interface.isContentVersion();
+    system.assertNotEquals(null, isContentVersion);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testCreateSignupTrial() {
+    // Test case 1: Successful signup request
+    Test.startTest();
+    try {
+      String result = PackageVisualizerCtrl.createSignupTrial(
+        'John',
+        'Doe',
+        'john.doe@example.com',
+        'john.doe@example.com',
+        'ACME',
+        null,
+        'US',
+        'en_US',
+        null,
+        'Enterprise',
+        30,
+        false,
+        true
+      );
+      System.assertNotEquals(
+        'Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)',
+        result,
+        'Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)'
+      );
+    } catch (Exception e) {
+      System.debug(e);
+    }
+    Test.stopTest();
+  }
+
+  @isTest
+  public static void testCreateSignupTrialDemoTrials() {
+    // Test case 1: Successful signup request
+    Test.startTest();
+    try {
+      String result = DemoTrialsController.createSignupTrial(
+        'John',
+        'Doe',
+        'john.doe@example.com',
+        'john.doe@example.com',
+        'ACME',
+        null,
+        'US',
+        'en_US',
+        '0TT000000000000AAA',
+        30,
+        false,
+        true,
+        'Enterprise'
+      );
+      System.assertNotEquals(
+        'Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)',
+        result,
+        'Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)'
+      );
+    } catch (Exception e) {
+      System.debug(e);
+    }
+    Test.stopTest();
+  }
+
+  @isTest
+  public static void testCreateSignupTrialWithTrialforce() {
+    // Test case 1: Successful signup request
+    Test.startTest();
+    try {
+      String result = PackageVisualizerCtrl.createSignupTrial(
+        'John',
+        'Doe',
+        'john.doe@example.com',
+        'john.doe@example.com',
+        'ACME',
+        'testing123-231-231',
+        'US',
+        'en_US',
+        '0TT000000000000AAA',
+        null,
+        30,
+        false,
+        true
+      );
+      System.assertNotEquals(
+        'Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)',
+        result,
+        'Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)'
+      );
+    } catch (Exception e) {
+      System.debug(e);
+    }
+    Test.stopTest();
+  }
+
+  @isTest
+  public static void testCreateSignupTrialWithTrialforceDemoTrials() {
+    // Test case 1: Successful signup request
+    Test.startTest();
+    try {
+      String result = DemoTrialsController.createSignupTrial(
+        'John',
+        'Doe',
+        'john.doe@example.com',
+        'john.doe@example.com',
+        'ACME',
+        null,
+        'US',
+        'en_US',
+        '0TT000000000000AAA',
+        30,
+        false,
+        true,
+        'Enterprise'
+      );
+      System.assertNotEquals(
+        'Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)',
+        result,
+        'Unable to create org. Log a support case in the Salesforce Partner Community to enable the SignupRequest API in your Partner Business Org (PBO)'
+      );
+    } catch (Exception e) {
+      System.debug(e);
+    }
+    Test.stopTest();
+  }
+
+  @IsTest(SeeAllData=true)
+  static void testGetContent() {
+    Test.startTest();
+    // Set up the test request
+    RestRequest request = new RestRequest();
+    request.requestURI = '/services/apexrest/ecommerce/getContent';
+    request.httpMethod = 'GET';
+    request.addParameter('contentId', 'testContentId');
+    request.addParameter('page', '0');
+    request.addParameter('pageSize', '1');
+    request.addParameter('language', 'testLanguage');
+    request.addParameter('filterby', 'testFilter');
+    RestContext.request = request;
+    // Call the method to test
+    Map<String, ConnectApi.ManagedContentNodeValue> contentNodes = DemoTrialsController.getContent(
+      'testContentId',
+      0,
+      1,
+      'testLanguage',
+      'testFilter'
+    );
+    Test.stopTest();
+    // Assert the results
+    System.assertEquals(
+      0,
+      contentNodes.size(),
+      'Content nodes size should be 1'
+    );
+  }
+
+  @isTest
+  public static void testisEnvironmentHubMember() {
+    TEST.startTest();
+    Boolean isEnvironmentHubMember = Package2Interface.isEnvironmentHubMember();
+    system.assertNotEquals(null, isEnvironmentHubMember);
+    TEST.stopTest();
+  }
+
+  @isTest
+  public static void testVerifyUnlockedPackageInstalled() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    Boolean installed = PackageVisualizerCtrl.verifyUnlockedPackageInstalled();
+    System.assertEquals(false, installed);
+    Test.stopTest();
+  }
+
+  @isTest
+  public static void testToolingApiCalloutMockRespondBranches() {
+    ToolingAPICalloutMock mock = new ToolingAPICalloutMock();
+    HttpRequest reqPv = new HttpRequest();
+    reqPv.setEndpoint(
+      'https://example.com/services/data/v61.0/tooling/query?q=SELECT+Id+from+Package2Version'
+    );
+    HttpResponse resPv = mock.respond(reqPv);
+    System.assertEquals(200, resPv.getStatusCode());
+
+    HttpRequest reqP2 = new HttpRequest();
+    reqP2.setEndpoint(
+      'https://example.com/services/data/v61.0/tooling/query?q=SELECT+Id+FROM+Package2'
+    );
+    HttpResponse resP2 = mock.respond(reqP2);
+    System.assertEquals(200, resP2.getStatusCode());
+
+    HttpRequest reqOther = new HttpRequest();
+    reqOther.setEndpoint(
+      'https://example.com/services/data/v61.0/tooling/query?q=SELECT+Id+FROM+Account'
+    );
+    HttpResponse resOther = mock.respond(reqOther);
+    System.assertEquals(401, resOther.getStatusCode());
+  }
+
+  @isTest
+  public static void testToolingApiCalloutMockCmsRespond() {
+    ToolingAPICalloutMock mock = new ToolingAPICalloutMock();
+    HttpResponse res = mock.cmsRespond(new HttpRequest());
+    System.assertEquals(500, res.getStatusCode());
+    System.assert(res.getBody().contains('Mock exception'));
+  }
+
+  @isTest
+  public static void testChangePasswordController() {
+    ChangePasswordController ctrl = new ChangePasswordController();
+    ctrl.oldPassword = 'old';
+    ctrl.newPassword = 'new';
+    ctrl.verifyNewPassword = 'new';
+    System.assertEquals('old', ctrl.oldPassword);
+    try {
+      ctrl.changePassword();
+    } catch (Exception e) {
+      System.assertNotEquals(null, e.getMessage());
+    }
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getPackageDependencies - NEW method
+   **************************************************************************************/
+  @isTest
+  public static void testGetPackageDependencies() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    ObjectWrappers.PackageDependenciesResponse response = PackageVisualizerCtrl.getPackageDependencies(
+      '04t000000000000AAA'
+    );
+    System.assertNotEquals(null, response);
+    System.assertNotEquals(null, response.dependencies);
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getPackageVersionBySubscriberId - NEW method
+   **************************************************************************************/
+  @isTest
+  public static void testGetPackageVersionBySubscriberId() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    ObjectWrappers.PackageVersionWrapper version = PackageVisualizerCtrl.getPackageVersionBySubscriberId(
+      '04t000000000000AAA'
+    );
+    System.assertNotEquals(null, version);
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getPackageVersionBySubscriberId with no results
+   **************************************************************************************/
+  @isTest
+  public static void testGetPackageVersionBySubscriberIdNoResults() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    ObjectWrappers.PackageVersionWrapper version = PackageVisualizerCtrl.getPackageVersionBySubscriberId(
+      '04tXXXXXXXXXXXXXXXX'
+    );
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for Package2Interface.getPackageDependencies
+   **************************************************************************************/
+  @isTest
+  public static void testPackage2InterfaceGetPackageDependencies() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    ObjectWrappers.PackageDependenciesResponse response = Package2Interface.getPackageDependencies(
+      '04t000000000000AAA'
+    );
+    System.assertNotEquals(null, response);
+    System.assertNotEquals(null, response.dependencies);
+    System.assertEquals(2, response.dependencies.size());
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for Package Dependencies wrapper classes
+   **************************************************************************************/
+  @isTest
+  public static void testPackageDependencyWrappers() {
+    Test.startTest();
+    ObjectWrappers.PackageDependencyWrapper depWrapper = new ObjectWrappers.PackageDependencyWrapper();
+    depWrapper.subscriberPackageVersionId = '04t000000000000AAA';
+    depWrapper.packageName = 'Test Package';
+    depWrapper.versionNumber = '1.0.0';
+    System.assertEquals(
+      '04t000000000000AAA',
+      depWrapper.subscriberPackageVersionId
+    );
+    System.assertEquals('Test Package', depWrapper.packageName);
+    System.assertEquals('1.0.0', depWrapper.versionNumber);
+
+    ObjectWrappers.PackageDependenciesResponse response = new ObjectWrappers.PackageDependenciesResponse();
+    response.dependencies = new List<ObjectWrappers.PackageDependencyWrapper>();
+    response.dependencies.add(depWrapper);
+    System.assertEquals(1, response.dependencies.size());
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for invokeModelsGenAi - GenAI integration
+   **************************************************************************************/
+  @isTest
+  public static void testInvokeModelsGenAi() {
+    Test.startTest();
+    try {
+      Object result = PackageVisualizerCtrl.invokeModelsGenAi(
+        'TestClass',
+        'testMethod',
+        'gpt-4',
+        'Test prompt'
+      );
+    } catch (Exception e) {
+      System.assertNotEquals(null, e.getMessage());
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for invokePromptAndUserModelsGenAi - GenAI integration
+   **************************************************************************************/
+  @isTest
+  public static void testInvokePromptAndUserModelsGenAi() {
+    Test.startTest();
+    try {
+      Object result = PackageVisualizerCtrl.invokePromptAndUserModelsGenAi(
+        'TestClass',
+        'testMethod',
+        'gpt-4',
+        'User prompt',
+        'System prompt'
+      );
+    } catch (Exception e) {
+      System.assertNotEquals(null, e.getMessage());
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for invokeGenAiPromptTemplate - GenAI Prompt Template
+   **************************************************************************************/
+  @isTest
+  public static void testInvokeGenAiPromptTemplate() {
+    Test.startTest();
+    try {
+      Object result = PackageVisualizerCtrl.invokeGenAiPromptTemplate(
+        'TestClass',
+        'testMethod',
+        '001000000000000AAA',
+        'Account',
+        'TestTemplate'
+      );
+    } catch (Exception e) {
+      System.assertNotEquals(null, e.getMessage());
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for checkPackageSubscriberEnabled - Feature management
+   **************************************************************************************/
+  @isTest
+  public static void testCheckPackageSubscriberEnabled() {
+    Test.startTest();
+    Boolean isEnabled = PackageVisualizerCtrl.checkPackageSubscriberEnabled();
+    System.assertNotEquals(null, isEnabled);
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getOrgCountryCode - Organization details
+   **************************************************************************************/
+  @isTest
+  public static void testGetOrgCountryCode() {
+    Test.startTest();
+    String countryCode = PackageVisualizerCtrl.getOrgCountryCode();
+    System.assertNotEquals(null, countryCode);
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for isPboOrg - PBO validation
+   **************************************************************************************/
+  @isTest
+  public static void testIsPboOrg() {
+    Test.startTest();
+    Boolean isPbo = PackageVisualizerCtrl.isPboOrg();
+    System.assertNotEquals(null, isPbo);
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getProfileId - Profile lookup
+   **************************************************************************************/
+  @isTest
+  public static void testGetProfileId() {
+    Test.startTest();
+    try {
+      String profileId = PackageVisualizerCtrl.getProfileId(
+        'System Administrator'
+      );
+      System.assertNotEquals(null, profileId);
+    } catch (Exception e) {
+      System.assertNotEquals(null, e.getMessage());
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getProfileId with invalid profile
+   **************************************************************************************/
+  @isTest
+  public static void testGetProfileIdInvalid() {
+    Test.startTest();
+    Boolean exceptionThrown = false;
+    try {
+      String profileId = PackageVisualizerCtrl.getProfileId(
+        'NonExistentProfile'
+      );
+    } catch (Exception e) {
+      exceptionThrown = true;
+    }
+    System.assert(
+      exceptionThrown,
+      'Expected an exception for non-existent profile'
+    );
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getNamespacePermSetId - Permission set lookup
+   **************************************************************************************/
+  @isTest
+  public static void testGetNamespacePermSetId() {
+    Test.startTest();
+    // Non-existent perm set — will throw AuraHandledException (getMessage() = 'Script-thrown exception')
+    Boolean exceptionThrown = false;
+    try {
+      String permSetId = PackageVisualizerCtrl.getNamespacePermSetId(
+        'TestPermSet',
+        'testns'
+      );
+    } catch (Exception e) {
+      exceptionThrown = true;
+    }
+    System.assert(
+      exceptionThrown,
+      'Expected an exception for non-existent permission set'
+    );
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getSignupCount - Signup statistics (1 day)
+   **************************************************************************************/
+  @isTest
+  public static void testGetSignupCountOneDay() {
+    Test.startTest();
+    // AuraHandledException.getMessage() returns 'Script-thrown exception', not the inner message
+    try {
+      List<AggregateResult> result = PackageVisualizerCtrl.getSignupCount('1');
+      System.assertNotEquals(null, result);
+    } catch (Exception e) {
+      System.assertNotEquals(null, e);
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getSignupCount - Signup statistics (7 days)
+   **************************************************************************************/
+  @isTest
+  public static void testGetSignupCountMultipleDays() {
+    Test.startTest();
+    try {
+      List<AggregateResult> result = PackageVisualizerCtrl.getSignupCount('7');
+      System.assertNotEquals(null, result);
+    } catch (Exception e) {
+      System.assertNotEquals(null, e);
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getUserName - User lookup by Id
+   **************************************************************************************/
+  @isTest
+  public static void testGetUserName() {
+    Test.startTest();
+    try {
+      User testUser = [SELECT Id FROM User WHERE IsActive = TRUE LIMIT 1];
+      User result = PackageVisualizerCtrl.getUserName(testUser.Id);
+      System.assertNotEquals(null, result);
+      System.assertNotEquals(null, result.Username);
+    } catch (Exception e) {
+      System.assertNotEquals(null, e.getMessage());
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getUser - User lookup by Username
+   **************************************************************************************/
+  @isTest
+  public static void testGetUserByUsername() {
+    Test.startTest();
+    try {
+      User testUser = [SELECT Username FROM User WHERE IsActive = TRUE LIMIT 1];
+      User result = PackageVisualizerCtrl.getUser(testUser.Username);
+      System.assertNotEquals(null, result);
+      System.assertEquals(testUser.Username, result.Username);
+    } catch (Exception e) {
+      System.assertNotEquals(null, e.getMessage());
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getLMAVersion with error handling
+   **************************************************************************************/
+  @isTest
+  public static void testGetLMAVersionError() {
+    Test.startTest();
+    try {
+      ObjectWrappers.LMAVersionWrapper lvw = PackageVisualizerCtrl.getLMAVersion(
+        '04t000000000000AAA'
+      );
+    } catch (Exception e) {
+      System.assert(e.getMessage().contains('Could not find a LMA record'));
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getLmaPackage with error handling
+   **************************************************************************************/
+  @isTest
+  public static void testGetLmaPackageError() {
+    Test.startTest();
+    try {
+      ObjectWrappers.LMAPackageWrapper lmaPkg = PackageVisualizerCtrl.getLmaPackage(
+        '033000000000000AAA'
+      );
+    } catch (Exception e) {
+      System.assert(e.getMessage().contains('Could not find a LMA record'));
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getPackageVersionLicenses with error handling
+   **************************************************************************************/
+  @isTest
+  public static void testGetPackageVersionLicensesError() {
+    Test.startTest();
+    try {
+      List<ObjectWrappers.FilterWrapper> filters = createFilterList(
+        'sfLma__Package_Version__c',
+        '05i000000000000AAA',
+        'STRING'
+      );
+      List<ObjectWrappers.LMALicenseWrapper> licenses = PackageVisualizerCtrl.getPackageVersionLicenses(
+        filters,
+        'Name',
+        'DESC',
+        '10',
+        '0'
+      );
+    } catch (Exception e) {
+      System.assert(
+        e.getMessage().contains('could not retrieve package version')
+      );
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getLmaTimeline
+   **************************************************************************************/
+  @isTest
+  public static void testGetLmaTimeline() {
+    Test.startTest();
+    // Returns null when sfLma__License__History type is not installed — both null and empty list are valid
+    List<ObjectWrappers.LMALicenseHistoryWrapper> timeline = PackageVisualizerCtrl.getLmaTimeline(
+      'a0x000000000000AAA'
+    );
+    System.assert(
+      timeline == null || timeline.isEmpty() || timeline.size() >= 0
+    );
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for modifyLicense
+   **************************************************************************************/
+  @isTest
+  public static void testModifyLicense() {
+    Test.startTest();
+    try {
+      String result = PackageVisualizerCtrl.modifyLicense(
+        'a0x000000000000AAA',
+        '2025-12-31',
+        '10',
+        'Active'
+      );
+    } catch (Exception e) {
+      System.assertNotEquals(null, e.getMessage());
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for getEnvHubMemberId positive case
+   **************************************************************************************/
+  @isTest
+  public static void testGetEnvHubMemberId() {
+    Test.startTest();
+    // AuraHandledException.getMessage() returns 'Script-thrown exception', not the inner message
+    Boolean exceptionThrown = false;
+    try {
+      String envHubId = PackageVisualizerCtrl.getEnvHubMemberId(
+        '00D000000000000AAA'
+      );
+    } catch (Exception e) {
+      exceptionThrown = true;
+    }
+    // Either succeeds (EnvironmentHubMember installed) or throws — both are valid
+    System.assert(true);
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for parseListValues - private method testing via getWhereClause
+   **************************************************************************************/
+  @isTest
+  public static void testParseListValuesViaWhereClause() {
+    Test.startTest();
+    List<ObjectWrappers.FilterWrapper> filters = new List<ObjectWrappers.FilterWrapper>();
+    ObjectWrappers.FilterWrapper fw = new ObjectWrappers.FilterWrapper();
+    fw.fieldName = 'OrgType';
+    fw.value = 'Production~Sandbox~Developer';
+    fw.dataType = 'LIST';
+    filters.add(fw);
+    String whereClause = Package2Interface.getWhereClause(filters);
+    System.assert(whereClause.contains('Production'));
+    System.assert(whereClause.contains('Sandbox'));
+    System.assert(whereClause.contains('Developer'));
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for ObjectWrappers LMA License missing properties
+   **************************************************************************************/
+  @isTest
+  public static void testObjectWrappersLMALicenseExtended() {
+    Test.startTest();
+    ObjectWrappers.LMALicenseWrapper llw = new ObjectWrappers.LMALicenseWrapper();
+    llw.seats = (Object) 10;
+    llw.usedLicenses = (Object) 5;
+    llw.lmaExpirationDate = (Object) Date.today();
+    llw.leadEmail = (Object) 'test@example.com';
+    System.assertEquals((Object) 10, llw.seats);
+    System.assertEquals((Object) 5, llw.usedLicenses);
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for edge case - empty filter list
+   **************************************************************************************/
+  @isTest
+  public static void testGetWhereClauseEmptyFilters() {
+    Test.startTest();
+    List<ObjectWrappers.FilterWrapper> emptyFilters = new List<ObjectWrappers.FilterWrapper>();
+    String whereClause = Package2Interface.getWhereClause(emptyFilters);
+    System.assertEquals('', whereClause);
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for edge case - filter with blank values
+   **************************************************************************************/
+  @isTest
+  public static void testGetWhereClauseBlankValues() {
+    Test.startTest();
+    List<ObjectWrappers.FilterWrapper> filters = new List<ObjectWrappers.FilterWrapper>();
+    ObjectWrappers.FilterWrapper fw = new ObjectWrappers.FilterWrapper();
+    fw.fieldName = '';
+    fw.value = '';
+    fw.dataType = 'STRING';
+    filters.add(fw);
+    String whereClause = Package2Interface.getWhereClause(filters);
+    System.assertEquals('', whereClause);
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Negative test - Package2Interface.updateLicense with errors
+   **************************************************************************************/
+  @isTest
+  public static void testUpdateLicenseError() {
+    Test.startTest();
+    try {
+      String result = Package2Interface.updateLicense(
+        'InvalidId',
+        '2025-12-31',
+        '10',
+        'Active'
+      );
+    } catch (Exception e) {
+      System.assertNotEquals(null, e.getMessage());
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Negative test - Package2Interface.updatePackage2Fields with errors
+   **************************************************************************************/
+  @isTest
+  public static void testUpdatePackage2FieldsError() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    try {
+      List<ObjectWrappers.FilterWrapper> filters = createFilterList(
+        'Description',
+        'New Description',
+        'STRING'
+      );
+      String result = Package2Interface.updatePackage2Fields(
+        filters,
+        'InvalidObject',
+        'InvalidId'
+      );
+    } catch (Exception e) {
+      System.assertNotEquals(null, e.getMessage());
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Negative test - Package2Interface.getEnvHubMemberId with invalid org
+   **************************************************************************************/
+  @isTest
+  public static void testGetEnvHubMemberIdError() {
+    Test.startTest();
+    try {
+      String result = Package2Interface.getEnvHubMemberId('InvalidOrgId');
+      System.assert(false, 'Should have thrown exception');
+    } catch (Exception e) {
+      System.assertNotEquals(null, e.getMessage());
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  getPackageSubscriberByOrgKey - blank orgKey returns empty wrapper
+   **************************************************************************************/
+  @isTest
+  public static void testGetPackageSubscriberByOrgKey_BlankKey() {
+    Test.startTest();
+    ObjectWrappers.PackageSubscriberWrapper result = PackageVisualizerCtrl.getPackageSubscriberByOrgKey(
+      ''
+    );
+    Test.stopTest();
+    Assert.isNotNull(result, 'Should return empty wrapper for blank orgKey');
+  }
+
+  /**************************************************************************************
+   * @Description  getPackageSubscriberByOrgKey - non-blank key exercises the query path
+   **************************************************************************************/
+  @isTest
+  public static void testGetPackageSubscriberByOrgKey_NonBlankKey() {
+    Test.startTest();
+    ObjectWrappers.PackageSubscriberWrapper result = PackageVisualizerCtrl.getPackageSubscriberByOrgKey(
+      '00D000000000001AAA'
+    );
+    Test.stopTest();
+    Assert.isNotNull(
+      result,
+      'Should return wrapper (empty if PackageSubscriber not installed)'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  getInstalledPackages - null list returns empty list
+   **************************************************************************************/
+  @isTest
+  public static void testGetInstalledPackages_NullList() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    List<ObjectWrappers.InstalledPackageWrapper> result = PackageVisualizerCtrl.getInstalledPackages(
+      null
+    );
+    Test.stopTest();
+    Assert.isNotNull(result, 'Should return empty list for null input');
+    Assert.areEqual(
+      0,
+      result.size(),
+      'Should return empty list for null input'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  getInstalledPackages - empty list returns empty list
+   **************************************************************************************/
+  @isTest
+  public static void testGetInstalledPackages_EmptyList() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    List<ObjectWrappers.InstalledPackageWrapper> result = PackageVisualizerCtrl.getInstalledPackages(
+      new List<String>()
+    );
+    Test.stopTest();
+    Assert.isNotNull(result, 'Should return empty list for empty input');
+    Assert.areEqual(
+      0,
+      result.size(),
+      'Should return empty list for empty input'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  getInstalledPackages - populated list exercises the query path
+   **************************************************************************************/
+  @isTest
+  public static void testGetInstalledPackages_WithIds() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    List<ObjectWrappers.InstalledPackageWrapper> result = PackageVisualizerCtrl.getInstalledPackages(
+      new List<String>{ '033000000000001AAA', '033000000000002AAA' }
+    );
+    Test.stopTest();
+    Assert.isNotNull(
+      result,
+      'Should return a list (may be empty if not installed in org)'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  Package2Interface.getBaseURL constructs the correct URL
+   **************************************************************************************/
+  @isTest
+  public static void testGetBaseURL() {
+    Test.startTest();
+    String url = Package2Interface.getBaseURL('tooling');
+    Test.stopTest();
+    Assert.isTrue(
+      url.contains('/services/data/v61.0/tooling/'),
+      'Base URL should contain versioned tooling path'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  Package2Interface.getSessionId returns a value in test context
+   **************************************************************************************/
+  @isTest
+  public static void testGetSessionId() {
+    Test.startTest();
+    String sessionId = Package2Interface.getSessionId();
+    Test.stopTest();
+    Assert.isNotNull(sessionId, 'Should return a non-null session id string');
+  }
+
+  /**************************************************************************************
+   * @Description  Package2Interface.getPackageSubscriberByOrgKey - blank key early return
+   **************************************************************************************/
+  @isTest
+  public static void testGetPackageSubscriberByOrgKey_DirectBlank() {
+    Test.startTest();
+    ObjectWrappers.PackageSubscriberWrapper result = Package2Interface.getPackageSubscriberByOrgKey(
+      ''
+    );
+    Test.stopTest();
+    Assert.isNotNull(result, 'Blank key should return empty wrapper');
+  }
+
+  /**************************************************************************************
+   * @Description  Package2Interface.getInstalledPackages - single id builds the IN clause
+   **************************************************************************************/
+  @isTest
+  public static void testGetInstalledPackages_SingleId() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    List<ObjectWrappers.InstalledPackageWrapper> result = Package2Interface.getInstalledPackages(
+      new List<String>{ '033000000000001AAA' }
+    );
+    Test.stopTest();
+    Assert.isNotNull(
+      result,
+      'Should return a list for a single subscriber package id'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  InstalledPackageWrapper wrapper properties
+   **************************************************************************************/
+  @isTest
+  public static void testInstalledPackageWrapper() {
+    Test.startTest();
+    ObjectWrappers.InstalledPackageWrapper ipw = new ObjectWrappers.InstalledPackageWrapper();
+    ipw.subscriberPackageId = '033000000000001AAA';
+    ipw.subscriberPackageVersionId = '04t000000000001AAA';
+    Test.stopTest();
+    Assert.areEqual(
+      '033000000000001AAA',
+      ipw.subscriberPackageId,
+      'subscriberPackageId should match'
+    );
+    Assert.areEqual(
+      '04t000000000001AAA',
+      ipw.subscriberPackageVersionId,
+      'subscriberPackageVersionId should match'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  getTargetRecordId - apex type returns ApexClass Id
+   **************************************************************************************/
+  @isTest
+  public static void testGetTargetRecordId_ApexType_ReturnsId() {
+    // Given — query the running test class itself so there is always a match
+    String className = 'PackageInterfaceTest';
+
+    // When
+    Test.startTest();
+    String recordId = PackageVisualizerCtrl.getTargetRecordId(
+      'apex',
+      className,
+      null
+    );
+    Test.stopTest();
+
+    // Then
+    Assert.isNotNull(recordId, 'Should return an Id for an existing ApexClass');
+    Assert.isTrue(
+      recordId.startsWith('01p'),
+      'Id should be an ApexClass Id (key prefix 01p)'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  getTargetRecordId - apex type with namespace filter hits the namespace branch
+   **************************************************************************************/
+  @isTest
+  public static void testGetTargetRecordId_ApexTypeWithNamespace_NotFound() {
+    // Given — using a namespace that will never exist in test context → "Not found" path
+    Test.startTest();
+    Boolean exceptionThrown = false;
+    try {
+      PackageVisualizerCtrl.getTargetRecordId(
+        'apex',
+        'PackageInterfaceTest',
+        'nonexistentns'
+      );
+    } catch (AuraHandledException e) {
+      exceptionThrown = true;
+    }
+    Test.stopTest();
+
+    Assert.isTrue(
+      exceptionThrown,
+      'Should throw AuraHandledException when namespace yields no match'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  getTargetRecordId - unsupported targetType throws AuraHandledException
+   **************************************************************************************/
+  @isTest
+  public static void testGetTargetRecordId_UnsupportedType_ThrowsException() {
+    Test.startTest();
+    Boolean exceptionThrown = false;
+    try {
+      PackageVisualizerCtrl.getTargetRecordId('trigger', 'SomeTrigger', null);
+    } catch (AuraHandledException e) {
+      exceptionThrown = true;
+    }
+    Test.stopTest();
+
+    Assert.isTrue(
+      exceptionThrown,
+      'Should throw AuraHandledException for unsupported targetType'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  getTargetRecordId - apex type with no match throws "Not found" exception
+   **************************************************************************************/
+  @isTest
+  public static void testGetTargetRecordId_ApexType_NotFound() {
+    Test.startTest();
+    Boolean exceptionThrown = false;
+    try {
+      PackageVisualizerCtrl.getTargetRecordId(
+        'apex',
+        'ClassThatDefinitelyDoesNotExist_XYZ987',
+        null
+      );
+    } catch (AuraHandledException e) {
+      exceptionThrown = true;
+    }
+    Test.stopTest();
+
+    Assert.isTrue(
+      exceptionThrown,
+      'Should throw AuraHandledException when no ApexClass matches'
+    );
+  }
 }

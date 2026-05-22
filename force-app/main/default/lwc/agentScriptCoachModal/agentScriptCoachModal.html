@@ -3,36 +3,42 @@
   <lightning-modal-body>
     <div class="slds-card">
       <template lwc:if={displaySpinner}>
-        <div class="slds-p-top_xx-large">
-          <lightning-spinner
-            alternative-text="Loading"
-            size="medium"
-            variant="brand"
-          ></lightning-spinner>
+        <div class="slds-grid slds-grid_vertical slds-grid_align-center">
+          <div class="slds-is-relative" style="height: 40px; width: 100%">
+            <lightning-spinner
+              alternative-text="Loading"
+              size="medium"
+              variant="brand"
+            ></lightning-spinner>
+          </div>
+          <p
+            class="slds-text-align_center slds-text-title_bold slds-m-top_medium"
+          >
+            {thinkingMessage}
+          </p>
         </div>
       </template>
 
       <template lwc:if={displayExtensionIllustration}>
         <div class="slds-p-around_medium">
-          <div
-            class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small"
-            role="status"
+          <lightning-empty-state
+            title="Hmm..."
+            illustration-name="noresults:search"
           >
-            <div class="slds-media__figure">
-              <lightning-icon
-                size="small"
-                icon-name="utility:info"
-                alternative-text="info"
-                variant="inverse"
-              ></lightning-icon>
-            </div>
-            <div class="slds-media__body">
-              <p>
-                Ensure Agentforce is enabled in Einstein Setup and the
-                Agentforce Extension package is installed.
-              </p>
-            </div>
-          </div>
+            <p slot="description">
+              Looks like you may have not installed the Agentforce dependent
+              extension managed package. Or you don't have the necessary
+              permissions or configuration to perform Agentforce related
+              functionalities. Please contact your admin for further
+              assistance...
+            </p>
+            <lightning-button
+              variant="brand"
+              label="Install Managed Package"
+              slot="cta"
+              onclick={handleExtensionInstall}
+            ></lightning-button>
+          </lightning-empty-state>
         </div>
       </template>
 
@@ -156,22 +162,24 @@
                         ></span>
                       </div>
                       <template lwc:if={category.notes}>
-                        <p
-                          class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small"
-                        >
-                          {category.notes}
-                        </p>
+                        <p class="slds-m-top_xx-small">{category.notes}</p>
                       </template>
                     </div>
                   </template>
                 </template>
                 <template lwc:else>
-                  <p class="slds-p-around_small slds-text-color_weak">
-                    No score data available.
-                  </p>
+                  <div class="slds-p-around_medium">
+                    <lightning-empty-state
+                      title="No Scores Available"
+                      illustration-name="success:new"
+                    >
+                      <p slot="description">
+                        No score data is available for this analysis yet.
+                      </p>
+                    </lightning-empty-state>
+                  </div>
                 </template>
               </lightning-tab>
-
               <lightning-tab
                 label="Subagents"
                 icon-name="standard:topic2"
@@ -221,9 +229,16 @@
                   </template>
                 </template>
                 <template lwc:else>
-                  <p class="slds-p-around_small slds-text-color_weak">
-                    No subagent analysis available.
-                  </p>
+                  <div class="slds-p-around_medium">
+                    <lightning-empty-state
+                      title="No Subagent Analysis"
+                      illustration-name="success:new"
+                    >
+                      <p slot="description">
+                        No subagent analysis is available for this AgentScript.
+                      </p>
+                    </lightning-empty-state>
+                  </div>
                 </template>
               </lightning-tab>
 
@@ -233,75 +248,174 @@
                 value="actions"
               >
                 <template lwc:if={hasActions}>
-                  <template for:each={parsedResponse.actions} for:item="action">
+                  <div
+                    class="slds-border_bottom slds-border_left slds-border_right slds-border_top slds-box slds-box_xx-small slds-p-around_medium"
+                  >
+                    <lightning-card
+                      title="All Actions"
+                      icon-name="standard:actions_and_buttons"
+                    >
+                      <template lwc:if={hasNavigableActions}>
+                        <lightning-button-group slot="actions">
+                          <lightning-button
+                            label={verifyTargetsLabel}
+                            icon-name={verifyTargetsIcon}
+                            disabled={verifyTargetsDisabled}
+                            onclick={handleVerifyTargets}
+                            icon-position="right"
+                          ></lightning-button>
+                        </lightning-button-group>
+                      </template>
+                      <div class="slds-card__body slds-card__body_inner">
+                        <template
+                          for:each={parsedResponse.actions}
+                          for:item="action"
+                        >
+                          <div
+                            key={action.key}
+                            class="slds-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
+                          >
+                            <lightning-card
+                              icon-name={action.iconName}
+                              title={action.label}
+                            >
+                              <template lwc:if={action.hasAvailableWhen}>
+                                <lightning-badge
+                                  slot="actions"
+                                  label="Gated"
+                                  class="slds-theme_success"
+                                ></lightning-badge>
+                              </template>
+                              <span slot="actions" class="slds-m-left_x-small">
+                                <span class="slds-text-body_small"
+                                  >Input:
+                                </span>
+                                <lightning-badge
+                                  label={action.inputQuality}
+                                  class={action.inputQualityClass}
+                                ></lightning-badge>
+                              </span>
+                              <span slot="actions" class="slds-m-left_x-small">
+                                <span class="slds-text-body_small"
+                                  >Output:
+                                </span>
+                                <lightning-badge
+                                  label={action.outputQuality}
+                                  class={action.outputQualityClass}
+                                ></lightning-badge>
+                              </span>
+                              <template lwc:if={action.hasVerification}>
+                                <span
+                                  slot="actions"
+                                  class="slds-m-left_x-small"
+                                >
+                                  <lightning-badge
+                                    label={action.verificationLabel}
+                                    class={action.verificationClass}
+                                  ></lightning-badge>
+                                </span>
+                              </template>
+                              <template lwc:if={action.isNavigableAndFound}>
+                                <lightning-button-group
+                                  class="slds-m-left_x-small"
+                                  slot="actions"
+                                >
+                                  <lightning-button-icon
+                                    icon-name="utility:new_window"
+                                    tooltip="Navigate to Target"
+                                    variant="border-filled"
+                                    data-target-type={action.parsedTargetType}
+                                    data-name={action.parsedName}
+                                    data-namespace={action.parsedNamespace}
+                                    onclick={handleNavigateToTarget}
+                                  >
+                                  </lightning-button-icon>
+                                </lightning-button-group>
+                              </template>
+                              <div
+                                class="slds-card__body slds-card__body_inner"
+                              >
+                                <div
+                                  class="slds-grid slds-grid_vertical-center slds-m-bottom_xx-small"
+                                >
+                                  <div class="slds-text-title_bold">
+                                    {action.target}
+                                  </div>
+                                </div>
+                                <template lwc:if={action.hasSuggestions}>
+                                  <ul
+                                    class="slds-list_dotted slds-m-top_x-small"
+                                  >
+                                    <template
+                                      for:each={action.suggestions}
+                                      for:item="suggestion"
+                                    >
+                                      <li
+                                        key={suggestion}
+                                        class="slds-text-body_small"
+                                      >
+                                        {suggestion}
+                                      </li>
+                                    </template>
+                                  </ul>
+                                </template>
+                              </div>
+                            </lightning-card>
+                          </div>
+                        </template>
+                      </div>
+                    </lightning-card>
+                  </div>
+                </template>
+                <template lwc:else>
+                  <div class="slds-p-around_medium">
+                    <lightning-empty-state
+                      title="No Action Analysis"
+                      illustration-name="success:new"
+                    >
+                      <p slot="description">
+                        No action analysis is available for this AgentScript.
+                      </p>
+                    </lightning-empty-state>
+                  </div>
+                </template>
+              </lightning-tab>
+              <lightning-tab
+                label="Improvements"
+                icon-name="standard:sub_metric"
+                value="improvements"
+              >
+                <template lwc:if={hasImprovements}>
+                  <template
+                    for:each={parsedResponse.improvements}
+                    for:item="improvement"
+                  >
                     <div
-                      key={action.key}
+                      key={improvement.key}
                       class="slds-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
                     >
                       <lightning-card
-                        icon-name={action.iconName}
-                        title={action.label}
+                        icon-name="standard:metric"
+                        title={improvement.title}
                       >
-                        <template lwc:if={action.hasAvailableWhen}>
-                          <lightning-badge
-                            slot="actions"
-                            label="Gated"
-                            class="slds-theme_success"
-                          ></lightning-badge>
-                        </template>
-                        <span slot="actions" class="slds-m-left_xx-small">
-                          <span class="slds-text-body_small">Input: </span>
-                          <lightning-badge
-                            label={action.inputQuality}
-                            class={action.inputQualityClass}
-                          ></lightning-badge>
-                        </span>
-                        <span slot="actions" class="slds-m-left_xx-small">
-                          <span class="slds-text-body_small">Output: </span>
-                          <lightning-badge
-                            label={action.outputQuality}
-                            class={action.outputQualityClass}
-                          ></lightning-badge>
-                        </span>
-                        <template lwc:if={action.isNavigable}>
-                          <lightning-button-group
-                            class="slds-m-left_x-small"
-                            slot="actions"
-                          >
-                            <lightning-button-icon
-                              icon-name="utility:new_window"
-                              tooltip="Navigate to Target Component"
-                              variant="border-filled"
-                              data-target-type={action.parsedTargetType}
-                              data-name={action.parsedName}
-                              data-namespace={action.parsedNamespace}
-                              onclick={handleNavigateToTarget}
-                            >
-                            </lightning-button-icon>
-                          </lightning-button-group>
-                        </template>
+                        <lightning-badge
+                          slot="actions"
+                          label={improvement.priority}
+                          class={improvement.priorityClass}
+                        ></lightning-badge>
+                        <lightning-badge
+                          slot="actions"
+                          label={improvement.category}
+                          class="slds-m-left_x-small slds-theme_inverse"
+                        ></lightning-badge>
                         <div class="slds-card__body slds-card__body_inner">
-                          <div
-                            class="slds-grid slds-grid_vertical-center slds-m-bottom_xx-small"
-                          >
-                            <div class="slds-text-title_bold">
-                              {action.target}
-                            </div>
-                          </div>
-                          <template lwc:if={action.hasSuggestions}>
-                            <ul class="slds-list_dotted slds-m-top_x-small">
-                              <template
-                                for:each={action.suggestions}
-                                for:item="suggestion"
-                              >
-                                <li
-                                  key={suggestion}
-                                  class="slds-text-body_small"
-                                >
-                                  {suggestion}
-                                </li>
-                              </template>
-                            </ul>
+                          <p class="slds-text-body_small slds-m-top_xx-small">
+                            {improvement.description}
+                          </p>
+                          <template lwc:if={improvement.codeSnippet}>
+                            <pre
+                              class="code-snippet slds-m-top_x-small"
+                            ><code>{improvement.codeSnippet}</code></pre>
                           </template>
                         </div>
                       </lightning-card>
@@ -309,12 +423,19 @@
                   </template>
                 </template>
                 <template lwc:else>
-                  <p class="slds-p-around_small slds-text-color_weak">
-                    No action analysis available.
-                  </p>
+                  <div class="slds-p-around_medium">
+                    <lightning-empty-state
+                      title="No Improvements Suggested"
+                      illustration-name="success:new"
+                    >
+                      <p slot="description">
+                        No improvement suggestions are available for this
+                        AgentScript.
+                      </p>
+                    </lightning-empty-state>
+                  </div>
                 </template>
               </lightning-tab>
-
               <lightning-tab
                 label="Variables"
                 icon-name="standard:variable"
@@ -386,58 +507,60 @@
                   </table>
                 </template>
                 <template lwc:else>
-                  <p class="slds-p-around_small slds-text-color_weak">
-                    No variable analysis available.
-                  </p>
+                  <div class="slds-p-around_medium">
+                    <lightning-empty-state
+                      title="No Variable Analysis"
+                      illustration-name="success:new"
+                    >
+                      <p slot="description">
+                        No variable analysis is available for this AgentScript.
+                      </p>
+                    </lightning-empty-state>
+                  </div>
                 </template>
               </lightning-tab>
-
               <lightning-tab
-                label="Improvements"
-                icon-name="standard:metric"
-                value="improvements"
+                label="Safety"
+                icon-name="custom:custom91"
+                value="safety"
               >
-                <template lwc:if={hasImprovements}>
-                  <template
-                    for:each={parsedResponse.improvements}
-                    for:item="improvement"
-                  >
+                <template lwc:if={hasSafetyFindings}>
+                  <template for:each={safetyFindings} for:item="finding">
                     <div
-                      key={improvement.key}
+                      key={finding.key}
                       class="slds-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
                     >
                       <lightning-card
-                        icon-name="standard:sub_metric"
-                        title={improvement.title}
+                        icon-name="standard:record_consent"
+                        title={finding.category}
                       >
                         <lightning-badge
                           slot="actions"
-                          label={improvement.priority}
-                          class={improvement.priorityClass}
-                        ></lightning-badge>
-                        <lightning-badge
-                          slot="actions"
-                          label={improvement.category}
-                          class="slds-m-left_xx-small slds-theme_inverse"
+                          label={finding.severity}
+                          class={finding.severityClass}
                         ></lightning-badge>
                         <div class="slds-card__body slds-card__body_inner">
-                          <p class="slds-text-body_small slds-m-top_xx-small">
-                            {improvement.description}
-                          </p>
-                          <template lwc:if={improvement.codeSnippet}>
-                            <pre
-                              class="code-snippet slds-m-top_x-small"
-                            ><code>{improvement.codeSnippet}</code></pre>
-                          </template>
+                          <div>{finding.description}</div>
+                          <div>
+                            <strong>Mitigation: </strong>{finding.mitigation}
+                          </div>
                         </div>
                       </lightning-card>
                     </div>
                   </template>
                 </template>
                 <template lwc:else>
-                  <p class="slds-p-around_small slds-text-color_weak">
-                    No improvement suggestions available.
-                  </p>
+                  <div class="slds-p-around_medium">
+                    <lightning-empty-state
+                      title="No Safety Findings"
+                      illustration-name="success:new"
+                    >
+                      <p slot="description">
+                        No safety findings were detected. This agent passes all
+                        seven safety subcategories.
+                      </p>
+                    </lightning-empty-state>
+                  </div>
                 </template>
               </lightning-tab>
             </lightning-tabset>

@@ -176,7 +176,8 @@ export default class InAppGuidanceCard extends NavigationMixin(
       size: "large",
       scriptBody: script.body,
       scriptLabel: `${script.label}`,
-      scriptHeader: `Agentforce Generated${script.label} Analysis`
+      scriptHeader: `Agentforce Analysis - ${script.label}`,
+      currentPkgVersionId: this.currentPkgVersionId
     });
   }
 

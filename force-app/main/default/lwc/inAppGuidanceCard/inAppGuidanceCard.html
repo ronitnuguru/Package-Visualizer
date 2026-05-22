@@ -43,27 +43,23 @@
               Component Requirements
               <ol class="slds-list_ordered">
                 <li>
-                  Enable Agentforce in
-                  <a
-                    href="/lightning/setup/EinsteinGPTSetup/home"
-                    target="_blank"
-                    >Einstein Setup</a
-                  >
-                  and
-                  <a
-                    href="/lightning/setup/EinsteinCopilot/home"
-                    target="_blank"
-                    >Agent Studio</a
-                  >
+                  Enable Agentforce in&nbsp;
+                  <span class="slds-text-link">
+                    <a
+                      href="/lightning/setup/EinsteinGPTSetup/home"
+                      target="_blank"
+                      >Einstein Setup</a
+                    >
+                  </span>
+                  &nbsp;and&nbsp;
+                  <span class="slds-text-link">
+                    <a
+                      href="/lightning/setup/EinsteinCopilot/home"
+                      target="_blank"
+                      >Agent Studio</a
+                    >
+                  </span>
                 </li>
-                <!--
-                            <li>
-                                <a href="https://help.salesforce.com/s/articleView?id=data.c360_a_set_up.htm" target="_blank">Set Up and Maintain</a> Data360
-                            </li>
-                            <li>
-                                <a href="https://help.tableau.com/current/online/en-us/tableau_next_overview.htm" target="_blank">Setup</a> Tableau Next
-                            </li>
-                            -->
               </ol>
             </div>
           </div>
@@ -187,12 +183,14 @@
                         {script.label}
                       </h3>
                       <lightning-button-group slot="actions">
-                        <lightning-button-icon
+                        <lightning-button
+                          label="Generate"
+                          variant="brand"
                           icon-name="utility:sparkles"
-                          variant="border-filled"
+                          icon-position="right"
                           data-script-id={script.id}
                           onclick={handleAgentScriptCoach}
-                        ></lightning-button-icon>
+                        ></lightning-button>
                         <lightning-button-icon
                           icon-name="utility:copy"
                           variant="border-filled"

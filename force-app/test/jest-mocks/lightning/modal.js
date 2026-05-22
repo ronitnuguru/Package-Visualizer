@@ -1,0 +1,12 @@
+import { LightningElement, api } from "lwc";
+
+export default class LightningModal extends LightningElement {
+  @api label;
+  @api size;
+
+  close() {}
+
+  static open() {
+    return Promise.resolve();
+  }
+}

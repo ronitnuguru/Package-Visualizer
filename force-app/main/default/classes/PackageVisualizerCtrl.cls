@@ -1000,29 +1000,32 @@ public with sharing class PackageVisualizerCtrl {
     String name,
     String namespace
   ) {
-    try {
-      if (targetType == 'apex') {
-        String queryString = 'SELECT Id FROM ApexClass WHERE Name = :name';
-        if (String.isNotBlank(namespace)) {
-          queryString += ' AND NamespacePrefix = :namespace';
-        }
-        queryString += ' LIMIT 1';
-        sObject s = Database.query(queryString);
-        return s.Id;
-      } else if (targetType == 'flow') {
-        String queryString = 'SELECT Id, FlowDefinition FROM FlowRecord WHERE Name = :name';
-        if (String.isNotBlank(namespace)) {
-          queryString += ' AND NamespacePrefix = :namespace';
-        }
-        queryString += ' LIMIT 1';
-        sObject s = Database.query(queryString);
-        return s.Id;
-      }
+    String sObjectLabel;
+    String queryString;
+    if (targetType == 'apex') {
+      sObjectLabel = 'ApexClass';
+      queryString = 'SELECT Id FROM ApexClass WHERE Name = :name';
+    } else if (targetType == 'flow') {
+      sObjectLabel = 'FlowRecord';
+      queryString = 'SELECT Id, FlowDefinition FROM FlowRecord WHERE Name = :name';
+    } else {
       throw new AuraHandledException('Unsupported target type: ' + targetType);
-    } catch (Exception e) {
-      throw new AuraHandledException(
-        'Unable to get record ID for ' + targetType
-      );
     }
+    if (String.isNotBlank(namespace)) {
+      queryString += ' AND NamespacePrefix = :namespace';
+    }
+    queryString += ' WITH USER_MODE LIMIT 1';
+    List<SObject> results;
+    try {
+      results = Database.query(queryString);
+    } catch (System.QueryException qe) {
+      throw new AuraHandledException('Permission denied: ' + sObjectLabel);
+    } catch (System.NoAccessException nae) {
+      throw new AuraHandledException('Permission denied: ' + sObjectLabel);
+    }
+    if (results == null || results.isEmpty()) {
+      throw new AuraHandledException('Not found: ' + name);
+    }
+    return (String) results[0].get('Id');
   }
 }
