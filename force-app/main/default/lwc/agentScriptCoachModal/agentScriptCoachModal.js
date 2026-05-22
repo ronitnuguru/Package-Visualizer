@@ -458,11 +458,16 @@ export default class AgentScriptCoachModal extends LightningModal {
         }));
       }
       if (parsed.subagents) {
-        parsed.subagents = parsed.subagents.map((item, idx) => ({
-          ...item,
-          key: `subagent-${idx}`,
-          hasSuggestions: item.suggestions && item.suggestions.length > 0
-        }));
+        parsed.subagents = parsed.subagents.map((item, idx) => {
+          const sourceBlock = this._extractSubagentBlock(item.name);
+          return {
+            ...item,
+            key: `subagent-${idx}`,
+            hasSuggestions: item.suggestions && item.suggestions.length > 0,
+            sourceBlock,
+            hasSourceBlock: !!sourceBlock
+          };
+        });
       }
       if (parsed.actions) {
         parsed.actions = parsed.actions.map((item, idx) => {
@@ -624,6 +629,39 @@ export default class AgentScriptCoachModal extends LightningModal {
         new ShowToastEvent({
           title: "Copy failed",
           message: error.message || "Unable to copy markdown to clipboard",
+          variant: "error"
+        })
+      );
+    }
+  }
+
+  async handleCopySubagentSource(event) {
+    const subagentName = event.currentTarget.dataset.name;
+    const sourceBlock = this._extractSubagentBlock(subagentName);
+    if (!sourceBlock) {
+      this.dispatchEvent(
+        new ShowToastEvent({
+          title: "Source Not Found",
+          message: `Could not find source block for "${subagentName}"`,
+          variant: "warning"
+        })
+      );
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(sourceBlock);
+      this.dispatchEvent(
+        new ShowToastEvent({
+          title: "Source Copied",
+          message: `AgentScript Subagent block for "${subagentName}" copied to clipboard`,
+          variant: "success"
+        })
+      );
+    } catch (error) {
+      this.dispatchEvent(
+        new ShowToastEvent({
+          title: "Copy Failed",
+          message: error.message || "Unable to copy to clipboard",
           variant: "error"
         })
       );
@@ -1132,6 +1170,34 @@ export default class AgentScriptCoachModal extends LightningModal {
     if (target.startsWith("generatePromptResponse"))
       return "standard:prompt_builder";
     return "standard:invocable_action";
+  }
+
+  _extractSubagentBlock(name) {
+    if (!this.scriptBody || !name) return null;
+    const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const blockStartPattern = new RegExp(
+      `^((?:topic|subagent)\\s+${escapedName}\\s*:.*)`,
+      "m"
+    );
+    const match = this.scriptBody.match(blockStartPattern);
+    if (!match) return null;
+    const startIndex = match.index;
+    const remainingText = this.scriptBody.substring(
+      startIndex + match[0].length
+    );
+    const nextBlockPattern =
+      /^(?:system:|config:|variables:|connection\b|knowledge:|language:|start_agent\b|subagent\b|topic\b)/m;
+    const nextMatch = remainingText.match(nextBlockPattern);
+    let blockText;
+    if (nextMatch) {
+      blockText = this.scriptBody.substring(
+        startIndex,
+        startIndex + match[0].length + nextMatch.index
+      );
+    } else {
+      blockText = this.scriptBody.substring(startIndex);
+    }
+    return blockText.trimEnd();
   }
 
   startThinkingAnimation() {

@@ -198,11 +198,23 @@
                         title={subagent.label}
                         icon-name="standard:topic"
                       >
-                        <lightning-badge
+                        <div
                           slot="actions"
-                          class="slds-theme_inverse"
-                          label={subagent.reasoningMode}
-                        ></lightning-badge>
+                          class="slds-grid slds-grid_vertical-align-center"
+                        >
+                          <lightning-badge
+                            class="slds-theme_inverse slds-m-right_x-small"
+                            label={subagent.reasoningMode}
+                          ></lightning-badge>
+                          <template lwc:if={subagent.hasSourceBlock}>
+                            <lightning-button-icon
+                              icon-name="utility:copy"
+                              variant="border-filled"
+                              data-name={subagent.name}
+                              onclick={handleCopySubagentSource}
+                            ></lightning-button-icon>
+                          </template>
+                        </div>
                         <div class="slds-card__body slds-card__body_inner">
                           <p class="slds-text-body_small">{subagent.purpose}</p>
                           <p class="slds-text-body_small">
@@ -222,6 +234,21 @@
                                 </li>
                               </template>
                             </ul>
+                          </template>
+                          <template lwc:if={subagent.hasSourceBlock}>
+                            <lightning-accordion
+                              class=""
+                              allow-multiple-sections-open
+                            >
+                              <lightning-accordion-section
+                                name="source"
+                                label="Subagent Block"
+                              >
+                                <pre
+                                  class="code-snippet slds-m-top_x-small"
+                                ><code>{subagent.sourceBlock}</code></pre>
+                              </lightning-accordion-section>
+                            </lightning-accordion>
                           </template>
                         </div>
                       </lightning-card>
@@ -253,7 +280,7 @@
                   >
                     <lightning-card
                       title="All Actions"
-                      icon-name="standard:actions_and_buttons"
+                      icon-name="standard:code_playground"
                     >
                       <template lwc:if={hasNavigableActions}>
                         <lightning-button-group slot="actions">
