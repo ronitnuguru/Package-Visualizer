@@ -3,36 +3,41 @@ import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { AGENT_SCRIPTS } from "./agentScriptsData.js";
 import getInstalledPackages from "@salesforce/apex/PackageVisualizerCtrl.getInstalledPackages";
+import AgentScriptCoachModal from "c/agentScriptCoachModal";
 
 function normalizeId15(id) {
-    if (!id) {
-        return id;
-    }
-    return id.length >= 15 ? id.substring(0, 15) : id;
+  if (!id) {
+    return id;
+  }
+  return id.length >= 15 ? id.substring(0, 15) : id;
 }
 
-export default class InAppGuidanceCard extends NavigationMixin(LightningElement) {
-    displaySpinner;
-    displayInAppPrompt;
+export default class InAppGuidanceCard extends NavigationMixin(
+  LightningElement
+) {
+  displaySpinner;
+  displayInAppPrompt;
 
-    // Agentforce Extension package version ID
-    currentPkgVersionId = '04tRh000001bMYrIAM';
+  // Agentforce Extension package version ID
+  currentPkgVersionId = "04tRh000001bMYrIAM";
 
-    title = 'AgentExchange Showcase';
-    iconName = 'utility:salesforce1';
-    agentScripts = AGENT_SCRIPTS;
-    resourcesData = [
-        {
-            label: 'Agentforce Extension',
-            description: 'Extend agentic and AI capabilities to help ease your packaging and ISV development cycle.',
-            icon: 'standard:agent_astro',
-            listingLink: 'https://appexchange.salesforce.com/appxListingDetail?listingId=632af825-58e1-4e61-a2b6-8b008449ca03',
-            installLink: `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`,
-            helpGuideLink: 'https://salesforce.quip.com/f3SWA340YbFH',
-            helpGuideIcon: 'utility:quip',
-            subscriberPackageId: '033Rh000002JY85IAG',
-            subscriberPackageVersionId: this.currentPkgVersionId
-        }/*,
+  title = "AgentExchange Showcase";
+  iconName = "utility:salesforce1";
+  agentScripts = AGENT_SCRIPTS;
+  resourcesData = [
+    {
+      label: "Agentforce Extension",
+      description:
+        "Extend agentic and AI capabilities to help ease your packaging and ISV development cycle.",
+      icon: "standard:agent_astro",
+      listingLink:
+        "https://appexchange.salesforce.com/appxListingDetail?listingId=632af825-58e1-4e61-a2b6-8b008449ca03",
+      installLink: `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`,
+      helpGuideLink: "https://salesforce.quip.com/f3SWA340YbFH",
+      helpGuideIcon: "utility:quip",
+      subscriberPackageId: "033Rh000002JY85IAG",
+      subscriberPackageVersionId: this.currentPkgVersionId
+    } /*,
         {
             label: 'Data Kit Extension',
             description: 'Understand package adoption and feature usage via Data360 and AppAnalytics.',
@@ -51,159 +56,179 @@ export default class InAppGuidanceCard extends NavigationMixin(LightningElement)
             //tooltip: 'Requires Agentforce, Data360 and Tableau Next'
         }
         */
-    ];
+  ];
 
-    connectedCallback(){
-        this.displaySpinner = true;
-        const packageIds = this.resourcesData.map(r => r.subscriberPackageId);
-        getInstalledPackages({ subscriberPackageIds: packageIds })
-            .then((result) => {
-                const installedMap = new Map();
-                for (const row of result) {
-                    installedMap.set(normalizeId15(row.subscriberPackageId), row.subscriberPackageVersionId);
-                }
-                this.resourcesData = this.resourcesData.map((r) => {
-                    const installedVersionId = installedMap.get(normalizeId15(r.subscriberPackageId));
-                    const hasPackage = installedVersionId !== undefined;
-                    const normalizedInstalled = normalizeId15(installedVersionId);
-                    const normalizedTarget = normalizeId15(r.subscriberPackageVersionId);
-                    const versionsMatch = hasPackage && normalizedInstalled === normalizedTarget;
-                    const isUpgradeAvailable = hasPackage && !versionsMatch;
-                    return {
-                        ...r,
-                        isInstalled: versionsMatch,
-                        isUpgradeAvailable
-                    };
-                });
+  connectedCallback() {
+    this.displaySpinner = true;
+    const packageIds = this.resourcesData.map((r) => r.subscriberPackageId);
+    getInstalledPackages({ subscriberPackageIds: packageIds })
+      .then((result) => {
+        const installedMap = new Map();
+        for (const row of result) {
+          installedMap.set(
+            normalizeId15(row.subscriberPackageId),
+            row.subscriberPackageVersionId
+          );
+        }
+        this.resourcesData = this.resourcesData.map((r) => {
+          const installedVersionId = installedMap.get(
+            normalizeId15(r.subscriberPackageId)
+          );
+          const hasPackage = installedVersionId !== undefined;
+          const normalizedInstalled = normalizeId15(installedVersionId);
+          const normalizedTarget = normalizeId15(r.subscriberPackageVersionId);
+          const versionsMatch =
+            hasPackage && normalizedInstalled === normalizedTarget;
+          const isUpgradeAvailable = hasPackage && !versionsMatch;
+          return {
+            ...r,
+            isInstalled: versionsMatch,
+            isUpgradeAvailable
+          };
+        });
+      })
+      .catch((error) => {
+        console.error("Error checking installed packages:", error);
+      })
+      .finally(() => {
+        this.displaySpinner = false;
+      });
+  }
+
+  handleSlackCommunity() {
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: `https://partnerblazer.slack.com/`
+      },
+      state: {
+        target: "_blank"
+      }
+    });
+  }
+
+  handleInAppPrompt() {
+    this.displayInAppPrompt = true;
+  }
+
+  handleInAppPromptCancel() {
+    this.displayInAppPrompt = false;
+  }
+
+  navigateToAgentExchangeListing(event) {
+    // Get the resource data from the event target's data attribute
+    const resourceIndex = event.target.dataset.index;
+    const selectedResource = this.resourcesData[resourceIndex];
+
+    // Navigate to the AgentExchange listing in a new tab
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: selectedResource.listingLink
+      },
+      state: {
+        target: "_blank"
+      }
+    });
+  }
+
+  handleInstall(event) {
+    // Get the resource data from the event target's data attribute
+    const resourceIndex = event.target.dataset.index;
+    const selectedResource = this.resourcesData[resourceIndex];
+
+    // Navigate to the install link in a new tab
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: selectedResource.installLink
+      },
+      state: {
+        target: "_blank"
+      }
+    });
+  }
+
+  navigateToHelpGuide(event) {
+    // Get the resource data from the event target's data attribute
+    const resourceIndex = event.target.dataset.index;
+    const selectedResource = this.resourcesData[resourceIndex];
+
+    // Navigate to the help guide in a new tab
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: selectedResource.helpGuideLink
+      },
+      state: {
+        target: "_blank"
+      }
+    });
+  }
+
+  handleAgentScriptCoach(event) {
+    const scriptId = event.currentTarget.dataset.scriptId;
+    const script = this.agentScripts.find((s) => s.id === scriptId);
+    if (!script || !script.body) {
+      return;
+    }
+    AgentScriptCoachModal.open({
+      size: "large",
+      scriptBody: script.body,
+      scriptLabel: `${script.label}`,
+      scriptHeader: `Agentforce Generated${script.label} Analysis`
+    });
+  }
+
+  handleCopyAgentScript(event) {
+    const scriptId = event.currentTarget.dataset.scriptId;
+    const script = this.agentScripts.find((s) => s.id === scriptId);
+    if (!script || !script.body) {
+      return;
+    }
+    const text = script.body;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(text)
+        .then(() => {
+          this.dispatchEvent(
+            new ShowToastEvent({
+              title: "Success",
+              message: "Text copied to clipboard",
+              variant: "success"
             })
-            .catch(error => {
-                console.error('Error checking installed packages:', error);
-            })
-            .finally(() => {
-                this.displaySpinner = false;
-            });
-    }
-
-    handleSlackCommunity(){
-        this[NavigationMixin.Navigate]({
-            type: "standard__webPage",
-            attributes: {
-              url: `https://partnerblazer.slack.com/`
-            },
-            state: {
-                target: "_blank"
-            }
+          );
+        })
+        .catch((err) => {
+          console.error("Failed to copy AgentScript:", err);
+          this.fallbackCopyToClipboard(text);
         });
+    } else {
+      this.fallbackCopyToClipboard(text);
     }
+  }
 
-    handleInAppPrompt() {
-        this.displayInAppPrompt = true;
+  fallbackCopyToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand("copy");
+      this.dispatchEvent(
+        new ShowToastEvent({
+          title: "Success",
+          message: "Text copied to clipboard",
+          variant: "success"
+        })
+      );
+    } catch (err) {
+      console.error("Fallback copy to clipboard failed:", err);
     }
-
-    handleInAppPromptCancel() {
-        this.displayInAppPrompt = false;
-    }
-
-    navigateToAgentExchangeListing(event) {
-        // Get the resource data from the event target's data attribute
-        const resourceIndex = event.target.dataset.index;
-        const selectedResource = this.resourcesData[resourceIndex];
-                
-        // Navigate to the AgentExchange listing in a new tab
-        this[NavigationMixin.Navigate]({
-            type: "standard__webPage",
-            attributes: {
-                url: selectedResource.listingLink
-            },
-            state: {
-                target: "_blank"
-            }
-        });
-    }
-
-    handleInstall(event) {
-        // Get the resource data from the event target's data attribute
-        const resourceIndex = event.target.dataset.index;
-        const selectedResource = this.resourcesData[resourceIndex];
-                
-        // Navigate to the install link in a new tab
-        this[NavigationMixin.Navigate]({
-            type: "standard__webPage",
-            attributes: {
-                url: selectedResource.installLink
-            },
-            state: {
-                target: "_blank"
-            }
-        });
-    }
-
-    navigateToHelpGuide(event) {
-        // Get the resource data from the event target's data attribute
-        const resourceIndex = event.target.dataset.index;
-        const selectedResource = this.resourcesData[resourceIndex];
-                
-        // Navigate to the help guide in a new tab
-        this[NavigationMixin.Navigate]({
-            type: "standard__webPage",
-            attributes: {
-                url: selectedResource.helpGuideLink
-            },
-            state: {
-                target: "_blank"
-            }
-        });
-    }
-
-    handleCopyAgentScript(event) {
-        const scriptId = event.currentTarget.dataset.scriptId;
-        const script = this.agentScripts.find((s) => s.id === scriptId);
-        if (!script || !script.body) {
-            return;
-        }
-        const text = script.body;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard
-                .writeText(text)
-                .then(() => {
-                    this.dispatchEvent(
-                        new ShowToastEvent({
-                            title: "Success",
-                            message: "Text copied to clipboard",
-                            variant: "success"
-                        })
-                    );
-                })
-                .catch((err) => {
-                    console.error("Failed to copy AgentScript:", err);
-                    this.fallbackCopyToClipboard(text);
-                });
-        } else {
-            this.fallbackCopyToClipboard(text);
-        }
-    }
-
-    fallbackCopyToClipboard(text) {
-        const textArea = document.createElement("textarea");
-        textArea.value = text;
-        textArea.style.position = "fixed";
-        textArea.style.left = "-999999px";
-        textArea.style.top = "-999999px";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        try {
-            document.execCommand("copy");
-            this.dispatchEvent(
-                new ShowToastEvent({
-                    title: "Success",
-                    message: "Text copied to clipboard",
-                    variant: "success"
-                })
-            );
-        } catch (err) {
-            console.error("Fallback copy to clipboard failed:", err);
-        }
-        document.body.removeChild(textArea);
-    }
+    document.body.removeChild(textArea);
+  }
 }

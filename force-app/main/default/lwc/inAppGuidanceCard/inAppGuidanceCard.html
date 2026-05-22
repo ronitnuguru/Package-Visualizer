@@ -1,43 +1,62 @@
 <template>
   <lightning-card>
-      <h3 slot="title" class="slds-truncate">
-          <lightning-icon 
-              icon-name={iconName}
-              size="medium"
-              class="slds-m-right_small card_header_icon"
-          ></lightning-icon>
-          {title}
-      </h3>
-      <lightning-button-group slot="actions">
-          <lightning-button-icon icon-name="utility:slack_conversations" variant="border-filled" tooltip="Partnerblazer Slack Community" onclick={handleSlackCommunity}></lightning-button-icon>
-      </lightning-button-group>
-      <div class="slds-card__body slds-card__body_inner">
-          <template if:true={displaySpinner}>
-              <lightning-spinner
-                alternative-text="Loading"
-                size="medium"
-                variant="brand"
-              ></lightning-spinner>
-          </template>
-            <template if:false={displaySpinner}>
-              <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small" role="status">
-                <div class="slds-media__figure">
-                    <lightning-icon
-                        size="small"
-                        icon-name="utility:info"
-                        alternative-text="info"
-                        title="info"
-                        variant="inverse"
-                    ></lightning-icon>
-                </div>
-                <div class="slds-media__body">
-                    <div>
-                        Component Requirements
-                        <ol class="slds-list_ordered">
-                            <li>
-                                Enable Agentforce in <a href="/lightning/setup/EinsteinGPTSetup/home" target="_blank">Einstein Setup</a> and <a href="/lightning/setup/EinsteinCopilot/home" target="_blank">Agent Studio</a> 
-                            </li>
-                            <!--
+    <h3 slot="title" class="slds-truncate">
+      <lightning-icon
+        icon-name={iconName}
+        size="medium"
+        class="slds-m-right_small card_header_icon"
+      ></lightning-icon>
+      {title}
+    </h3>
+    <lightning-button-group slot="actions">
+      <lightning-button-icon
+        icon-name="utility:slack_conversations"
+        variant="border-filled"
+        tooltip="Partnerblazer Slack Community"
+        onclick={handleSlackCommunity}
+      ></lightning-button-icon>
+    </lightning-button-group>
+    <div class="slds-card__body slds-card__body_inner">
+      <template if:true={displaySpinner}>
+        <lightning-spinner
+          alternative-text="Loading"
+          size="medium"
+          variant="brand"
+        ></lightning-spinner>
+      </template>
+      <template if:false={displaySpinner}>
+        <div
+          class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small"
+          role="status"
+        >
+          <div class="slds-media__figure">
+            <lightning-icon
+              size="small"
+              icon-name="utility:info"
+              alternative-text="info"
+              title="info"
+              variant="inverse"
+            ></lightning-icon>
+          </div>
+          <div class="slds-media__body">
+            <div>
+              Component Requirements
+              <ol class="slds-list_ordered">
+                <li>
+                  Enable Agentforce in
+                  <a
+                    href="/lightning/setup/EinsteinGPTSetup/home"
+                    target="_blank"
+                    >Einstein Setup</a
+                  >
+                  and
+                  <a
+                    href="/lightning/setup/EinsteinCopilot/home"
+                    target="_blank"
+                    >Agent Studio</a
+                  >
+                </li>
+                <!--
                             <li>
                                 <a href="https://help.salesforce.com/s/articleView?id=data.c360_a_set_up.htm" target="_blank">Set Up and Maintain</a> Data360
                             </li>
@@ -45,102 +64,165 @@
                                 <a href="https://help.tableau.com/current/online/en-us/tableau_next_overview.htm" target="_blank">Setup</a> Tableau Next
                             </li>
                             -->
-                        </ol>
-                    </div>
-                </div>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <lightning-tabset variant="scoped">
+          <lightning-tab label="Packages" icon-name="standard:shipment">
+            <template
+              for:each={resourcesData}
+              for:item="resource"
+              for:index="index"
+            >
+              <div
+                class="card-style slds-var-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
+                key={resource.label}
+              >
+                <lightning-card>
+                  <h3 slot="title" class="slds-truncate" title={resource.label}>
+                    <lightning-icon
+                      icon-name={resource.icon}
+                      size="medium"
+                      class="slds-m-right_small"
+                    ></lightning-icon>
+                    {resource.label}
+                  </h3>
+                  <lightning-button-group slot="actions">
+                    <template lwc:if={resource.listingLink}>
+                      <lightning-button-icon
+                        tooltip="AgentExchange Listing"
+                        variant="border-filled"
+                        icon-name="utility:cart"
+                        data-index={index}
+                        onclick={navigateToAgentExchangeListing}
+                      ></lightning-button-icon>
+                    </template>
+                    <template lwc:if={resource.helpGuideLink}>
+                      <lightning-button-icon
+                        tooltip="Setup Guide"
+                        variant="border-filled"
+                        icon-name={resource.helpGuideIcon}
+                        data-index={index}
+                        onclick={navigateToHelpGuide}
+                      ></lightning-button-icon>
+                    </template>
+                  </lightning-button-group>
+                  <div class="slds-card__body_inner">
+                    <p>{resource.description}</p>
+                  </div>
+                  <div
+                    slot="footer"
+                    class="slds-grid slds-grid_vertical-align-center"
+                  >
+                    <template lwc:if={resource.isUpgradeAvailable}>
+                      <lightning-button
+                        label="Upgrade"
+                        variant="brand"
+                        icon-name="utility:forward_up"
+                        icon-position="right"
+                        data-index={index}
+                        onclick={handleInstall}
+                      ></lightning-button>
+                    </template>
+                    <template lwc:elseif={resource.isInstalled}>
+                      <lightning-button
+                        label="Installed"
+                        variant="brand"
+                        icon-name="utility:success"
+                        disabled
+                        icon-position="right"
+                      ></lightning-button>
+                    </template>
+                    <template lwc:else>
+                      <lightning-button
+                        label="Install"
+                        variant="brand"
+                        icon-name="utility:download"
+                        icon-position="right"
+                        data-index={index}
+                        onclick={handleInstall}
+                      ></lightning-button>
+                    </template>
+                    <template lwc:if={resource.tooltip}>
+                      <lightning-helptext
+                        content={resource.tooltip}
+                        class="slds-var-m-left_xx-small"
+                      ></lightning-helptext>
+                    </template>
+                  </div>
+                </lightning-card>
               </div>
-              <lightning-tabset variant="scoped">
-                <lightning-tab label="Packages" icon-name="standard:shipment">
-                  <template for:each={resourcesData} for:item="resource" for:index="index">
-                    <div class="card-style slds-var-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small" key={resource.label}>
-                      <lightning-card>
-                        <h3 slot="title" class="slds-truncate" title={resource.label}>
-                          <lightning-icon 
-                              icon-name={resource.icon}
-                              size="medium"
-                              class="slds-m-right_small"
-                          ></lightning-icon>
-                          {resource.label}
-                        </h3>
-                        <lightning-button-group slot="actions">
-                          <template lwc:if={resource.listingLink}>
-                            <lightning-button-icon tooltip="AgentExchange Listing" variant="border-filled" icon-name="utility:cart" data-index={index} onclick={navigateToAgentExchangeListing}></lightning-button-icon>
-                          </template>
-                          <template lwc:if={resource.helpGuideLink}>
-                            <lightning-button-icon tooltip="Setup Guide" variant="border-filled" icon-name={resource.helpGuideIcon} data-index={index} onclick={navigateToHelpGuide}></lightning-button-icon>
-                          </template>
-                        </lightning-button-group>
-                        <div class="slds-card__body_inner">
-                          <p>{resource.description}</p>
-                        </div>
-                        <div slot="footer" class="slds-grid slds-grid_vertical-align-center">
-                          <template lwc:if={resource.isUpgradeAvailable}>
-                            <lightning-button label="Upgrade" variant="brand" icon-name="utility:forward_up" icon-position="right" data-index={index} onclick={handleInstall}></lightning-button>
-                          </template>
-                          <template lwc:elseif={resource.isInstalled}>
-                            <lightning-button label="Installed" variant="brand" icon-name="utility:success" disabled icon-position="right"></lightning-button>
-                          </template>
-                          <template lwc:else>
-                            <lightning-button label="Install" variant="brand" icon-name="utility:download" icon-position="right" data-index={index} onclick={handleInstall}></lightning-button>
-                          </template>
-                          <template lwc:if={resource.tooltip}>
-                            <lightning-helptext content={resource.tooltip} class="slds-var-m-left_xx-small"></lightning-helptext>
-                          </template>
-                        </div>
-                      </lightning-card>
-                    </div>
-                  </template>
-                </lightning-tab>
-                <lightning-tab label="AgentScripts" icon-name="standard:code_set_bundle">
-                    <lightning-accordion
-                        active-section-name="card-style slds-border_top slds-border_right slds-border_bottom slds-border_left"
-                        allow-multiple-sections-open
-                        class="slds-border_top slds-border_right slds-border_bottom slds-border_left card-style agentscript-accordion"
-                    >
-                        <template for:each={agentScripts} for:item="script">
-                            <lightning-accordion-section
-                                key={script.id}
-                                name={script.id}
-                                label={script.label}
-                            >
-                                <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left card-style">
-                                    <lightning-card>
-                                        <h3 slot="title" class="slds-truncate" title={script.label}>
-                                            <lightning-icon
-                                                icon-name="standard:code_set"
-                                                size="small"
-                                                class="slds-m-right_small"
-                                            ></lightning-icon>
-                                            {script.label}
-                                        </h3>
-                                        <lightning-button-group slot="actions">
-                                            <lightning-button-icon
-                                                icon-name="utility:copy"
-                                                variant="border-filled"
-                                                tooltip="Copy to Clipboard"
-                                                data-script-id={script.id}
-                                                onclick={handleCopyAgentScript}
-                                            ></lightning-button-icon>
-                                            <lightning-button-icon
-                                                icon-name="utility:prompt"
-                                                variant="border-filled"
-                                                tooltip="In App Guidance"
-                                                onclick={handleInAppPrompt}
-                                            ></lightning-button-icon>
-                                        </lightning-button-group>
-                                        <div class="slds-card__body slds-card__body_inner slds-p-around_none">
-                                            <pre class="agentscript-pre slds-scrollable_y"><code class="agentscript-code">{script.body}</code></pre>
-                                        </div>
-                                    </lightning-card>
-                                </div>
-                            </lightning-accordion-section>
-                        </template>
-                    </lightning-accordion>
-                </lightning-tab>
-            </lightning-tabset>
-
-          </template>
-      </div>
+            </template>
+          </lightning-tab>
+          <lightning-tab
+            label="AgentScripts"
+            icon-name="standard:code_set_bundle"
+          >
+            <lightning-accordion
+              active-section-name="card-style slds-border_top slds-border_right slds-border_bottom slds-border_left"
+              allow-multiple-sections-open
+              class="slds-border_top slds-border_right slds-border_bottom slds-border_left card-style agentscript-accordion"
+            >
+              <template for:each={agentScripts} for:item="script">
+                <lightning-accordion-section
+                  key={script.id}
+                  name={script.id}
+                  label={script.label}
+                >
+                  <div
+                    class="slds-border_top slds-border_right slds-border_bottom slds-border_left card-style"
+                  >
+                    <lightning-card>
+                      <h3
+                        slot="title"
+                        class="slds-truncate"
+                        title={script.label}
+                      >
+                        <lightning-icon
+                          icon-name="standard:code_set"
+                          size="small"
+                          class="slds-m-right_small"
+                        ></lightning-icon>
+                        {script.label}
+                      </h3>
+                      <lightning-button-group slot="actions">
+                        <lightning-button-icon
+                          icon-name="utility:sparkles"
+                          variant="border-filled"
+                          data-script-id={script.id}
+                          onclick={handleAgentScriptCoach}
+                        ></lightning-button-icon>
+                        <lightning-button-icon
+                          icon-name="utility:copy"
+                          variant="border-filled"
+                          tooltip="Copy to Clipboard"
+                          data-script-id={script.id}
+                          onclick={handleCopyAgentScript}
+                        ></lightning-button-icon>
+                        <lightning-button-icon
+                          icon-name="utility:prompt"
+                          variant="border-filled"
+                          tooltip="In App Guidance"
+                          onclick={handleInAppPrompt}
+                        ></lightning-button-icon>
+                      </lightning-button-group>
+                      <div
+                        class="slds-card__body slds-card__body_inner slds-p-around_none"
+                      >
+                        <pre
+                          class="agentscript-pre slds-scrollable_y"
+                        ><code class="agentscript-code">{script.body}</code></pre>
+                      </div>
+                    </lightning-card>
+                  </div>
+                </lightning-accordion-section>
+              </template>
+            </lightning-accordion>
+          </lightning-tab>
+        </lightning-tabset>
+      </template>
+    </div>
   </lightning-card>
 
   <template if:true={displayInAppPrompt}>

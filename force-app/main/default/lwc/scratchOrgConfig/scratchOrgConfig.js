@@ -566,7 +566,13 @@ export const DEFAULT_FIELDS = {
   devHubSettings: [boolField("enableDevOpsCenterGA")],
   revenueManagementSettings: [boolField("enableCoreCPQ")],
   orderManagementSettings: [boolField("enableOrderManagement")],
-  orderSettings: [boolField("enableOrders")],
+  orderSettings: [
+    boolField("enableOrders"),
+    boolField("enableNegativeQuantity"),
+    boolField("enableZeroQuantity"),
+    boolField("enableEnhancedCommerceOrders"),
+    boolField("enableOrderEvents")
+  ],
   fieldServiceSettings: [
     boolField("enableWorkOrders"),
     boolField("enableWorkPlansAutoGeneration"),
@@ -582,7 +588,7 @@ export const TEMPLATES = {
   agentforce: {
     label: "Agentforce",
     edition: "Partner Developer",
-    features: ["Einstein1AIPlatform", "Chatbot"],
+    features: ["Einstein1AIPlatform"],
     settings: {
       einsteinGptSettings: { enableEinsteinGptPlatform: true },
       botSettings: { enableBots: true }

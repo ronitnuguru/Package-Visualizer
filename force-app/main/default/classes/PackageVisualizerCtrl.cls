@@ -170,7 +170,9 @@ public with sharing class PackageVisualizerCtrl {
   }
 
   @AuraEnabled(cacheable=true)
-  public static ObjectWrappers.PackageSubscriberWrapper getPackageSubscriberByOrgKey(String orgKey) {
+  public static ObjectWrappers.PackageSubscriberWrapper getPackageSubscriberByOrgKey(
+    String orgKey
+  ) {
     return Package2Interface.getPackageSubscriberByOrgKey(orgKey);
   }
 
@@ -990,5 +992,37 @@ public with sharing class PackageVisualizerCtrl {
       return versions[0];
     }
     return null;
+  }
+
+  @AuraEnabled(cacheable=true)
+  public static String getTargetRecordId(
+    String targetType,
+    String name,
+    String namespace
+  ) {
+    try {
+      if (targetType == 'apex') {
+        String queryString = 'SELECT Id FROM ApexClass WHERE Name = :name';
+        if (String.isNotBlank(namespace)) {
+          queryString += ' AND NamespacePrefix = :namespace';
+        }
+        queryString += ' LIMIT 1';
+        sObject s = Database.query(queryString);
+        return s.Id;
+      } else if (targetType == 'flow') {
+        String queryString = 'SELECT Id, FlowDefinition FROM FlowRecord WHERE Name = :name';
+        if (String.isNotBlank(namespace)) {
+          queryString += ' AND NamespacePrefix = :namespace';
+        }
+        queryString += ' LIMIT 1';
+        sObject s = Database.query(queryString);
+        return s.Id;
+      }
+      throw new AuraHandledException('Unsupported target type: ' + targetType);
+    } catch (Exception e) {
+      throw new AuraHandledException(
+        'Unable to get record ID for ' + targetType
+      );
+    }
   }
 }

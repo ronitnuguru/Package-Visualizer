@@ -1,0 +1,475 @@
+<template>
+  <lightning-modal-header label={scriptHeader}> </lightning-modal-header>
+  <lightning-modal-body>
+    <div class="slds-card">
+      <template lwc:if={displaySpinner}>
+        <div class="slds-p-top_xx-large">
+          <lightning-spinner
+            alternative-text="Loading"
+            size="medium"
+            variant="brand"
+          ></lightning-spinner>
+        </div>
+      </template>
+
+      <template lwc:if={displayExtensionIllustration}>
+        <div class="slds-p-around_medium">
+          <div
+            class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small"
+            role="status"
+          >
+            <div class="slds-media__figure">
+              <lightning-icon
+                size="small"
+                icon-name="utility:info"
+                alternative-text="info"
+                variant="inverse"
+              ></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+              <p>
+                Ensure Agentforce is enabled in Einstein Setup and the
+                Agentforce Extension package is installed.
+              </p>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <template lwc:if={displayResult}>
+        <template lwc:if={isRawFallback}>
+          <div class="slds-p-around_medium">
+            <lightning-formatted-rich-text
+              value={parsedResponse.rawResponse}
+            ></lightning-formatted-rich-text>
+          </div>
+        </template>
+
+        <template lwc:if={parsedResponse.overview}>
+          <div
+            class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small slds-m-horizontal_medium"
+            role="status"
+          >
+            <div class="slds-media__figure">
+              <lightning-icon
+                size="small"
+                icon-name="utility:info"
+                variant="inverse"
+              ></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+              <p>
+                This AgentScript analysis is AI-generated and may contain
+                inaccuracies. Review all recommendations before applying changes
+              </p>
+            </div>
+          </div>
+          <div class="card-style slds-m-horizontal_medium">
+            <section
+              class="slds-card slds-border_top slds-border_right slds-border_bottom slds-border_left"
+            >
+              <header class="slds-theme_shade slds-p-around_medium">
+                <div>
+                  <div
+                    class="slds-grid slds-grid_align-spread slds-p-bottom_x-small"
+                  >
+                    <span>
+                      <span
+                        class="slds-m-right_x-small slds-text-title_bold slds-text-title_caps"
+                        >{parsedResponse.overallScoreLabel}</span
+                      >
+                      <lightning-badge
+                        label={parsedResponse.overview.agentType}
+                        class="slds-theme_inverse"
+                      ></lightning-badge>
+                      <lightning-badge
+                        label={parsedResponse.overview.architecturePattern}
+                        class="slds-m-left_xx-small slds-theme_inverse"
+                      ></lightning-badge>
+                    </span>
+                    <span aria-hidden="true">
+                      <strong class={parsedResponse.overallScoreClass}
+                        >{parsedResponse.scores.overall}/100</strong
+                      >
+                    </span>
+                  </div>
+                  <!-- Score progress bar (SLDS standard pattern) -->
+                  <div
+                    class="slds-progress-bar slds-progress-bar_circular"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow={parsedResponse.scores.overall}
+                    role="progressbar"
+                  >
+                    <span
+                      class={parsedResponse.overallProgressBarClass}
+                      style={overallProgressStyle}
+                    ></span>
+                  </div>
+                </div>
+              </header>
+              <lightning-card
+                title={scriptLabel}
+                icon-name="standard:agent_astro"
+              >
+                <div
+                  class="slds-card__body slds-card__body_inner slds-p-bottom_medium"
+                >
+                  {parsedResponse.overview.summary}
+                  {parsedResponse.overview.purpose}
+                </div>
+              </lightning-card>
+            </section>
+          </div>
+
+          <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+            <lightning-tabset variant="scoped">
+              <lightning-tab
+                label="Scores"
+                icon-name="standard:visualization"
+                value="scores"
+              >
+                <template lwc:if={hasScores}>
+                  <template for:each={scoreBreakdown} for:item="category">
+                    <div key={category.key} class="slds-m-bottom_small">
+                      <div
+                        class="slds-grid slds-grid_vertical-align-center slds-m-bottom_xx-small"
+                      >
+                        <span
+                          class="slds-col slds-text-title_bold slds-text-title_caps"
+                          >{category.label}</span
+                        >
+                        <span class="slds-text-title_bold"
+                          >{category.score}/{category.max}</span
+                        >
+                      </div>
+                      <div
+                        class="slds-progress-bar slds-progress-bar_circular"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        aria-valuenow={category.percentage}
+                        role="progressbar"
+                      >
+                        <span
+                          class={category.progressBarClass}
+                          style={category.barStyle}
+                        ></span>
+                      </div>
+                      <template lwc:if={category.notes}>
+                        <p
+                          class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small"
+                        >
+                          {category.notes}
+                        </p>
+                      </template>
+                    </div>
+                  </template>
+                </template>
+                <template lwc:else>
+                  <p class="slds-p-around_small slds-text-color_weak">
+                    No score data available.
+                  </p>
+                </template>
+              </lightning-tab>
+
+              <lightning-tab
+                label="Subagents"
+                icon-name="standard:topic2"
+                value="subagents"
+              >
+                <template lwc:if={hasSubagents}>
+                  <template
+                    for:each={parsedResponse.subagents}
+                    for:item="subagent"
+                  >
+                    <div
+                      key={subagent.key}
+                      class="slds-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
+                    >
+                      <lightning-card
+                        title={subagent.label}
+                        icon-name="standard:topic"
+                      >
+                        <lightning-badge
+                          slot="actions"
+                          class="slds-theme_inverse"
+                          label={subagent.reasoningMode}
+                        ></lightning-badge>
+                        <div class="slds-card__body slds-card__body_inner">
+                          <p class="slds-text-body_small">{subagent.purpose}</p>
+                          <p class="slds-text-body_small">
+                            {subagent.routingAnalysis}
+                          </p>
+                          <template lwc:if={subagent.hasSuggestions}>
+                            <ul class="slds-list_dotted slds-m-top_x-small">
+                              <template
+                                for:each={subagent.suggestions}
+                                for:item="suggestion"
+                              >
+                                <li
+                                  key={suggestion}
+                                  class="slds-text-body_small"
+                                >
+                                  {suggestion}
+                                </li>
+                              </template>
+                            </ul>
+                          </template>
+                        </div>
+                      </lightning-card>
+                    </div>
+                  </template>
+                </template>
+                <template lwc:else>
+                  <p class="slds-p-around_small slds-text-color_weak">
+                    No subagent analysis available.
+                  </p>
+                </template>
+              </lightning-tab>
+
+              <lightning-tab
+                label="Actions"
+                icon-name="standard:apex_plugin"
+                value="actions"
+              >
+                <template lwc:if={hasActions}>
+                  <template for:each={parsedResponse.actions} for:item="action">
+                    <div
+                      key={action.key}
+                      class="slds-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
+                    >
+                      <lightning-card
+                        icon-name={action.iconName}
+                        title={action.label}
+                      >
+                        <template lwc:if={action.hasAvailableWhen}>
+                          <lightning-badge
+                            slot="actions"
+                            label="Gated"
+                            class="slds-theme_success"
+                          ></lightning-badge>
+                        </template>
+                        <span slot="actions" class="slds-m-left_xx-small">
+                          <span class="slds-text-body_small">Input: </span>
+                          <lightning-badge
+                            label={action.inputQuality}
+                            class={action.inputQualityClass}
+                          ></lightning-badge>
+                        </span>
+                        <span slot="actions" class="slds-m-left_xx-small">
+                          <span class="slds-text-body_small">Output: </span>
+                          <lightning-badge
+                            label={action.outputQuality}
+                            class={action.outputQualityClass}
+                          ></lightning-badge>
+                        </span>
+                        <template lwc:if={action.isNavigable}>
+                          <lightning-button-group
+                            class="slds-m-left_x-small"
+                            slot="actions"
+                          >
+                            <lightning-button-icon
+                              icon-name="utility:new_window"
+                              tooltip="Navigate to Target Component"
+                              variant="border-filled"
+                              data-target-type={action.parsedTargetType}
+                              data-name={action.parsedName}
+                              data-namespace={action.parsedNamespace}
+                              onclick={handleNavigateToTarget}
+                            >
+                            </lightning-button-icon>
+                          </lightning-button-group>
+                        </template>
+                        <div class="slds-card__body slds-card__body_inner">
+                          <div
+                            class="slds-grid slds-grid_vertical-center slds-m-bottom_xx-small"
+                          >
+                            <div class="slds-text-title_bold">
+                              {action.target}
+                            </div>
+                          </div>
+                          <template lwc:if={action.hasSuggestions}>
+                            <ul class="slds-list_dotted slds-m-top_x-small">
+                              <template
+                                for:each={action.suggestions}
+                                for:item="suggestion"
+                              >
+                                <li
+                                  key={suggestion}
+                                  class="slds-text-body_small"
+                                >
+                                  {suggestion}
+                                </li>
+                              </template>
+                            </ul>
+                          </template>
+                        </div>
+                      </lightning-card>
+                    </div>
+                  </template>
+                </template>
+                <template lwc:else>
+                  <p class="slds-p-around_small slds-text-color_weak">
+                    No action analysis available.
+                  </p>
+                </template>
+              </lightning-tab>
+
+              <lightning-tab
+                label="Variables"
+                icon-name="standard:variable"
+                value="variables"
+              >
+                <template lwc:if={hasVariables}>
+                  <table
+                    class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered"
+                  >
+                    <thead>
+                      <tr class="slds-line-height_reset">
+                        <th scope="col">
+                          <div class="slds-truncate">Name</div>
+                        </th>
+                        <th scope="col">
+                          <div class="slds-truncate">Type</div>
+                        </th>
+                        <th scope="col">
+                          <div class="slds-truncate">Kind</div>
+                        </th>
+                        <th scope="col">
+                          <div class="slds-truncate">Visibility</div>
+                        </th>
+                        <th scope="col">
+                          <div class="slds-truncate">Concern</div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template
+                        for:each={parsedResponse.variables}
+                        for:item="variable"
+                      >
+                        <tr key={variable.key}>
+                          <td>
+                            <div class="slds-truncate">
+                              <code>{variable.name}</code>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="slds-truncate">{variable.type}</div>
+                          </td>
+                          <td>
+                            <div class="slds-truncate">
+                              <lightning-badge
+                                label={variable.kind}
+                                class="slds-theme_inverse"
+                              ></lightning-badge>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="slds-truncate">
+                              {variable.visibility}
+                            </div>
+                          </td>
+                          <td>
+                            <div class="slds-truncate">
+                              <template lwc:if={variable.hasConcern}>
+                                <span class="slds-text-color_error"
+                                  >{variable.concern}</span
+                                >
+                              </template>
+                              <template lwc:else>—</template>
+                            </div>
+                          </td>
+                        </tr>
+                      </template>
+                    </tbody>
+                  </table>
+                </template>
+                <template lwc:else>
+                  <p class="slds-p-around_small slds-text-color_weak">
+                    No variable analysis available.
+                  </p>
+                </template>
+              </lightning-tab>
+
+              <lightning-tab
+                label="Improvements"
+                icon-name="standard:metric"
+                value="improvements"
+              >
+                <template lwc:if={hasImprovements}>
+                  <template
+                    for:each={parsedResponse.improvements}
+                    for:item="improvement"
+                  >
+                    <div
+                      key={improvement.key}
+                      class="slds-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
+                    >
+                      <lightning-card
+                        icon-name="standard:sub_metric"
+                        title={improvement.title}
+                      >
+                        <lightning-badge
+                          slot="actions"
+                          label={improvement.priority}
+                          class={improvement.priorityClass}
+                        ></lightning-badge>
+                        <lightning-badge
+                          slot="actions"
+                          label={improvement.category}
+                          class="slds-m-left_xx-small slds-theme_inverse"
+                        ></lightning-badge>
+                        <div class="slds-card__body slds-card__body_inner">
+                          <p class="slds-text-body_small slds-m-top_xx-small">
+                            {improvement.description}
+                          </p>
+                          <template lwc:if={improvement.codeSnippet}>
+                            <pre
+                              class="code-snippet slds-m-top_x-small"
+                            ><code>{improvement.codeSnippet}</code></pre>
+                          </template>
+                        </div>
+                      </lightning-card>
+                    </div>
+                  </template>
+                </template>
+                <template lwc:else>
+                  <p class="slds-p-around_small slds-text-color_weak">
+                    No improvement suggestions available.
+                  </p>
+                </template>
+              </lightning-tab>
+            </lightning-tabset>
+          </div>
+        </template>
+      </template>
+    </div>
+  </lightning-modal-body>
+  <lightning-modal-footer>
+    <lightning-button
+      label="Close"
+      onclick={handleCancel}
+      class="slds-m-right_x-small"
+    ></lightning-button>
+    <template lwc:if={canCopyMarkdown}>
+      <lightning-button
+        label="Copy as Markdown"
+        icon-name="utility:copy"
+        icon-position="right"
+        onclick={handleCopyMarkdown}
+        class="slds-m-right_x-small"
+      ></lightning-button>
+    </template>
+    <lightning-button-group>
+      <lightning-button
+        variant="brand"
+        label="Re-Analyze"
+        icon-name="utility:sparkles"
+        icon-position="right"
+        onclick={handleReanalyze}
+        disabled={displaySpinner}
+      ></lightning-button>
+    </lightning-button-group>
+  </lightning-modal-footer>
+</template>

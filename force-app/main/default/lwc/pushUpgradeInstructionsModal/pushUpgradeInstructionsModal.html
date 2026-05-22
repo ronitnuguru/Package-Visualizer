@@ -1,12 +1,17 @@
 <template>
-  <lightning-modal-header label="Block Push Upgrade">
-  </lightning-modal-header>
+  <lightning-modal-header label="Block Push Upgrade"> </lightning-modal-header>
 
   <lightning-modal-body>
     <p class="slds-var-p-bottom_small">
-      The PushUpgradeCustomizationRepository Apex Class can only be run from within your Org via Anonymous Apex and beyond the scope of this Managed Package. Because of these current platform limitations, this functionality cannot be automated. Use the snippet below in Developer Console to complete the update
+      The PushUpgradeCustomizationRepository Apex Class can only be run from
+      within your Org via Anonymous Apex and beyond the scope of this managed
+      package. Because of these current platform limitations, this functionality
+      cannot be automated. Use the snippet below in Developer Console to
+      complete the update
     </p>
-    <div class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-var-p-bottom_x-small card-style">
+    <div
+      class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-var-p-bottom_x-small card-style"
+    >
       <lightning-card>
         <h3 slot="title" class="slds-truncate">
           <lightning-icon
@@ -31,13 +36,17 @@
           ></lightning-button>
         </lightning-button-group>
         <div class="slds-card__body slds-card__body_inner">
-          <pre class="agentscript-pre slds-scrollable_y"><code class="agentscript-code">{apexSnippet}</code></pre>
+          <pre
+            class="agentscript-pre slds-scrollable_y"
+          ><code class="agentscript-code">{apexSnippet}</code></pre>
           <textarea
             id="snippet"
             class="snippet-fallback slds-assistive-text"
             readonly
             aria-hidden="true"
-          >{apexSnippet}</textarea>
+          >
+{apexSnippet}</textarea
+          >
         </div>
       </lightning-card>
     </div>

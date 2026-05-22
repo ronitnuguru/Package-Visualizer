@@ -1,17 +1,33 @@
 {
-  "orgName": "PkgViz Scratch Org",
-  "edition": "Developer",
+  "orgName": "AF + DC Scratch Org",
+  "edition": "Partner Developer",
+  "hasSampleData": true,
+  "country": "US",
+  "language": "en_US",
   "features": [
-    "EnableSetPasswordInApi"
+    "EnableSetPasswordInApi",
+    "CustomerDataPlatform",
+    "CustomerDataPlatformLite",
+    "MarketingUser",
+    "Einstein1AIPlatform"
   ],
   "settings": {
     "lightningExperienceSettings": {
-      "enableS1DesktopEnabled": "true",
-      "enableUsersAreLightningOnly": "true",
-      "enableLexEndUsersNoSwitching": "true"
+      "enableS1DesktopEnabled": true,
+      "enableUsersAreLightningOnly": true,
+      "enableLexEndUsersNoSwitching": true
     },
     "mobileSettings": {
-      "enableS1EncryptedStoragePref2": "false"
+      "enableS1EncryptedStoragePref2": false
+    },
+    "customerDataPlatformSettings": {
+      "enableCustomerDataPlatform": true
+    },
+    "einsteinGptSettings": {
+      "enableEinsteinGptPlatform": true
+    },
+    "botSettings": {
+      "enableBots": true
     }
   }
 }

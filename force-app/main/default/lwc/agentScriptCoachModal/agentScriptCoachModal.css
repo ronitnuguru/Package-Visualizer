@@ -1,0 +1,29 @@
+.card-style {
+  border-radius: 0.25rem; /* More rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06); /* Layered shadows for depth */
+  transition: box-shadow 0.3s ease, transform 0.3s ease; /* Smooth hover effects */
+}
+
+.code-snippet {
+  background-color: var(--slds-g-color-neutral-base-95, #f3f3f3);
+  border: 1px solid var(--slds-g-color-border-base-1, #e5e5e5);
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.text-area-style {
+  min-height: 8rem;
+}
+
+:host {
+  --slds-c-modal-content-padding-block-start: 0;
+  --slds-c-modal-content-padding-block-end: 0;
+  --slds-c-modal-content-padding-inline-start: 0;
+  --slds-c-modal-content-padding-inline-end: 0;
+}
