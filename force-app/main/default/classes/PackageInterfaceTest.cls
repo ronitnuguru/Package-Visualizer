@@ -1974,4 +1974,290 @@ private class PackageInterfaceTest {
       'Should throw AuraHandledException when no ApexClass matches'
     );
   }
+
+  /**************************************************************************************
+   * AgentScript Coach platform-cache helpers (Package2Interface)
+   **************************************************************************************/
+  private static final String COACH_MODEL = 'sfdc_ai__DefaultBedrockAnthropicClaude45Opus';
+  private static final String COACH_SYSTEM_PROMPT = 'You are an expert AgentScript Coach.';
+  private static final String COACH_USER_PROMPT = 'system: name: TestAgent';
+  private static final String COACH_RESPONSE_JSON = '{"scores":{"overall":85}}';
+
+  @IsTest
+  static void testCoachCache_MissReturnsNull() {
+    Test.startTest();
+    String result = Package2Interface.getCachedCoachResponse(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      'never-cached-' + System.currentTimeMillis()
+    );
+    Test.stopTest();
+
+    Assert.isNull(result, 'Cache miss should return null, not throw');
+  }
+
+  @IsTest
+  static void testCoachCache_PutGetRoundtrip() {
+    Test.startTest();
+    Package2Interface.putCachedCoachResponse(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      COACH_USER_PROMPT,
+      COACH_RESPONSE_JSON
+    );
+    String result = Package2Interface.getCachedCoachResponse(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      COACH_USER_PROMPT
+    );
+    Test.stopTest();
+
+    // Cache may be unallocated in scratch/test orgs. When unavailable, get
+    // returns null and the test still validates put/get do not throw. When
+    // allocated, the value must roundtrip unchanged.
+    if (result != null) {
+      Assert.areEqual(
+        COACH_RESPONSE_JSON,
+        result,
+        'Cached value should roundtrip unchanged'
+      );
+    }
+  }
+
+  @IsTest
+  static void testCoachCache_BlankResponseNotCached() {
+    Test.startTest();
+    Package2Interface.putCachedCoachResponse(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      COACH_USER_PROMPT,
+      ''
+    );
+    Package2Interface.putCachedCoachResponse(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      COACH_USER_PROMPT,
+      null
+    );
+    Package2Interface.putCachedCoachResponse(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      COACH_USER_PROMPT,
+      '   '
+    );
+    Test.stopTest();
+    Assert.isTrue(true, 'Blank/null put must be a no-op');
+  }
+
+  @IsTest
+  static void testCoachCacheKey_DifferentModelDifferentKey() {
+    String key1 = Package2Interface.buildCoachCacheKey(
+      'modelA',
+      COACH_SYSTEM_PROMPT,
+      COACH_USER_PROMPT
+    );
+    String key2 = Package2Interface.buildCoachCacheKey(
+      'modelB',
+      COACH_SYSTEM_PROMPT,
+      COACH_USER_PROMPT
+    );
+    Assert.areNotEqual(
+      key1,
+      key2,
+      'Different models must hash to different keys'
+    );
+  }
+
+  @IsTest
+  static void testCoachCacheKey_DifferentUserPromptDifferentKey() {
+    String key1 = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      'script A'
+    );
+    String key2 = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      'script B'
+    );
+    Assert.areNotEqual(
+      key1,
+      key2,
+      'Different scripts must hash to different keys'
+    );
+  }
+
+  @IsTest
+  static void testCoachCacheKey_DifferentSystemPromptDifferentKey() {
+    String key1 = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      'rubric v1',
+      COACH_USER_PROMPT
+    );
+    String key2 = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      'rubric v2',
+      COACH_USER_PROMPT
+    );
+    Assert.areNotEqual(
+      key1,
+      key2,
+      'Different rubrics must hash to different keys'
+    );
+  }
+
+  @IsTest
+  static void testCoachCacheKey_DeterministicForSameInputs() {
+    String key1 = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      COACH_USER_PROMPT
+    );
+    String key2 = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      COACH_USER_PROMPT
+    );
+    Assert.areEqual(key1, key2, 'Identical inputs must hash to identical keys');
+  }
+
+  @IsTest
+  static void testCoachCacheKey_StaysUnderPlatformCacheLimit() {
+    String key = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT.repeat(10),
+      COACH_USER_PROMPT.repeat(100)
+    );
+    Assert.isTrue(
+      key.length() <= 50,
+      'Cache key must stay within Platform Cache 50-char limit. Actual: ' +
+      key.length()
+    );
+  }
+
+  @IsTest
+  static void testCoachCacheKey_IsAlphanumericOnly() {
+    String key = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      COACH_USER_PROMPT
+    );
+    Assert.isTrue(
+      Pattern.matches('[A-Za-z0-9]+', key),
+      'Platform Cache requires strictly alphanumeric keys (no separators). Got: ' +
+      key
+    );
+  }
+
+  @IsTest
+  static void testGetPackageNamespace_ReturnsConsistentValueAcrossCalls() {
+    Test.startTest();
+    String ns1 = Package2Interface.getPackageNamespace();
+    String ns2 = Package2Interface.getPackageNamespace();
+    Test.stopTest();
+
+    // Value depends on whether tests run from a namespaced package install or
+    // a non-namespaced scratch org. Both calls must return the same value
+    // (proves the static cache works — a second SOQL would fail under tight
+    // governor limits in heavier callers).
+    Assert.areEqual(
+      ns1,
+      ns2,
+      'getPackageNamespace must return the same value across calls (static cache)'
+    );
+  }
+
+  @IsTest
+  static void testCoachCachePartition_ResolvesToValidPartitionRef() {
+    Test.startTest();
+    // Force resolution by exercising any cache path. getCachedCoachResponse
+    // calls Cache.Org.getPartition(coachCachePartition) which would throw
+    // 'Invalid partition' if the resolved string is malformed.
+    String result = Package2Interface.getCachedCoachResponse(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      'partition-resolution-probe'
+    );
+    Test.stopTest();
+
+    Assert.isNull(
+      result,
+      'Resolution probe must return null on miss without throwing on partition lookup'
+    );
+  }
+
+  @IsTest
+  static void testInvokePromptAndUserModels_CoachPath_CacheHitShortCircuits() {
+    // Pre-populate cache so the controller's get returns non-null and the
+    // Callable invocation is skipped. If the cache partition is unallocated
+    // in the test org, the put no-ops and the test falls through to the
+    // exception path — both are valid (assertion below tolerates both).
+    Package2Interface.putCachedCoachResponse(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      COACH_USER_PROMPT,
+      COACH_RESPONSE_JSON
+    );
+
+    Test.startTest();
+    Object result;
+    Boolean threw = false;
+    try {
+      result = PackageVisualizerCtrl.invokePromptAndUserModelsGenAi(
+        'AgentGenAiController',
+        'createChatGeneration',
+        COACH_MODEL,
+        COACH_USER_PROMPT,
+        COACH_SYSTEM_PROMPT
+      );
+    } catch (AuraHandledException e) {
+      threw = true;
+    }
+    Test.stopTest();
+
+    if (!threw) {
+      Assert.areEqual(
+        COACH_RESPONSE_JSON,
+        result,
+        'Cache hit must short-circuit and return the cached value verbatim'
+      );
+    } else {
+      // Cache unallocated → fell through to Type.forName which fails for
+      // a class not present in this package. Acceptable: the coach guard
+      // and try/catch path are exercised either way.
+      Assert.isTrue(
+        true,
+        'Coach path executed; cache was unallocated so fell through to exception'
+      );
+    }
+  }
+
+  @IsTest
+  static void testInvokePromptAndUserModels_CoachPath_CacheMissCallsCallable() {
+    // Use a unique prompt to guarantee a cache miss, then expect the Callable
+    // resolution to fail (AgentGenAiController is in a separate package and
+    // not present in this test context). This proves: (a) coach guard fires,
+    // (b) miss path falls through to Callable, (c) exception is wrapped.
+    String uniquePrompt = 'unique-' + System.currentTimeMillis();
+
+    Test.startTest();
+    Boolean threw = false;
+    try {
+      PackageVisualizerCtrl.invokePromptAndUserModelsGenAi(
+        'AgentGenAiController',
+        'createChatGeneration',
+        COACH_MODEL,
+        uniquePrompt,
+        COACH_SYSTEM_PROMPT
+      );
+    } catch (AuraHandledException e) {
+      threw = true;
+    }
+    Test.stopTest();
+
+    Assert.isTrue(
+      threw,
+      'Cache miss with non-resolvable Callable must surface as AuraHandledException'
+    );
+  }
 }

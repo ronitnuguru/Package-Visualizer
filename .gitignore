@@ -50,3 +50,6 @@ $RECYCLE.BIN/
 
 # Local project configuration
 sfdx-project.json
+
+.husky/
+.vscode/

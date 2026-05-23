@@ -912,6 +912,22 @@ public with sharing class PackageVisualizerCtrl {
     String systemPrompt
   ) {
     try {
+      // AgentScript Coach inputs are deterministic (static rubric + static
+      // script bodies) so the LLM response is safe to memoize per prompt hash.
+      // Other Models API callers retain pass-through behavior.
+      Boolean isCoachPath =
+        className == 'AgentGenAiController' &&
+        methodName == 'createChatGeneration';
+      if (isCoachPath) {
+        String cached = Package2Interface.getCachedCoachResponse(
+          modelName,
+          systemPrompt,
+          userPrompt
+        );
+        if (cached != null) {
+          return cached;
+        }
+      }
       String namespacedClass = 'pkgviz.' + className;
       Callable callableInstance = (Callable) Type.forName(className)
         .newInstance();
@@ -921,6 +937,14 @@ public with sharing class PackageVisualizerCtrl {
         'systemPrompt' => systemPrompt
       };
       String result = (String) callableInstance.call(methodName, payload);
+      if (isCoachPath) {
+        Package2Interface.putCachedCoachResponse(
+          modelName,
+          systemPrompt,
+          userPrompt,
+          result
+        );
+      }
       return result;
     } catch (Exception e) {
       throw new AuraHandledException(e.getMessage());

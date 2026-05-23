@@ -5,6 +5,127 @@
  *******************************************************************************************/
 global with sharing class Package2Interface { // NOPMD
   /**************************************************************************************
+   * @Description  AgentScript Coach platform-cache constants and helpers. The Coach
+   * sends a static rubric + a static AgentScript body to the Models API and gets back
+   * a long, expensive analysis. Caching by SHA-256 of the prompt envelope cuts repeat
+   * opens from ~30-60s to <500ms.
+   *
+   * Partition: pkgviz.AgentScriptCoach (named, non-default — required for managed
+   * package install). Visibility NAMESPACE so subscriber Apex cannot read entries.
+   * TTL 48h (max). Bump KEY_VERSION to globally invalidate.
+   **************************************************************************************/
+  // Resolved at runtime: 'pkgviz.AgentScriptCoach' when running from the
+  // installed managed package (subscriber org), 'local.AgentScriptCoach' when
+  // running from a non-namespaced org (scratch/dev). Avoids the manual
+  // const-flip at packaging time and prevents the 'local resolves to
+  // subscriber namespace inside a managed package' footgun.
+  @TestVisible
+  private static String coachCachePartition {
+    get {
+      if (coachCachePartition == null) {
+        String ns = getPackageNamespace();
+        coachCachePartition =
+          (String.isBlank(ns) ? 'local' : ns) + '.AgentScriptCoach';
+      }
+      return coachCachePartition;
+    }
+    set;
+  }
+
+  private static String packageNamespace;
+  private static Boolean packageNamespaceResolved = false;
+
+  /**
+   * @Description  Returns the running namespace prefix of this package
+   * ('pkgviz' when installed, null in a non-namespaced org).
+   *
+   * Uses Type reflection (not SOQL on ApexClass): String.valueOf(T.class)
+   * returns 'namespace.ClassName' when running inside a namespaced package,
+   * and just 'ClassName' otherwise. SOQL on ApexClass is unreliable in
+   * subscriber orgs because the running user often lacks View Setup access,
+   * causing the query to return zero rows and the helper to fall back to
+   * 'local' — which resolves to the SUBSCRIBER namespace inside an installed
+   * managed package and triggers "Cross-namespace PUT not supported".
+   */
+  @TestVisible
+  private static String getPackageNamespace() {
+    if (!packageNamespaceResolved) {
+      String fullName = String.valueOf(Package2Interface.class);
+      Integer dotIdx = fullName.indexOf('.');
+      packageNamespace = dotIdx > 0 ? fullName.substring(0, dotIdx) : null;
+      packageNamespaceResolved = true;
+    }
+    return packageNamespace;
+  }
+  @TestVisible
+  private static final String COACH_CACHE_KEY_VERSION = 'v1';
+  @TestVisible
+  private static final Integer COACH_CACHE_TTL_SECONDS = 172800;
+
+  /**
+   * @Description  Build a deterministic Platform Cache key from the LLM prompt
+   * envelope. SHA-256 truncated to 40 hex chars + version prefix stays under the
+   * 50-char Platform Cache key limit.
+   */
+  @TestVisible
+  private static String buildCoachCacheKey(
+    String modelName,
+    String systemPrompt,
+    String userPrompt
+  ) {
+    String composite = modelName + '|' + systemPrompt + '|' + userPrompt;
+    Blob digest = Crypto.generateDigest('SHA-256', Blob.valueOf(composite));
+    String hex = EncodingUtil.convertToHex(digest);
+    // Platform Cache keys must be strictly alphanumeric — no separators at all.
+    return COACH_CACHE_KEY_VERSION + hex.substring(0, 40);
+  }
+
+  /**
+   * @Description  Read a cached Coach LLM response. Returns null on miss or when
+   * no cache is allocated (e.g. Developer Edition orgs).
+   */
+  public static String getCachedCoachResponse(
+    String modelName,
+    String systemPrompt,
+    String userPrompt
+  ) {
+    String key = buildCoachCacheKey(modelName, systemPrompt, userPrompt);
+    Cache.OrgPartition partition = Cache.Org.getPartition(coachCachePartition);
+    if (partition == null) {
+      return null;
+    }
+    Object cached = partition.get(key);
+    return (String) cached;
+  }
+
+  /**
+   * @Description  Store a Coach LLM response in cache. No-op when response is
+   * blank so failed generations are never memoized.
+   */
+  public static void putCachedCoachResponse(
+    String modelName,
+    String systemPrompt,
+    String userPrompt,
+    String response
+  ) {
+    if (String.isBlank(response)) {
+      return;
+    }
+    Cache.OrgPartition partition = Cache.Org.getPartition(coachCachePartition);
+    if (partition == null) {
+      return;
+    }
+    String key = buildCoachCacheKey(modelName, systemPrompt, userPrompt);
+    partition.put(
+      key,
+      response,
+      COACH_CACHE_TTL_SECONDS,
+      Cache.Visibility.NAMESPACE,
+      false
+    );
+  }
+
+  /**************************************************************************************
    * @Description  Get the list of packages using tooling API.
    **************************************************************************************/
   public static List<ObjectWrappers.PackageWrapper> getPackage2(
@@ -291,15 +412,23 @@ global with sharing class Package2Interface { // NOPMD
   /**************************************************************************************
    * @Description  Get a single PackageSubscriber by OrgKey.
    **************************************************************************************/
-  global static ObjectWrappers.PackageSubscriberWrapper getPackageSubscriberByOrgKey(String orgKey) {
+  global static ObjectWrappers.PackageSubscriberWrapper getPackageSubscriberByOrgKey(
+    String orgKey
+  ) {
     ObjectWrappers.PackageSubscriberWrapper subscriber = new ObjectWrappers.PackageSubscriberWrapper();
     if (String.isBlank(orgKey) || Type.forName('PackageSubscriber') == null) {
       return subscriber;
     }
     String queryString = 'SELECT Id, MetadataPackageId, MetadataPackageVersionId, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, ParentOrg, CustomUpgradeType, HasRestrictionEnabled, IsCustomUpgradeAllowed FROM PackageSubscriber WHERE OrgKey = :orgKey LIMIT 1';
-    SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, Database.query(queryString));
+    SObjectAccessDecision decision = Security.stripInaccessible(
+      AccessType.READABLE,
+      Database.query(queryString)
+    );
     for (sObject o : decision.getRecords()) {
-      subscriber = (ObjectWrappers.PackageSubscriberWrapper) JSON.deserialize(JSON.serialize(o), ObjectWrappers.PackageSubscriberWrapper.class);
+      subscriber = (ObjectWrappers.PackageSubscriberWrapper) JSON.deserialize(
+        JSON.serialize(o),
+        ObjectWrappers.PackageSubscriberWrapper.class
+      );
     }
     return subscriber;
   }

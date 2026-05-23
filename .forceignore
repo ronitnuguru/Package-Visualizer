@@ -17,3 +17,5 @@ package.xml
 .cursor/
 .claude/
 .unpackaged-directory/
+
+Claude.md

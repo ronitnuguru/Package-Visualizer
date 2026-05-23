@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<PlatformCachePartition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description
+  >Caches AgentScript Coach LLM responses keyed by SHA-256 hash of (modelName + systemPrompt + userPrompt). Org-wide, 48h TTL, namespace-scoped visibility.</description>
+    <isDefaultPartition>false</isDefaultPartition>
+    <masterLabel>AgentScriptCoach</masterLabel>
+    <platformCachePartitionTypes>
+        <cacheType>Organization</cacheType>
+        <allocatedCapacity>3</allocatedCapacity>
+        <allocatedPartnerCapacity>3</allocatedPartnerCapacity>
+        <allocatedPurchasedCapacity>0</allocatedPurchasedCapacity>
+        <allocatedTrialCapacity>0</allocatedTrialCapacity>
+    </platformCachePartitionTypes>
+    <platformCachePartitionTypes>
+        <cacheType>Session</cacheType>
+        <allocatedCapacity>0</allocatedCapacity>
+        <allocatedPartnerCapacity>0</allocatedPartnerCapacity>
+        <allocatedPurchasedCapacity>0</allocatedPurchasedCapacity>
+        <allocatedTrialCapacity>0</allocatedTrialCapacity>
+    </platformCachePartitionTypes>
+</PlatformCachePartition>
