@@ -1,6 +1,6 @@
 {
   "orgName": "Scratch Org",
-  "edition": "Partner Developer",
+  "edition": "Developer",
   "features": ["EnableSetPasswordInApi"],
   "settings": {
     "lightningExperienceSettings": {

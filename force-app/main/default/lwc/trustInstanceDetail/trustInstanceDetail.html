@@ -1,19 +1,41 @@
 <template>
-  <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small">
+  <div
+    class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
+  >
     <lightning-card>
       <h3 slot="title" class="slds-truncate">
         <lightning-icon
           icon-name={sldsIcon}
           size="medium"
           variant={sldsIconVariant}
-           class="slds-m-right_small"
+          class="slds-m-right_small"
         ></lightning-icon>
         <a href={trustUrl} target="_blank">{instanceKey}</a>
       </h3>
       <lightning-button-group slot="actions">
-        <lightning-button-icon variant="border-filled" icon-name="utility:real_time" tooltip="Instance History" onclick={handleInstanceHistory}></lightning-button-icon>
-        <lightning-button-icon variant="border-filled" icon-name="utility:maintenance_plan" tooltip="Instance Maintenance" onclick={handleInstanceMaintenancePlan}></lightning-button-icon>
-        <lightning-button-icon variant="border-filled" icon-name="utility:contract_doc" tooltip="Release Notes" onclick={handleReleaseNotes}></lightning-button-icon>
+        <lightning-button-icon
+          variant="brand"
+          icon-name="utility:sparkles"
+          onclick={handleAgentforceDetails}
+        ></lightning-button-icon>
+        <lightning-button-icon
+          variant="border-filled"
+          icon-name="utility:real_time"
+          tooltip="Instance History"
+          onclick={handleInstanceHistory}
+        ></lightning-button-icon>
+        <lightning-button-icon
+          variant="border-filled"
+          icon-name="utility:maintenance_plan"
+          tooltip="Instance Maintenance"
+          onclick={handleInstanceMaintenancePlan}
+        ></lightning-button-icon>
+        <lightning-button-icon
+          variant="border-filled"
+          icon-name="utility:contract_doc"
+          tooltip="Release Notes"
+          onclick={handleReleaseNotes}
+        ></lightning-button-icon>
       </lightning-button-group>
       <div class="slds-card__body slds-card__body_inner">
         <lightning-tile>
@@ -27,43 +49,259 @@
               </dd>
             </template>
             <template if:true={region}>
-            <dt class="slds-item_label slds-text-color_weak" title="Region">
-              <p class="slds-truncate">Region:</p>
-            </dt>
-            <dd class="slds-item_detail slds-tile__meta slds-truncate">
-              {region}
-            </dd>
+              <dt class="slds-item_label slds-text-color_weak" title="Region">
+                <p class="slds-truncate">Region:</p>
+              </dt>
+              <dd class="slds-item_detail slds-tile__meta slds-truncate">
+                {region}
+              </dd>
             </template>
             <template if:true={releaseVersion}>
-            <dt class="slds-item_label slds-text-color_weak" title="Release Version">
-              <p class="slds-truncate">Release Version:</p>
-            </dt>
-            <dd class="slds-item_detail slds-tile__meta slds-truncate">
-              {releaseVersion}
-            </dd>
+              <dt
+                class="slds-item_label slds-text-color_weak"
+                title="Release Version"
+              >
+                <p class="slds-truncate">Release Version:</p>
+              </dt>
+              <dd class="slds-item_detail slds-tile__meta slds-truncate">
+                {releaseVersion}
+              </dd>
             </template>
             <template if:true={releaseNumber}>
-            <dt class="slds-item_label slds-text-color_weak" title="Release Number">
-              <p class="slds-truncate">Release Number:</p>
-            </dt>
-            <dd class="slds-item_detail slds-tile__meta slds-truncate">
-              {releaseNumber}
-            </dd>
+              <dt
+                class="slds-item_label slds-text-color_weak"
+                title="Release Number"
+              >
+                <p class="slds-truncate">Release Number:</p>
+              </dt>
+              <dd class="slds-item_detail slds-tile__meta slds-truncate">
+                {releaseNumber}
+              </dd>
             </template>
             <template if:true={maintenanceWindow}>
-            <dt class="slds-item_label slds-text-color_weak" title="Maintenance Window">
-              <p class="slds-truncate">Maintenance Window:</p>
-            </dt>
-            <dd class="slds-item_detail slds-tile__meta slds-truncate">
-              {maintenanceWindow}&nbsp;
+              <dt
+                class="slds-item_label slds-text-color_weak"
+                title="Maintenance Window"
+              >
+                <p class="slds-truncate">Maintenance Window:</p>
+              </dt>
+              <dd class="slds-item_detail slds-tile__meta slds-truncate">
+                {maintenanceWindow}&nbsp;
                 <lightning-helptext
-                  style="display:inline-flex"
+                  style="display: inline-flex"
                   content="Whenever possible, and only as maintenance is necessary, Salesforce will schedule system maintenance the first and third weekends of the calendar month during the window listed. When a calendar month begins on a Sunday, we would hold system maintenance the first and third full weekends of the month."
                 ></lightning-helptext>
-            </dd>
+              </dd>
             </template>
           </dl>
         </lightning-tile>
+        <template if:true={displayAnalysis}>
+          <div class="slds-m-top_small">
+            <template if:true={displaySpinner}>
+              <lightning-spinner
+                alternative-text="Loading"
+                size="medium"
+                variant="brand"
+              ></lightning-spinner>
+            </template>
+            <template if:false={displaySpinner}>
+              <div
+                class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
+              >
+                <lightning-card icon-name="standard:agent_astro">
+                  <h3 slot="title" class="slds-truncate">
+                    Agentforce Generated
+                  </h3>
+                  <template if:true={parsedResponse}>
+                    <template if:false={isRawFallback}>
+                      <lightning-badge
+                        slot="actions"
+                        label={parsedResponse.severity}
+                        class="slds-theme_inverse"
+                      ></lightning-badge>
+                    </template>
+                  </template>
+                  <div class="slds-card__body slds-card__body_inner">
+                    <template if:true={displayExtensionIllustration}>
+                      <div
+                        class="slds-illustration slds-illustration_small slds-text-align_center"
+                      >
+                        <lightning-icon
+                          icon-name="utility:einstein"
+                          size="medium"
+                          variant="warning"
+                        ></lightning-icon>
+                        <h3 class="slds-text-heading_small slds-m-top_small">
+                          Agentforce Extension Required
+                        </h3>
+                        <p class="slds-m-top_x-small">
+                          Install the Agentforce extension package to generate
+                          AI summaries of Trust instance status.
+                        </p>
+                      </div>
+                    </template>
+                    <template if:true={parsedResponse}>
+                      <template if:false={isRawFallback}>
+                        <lightning-tabset variant="scoped">
+                          <lightning-tab
+                            label="Summary"
+                            icon-name="standard:ai_slack_summary"
+                          >
+                            <p class="slds-m-bottom_small">
+                              {parsedResponse.summary}
+                            </p>
+                            <template if:true={parsedResponse.hasActionItems}>
+                              <h3
+                                class="slds-text-title_bold slds-m-bottom_xx-small"
+                              >
+                                Action Items
+                              </h3>
+                              <ul class="slds-list_dotted">
+                                <template
+                                  for:each={parsedResponse.actionItems}
+                                  for:item="a"
+                                >
+                                  <li key={a.key}>{a.text}</li>
+                                </template>
+                              </ul>
+                            </template>
+                          </lightning-tab>
+                          <lightning-tab
+                            label="Incidents"
+                            icon-name="standard:incident"
+                          >
+                            <template if:false={parsedResponse.hasIncidents}>
+                              <template
+                                if:false={parsedResponse.hasMaintenances}
+                              >
+                                <p>No active incidents or maintenances.</p>
+                              </template>
+                            </template>
+                            <template if:true={parsedResponse.hasIncidents}>
+                              <h3
+                                class="slds-text-title_bold slds-m-bottom_xx-small"
+                              >
+                                Incidents
+                              </h3>
+                              <lightning-accordion allow-multiple-sections-open>
+                                <template
+                                  for:each={parsedResponse.incidents}
+                                  for:item="i"
+                                >
+                                  <lightning-accordion-section
+                                    key={i.key}
+                                    name={i.key}
+                                    label={i.title}
+                                  >
+                                    <template if:true={i.endUserImpact}>
+                                      <p class="slds-m-bottom_small">
+                                        {i.endUserImpact}
+                                      </p>
+                                    </template>
+                                    <template if:true={i.hasLink}>
+                                      <lightning-button
+                                        label="Learn More"
+                                        variant="base"
+                                        icon-name="utility:new_window"
+                                        icon-position="right"
+                                        onclick={handleAdvisoryLink}
+                                        data-url={i.link}
+                                      ></lightning-button>
+                                    </template>
+                                  </lightning-accordion-section>
+                                </template>
+                              </lightning-accordion>
+                            </template>
+                            <template if:true={parsedResponse.hasMaintenances}>
+                              <h3
+                                class="slds-text-title_bold slds-m-top_small slds-m-bottom_xx-small"
+                              >
+                                Maintenances
+                              </h3>
+                              <lightning-accordion allow-multiple-sections-open>
+                                <template
+                                  for:each={parsedResponse.maintenances}
+                                  for:item="m"
+                                >
+                                  <lightning-accordion-section
+                                    key={m.key}
+                                    name={m.key}
+                                    label={m.title}
+                                  >
+                                    <template if:true={m.plannedEndTime}>
+                                      <p class="slds-m-bottom_small">
+                                        Ends: {m.plannedEndTime}
+                                      </p>
+                                    </template>
+                                    <template if:true={m.hasLink}>
+                                      <lightning-button
+                                        label="Learn More"
+                                        variant="base"
+                                        icon-name="utility:new_window"
+                                        icon-position="right"
+                                        onclick={handleAdvisoryLink}
+                                        data-url={m.link}
+                                      ></lightning-button>
+                                    </template>
+                                  </lightning-accordion-section>
+                                </template>
+                              </lightning-accordion>
+                            </template>
+                          </lightning-tab>
+                          <lightning-tab
+                            label="Advisories"
+                            icon-name="standard:announcement"
+                          >
+                            <template
+                              if:false={parsedResponse.hasGeneralMessages}
+                            >
+                              <p>No advisories at this time.</p>
+                            </template>
+                            <template
+                              if:true={parsedResponse.hasGeneralMessages}
+                            >
+                              <lightning-accordion allow-multiple-sections-open>
+                                <template
+                                  for:each={parsedResponse.generalMessages}
+                                  for:item="g"
+                                >
+                                  <lightning-accordion-section
+                                    key={g.key}
+                                    name={g.key}
+                                    label={g.subject}
+                                  >
+                                    <p class="slds-m-bottom_small">
+                                      {g.briefSummary}
+                                    </p>
+                                    <template if:true={g.hasLink}>
+                                      <lightning-button
+                                        label="Learn More"
+                                        variant="base"
+                                        icon-name="utility:new_window"
+                                        icon-position="right"
+                                        onclick={handleAdvisoryLink}
+                                        data-url={g.link}
+                                      ></lightning-button>
+                                    </template>
+                                  </lightning-accordion-section>
+                                </template>
+                              </lightning-accordion>
+                            </template>
+                          </lightning-tab>
+                        </lightning-tabset>
+                      </template>
+                      <template if:true={isRawFallback}>
+                        <pre class="slds-text-font_monospace">
+{parsedResponse.rawResponse}</pre
+                        >
+                      </template>
+                    </template>
+                  </div>
+                </lightning-card>
+              </div>
+            </template>
+          </div>
+        </template>
       </div>
     </lightning-card>
   </div>

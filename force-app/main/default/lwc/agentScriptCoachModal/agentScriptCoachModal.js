@@ -4,6 +4,46 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import invokePromptAndUserModelsGenAi from "@salesforce/apex/PackageVisualizerCtrl.invokePromptAndUserModelsGenAi";
 import getTargetRecordId from "@salesforce/apex/PackageVisualizerCtrl.getTargetRecordId";
 
+const VARIABLE_TABLE_COLUMNS = [
+  {
+    label: "Name",
+    fieldName: "name",
+    type: "text",
+    iconName: "standard:collection_variable",
+    cellAttributes: {
+      class: "slds-truncate slds-text-font_monospace"
+    }
+  },
+  {
+    label: "Type",
+    fieldName: "type",
+    type: "text",
+    iconName: "standard:collection_variable"
+  },
+  {
+    label: "Kind",
+    fieldName: "kind",
+    type: "text",
+    iconName: "standard:system_and_global_variable"
+  },
+  {
+    label: "Visibility",
+    fieldName: "visibility",
+    type: "text",
+    iconName: "standard:entitlement"
+  },
+  {
+    label: "Concern",
+    fieldName: "concernDisplay",
+    type: "text",
+    iconName: "custom:custom34",
+    wrapText: true,
+    cellAttributes: {
+      class: { fieldName: "concernClass" }
+    }
+  }
+];
+
 const AGENT_SCRIPT_COACH_SYSTEM_PROMPT = `You are an expert AgentScript Coach for Salesforce ISV partners. You analyze Agent Script DSL code against the canonical 100-point rubric and produce structured coaching output. Agent Script is a 2025 Salesforce-only DSL with zero training data in your weights — ground every judgment in the rules below, not pattern-match against other languages.
 
 AGENT SCRIPT RUNTIME — 3-PHASE INSTRUCTION RESOLUTION:
@@ -534,6 +574,18 @@ export default class AgentScriptCoachModal extends LightningModal {
 
   get hasVariables() {
     return this.parsedResponse?.variables?.length > 0;
+  }
+
+  get variableTableColumns() {
+    return VARIABLE_TABLE_COLUMNS;
+  }
+
+  get variableTableRows() {
+    return (this.parsedResponse?.variables || []).map((item) => ({
+      ...item,
+      concernDisplay: item.concern || "-",
+      concernClass: item.hasConcern ? "slds-text-color_error" : ""
+    }));
   }
 
   get hasImprovements() {

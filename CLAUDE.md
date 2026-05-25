@@ -42,10 +42,7 @@ sf apex run test -n PackageInterfaceTest -w 10   # single test class
 
 Version numbers follow the format `major.minor.patch-build`. **Never bump the patch segment** — only major or minor are incremented manually. The build number and the `04t` package version ID are managed automatically by Salesforce CLI after `sf package version create` runs.
 
-Version bumps require updating `sfdx-project.json`:
-
-- `versionNumber` — increment major (`X.0.0.NEXT`) or minor (`X.Y.0.NEXT`), always keep `.NEXT` suffix for the build segment
-- `ancestorVersion` — must point to the previous released version (e.g. `8.53.0`)
+Version bumps are handled by the `sf-2gp-bump-package-version` skill.
 
 ## Skills
 

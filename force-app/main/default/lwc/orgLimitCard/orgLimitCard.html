@@ -1,26 +1,27 @@
 <template>
-    <lightning-card>
-        <h3 slot="title" class="slds-truncate">
-            <lightning-icon 
-                icon-name="standard:metrics" 
-                size="medium" 
-                class="slds-m-right_small"
-            ></lightning-icon>
-            Org Limits
-        </h3>
-        <lightning-button-group slot="actions">
-            <template lwc:if={limitsData}>
-                <lightning-button-icon 
-                    icon-name="utility:sparkles" 
-                    onclick={handleGenAiOrgLimitsModal} 
-                    tooltip="Generative AI"
-                ></lightning-button-icon>
-            </template>
-        </lightning-button-group>
-        <div class="slds-card__body slds-card__body_inner slds-scrollable" style="max-height:500px">
-            <c-org-limits
-                onlimits={updateLimits}
-            ></c-org-limits>
-        </div>
-    </lightning-card>
+  <lightning-card>
+    <h3 slot="title" class="slds-truncate">
+      <lightning-icon
+        icon-name="standard:metrics"
+        size="medium"
+        class="slds-m-right_small"
+      ></lightning-icon>
+      Org Limits
+    </h3>
+    <lightning-button-group slot="actions">
+      <template lwc:if={limitsData}>
+        <lightning-button-icon
+          variant="brand"
+          icon-name="utility:sparkles"
+          onclick={handleGenAiOrgLimitsModal}
+        ></lightning-button-icon>
+      </template>
+    </lightning-button-group>
+    <div
+      class="slds-card__body slds-card__body_inner slds-scrollable"
+      style="max-height: 500px"
+    >
+      <c-org-limits onlimits={updateLimits}></c-org-limits>
+    </div>
+  </lightning-card>
 </template>

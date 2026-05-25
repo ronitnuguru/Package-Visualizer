@@ -14,8 +14,4 @@ package.xml
 
 **/*.ts
 
-.cursor/
-.claude/
-.unpackaged-directory/
-
 Claude.md

@@ -2,120 +2,144 @@
   <article class="slds-card slds-m-bottom_xx-large">
     <div class="slds-grid slds-card__header">
       <header class="slds-media slds-media_center slds-has-flexi-truncate">
-          <div class="slds-media__figure">
-            <span class="slds-icon_container">
-              <lightning-icon icon-name="utility:setup_assistant_guide"></lightning-icon>
-            </span>
-          </div>
-          <div class="slds-media__body">
-            <h2 class="slds-card__header-title">
-              Setup Assistant ({packageTypes})
-            </h2>
-          </div>
-          <div class="slds-no-flex">
-            <lightning-button-group>
-              <template if:true={packageListAvailable}>
-                <lightning-button
-                  icon-name="utility:back"
-                  variant="border-filled"
-                  label="Back"
-                  onclick={handleBackToPackageVisualizer}
-                ></lightning-button>
-              </template>
-              <lightning-button-menu variant="border-filled" icon-name="utility:anchor" menu-alignment="auto">
-                <lightning-menu-subheader label="Anchor Links"></lightning-menu-subheader>
-                <lightning-menu-item 
-                  value="MenuItemOne" 
-                  label="Component Setup and Customization" 
-                  prefix-icon-name="utility:component_customization" 
-                  data-target="componentSetupCustomization"
-                  onclick={handleAnchorClick}>
-                </lightning-menu-item>
-                <lightning-menu-item 
-                  value="MenuItemTwo" 
-                  label="Enable Dev Hub Features" 
-                  prefix-icon-name="utility:toggle"
-                  data-target="enableDevHub"
-                  onclick={handleAnchorClick}>
-                </lightning-menu-item>
-                <lightning-menu-item 
-                  value="MenuItemThree" 
-                  label="Create and Register Your Namespace"  
-                  prefix-icon-name="utility:record_create"
-                  data-target="createRegisterNamespace"
-                  onclick={handleAnchorClick}>
-                </lightning-menu-item>
-                <lightning-menu-item 
-                  value="MenuItemFour" 
-                  label="Provision Access to Developers" 
-                  prefix-icon-name="utility:user_role"
-                  data-target="provisionAccess"
-                  onclick={handleAnchorClick}>
-                </lightning-menu-item>
-                <lightning-menu-item 
-                  value="MenuItemFive" 
-                  label="Develop and Manage Apps via Developer Experience (DX)" 
-                  prefix-icon-name="utility:apex"
-                  data-target="developerExperience"
-                  onclick={handleAnchorClick}>
-                </lightning-menu-item>
-                <lightning-menu-item 
-                  value="MenuItemSix" 
-                  label="Incorporate CLI Into Your Application Lifecycle Management" 
-                  prefix-icon-name="utility:package"
-                  data-target="cliLifecycle"
-                  onclick={handleAnchorClick}>
-                </lightning-menu-item>
-                <lightning-menu-item 
-                  value="MenuItemSeven" 
-                  label="Security Review" 
-                  prefix-icon-name="utility:shield"
-                  data-target="securityReview"
-                  onclick={handleAnchorClick}>
-                </lightning-menu-item>
-                <lightning-menu-item 
-                  value="MenuItemEight" 
-                  label="Develop and Extend Salesforce Products" 
-                  prefix-icon-name="utility:salesforce1"
-                  data-target="extendSalesforce"
-                  onclick={handleAnchorClick}>
-                </lightning-menu-item>
-                <lightning-menu-item 
-                  value="MenuItemNine" 
-                  label='1GP -> 2GP Package Migration (Generally Available)' 
-                  prefix-icon-name="utility:alert"
-                  data-target="packageMigration"
-                  onclick={handleAnchorClick}>
-                </lightning-menu-item>
-              </lightning-button-menu>
-            </lightning-button-group>
-          </div>
+        <div class="slds-media__figure">
+          <span class="slds-icon_container">
+            <lightning-icon
+              icon-name="utility:setup_assistant_guide"
+            ></lightning-icon>
+          </span>
+        </div>
+        <div class="slds-media__body">
+          <h2 class="slds-card__header-title">
+            Setup Assistant ({packageTypes})
+          </h2>
+        </div>
+        <div class="slds-no-flex">
+          <lightning-button-group>
+            <template if:true={packageListAvailable}>
+              <lightning-button
+                icon-name="utility:back"
+                variant="border-filled"
+                label="Back"
+                onclick={handleBackToPackageVisualizer}
+              ></lightning-button>
+            </template>
+            <lightning-button-menu
+              variant="border-filled"
+              icon-name="utility:anchor"
+              menu-alignment="auto"
+            >
+              <lightning-menu-subheader
+                label="Anchor Links"
+              ></lightning-menu-subheader>
+              <lightning-menu-item
+                value="MenuItemOne"
+                label="Component Setup and Customization"
+                prefix-icon-name="utility:component_customization"
+                data-target="componentSetupCustomization"
+                onclick={handleAnchorClick}
+              >
+              </lightning-menu-item>
+              <lightning-menu-item
+                value="MenuItemTwo"
+                label="Enable Dev Hub Features"
+                prefix-icon-name="utility:toggle"
+                data-target="enableDevHub"
+                onclick={handleAnchorClick}
+              >
+              </lightning-menu-item>
+              <lightning-menu-item
+                value="MenuItemThree"
+                label="Create and Register Your Namespace"
+                prefix-icon-name="utility:record_create"
+                data-target="createRegisterNamespace"
+                onclick={handleAnchorClick}
+              >
+              </lightning-menu-item>
+              <lightning-menu-item
+                value="MenuItemFour"
+                label="Provision Access to Developers"
+                prefix-icon-name="utility:user_role"
+                data-target="provisionAccess"
+                onclick={handleAnchorClick}
+              >
+              </lightning-menu-item>
+              <lightning-menu-item
+                value="MenuItemFive"
+                label="Develop and Manage Apps via Developer Experience (DX)"
+                prefix-icon-name="utility:apex"
+                data-target="developerExperience"
+                onclick={handleAnchorClick}
+              >
+              </lightning-menu-item>
+              <lightning-menu-item
+                value="MenuItemSix"
+                label="Incorporate CLI Into Your Application Lifecycle Management"
+                prefix-icon-name="utility:package"
+                data-target="cliLifecycle"
+                onclick={handleAnchorClick}
+              >
+              </lightning-menu-item>
+              <lightning-menu-item
+                value="MenuItemSeven"
+                label="Security Review"
+                prefix-icon-name="utility:shield"
+                data-target="securityReview"
+                onclick={handleAnchorClick}
+              >
+              </lightning-menu-item>
+              <lightning-menu-item
+                value="MenuItemEight"
+                label="Develop and Extend Salesforce Products"
+                prefix-icon-name="utility:salesforce1"
+                data-target="extendSalesforce"
+                onclick={handleAnchorClick}
+              >
+              </lightning-menu-item>
+              <lightning-menu-item
+                value="MenuItemNine"
+                label="1GP -> 2GP Package Migration (Generally Available)"
+                prefix-icon-name="utility:alert"
+                data-target="packageMigration"
+                onclick={handleAnchorClick}
+              >
+              </lightning-menu-item>
+            </lightning-button-menu>
+          </lightning-button-group>
+        </div>
       </header>
     </div>
     <div class="slds-card__body slds-card__body_inner">
       <template if:true={alert}>
         <div class="slds-notify slds-notify_alert" role="alert">
           <span class="slds-assistive-text">info</span>
-          <span class="slds-icon_container slds-icon-utility-user slds-var-m-right_x-small">
+          <span
+            class="slds-icon_container slds-icon-utility-user slds-var-m-right_x-small"
+          >
             <lightning-icon
               icon-name="utility:screen"
               size="x-small"
               variant="inverse"
             ></lightning-icon>
           </span>
-          <h2>
-            {alert}
-          </h2>
+          <h2>{alert}</h2>
         </div>
       </template>
       <ol class="slds-setup-assistant">
-        <li class="slds-setup-assistant__item" data-id="componentSetupCustomization">
+        <li
+          class="slds-setup-assistant__item"
+          data-id="componentSetupCustomization"
+        >
           <div class="">
             <article class="slds-setup-assistant__step">
               <div class="slds-setup-assistant__step-summary">
                 <div class="slds-media">
-                  <div class="slds-setup-assistant__step-summary-content slds-media__body">
-                    <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                  <div
+                    class="slds-setup-assistant__step-summary-content slds-media__body"
+                  >
+                    <h3
+                      class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                    >
                       <lightning-icon
                         icon-name="utility:component_customization"
                         size="small"
@@ -123,12 +147,18 @@
                       ></lightning-icon>
                       Component Setup and Customization
                     </h3>
-                    <div class="slds-progress slds-progress_vertical slds-progress_success">
-                      <ol class="slds-progress__list slds-progress__list-bordered border-bottom">
+                    <div
+                      class="slds-progress slds-progress_vertical slds-progress_success"
+                    >
+                      <ol
+                        class="slds-progress__list slds-progress__list-bordered border-bottom"
+                      >
                         <template if:true={is2GP}>
                           <li class="slds-progress__item">
                             <template if:false={isPBO}>
-                              <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <span
+                                class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                              >
                                 <lightning-icon
                                   icon-name="utility:warning"
                                   variant="warning"
@@ -145,26 +175,43 @@
                                 ></lightning-icon>
                               </span>
                             </template>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
                                 <strong class="slds-text-title_caps">
                                   Partner Business Org (PBO)
                                 </strong>
                                 <p class="slds-var-m-top_xx-small">
-                                  The PBO acts as the central hub for ISVs to manage packaging, orgs, customers, and licenses covering everything from development and provisioning to sales, orders, and customer support.
+                                  The PBO acts as the central hub for ISVs to
+                                  manage packaging, orgs, customers, and
+                                  licenses covering everything from development
+                                  and provisioning to sales, orders, and
+                                  customer support.
                                   <template if:false={isPBO}>
                                     <p>
-                                      The current org does not have the features associated with the PBO. If you did not receive the PBO when you joined the <a target="_blank" href="https://developer.salesforce.com/docs/atlas.en-us.packagingGuide.meta/packagingGuide/appexchange_partner_join.htm">Salesforce Partner Community</a>, log a case to request one.
+                                      The current org does not have the features
+                                      associated with the PBO. If you did not
+                                      receive the PBO when you joined the
+                                      <a
+                                        target="_blank"
+                                        href="https://developer.salesforce.com/docs/atlas.en-us.packagingGuide.meta/packagingGuide/appexchange_partner_join.htm"
+                                        >Salesforce Partner Community</a
+                                      >, log a case to request one.
                                     </p>
                                   </template>
                                   <template if:true={isPBO}>
                                     <p>
-                                      Great! It looks like you are on the right path. The current org has all the features of the PBO!
+                                      Great! It looks like you are on the right
+                                      path. The current org has all the features
+                                      of the PBO!
                                     </p>
                                   </template>
                                 </p>
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:trailhead_ext"
                                   variant="brand"
@@ -190,7 +237,9 @@
                               ></lightning-icon>
                             </span>
                           </template>
-                          <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                          <div
+                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                          >
                             <div class="slds-size_3-of-4">
                               <strong class="slds-text-title_caps">
                                 Package Visualizer Permission
@@ -201,7 +250,9 @@
                                 functionalities
                               </p>
                             </div>
-                            <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                            <div
+                              class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                            >
                               <lightning-button-icon
                                 icon-name="action:manage_perm_sets"
                                 variant="brand"
@@ -227,7 +278,9 @@
                                 ></lightning-icon>
                               </span>
                             </template>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
                                 <strong class="slds-text-title_caps">
                                   Package Visualizer Push Upgrade Permission
@@ -238,7 +291,9 @@
                                   schedule push upgrades
                                 </p>
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="action:manage_perm_sets"
                                   variant="brand"
@@ -250,9 +305,7 @@
                           </li>
                         </template>
                       </ol>
-                      <ol
-                        class="list_ordered"
-                      >
+                      <ol class="list_ordered">
                         <li class="list_item">
                           <div
                             class="slds-progress__item_content slds-grid slds-grid_align-spread border-bottom"
@@ -328,8 +381,12 @@
               <article class="slds-setup-assistant__step">
                 <div class="slds-setup-assistant__step-summary">
                   <div class="slds-media">
-                    <div class="slds-setup-assistant__step-summary-content slds-media__body">
-                      <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                    <div
+                      class="slds-setup-assistant__step-summary-content slds-media__body"
+                    >
+                      <h3
+                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                      >
                         <lightning-icon
                           icon-name="utility:toggle"
                           size="small"
@@ -338,19 +395,40 @@
                         Enable Dev Hub Features
                       </h3>
                       <p>
-                        Dev Hub allows you to create and manage Namespaces, Scratch Orgs, Unlocked Packages, and Second-Generation Managed Packages (2GP).&nbsp;
+                        Dev Hub allows you to create and manage Namespaces,
+                        Scratch Orgs, Unlocked Packages, and Second-Generation
+                        Managed Packages (2GP).&nbsp;
                         <a
                           href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_enable_devhub.htm"
                           target="_blank"
                           >Learn More</a
                         >
                       </p>
-                        Required Feature Toggles:
-                        <ul class="slds-list_dotted">
-                          <li><a href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_pkg_enable_devhub.htm" target="_blank">Enable Dev Hub</a></li>
-                          <li><a href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_enable_secondgen_pkg.htm" target="_blank">Enable Unlocked Packages and Second-Generation Managed Packages</a></li>
-                          <li><a href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_enable_einstein.htm" target="_blank">Enable Einstein Features</a></li>
-                        </ul>
+                      Required Feature Toggles:
+                      <ul class="slds-list_dotted">
+                        <li>
+                          <a
+                            href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_pkg_enable_devhub.htm"
+                            target="_blank"
+                            >Enable Dev Hub</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_enable_secondgen_pkg.htm"
+                            target="_blank"
+                            >Enable Unlocked Packages and Second-Generation
+                            Managed Packages</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_enable_einstein.htm"
+                            target="_blank"
+                            >Enable Einstein Features</a
+                          >
+                        </li>
+                      </ul>
                     </div>
                     <div class="slds-media__figure slds-media__figure_reverse">
                       <lightning-button-group>
@@ -361,14 +439,17 @@
                           onclick={navigateToDevHub}
                           disabled={isSetupEnabled}
                         ></lightning-button>
-                      </lightning-button-group> 
+                      </lightning-button-group>
                     </div>
                   </div>
                 </div>
               </article>
             </div>
           </li>
-          <li class="slds-setup-assistant__item" data-id="createRegisterNamespace">
+          <li
+            class="slds-setup-assistant__item"
+            data-id="createRegisterNamespace"
+          >
             <div class="">
               <article class="slds-setup-assistant__step">
                 <div class="slds-setup-assistant__step-summary">
@@ -388,30 +469,47 @@
                       </h3>
                       <p>
                         With 2GP, you can share a single namespace with multiple
-                        packages. This makes sharing and maintenance of code much easier. We recommend that you
-                        use a single namespace for all of your 2GP packages
+                        packages. This makes sharing and maintenance of code
+                        much easier. We recommend that you use a single
+                        namespace for all of your 2GP packages
                       </p>
-                      <div class="slds-progress slds-progress_vertical slds-progress_success">
-                        <ol class="slds-progress__list slds-progress__list-bordered">
+                      <div
+                        class="slds-progress slds-progress_vertical slds-progress_success"
+                      >
+                        <ol
+                          class="slds-progress__list slds-progress__list-bordered"
+                        >
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                Create a Developer Editon Org for the sole purpose of registering your package's namespace. It may take a little while for org creation. Check your email once the org is provisioned. Then go to this newly provisioned org's Setup &rarr; Package Manager to register the namespace.&nbsp;
+                                Create a Developer Editon Org for the sole
+                                purpose of registering your package's namespace.
+                                It may take a little while for org creation.
+                                Check your email once the org is provisioned.
+                                Then go to this newly provisioned org's Setup
+                                &rarr; Package Manager to register the
+                                namespace.&nbsp;
                                 <a
                                   href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_namespace.htm"
                                   target="_blank"
                                   >Learn More</a
                                 >
                               </div>
-                              
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   tooltip="Create Org"
                                   icon-name="utility:salesforce1"
@@ -420,27 +518,37 @@
                                 >
                                 </lightning-button-icon>
                               </div>
-                              
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                Link your registered namespace by authenticating into the Developer Edition Org you created in the previous step. Once linked, we can create 2GPs with that namespace. This allows you to organize, and distribute your code and metadata in a scalable manner.&nbsp;
+                                Link your registered namespace by authenticating
+                                into the Developer Edition Org you created in
+                                the previous step. Once linked, we can create
+                                2GPs with that namespace. This allows you to
+                                organize, and distribute your code and metadata
+                                in a scalable manner.&nbsp;
                                 <a
                                   href="https://developer.salesforce.com/docs/atlas.en-us.248.0.sfdx_dev.meta/sfdx_dev/sfdx_dev_reg_namespace.htm"
                                   target="_blank"
                                   >Learn More</a
                                 >
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   tooltip="Namespace Registries"
                                   icon-name="utility:salesforce_page"
@@ -483,8 +591,12 @@
               <article class="slds-setup-assistant__step">
                 <div class="slds-setup-assistant__step-summary">
                   <div class="slds-media">
-                    <div class="slds-setup-assistant__step-summary-content slds-media__body">
-                      <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                    <div
+                      class="slds-setup-assistant__step-summary-content slds-media__body"
+                    >
+                      <h3
+                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                      >
                         <lightning-icon
                           icon-name="utility:user_role"
                           size="small"
@@ -493,28 +605,45 @@
                         Provision Access to Developers
                       </h3>
                       <p>
-                        The Limited Access User Profile is designed for users whose role is to build customizations or applications. These 100 licenses restrict access to standard and custom objects but provide essential access to dev hub, development tools, scratch org environments, and packaging related functionalities&nbsp;
+                        The Limited Access User Profile is designed for users
+                        whose role is to build customizations or applications.
+                        These 100 licenses restrict access to standard and
+                        custom objects but provide essential access to dev hub,
+                        development tools, scratch org environments, and
+                        packaging related functionalities&nbsp;
                         <a
                           href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_pkg_slalf_pkg_dev.htm"
                           target="_blank"
                           >Learn More</a
                         >
                       </p>
-                      <div class="slds-progress slds-progress_vertical slds-progress_success">
-                        <ol class="slds-progress__list slds-progress__list-bordered">
+                      <div
+                        class="slds-progress slds-progress_vertical slds-progress_success"
+                      >
+                        <ol
+                          class="slds-progress__list slds-progress__list-bordered"
+                        >
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                Create New Users and Select Salesforce Limited Access - Free for User License, and then Limited Access User for Profile
+                                Create New Users and Select Salesforce Limited
+                                Access - Free for User License, and then Limited
+                                Access User for Profile
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-group>
                                   <lightning-button-icon
                                     icon-name="utility:help_doc_ext"
@@ -526,18 +655,25 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                Create a Permission Set for developer to access the required Dev Hub Objects
+                                Create a Permission Set for developer to access
+                                the required Dev Hub Objects
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:help_doc_ext"
                                   variant="brand"
@@ -547,18 +683,26 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                Assign System Permissions for the ability to create Second-Generation Managed Packages and Package Versions
+                                Assign System Permissions for the ability to
+                                create Second-Generation Managed Packages and
+                                Package Versions
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:help_doc_ext"
                                   variant="brand"
@@ -601,8 +745,12 @@
               <article class="slds-setup-assistant__step">
                 <div class="slds-setup-assistant__step-summary">
                   <div class="slds-media">
-                    <div class="slds-setup-assistant__step-summary-content slds-media__body">
-                      <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                    <div
+                      class="slds-setup-assistant__step-summary-content slds-media__body"
+                    >
+                      <h3
+                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                      >
                         <lightning-icon
                           icon-name="utility:apex"
                           size="small"
@@ -611,28 +759,46 @@
                         Develop and Manage Apps via Developer Experience (DX)
                       </h3>
                       <p>
-                        Innovate faster on the Salesforce platform with modern tools that are designed to increase developer productivity, empower teams to build, test, ship faster and achieve new levels of agility.
+                        Innovate faster on the Salesforce platform with modern
+                        tools that are designed to increase developer
+                        productivity, empower teams to build, test, ship faster
+                        and achieve new levels of agility.
                       </p>
-                      <div class="slds-progress slds-progress_vertical slds-progress_success">
-                        <ol class="slds-progress__list slds-progress__list-bordered">
+                      <div
+                        class="slds-progress slds-progress_vertical slds-progress_success"
+                      >
+                        <ol
+                          class="slds-progress__list slds-progress__list-bordered"
+                        >
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                Salesforce CLI is a command-line interface that simplifies development and build automation when working with your Salesforce org. Use it to create and manage orgs, synchronize source to and from orgs, create and install packages, and more.&nbsp;
+                                Salesforce CLI is a command-line interface that
+                                simplifies development and build automation when
+                                working with your Salesforce org. Use it to
+                                create and manage orgs, synchronize source to
+                                and from orgs, create and install packages, and
+                                more.&nbsp;
                                 <a
                                   href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm"
                                   target="_blank"
                                   >Learn More</a
                                 >
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:trailhead_ext"
                                   variant="brand"
@@ -642,23 +808,33 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                Salesforce Extensions for Visual Studio Code Editor accelerates development on the Customer 360 Platform with features for working with Scratch Orgs, Lightning Web Components, Apex and other metadata.&nbsp;
+                                Salesforce Extensions for Visual Studio Code
+                                Editor accelerates development on the Customer
+                                360 Platform with features for working with
+                                Scratch Orgs, Lightning Web Components, Apex and
+                                other metadata.&nbsp;
                                 <a
                                   href="https://developer.salesforce.com/tools/vscode"
                                   target="_blank"
                                   >Learn More</a
                                 >
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:trailhead_ext"
                                   variant="brand"
@@ -668,16 +844,24 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                Skills are reusable AI capabilities that teach your coding agent Salesforce-specific patterns, best practices, and workflows. Install them with one command to enhance any supported AI coding tool.&nbsp;
+                                Skills are reusable AI capabilities that teach
+                                your coding agent Salesforce-specific patterns,
+                                best practices, and workflows. Install them with
+                                one command to enhance any supported AI coding
+                                tool.&nbsp;
                                 <span class="slds-text-body_small">
                                   Explore on GitHub:&nbsp;
                                   <a
@@ -687,13 +871,15 @@
                                   >
                                   &nbsp;|&nbsp;
                                   <a
-                                    href="https://github.com/forcedotcom/afv-library"
+                                    href="https://github.com/forcedotcom/sf-skills"
                                     target="_blank"
-                                    >afv-library</a
+                                    >sf-skills</a
                                   >
                                 </span>
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:agent_astro"
                                   variant="brand"
@@ -703,18 +889,27 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                Lay the foundation of your package by setting up your app's Project Structure. Ensure you edit the namespace parameter with global namespace you have registered for your package
+                                Lay the foundation of your package by setting up
+                                your app's Project Structure. Ensure you edit
+                                the namespace parameter with global namespace
+                                you have registered for your package
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:help_doc_ext"
                                   variant="brand"
@@ -724,18 +919,27 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                Create an Application by following the basic workflow when you are starting from scratch to develop an app that runs on the Salesforce Platform
+                                Create an Application by following the basic
+                                workflow when you are starting from scratch to
+                                develop an app that runs on the Salesforce
+                                Platform
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:help_doc_ext"
                                   variant="brand"
@@ -745,18 +949,30 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                Build a sample Scratch Org Definition File to mimic the shape of an org towards your development lifecycle, such as sandbox, packaging, or production. These source-driven and fully configurable scratch orgs allow developers to emulate different Salesforce editions with different features and settings
+                                Build a sample Scratch Org Definition File to
+                                mimic the shape of an org towards your
+                                development lifecycle, such as sandbox,
+                                packaging, or production. These source-driven
+                                and fully configurable scratch orgs allow
+                                developers to emulate different Salesforce
+                                editions with different features and settings
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:insert_tag_field"
                                   variant="brand"
@@ -766,18 +982,26 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                Maintain high standards of code quality and efficiency by incorporating Salesforce Code Analyzer in your development lifecycle
+                                Maintain high standards of code quality and
+                                efficiency by incorporating Salesforce Code
+                                Analyzer in your development lifecycle
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:help_doc_ext"
                                   variant="brand"
@@ -819,37 +1043,67 @@
               <article class="slds-setup-assistant__step">
                 <div class="slds-setup-assistant__step-summary">
                   <div class="slds-media">
-                    <div class="slds-setup-assistant__step-summary-content slds-media__body">
-                      <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                    <div
+                      class="slds-setup-assistant__step-summary-content slds-media__body"
+                    >
+                      <h3
+                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                      >
                         <lightning-icon
                           icon-name="utility:dx_pipeline"
                           size="small"
                           class="slds-var-p-right_small"
                         ></lightning-icon>
-                        Incorporate CLI into your Application Lifecycle Management
+                        Incorporate CLI into your Application Lifecycle
+                        Management
                       </h3>
                       <p>
-                        <code>sf</code> CLI commands embraces the future of Salesforce development with all new capabilities that enable you to experience ease with package commands, faster updates and installs.&nbsp;
+                        <code>sf</code> CLI commands embraces the future of
+                        Salesforce development with all new capabilities that
+                        enable you to experience ease with package commands,
+                        faster updates and installs.&nbsp;
                         <a
                           href="https://developer.salesforce.com/blogs/2023/07/salesforce-cli-sf-v2-is-here"
                           target="_blank"
-                          >Learn More</a>
+                          >Learn More</a
+                        >
                       </p>
-                      <div class="slds-progress slds-progress_vertical slds-progress_success">
-                        <ol class="slds-progress__list slds-progress__list-bordered border-bottom">
+                      <div
+                        class="slds-progress slds-progress_vertical slds-progress_success"
+                      >
+                        <ol
+                          class="slds-progress__list slds-progress__list-bordered border-bottom"
+                        >
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                To <a href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_pkg_base.htm" target="_blank">create a package</a>: <code>sf package create --name "Package Name" --description "Your Package Description" --package-type Managed --path force-app --target-dev-hub "DevHubOrgAlias"</code>
+                                To
+                                <a
+                                  href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_pkg_base.htm"
+                                  target="_blank"
+                                  >create a package</a
+                                >:
+                                <code
+                                  >sf package create --name "Package Name"
+                                  --description "Your Package Description"
+                                  --package-type Managed --path force-app
+                                  --target-dev-hub "DevHubOrgAlias"</code
+                                >
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:apex"
                                   variant="brand"
@@ -859,18 +1113,36 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                To <a href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_pkg_ver.htm" target="_blank">create a package version</a>: <code>sf package version create --package "Package Name" --wait 20 --installation-key-bypass --code-coverage --definition-file config/project-scratch-def.json --target-dev-hub "DevHubOrgAlias"</code>
+                                To
+                                <a
+                                  href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_pkg_ver.htm"
+                                  target="_blank"
+                                  >create a package version</a
+                                >:
+                                <code
+                                  >sf package version create --package "Package
+                                  Name" --wait 20 --installation-key-bypass
+                                  --code-coverage --definition-file
+                                  config/project-scratch-def.json
+                                  --target-dev-hub "DevHubOrgAlias"</code
+                                >
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:apex"
                                   variant="brand"
@@ -880,18 +1152,33 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                To <a href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_pkg_ver_promote.htm" target="_blank">promote/release a package version</a>: <code>sf package version promote --package "Package Version Alias"</code>
+                                To
+                                <a
+                                  href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_create_pkg_ver_promote.htm"
+                                  target="_blank"
+                                  >promote/release a package version</a
+                                >:
+                                <code
+                                  >sf package version promote --package "Package
+                                  Version Alias"</code
+                                >
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:apex"
                                   variant="brand"
@@ -901,18 +1188,34 @@
                             </div>
                           </li>
                           <li class="slds-progress__item">
-                            <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                            <span
+                              class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                            >
                               <lightning-icon
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
                               ></lightning-icon>
                             </span>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
-                                To <a href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_recommended_version.htm" target="_blank">recommend package version to subscribers</a>: <code>sf package update --package "0Ho..." --target-dev-hub "DevHubOrgAlias" --recommended-version-id "04t..."</code>
+                                To
+                                <a
+                                  href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_recommended_version.htm"
+                                  target="_blank"
+                                  >recommend package version to subscribers</a
+                                >:
+                                <code
+                                  >sf package update --package "0Ho..."
+                                  --target-dev-hub "DevHubOrgAlias"
+                                  --recommended-version-id "04t..."</code
+                                >
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:apex"
                                   variant="brand"
@@ -924,16 +1227,30 @@
                         </ol>
                         <ol class="list_ordered">
                           <li class="list_item">
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread border-bottom">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread border-bottom"
+                            >
                               <div class="slds-size_3-of-4">
                                 <strong class="slds-text-title_caps">
                                   Components Available in Managed Packages
                                 </strong>
                                 <p class="slds-var-m-top_xx-small">
-                                  <a href="https://developer.salesforce.com/docs/success/metadata-coverage-report/references/coverage-report/metadata-coverage-report.html" target="_blank">Metadata Coverage Report</a>: Each metadata component that you include in a managed package has certain rules that determine its behavior in a subscriber org. These manageability rules determine whether you, or the subscriber, can edit or remove components after the package version is created and installed.
+                                  <a
+                                    href="https://developer.salesforce.com/docs/success/metadata-coverage-report/references/coverage-report/metadata-coverage-report.html"
+                                    target="_blank"
+                                    >Metadata Coverage Report</a
+                                  >: Each metadata component that you include in
+                                  a managed package has certain rules that
+                                  determine its behavior in a subscriber org.
+                                  These manageability rules determine whether
+                                  you, or the subscriber, can edit or remove
+                                  components after the package version is
+                                  created and installed.
                                 </p>
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <lightning-button-icon
                                   icon-name="utility:package"
                                   variant="brand"
@@ -943,13 +1260,20 @@
                             </div>
                           </li>
                           <li class="list_item">
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread border-bottom">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread border-bottom"
+                            >
                               <div class="slds-size_3-of-4">
                                 <strong class="slds-text-title_caps">
                                   Run Salesforce Code Analyzer Scan
                                 </strong>
                                 <p class="slds-var-m-top_xx-small">
-                                  <code>sf code-analyzer run --rule-selector AppExchange --rule-selector Recommended:Security --output-file CodeAnalyzerReport.html</code>
+                                  <code
+                                    >sf code-analyzer run --rule-selector
+                                    AppExchange --rule-selector
+                                    Recommended:Security --output-file
+                                    CodeAnalyzerReport.html</code
+                                  >
                                 </p>
                               </div>
                               <div
@@ -986,8 +1310,12 @@
             <article class="slds-setup-assistant__step">
               <div class="slds-setup-assistant__step-summary">
                 <div class="slds-media">
-                  <div class="slds-setup-assistant__step-summary-content slds-media__body">
-                    <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                  <div
+                    class="slds-setup-assistant__step-summary-content slds-media__body"
+                  >
+                    <h3
+                      class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                    >
                       <lightning-icon
                         icon-name="utility:shield"
                         size="small"
@@ -996,27 +1324,44 @@
                       Security Review
                     </h3>
                     <p>
-                      The Salesforce security team conducts rigorous reviews of all products before publicly listing them on AppExchange. Ensuring that all products go through security review means that customers can feel confident in knowing that any AppExchange offering provides the highest level of protection for their data.&nbsp;
+                      The Salesforce security team conducts rigorous reviews of
+                      all products before publicly listing them on AppExchange.
+                      Ensuring that all products go through security review
+                      means that customers can feel confident in knowing that
+                      any AppExchange offering provides the highest level of
+                      protection for their data.&nbsp;
                       <a
                         href="https://developer.salesforce.com/developer-centers/security"
                         target="_blank"
-                        >Learn More</a>
+                        >Learn More</a
+                      >
                     </p>
-                    <div class="slds-progress slds-progress_vertical slds-progress_success">
-                      <ol class="slds-progress__list slds-progress__list-bordered">
+                    <div
+                      class="slds-progress slds-progress_vertical slds-progress_success"
+                    >
+                      <ol
+                        class="slds-progress__list slds-progress__list-bordered"
+                      >
                         <li class="slds-progress__item">
-                          <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                          <span
+                            class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                          >
                             <lightning-icon
                               icon-name="utility:info"
                               variant="info"
                               size="x-small"
                             ></lightning-icon>
                           </span>
-                          <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                          <div
+                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                          >
                             <div class="slds-size_3-of-4">
-                              Learn how to manage your team's access to the Salesforce Partner Community
+                              Learn how to manage your team's access to the
+                              Salesforce Partner Community
                             </div>
-                            <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                            <div
+                              class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                            >
                               <lightning-button-icon
                                 icon-name="utility:trailhead_ext"
                                 variant="brand"
@@ -1026,18 +1371,25 @@
                           </div>
                         </li>
                         <li class="slds-progress__item">
-                          <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                          <span
+                            class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                          >
                             <lightning-icon
                               icon-name="utility:info"
                               variant="info"
                               size="x-small"
                             ></lightning-icon>
                           </span>
-                          <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                          <div
+                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                          >
                             <div class="slds-size_3-of-4">
-                              Learn how to manage your AppExchange listings with the Partner Console and Listing Builder
+                              Learn how to manage your AppExchange listings with
+                              the Partner Console and Listing Builder
                             </div>
-                            <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                            <div
+                              class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                            >
                               <lightning-button-icon
                                 icon-name="utility:trailhead_ext"
                                 variant="brand"
@@ -1047,18 +1399,26 @@
                           </div>
                         </li>
                         <li class="slds-progress__item">
-                          <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                          <span
+                            class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                          >
                             <lightning-icon
                               icon-name="utility:info"
                               variant="info"
                               size="x-small"
                             ></lightning-icon>
                           </span>
-                          <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                          <div
+                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                          >
                             <div class="slds-size_3-of-4">
-                              Review and learn how to mitigate the top 20 vulnerabilities found in the AppExchange Security Review
+                              Review and learn how to mitigate the top 20
+                              vulnerabilities found in the AppExchange Security
+                              Review
                             </div>
-                            <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                            <div
+                              class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                            >
                               <lightning-button-icon
                                 icon-name="utility:help_doc_ext"
                                 variant="brand"
@@ -1070,7 +1430,9 @@
                         <template lwc:if={org}>
                           <li class="slds-progress__item">
                             <template if:true={numOfDays}>
-                              <span class="slds-icon_container slds-icon-utility-success slds-progress__marker">
+                              <span
+                                class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                              >
                                 <lightning-icon
                                   icon-name="utility:warning"
                                   variant="warning"
@@ -1088,17 +1450,42 @@
                                 ></lightning-icon>
                               </span>
                             </template>
-                            <div class="slds-progress__item_content slds-grid slds-grid_align-spread">
+                            <div
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                            >
                               <div class="slds-size_3-of-4">
                                 <template if:true={numOfDays}>
-                                  Your Dev Hub Org is set to expire <lightning-relative-date-time value={numOfDays}></lightning-relative-date-time>. You have until <lightning-formatted-date-time value={org.TrialExpirationDate} year="numeric" month="numeric" day="numeric" hour="2-digit"
-                                  minute="2-digit" time-zone-name="short"></lightning-formatted-date-time> to log a case via Partner Community and request org extension. Before submitting for Security Review, you will need to also log a case and convert your Partner Business Org ({org.Id}) from Trial to Active status
+                                  Your Dev Hub Org is set to expire
+                                  <lightning-relative-date-time
+                                    value={numOfDays}
+                                  ></lightning-relative-date-time
+                                  >. You have until
+                                  <lightning-formatted-date-time
+                                    value={org.TrialExpirationDate}
+                                    year="numeric"
+                                    month="numeric"
+                                    day="numeric"
+                                    hour="2-digit"
+                                    minute="2-digit"
+                                    time-zone-name="short"
+                                  ></lightning-formatted-date-time>
+                                  to log a case via Partner Community and
+                                  request org extension. Before submitting for
+                                  Security Review, you will need to also log a
+                                  case and convert your Partner Business Org
+                                  ({org.Id}) from Trial to Active status
                                 </template>
                                 <template if:false={numOfDays}>
-                                  Your Dev Hub Org is under Active status! You're all set to submit your package for Security Review! Learn more about maximizing tools and resources available for AppExchange Partners
+                                  Your Dev Hub Org is under Active status!
+                                  You're all set to submit your package for
+                                  Security Review! Learn more about maximizing
+                                  tools and resources available for AppExchange
+                                  Partners
                                 </template>
                               </div>
-                              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                              <div
+                                class="slds-grid slds-grid_align-end slds-size_1-of-4"
+                              >
                                 <template if:false={numOfDays}>
                                   <lightning-button-icon
                                     icon-name="utility:trailhead_ext"
@@ -1140,8 +1527,12 @@
               <article class="slds-setup-assistant__step">
                 <div class="slds-setup-assistant__step-summary">
                   <div class="slds-media">
-                    <div class="slds-setup-assistant__step-summary-content slds-media__body">
-                      <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                    <div
+                      class="slds-setup-assistant__step-summary-content slds-media__body"
+                    >
+                      <h3
+                        class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                      >
                         <lightning-icon
                           icon-name="utility:salesforce1"
                           size="small"
@@ -1150,25 +1541,38 @@
                         Develop and Extend Salesforce Products
                       </h3>
                       <p>
-                        Extend the power of conversational, generative and agentic AI to your business with Agentforce. Build a trusted and customizable AI agent that empowers your users to get more done in Salesforce at scale.&nbsp;
+                        Extend the power of conversational, generative and
+                        agentic AI to your business with Agentforce. Build a
+                        trusted and customizable AI agent that empowers your
+                        users to get more done in Salesforce at scale.&nbsp;
                         <a
                           href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/dev2gp_packageable_agentforce_md.htm"
                           target="_blank"
-                          >Learn More</a>
+                          >Learn More</a
+                        >
                       </p>
                       <div class="slds-m-top_small slds-show_medium">
                         <lightning-tabset variant="scoped">
-                          <lightning-tab label="Agentforce" icon-name="utility:agent_astro">
-                              <c-setup-assistant-agentforce
-                                org-id={orgId}
-                              ></c-setup-assistant-agentforce>
+                          <lightning-tab
+                            label="Agentforce"
+                            icon-name="utility:agent_astro"
+                          >
+                            <c-setup-assistant-agentforce
+                              org-id={orgId}
+                            ></c-setup-assistant-agentforce>
                           </lightning-tab>
-                          <lightning-tab label="Data360" icon-name="utility:data_cloud">
+                          <lightning-tab
+                            label="Data360"
+                            icon-name="utility:data_cloud"
+                          >
                             <c-setup-assistant-data-cloud
                               org-id={orgId}
                             ></c-setup-assistant-data-cloud>
                           </lightning-tab>
-                          <lightning-tab label="Slack" icon-name="utility:slack">
+                          <lightning-tab
+                            label="Slack"
+                            icon-name="utility:slack"
+                          >
                             <c-setup-assistant-slack
                               org-id={orgId}
                             ></c-setup-assistant-slack>
@@ -1196,8 +1600,12 @@
             <article class="slds-setup-assistant__step">
               <div class="slds-setup-assistant__step-summary">
                 <div class="slds-media">
-                  <div class="slds-setup-assistant__step-summary-content slds-media__body">
-                    <h3 class="slds-setup-assistant__step-summary-title slds-text-heading_small">
+                  <div
+                    class="slds-setup-assistant__step-summary-content slds-media__body"
+                  >
+                    <h3
+                      class="slds-setup-assistant__step-summary-title slds-text-heading_small"
+                    >
                       <lightning-icon
                         icon-name="utility:alert"
                         size="small"
@@ -1206,11 +1614,16 @@
                       1GP &rarr; 2GP Package Migration (Generally Available)
                     </h3>
                     <p>
-                      Are you still using first-generation managed packaging (1GP) for your package development work? If so, you're not alone. Many ISVs like you are looking to move to second-generation managed packaging (2GP) and take advantage of its many benefits.&nbsp;
+                      Are you still using first-generation managed packaging
+                      (1GP) for your package development work? If so, you're not
+                      alone. Many ISVs like you are looking to move to
+                      second-generation managed packaging (2GP) and take
+                      advantage of its many benefits.&nbsp;
                       <a
                         href="https://developer.salesforce.com/blogs/2025/06/move-to-managed-2gp-with-package-migrations"
                         target="_blank"
-                        >Learn More</a>
+                        >Learn More</a
+                      >
                     </p>
                   </div>
                   <div class="slds-media__figure slds-media__figure_reverse">

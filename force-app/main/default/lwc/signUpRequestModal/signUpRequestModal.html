@@ -1,523 +1,626 @@
 <template>
-    <section
-      role="dialog"
-      tabindex="-1"
-      aria-labelledby="modal-heading-01"
-      aria-modal="true"
-      aria-describedby="modal-content-id-1"
-      class="slds-modal slds-fade-in-open slds-modal_medium"
-    >
-      <div class="slds-modal__container">
-        <header class="slds-modal__header">
-            <button
-                class="slds-button slds-button_icon slds-modal__close"
-                title="Close"
-                onclick={handleCancel}
-                >
-                <lightning-icon
-                size="small"
-                icon-name="utility:close"
-                alternative-text="Close"
-                title="Close"
-                ></lightning-icon>
-                <span class="slds-assistive-text">Close</span>
-            </button>
-            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
-                {rowData.company}
-            </h2>
-        </header>
-        <div
-          class="slds-modal__content slds-var-p-around_medium slds-card content-style"
-          id="modal-content-id-1"
+  <section
+    role="dialog"
+    tabindex="-1"
+    aria-labelledby="modal-heading-01"
+    aria-modal="true"
+    aria-describedby="modal-content-id-1"
+    class="slds-modal slds-fade-in-open slds-modal_medium"
+  >
+    <div class="slds-modal__container">
+      <header class="slds-modal__header">
+        <button
+          class="slds-button slds-button_icon slds-modal__close"
+          title="Close"
+          onclick={handleCancel}
         >
-            <template if:true={displaySpinner}>
-                <lightning-spinner
-                alternative-text="Loading"
-                size="medium"
-                variant="brand"
-                ></lightning-spinner>
-            </template>
-            <div class="slds-section slds-is-open">
-                <h3 class="slds-section__title slds-theme_shade">
-                    <span class="slds-truncate slds-p-horizontal_small">Org Details</span>
-                </h3>
-                <div aria-hidden="false" class="slds-section__content">
-                    <template if:true={rowData.errorCode}>
-                        <div
-                            class="slds-notify slds-notify_alert slds-alert_error slds-var-m-bottom_xx-small"
-                            role="alert"
-                        >
-                            <span class="slds-assistive-text">error</span>
-                            <span
-                                class="slds-icon_container slds-icon-utility-error slds-var-m-right_x-small"
-                            >
-                            <lightning-icon
-                                size="small"
-                                icon-name="utility:error"
-                                alternative-text="error"
-                                title="error"
-                                class="slds-current-color"
-                            ></lightning-icon>
-                            </span>
-                            <h2>
-                                {rowData.errorCode}: {errorMessage}
-                            </h2>
-                        </div>
-                    </template>
-                    <template if:true={rowData.errorCode}>
-                    <template if:true={showAgentforceCard}>
-                        <div class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium slds-m-bottom_small card-style">
-                            <lightning-card>
-                                <template if:true={displayAgentforceSpinner}>
-                                    <div class="slds-p-vertical_medium">
-                                        <lightning-spinner
-                                            alternative-text="Loading"
-                                            size="medium"
-                                            variant="brand"
-                                        ></lightning-spinner>
-                                    </div>
-                                </template>
-                                <h3 slot="title" class="slds-truncate">
-                                    <lightning-icon
-                                        icon-name="standard:agent_astro"
-                                        size="medium"
-                                        class="slds-m-right_small"
-                                    ></lightning-icon>
-                                    Agentforce Generated
-                                </h3>
-                                <lightning-button-group slot="actions">
-                                    <template lwc:if={aiResponse}>
-                                        <lightning-button
-                                            label="Suggest Improvement"
-                                            icon-name="utility:sparkles"
-                                            icon-position="right"
-                                            variant="brand"
-                                            onclick={handleAiSuggestImprovements}
-                                        ></lightning-button>
-                                        <template if:true={displayAiSuggest}>
-                                            <div class="slds-is-relative">
-                                                <section
-                                                    class="slds-popover slds-nubbin_top-right tf-popover slds-popover_large"
-                                                    role="dialog"
-                                                >
-                                                    <button
-                                                        class="slds-button slds-button_icon slds-button_icon-small slds-float_right slds-popover__close slds-button_icon-inverse"
-                                                        title="Close dialog"
-                                                    >
-                                                        <lightning-button-icon
-                                                            size="x-small"
-                                                            icon-name="utility:close"
-                                                            alternative-text="Close"
-                                                            title="Close"
-                                                            value="bare"
-                                                            class="slds-current-color"
-                                                            onclick={handlePopoverClose}
-                                                        ></lightning-button-icon>
-                                                        <span class="slds-assistive-text">Close</span>
-                                                    </button>
-                                                    <header class="slds-popover__header">
-                                                        <div class="slds-media slds-media_center slds-has-flexi-truncate">
-                                                            <div class="slds-media__figure">
-                                                                <lightning-icon
-                                                                    size="small"
-                                                                    icon-name="utility:agent_astro"
-                                                                    class="icon-style"
-                                                                ></lightning-icon>
-                                                            </div>
-                                                            <div class="slds-media__body">
-                                                                <h2
-                                                                    class="slds-truncate slds-text-heading_small tf-popover_header"
-                                                                    title="How can we improve this?"
-                                                                >
-                                                                    How can we improve this?
-                                                                </h2>
-                                                            </div>
-                                                        </div>
-                                                    </header>
-                                                    <div
-                                                        class="slds-popover__body slds-popover__body_scrollable tf-popover-body"
-                                                    >
-                                                        <lightning-textarea
-                                                            required
-                                                            label="Revise AI Response"
-                                                            placeholder="Add additional context about the errors and the fix you want..."
-                                                            onchange={handleAiSuggestionChange}
-                                                        ></lightning-textarea>
-                                                    </div>
-                                                    <footer class="slds-popover__footer">
-                                                        <div
-                                                            class="slds-grid slds-grid_vertical-align-center slds-grid_align-end"
-                                                        >
-                                                            <lightning-button
-                                                                label="Generate"
-                                                                variant="brand"
-                                                                icon-name="utility:sparkles"
-                                                                icon-position="right"
-                                                                onclick={handleAiSuggestAssist}
-                                                                disabled={isAiSuggestionEmpty}
-                                                            ></lightning-button>
-                                                        </div>
-                                                    </footer>
-                                                </section>
-                                            </div>
-                                        </template>
-                                    </template>
-                                </lightning-button-group>
-                                <div class="slds-card__body slds-card__body_inner">
-                                    <template if:false={displayAgentforceSpinner}>
-                                        <template if:true={aiResponse}>
-                                            <div class="slds-p-around_small">
-                                                <div class="slds-grid slds-wrap slds-gutters slds-p-bottom_small">
-                                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                                        <template if:true={parsedResponse.severity}>
-                                                            <div class="slds-p-bottom_xx-small">
-                                                                <strong>Severity:</strong>
-                                                            </div>
-                                                            <div>
-                                                                <lightning-badge label={parsedResponse.severity} class={severityVariant}></lightning-badge>
-                                                            </div>
-                                                        </template>
-                                                    </div>
-                                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                                        <template if:true={parsedResponse.estimatedResolutionTime}>
-                                                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                                                                <div class="slds-p-bottom_xx-small">
-                                                                    <strong>Est. Resolution Time:</strong>
-                                                                </div>
-                                                                <div>
-                                                                    {parsedResponse.estimatedResolutionTime}
-                                                                </div>
-                                                            </div>
-                                                        </template>
-                                                    </div>
-                                                </div>
-                                                <dl class="slds-m-bottom_none">
-                                                    <dt class="slds-p-bottom_xx-small">
-                                                        <strong>Summary:</strong>
-                                                    </dt>
-                                                    <dd class="slds-var-m-left_none slds-p-bottom_small">
-                                                        {parsedResponse.summary}
-                                                    </dd>
-
-                                                    <template if:true={parsedResponse.rootCause}>
-                                                        <dt class="slds-p-bottom_xx-small">
-                                                            <strong>Root Cause:</strong>
-                                                        </dt>
-                                                        <dd class="slds-var-m-left_none slds-p-bottom_small">
-                                                            {parsedResponse.rootCause}
-                                                        </dd>
-                                                    </template>
-
-                                                    <template if:true={parsedResponse.debuggingSteps}>
-                                                        <dt class="slds-p-bottom_xx-small">
-                                                            <strong>Debugging Steps:</strong>
-                                                        </dt>
-                                                        <dd class="slds-var-m-left_none slds-p-bottom_small">
-                                                            <ol class="slds-list_ordered">
-                                                                <template for:each={parsedResponse.debuggingSteps} for:item="step">
-                                                                    <li key={step} class="slds-p-vertical_xx-small">{step}</li>
-                                                                </template>
-                                                            </ol>
-                                                        </dd>
-                                                    </template>
-
-                                                    <template if:true={parsedResponse.preventativeMeasures}>
-                                                        <dt class="slds-p-bottom_xx-small">
-                                                            <strong>Prevention:</strong>
-                                                        </dt>
-                                                        <dd class="slds-var-m-left_none slds-p-bottom_small">
-                                                            <ul class="slds-list_dotted">
-                                                                <template for:each={parsedResponse.preventativeMeasures} for:item="measure">
-                                                                    <li key={measure} class="slds-p-vertical_xx-small">{measure}</li>
-                                                                </template>
-                                                            </ul>
-                                                        </dd>
-                                                    </template>
-                                                </dl>
-                                            </div>
-                                        </template>
-                                        <template if:false={aiResponse}>
-                                            <div class="slds-p-around_medium">
-                                                <lightning-empty-state
-                                                    title="Hmm..."
-                                                    illustration-name="noresults:search"
-                                                >
-                                                    <p slot="description">
-                                                        Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance...
-                                                    </p>
-                                                    <lightning-button variant="brand" label="Install Managed Package" slot="cta" onclick={handleExtensionInstall}>
-                                                    </lightning-button>
-                                                </lightning-empty-state>
-                                            </div>
-                                        </template>
-                                    </template>
-                                </div>
-                            </lightning-card>
-                        </div>
-                    </template>
-                    </template>
-                    <div class="slds-grid slds-gutters">
-                        <div class="slds-col slds-size_1-of-3">
-                            <lightning-input
-                                type="text"
-                                label="Company"
-                                value={rowData.company}
-                                class="input-style slds-border_bottom"
-                                readonly
-                            ></lightning-input>
-                            <template if:true={rowData.trialDays}>
-                                <lightning-input
-                                    type="text"
-                                    label="Trial Days"
-                                    value={rowData.trialDays}
-                                    class="input-style slds-border_bottom"
-                                    readonly
-                                ></lightning-input>
-                            </template>
-                            <template if:true={rowData.createdOrgId}>
-                                <lightning-input
-                                    type="text"
-                                    label="Org Id"
-                                    value={rowData.createdOrgId}
-                                    class="input-style slds-border_bottom"
-                                    readonly
-                                ></lightning-input>
-                            </template>
-                            <template if:true={rowData.resolvedTemplateId}>
-                                <lightning-input
-                                    type="text"
-                                    label="Template Id"
-                                    value={rowData.resolvedTemplateId}
-                                    class="input-style slds-border_bottom"
-                                    readonly
-                                ></lightning-input>
-                            </template>
-                            <template if:true={rowData.trialSourceOrgId}>
-                                <lightning-input
-                                    type="text"
-                                    label="Trial Source Org Id"
-                                    value={rowData.trialSourceOrgId}
-                                    class="input-style slds-border_bottom"
-                                    readonly
-                                ></lightning-input>
-                            </template>
-                            <template if:true={rowData.subdomain}>
-                                <lightning-input
-                                    type="text"
-                                    label="Subdomain"
-                                    value={rowData.subdomain}
-                                    class="input-style slds-border_bottom"
-                                    readonly
-                                ></lightning-input>
-                            </template>
-                        </div>
-                        <div class="slds-col slds-size_1-of-3">
-                            <template if:true={rowData.status}>
-                                <lightning-input
-                                    type="text"
-                                    label="Status"
-                                    value={rowData.status}
-                                    class="input-style slds-border_bottom"
-                                    readonly
-                                ></lightning-input>
-                            </template>
-                            <template if:true={rowData.country}>
-                                <lightning-input
-                                    type="text"
-                                    label="Country"
-                                    value={rowData.country}
-                                    class="input-style slds-border_bottom"
-                                    readonly
-                                ></lightning-input>
-                            </template>
-                            <template if:true={rowData.edition}>
-                                <lightning-input
-                                    type="text"
-                                    label="Org Edition"
-                                    value={rowData.edition}
-                                    class="input-style slds-border_bottom"
-                                    readonly
-                                ></lightning-input>
-                            </template>
-                            <template if:true={rowData.preferredLanguage}>
-                                <lightning-input
-                                    type="text"
-                                    label="Preferred Language"
-                                    value={rowData.preferredLanguage}
-                                    class="input-style slds-border_bottom"
-                                    readonly
-                                ></lightning-input>
-                            </template>
-                            <template if:true={rowData.signupSource}>
-                                <lightning-input
-                                    type="text"
-                                    label="Signup Source"
-                                    value={rowData.signupSource}
-                                    class="input-style slds-border_bottom"
-                                    readonly
-                                ></lightning-input>
-                            </template>
-                            <template if:true={rowData.createdDate}>
-                                <div class="slds-form-element slds-border_bottom">
-                                  <label
-                                    class="slds-form-element__label input-style slds-var-p-bottom_xx-small"
-                                    for="text-input-id-1"
-                                  >
-                                    Created Date
-                                  </label>
-                                  <div
-                                    class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
-                                  >
-                                    <lightning-formatted-date-time
-                                      value={rowData.createdDate}
-                                      year="numeric"
-                                      month="numeric"
-                                      day="numeric"
-                                      hour="2-digit"
-                                      minute="2-digit"
-                                      time-zone-name="short"
-                                      hour12="true"
-                                    ></lightning-formatted-date-time>
-                                  </div>
-                                </div>
-                            </template>
-                        </div>
-                        <div class="slds-col slds-size_1-of-3">
-                            <lightning-input type="checkbox" label="Is Signup Email Suppressed" checked={rowData.isSignupEmailSuppressed} disabled></lightning-input>
-                            <lightning-input type="checkbox" label="Should Connect To Environment Hub" checked={rowData.shouldConnectToEnvHub} disabled></lightning-input>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="slds-section slds-is-open slds-p-top_x-small">
-                <h3 class="slds-section__title slds-theme_shade">
-                    <span class="slds-truncate slds-p-horizontal_small">Admin User Details</span>
-                </h3>
-                <div aria-hidden="false" class="slds-section__content">
-                    <div class="slds-grid slds-gutters">
-                        <div class="slds-col slds-size_1-of-2">
-                            <template if:true={rowData.firstName}>
-                                <lightning-input
-                                    type="text"
-                                    label="First Name"
-                                    value={rowData.firstName}
-                                    class="input-style slds-border_bottom"
-                                    readonly
-                                ></lightning-input>
-                            </template>
-                            <template if:true={rowData.signupEmail}>
-                                <lightning-input type="email" label="Signup Email" value={rowData.signupEmail} readonly class="input-style slds-border_bottom"></lightning-input>
-                            </template>
-                        </div>
-                        <div class="slds-col slds-size_1-of-2">
-                            <template if:true={rowData.lastName}>
-                                <lightning-input
-                                    type="text"
-                                    label="Last Name"
-                                    value={rowData.lastName}
-                                    class="input-style slds-border_bottom"
-                                    readonly
-                                ></lightning-input>
-                            </template>
-                            <template if:true={rowData.username}>
-                                <lightning-input type="email" label="Username" value={rowData.username} readonly class="input-style slds-border_bottom"></lightning-input>
-                            </template>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <template if:true={rowData.createdOrgInstance}>
-                <template if:true={instance}>
-                    <template if:true={displayInstance}>
-                        <div class="slds-section slds-is-open slds-p-top_x-small">
-                            <h3 class="slds-section__title slds-theme_shade">
-                                <span class="slds-truncate slds-p-horizontal_small">Instance Details</span>
-                            </h3>
-                            <div aria-hidden="false" class="slds-section__content">
-                                <div class="slds-var-m-top_x-small slds-card">
-                                    <c-trust-instance-detail
-                                      instance-key={instance.key}
-                                      location={instance.location}
-                                      maintenance-window={instance.maintenanceWindow}
-                                      release-number={instance.releaseNumber}
-                                      release-version={instance.releaseVersion}
-                                      status={instance.status}
-                                    ></c-trust-instance-detail>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                </template>
-            </template>
-            <div class="slds-section slds-is-open slds-p-top_x-small">
-                <h3 class="slds-section__title slds-theme_shade">
-                    <span class="slds-truncate slds-p-horizontal_small">Additional Information</span>
-                </h3>
-                <div aria-hidden="false" class="slds-section__content">
-                    <div class="slds-grid slds-gutters">
-                        <div class="slds-col slds-size_1-of-2">
-                            <template if:true={rowData.owner}>
-                                <lightning-input
-                                    type="text"
-                                    label="Created By"
-                                    value={rowData.owner}
-                                    readonly
-                                    class="input-style slds-border_bottom"
-                                ></lightning-input>
-                            </template>
-                        </div>
-                        <div class="slds-col slds-size_1-of-2">
-                            <template if:true={rowData.systemModstamp}>
-                                <div class="slds-form-element slds-border_bottom">
-                                  <label
-                                    class="slds-form-element__label input-style slds-var-p-bottom_xx-small"
-                                    for="text-input-id-1"
-                                  >
-                                    SystemModstamp
-                                  </label>
-                                  <div
-                                    class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
-                                  >
-                                    <lightning-formatted-date-time
-                                      value={rowData.systemModstamp}
-                                      year="numeric"
-                                      month="numeric"
-                                      day="numeric"
-                                      hour="2-digit"
-                                      minute="2-digit"
-                                      time-zone-name="short"
-                                      hour12="true"
-                                    ></lightning-formatted-date-time>
-                                  </div>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <footer class="slds-modal__footer">
-            <lightning-button label="Close" title="Close" onclick={handleCancel} ></lightning-button>
+          <lightning-icon
+            size="small"
+            icon-name="utility:close"
+            alternative-text="Close"
+            title="Close"
+          ></lightning-icon>
+          <span class="slds-assistive-text">Close</span>
+        </button>
+        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+          {rowData.company}
+        </h2>
+      </header>
+      <div
+        class="slds-modal__content slds-var-p-around_medium slds-card content-style"
+        id="modal-content-id-1"
+      >
+        <template if:true={displaySpinner}>
+          <lightning-spinner
+            alternative-text="Loading"
+            size="medium"
+            variant="brand"
+          ></lightning-spinner>
+        </template>
+        <div class="slds-section slds-is-open">
+          <h3 class="slds-section__title slds-theme_shade">
+            <span class="slds-truncate slds-p-horizontal_small"
+              >Org Details</span
+            >
+          </h3>
+          <div
+            aria-hidden="false"
+            class="slds-section__content slds-m-horizontal_small"
+          >
             <template if:true={rowData.errorCode}>
-                <template if:false={showAgentforceCard}>
-                    <lightning-button
-                        variant="brand"
-                        label="Generate"
-                        title="Generate"
-                        icon-name="utility:sparkles"
-                        icon-position="right"
-                        onclick={handleAskAgentforce}
-                        class="slds-m-left_x-small"
-                    ></lightning-button>
-                </template>
+              <div
+                class="slds-notify slds-notify_alert slds-alert_error slds-var-m-bottom_xx-small"
+                role="alert"
+              >
+                <span class="slds-assistive-text">error</span>
+                <span
+                  class="slds-icon_container slds-icon-utility-error slds-var-m-right_x-small"
+                >
+                  <lightning-icon
+                    size="small"
+                    icon-name="utility:error"
+                    alternative-text="error"
+                    title="error"
+                    class="slds-current-color"
+                  ></lightning-icon>
+                </span>
+                <h2>{rowData.errorCode}: {errorMessage}</h2>
+              </div>
             </template>
-            <template if:false={rowData.errorCode}>
-                <template if:true={rowData.shouldConnectToEnvHub}>
-                    <lightning-button variant="brand" label="Environment Hub Member" title="Environment Hub Member" onclick={handleEnvHubMemberNavigate} class="slds-m-left_x-small"></lightning-button>
-                </template>
+            <template if:true={rowData.errorCode}>
+              <template if:true={showAgentforceCard}>
+                <div
+                  class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium slds-m-bottom_small card-style"
+                >
+                  <lightning-card>
+                    <template if:true={displayAgentforceSpinner}>
+                      <div class="slds-p-vertical_medium">
+                        <lightning-spinner
+                          alternative-text="Loading"
+                          size="medium"
+                          variant="brand"
+                        ></lightning-spinner>
+                      </div>
+                    </template>
+                    <h3 slot="title" class="slds-truncate">
+                      <lightning-icon
+                        icon-name="standard:agent_astro"
+                        size="medium"
+                        class="slds-m-right_small"
+                      ></lightning-icon>
+                      Agentforce Generated
+                    </h3>
+                    <lightning-button-group slot="actions">
+                      <template lwc:if={aiResponse}>
+                        <lightning-button
+                          label="Suggest Improvement"
+                          icon-name="utility:sparkles"
+                          icon-position="right"
+                          variant="brand"
+                          onclick={handleAiSuggestImprovements}
+                        ></lightning-button>
+                        <template if:true={displayAiSuggest}>
+                          <div class="slds-is-relative">
+                            <section
+                              class="slds-popover slds-nubbin_top-right tf-popover slds-popover_large"
+                              role="dialog"
+                            >
+                              <button
+                                class="slds-button slds-button_icon slds-button_icon-small slds-float_right slds-popover__close slds-button_icon-inverse"
+                                title="Close dialog"
+                              >
+                                <lightning-button-icon
+                                  size="x-small"
+                                  icon-name="utility:close"
+                                  alternative-text="Close"
+                                  title="Close"
+                                  value="bare"
+                                  class="slds-current-color"
+                                  onclick={handlePopoverClose}
+                                ></lightning-button-icon>
+                                <span class="slds-assistive-text">Close</span>
+                              </button>
+                              <header class="slds-popover__header">
+                                <div
+                                  class="slds-media slds-media_center slds-has-flexi-truncate"
+                                >
+                                  <div class="slds-media__figure">
+                                    <lightning-icon
+                                      size="small"
+                                      icon-name="utility:agent_astro"
+                                      class="icon-style"
+                                    ></lightning-icon>
+                                  </div>
+                                  <div class="slds-media__body">
+                                    <h2
+                                      class="slds-truncate slds-text-heading_small tf-popover_header"
+                                      title="How can we improve this?"
+                                    >
+                                      How can we improve this?
+                                    </h2>
+                                  </div>
+                                </div>
+                              </header>
+                              <div
+                                class="slds-popover__body slds-popover__body_scrollable tf-popover-body"
+                              >
+                                <lightning-textarea
+                                  required
+                                  label="Revise AI Response"
+                                  placeholder="Add additional context about the errors and the fix you want..."
+                                  onchange={handleAiSuggestionChange}
+                                ></lightning-textarea>
+                              </div>
+                              <footer class="slds-popover__footer">
+                                <div
+                                  class="slds-grid slds-grid_vertical-align-center slds-grid_align-end"
+                                >
+                                  <lightning-button
+                                    label="Generate"
+                                    variant="brand"
+                                    icon-name="utility:sparkles"
+                                    icon-position="right"
+                                    onclick={handleAiSuggestAssist}
+                                    disabled={isAiSuggestionEmpty}
+                                  ></lightning-button>
+                                </div>
+                              </footer>
+                            </section>
+                          </div>
+                        </template>
+                      </template>
+                    </lightning-button-group>
+                    <div class="slds-card__body slds-card__body_inner">
+                      <template if:false={displayAgentforceSpinner}>
+                        <template if:true={aiResponse}>
+                          <div class="slds-p-around_small">
+                            <div
+                              class="slds-grid slds-wrap slds-gutters slds-p-bottom_small"
+                            >
+                              <div
+                                class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"
+                              >
+                                <template if:true={parsedResponse.severity}>
+                                  <div class="slds-p-bottom_xx-small">
+                                    <strong>Severity:</strong>
+                                  </div>
+                                  <div>
+                                    <lightning-badge
+                                      label={parsedResponse.severity}
+                                      class={severityVariant}
+                                    ></lightning-badge>
+                                  </div>
+                                </template>
+                              </div>
+                              <div
+                                class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"
+                              >
+                                <template
+                                  if:true={parsedResponse.estimatedResolutionTime}
+                                >
+                                  <div
+                                    class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"
+                                  >
+                                    <div class="slds-p-bottom_xx-small">
+                                      <strong>Est. Resolution Time:</strong>
+                                    </div>
+                                    <div>
+                                      {parsedResponse.estimatedResolutionTime}
+                                    </div>
+                                  </div>
+                                </template>
+                              </div>
+                            </div>
+                            <dl class="slds-m-bottom_none">
+                              <dt class="slds-p-bottom_xx-small">
+                                <strong>Summary:</strong>
+                              </dt>
+                              <dd
+                                class="slds-var-m-left_none slds-p-bottom_small"
+                              >
+                                {parsedResponse.summary}
+                              </dd>
+
+                              <template if:true={parsedResponse.rootCause}>
+                                <dt class="slds-p-bottom_xx-small">
+                                  <strong>Root Cause:</strong>
+                                </dt>
+                                <dd
+                                  class="slds-var-m-left_none slds-p-bottom_small"
+                                >
+                                  {parsedResponse.rootCause}
+                                </dd>
+                              </template>
+
+                              <template if:true={parsedResponse.debuggingSteps}>
+                                <dt class="slds-p-bottom_xx-small">
+                                  <strong>Debugging Steps:</strong>
+                                </dt>
+                                <dd
+                                  class="slds-var-m-left_none slds-p-bottom_small"
+                                >
+                                  <ol class="slds-list_ordered">
+                                    <template
+                                      for:each={parsedResponse.debuggingSteps}
+                                      for:item="step"
+                                    >
+                                      <li
+                                        key={step}
+                                        class="slds-p-vertical_xx-small"
+                                      >
+                                        {step}
+                                      </li>
+                                    </template>
+                                  </ol>
+                                </dd>
+                              </template>
+
+                              <template
+                                if:true={parsedResponse.preventativeMeasures}
+                              >
+                                <dt class="slds-p-bottom_xx-small">
+                                  <strong>Prevention:</strong>
+                                </dt>
+                                <dd
+                                  class="slds-var-m-left_none slds-p-bottom_small"
+                                >
+                                  <ul class="slds-list_dotted">
+                                    <template
+                                      for:each={parsedResponse.preventativeMeasures}
+                                      for:item="measure"
+                                    >
+                                      <li
+                                        key={measure}
+                                        class="slds-p-vertical_xx-small"
+                                      >
+                                        {measure}
+                                      </li>
+                                    </template>
+                                  </ul>
+                                </dd>
+                              </template>
+                            </dl>
+                          </div>
+                        </template>
+                        <template if:false={aiResponse}>
+                          <div class="slds-p-around_medium">
+                            <lightning-empty-state
+                              title="Hmm..."
+                              illustration-name="noresults:search"
+                            >
+                              <p slot="description">
+                                Looks like you may have not installed the
+                                Agentforce dependent extension managed package.
+                                Or you don't have the necessary permissions or
+                                configuration to perform Agentforce related
+                                functionalities. Please contact your admin for
+                                further assistance...
+                              </p>
+                              <lightning-button
+                                variant="brand"
+                                label="Install Managed Package"
+                                slot="cta"
+                                onclick={handleExtensionInstall}
+                              >
+                              </lightning-button>
+                            </lightning-empty-state>
+                          </div>
+                        </template>
+                      </template>
+                    </div>
+                  </lightning-card>
+                </div>
+              </template>
             </template>
-        </footer>
+            <div class="slds-grid slds-gutters">
+              <div class="slds-col slds-size_1-of-3">
+                <lightning-input
+                  type="text"
+                  label="Company"
+                  value={rowData.company}
+                  class="input-style slds-border_bottom"
+                  readonly
+                ></lightning-input>
+                <template if:true={rowData.trialDays}>
+                  <lightning-input
+                    type="text"
+                    label="Trial Days"
+                    value={rowData.trialDays}
+                    class="input-style slds-border_bottom"
+                    readonly
+                  ></lightning-input>
+                </template>
+                <template if:true={rowData.createdOrgId}>
+                  <lightning-input
+                    type="text"
+                    label="Org Id"
+                    value={rowData.createdOrgId}
+                    class="input-style slds-border_bottom"
+                    readonly
+                  ></lightning-input>
+                </template>
+                <template if:true={rowData.resolvedTemplateId}>
+                  <lightning-input
+                    type="text"
+                    label="Template Id"
+                    value={rowData.resolvedTemplateId}
+                    class="input-style slds-border_bottom"
+                    readonly
+                  ></lightning-input>
+                </template>
+                <template if:true={rowData.trialSourceOrgId}>
+                  <lightning-input
+                    type="text"
+                    label="Trial Source Org Id"
+                    value={rowData.trialSourceOrgId}
+                    class="input-style slds-border_bottom"
+                    readonly
+                  ></lightning-input>
+                </template>
+                <template if:true={rowData.subdomain}>
+                  <lightning-input
+                    type="text"
+                    label="Subdomain"
+                    value={rowData.subdomain}
+                    class="input-style slds-border_bottom"
+                    readonly
+                  ></lightning-input>
+                </template>
+              </div>
+              <div class="slds-col slds-size_1-of-3">
+                <template if:true={rowData.status}>
+                  <lightning-input
+                    type="text"
+                    label="Status"
+                    value={rowData.status}
+                    class="input-style slds-border_bottom"
+                    readonly
+                  ></lightning-input>
+                </template>
+                <template if:true={rowData.country}>
+                  <lightning-input
+                    type="text"
+                    label="Country"
+                    value={rowData.country}
+                    class="input-style slds-border_bottom"
+                    readonly
+                  ></lightning-input>
+                </template>
+                <template if:true={rowData.edition}>
+                  <lightning-input
+                    type="text"
+                    label="Org Edition"
+                    value={rowData.edition}
+                    class="input-style slds-border_bottom"
+                    readonly
+                  ></lightning-input>
+                </template>
+                <template if:true={rowData.preferredLanguage}>
+                  <lightning-input
+                    type="text"
+                    label="Preferred Language"
+                    value={rowData.preferredLanguage}
+                    class="input-style slds-border_bottom"
+                    readonly
+                  ></lightning-input>
+                </template>
+                <template if:true={rowData.signupSource}>
+                  <lightning-input
+                    type="text"
+                    label="Signup Source"
+                    value={rowData.signupSource}
+                    class="input-style slds-border_bottom"
+                    readonly
+                  ></lightning-input>
+                </template>
+                <template if:true={rowData.createdDate}>
+                  <div class="slds-form-element slds-border_bottom">
+                    <label
+                      class="slds-form-element__label input-style slds-var-p-bottom_xx-small"
+                      for="text-input-id-1"
+                    >
+                      Created Date
+                    </label>
+                    <div
+                      class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
+                    >
+                      <lightning-formatted-date-time
+                        value={rowData.createdDate}
+                        year="numeric"
+                        month="numeric"
+                        day="numeric"
+                        hour="2-digit"
+                        minute="2-digit"
+                        time-zone-name="short"
+                        hour12="true"
+                      ></lightning-formatted-date-time>
+                    </div>
+                  </div>
+                </template>
+              </div>
+              <div class="slds-col slds-size_1-of-3">
+                <lightning-input
+                  type="checkbox"
+                  label="Is Signup Email Suppressed"
+                  checked={rowData.isSignupEmailSuppressed}
+                  disabled
+                ></lightning-input>
+                <lightning-input
+                  type="checkbox"
+                  label="Should Connect To Environment Hub"
+                  checked={rowData.shouldConnectToEnvHub}
+                  disabled
+                ></lightning-input>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="slds-section slds-is-open slds-p-top_x-small">
+          <h3 class="slds-section__title slds-theme_shade">
+            <span class="slds-truncate slds-p-horizontal_small"
+              >Admin User Details</span
+            >
+          </h3>
+          <div
+            aria-hidden="false"
+            class="slds-section__content slds-m-horizontal_small"
+          >
+            <div class="slds-grid slds-gutters">
+              <div class="slds-col slds-size_1-of-2">
+                <template if:true={rowData.firstName}>
+                  <lightning-input
+                    type="text"
+                    label="First Name"
+                    value={rowData.firstName}
+                    class="input-style slds-border_bottom"
+                    readonly
+                  ></lightning-input>
+                </template>
+                <template if:true={rowData.signupEmail}>
+                  <lightning-input
+                    type="email"
+                    label="Signup Email"
+                    value={rowData.signupEmail}
+                    readonly
+                    class="input-style slds-border_bottom"
+                  ></lightning-input>
+                </template>
+              </div>
+              <div class="slds-col slds-size_1-of-2">
+                <template if:true={rowData.lastName}>
+                  <lightning-input
+                    type="text"
+                    label="Last Name"
+                    value={rowData.lastName}
+                    class="input-style slds-border_bottom"
+                    readonly
+                  ></lightning-input>
+                </template>
+                <template if:true={rowData.username}>
+                  <lightning-input
+                    type="email"
+                    label="Username"
+                    value={rowData.username}
+                    readonly
+                    class="input-style slds-border_bottom"
+                  ></lightning-input>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+        <template if:true={rowData.createdOrgInstance}>
+          <template if:true={instance}>
+            <template if:true={displayInstance}>
+              <div class="slds-section slds-is-open slds-p-top_x-small">
+                <h3 class="slds-section__title slds-theme_shade">
+                  <span class="slds-truncate slds-p-horizontal_small"
+                    >Instance Details</span
+                  >
+                </h3>
+                <div
+                  aria-hidden="false"
+                  class="slds-section__content slds-m-horizontal_small"
+                >
+                  <div class="slds-var-m-top_x-small slds-card">
+                    <c-trust-instance-detail
+                      instance-key={instance.key}
+                      location={instance.location}
+                      maintenance-window={instance.maintenanceWindow}
+                      release-number={instance.releaseNumber}
+                      release-version={instance.releaseVersion}
+                      status={instance.status}
+                    ></c-trust-instance-detail>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </template>
+        </template>
+        <div class="slds-section slds-is-open slds-p-top_x-small">
+          <h3 class="slds-section__title slds-theme_shade">
+            <span class="slds-truncate slds-p-horizontal_small"
+              >Additional Information</span
+            >
+          </h3>
+          <div
+            aria-hidden="false"
+            class="slds-section__content slds-m-horizontal_small"
+          >
+            <div class="slds-grid slds-gutters">
+              <div class="slds-col slds-size_1-of-2">
+                <template if:true={rowData.owner}>
+                  <lightning-input
+                    type="text"
+                    label="Created By"
+                    value={rowData.owner}
+                    readonly
+                    class="input-style slds-border_bottom"
+                  ></lightning-input>
+                </template>
+              </div>
+              <div class="slds-col slds-size_1-of-2">
+                <template if:true={rowData.systemModstamp}>
+                  <div class="slds-form-element slds-border_bottom">
+                    <label
+                      class="slds-form-element__label input-style slds-var-p-bottom_xx-small"
+                      for="text-input-id-1"
+                    >
+                      SystemModstamp
+                    </label>
+                    <div
+                      class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
+                    >
+                      <lightning-formatted-date-time
+                        value={rowData.systemModstamp}
+                        year="numeric"
+                        month="numeric"
+                        day="numeric"
+                        hour="2-digit"
+                        minute="2-digit"
+                        time-zone-name="short"
+                        hour12="true"
+                      ></lightning-formatted-date-time>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
-    <div class="slds-backdrop slds-backdrop_open"></div>
+      <footer class="slds-modal__footer">
+        <lightning-button
+          label="Close"
+          title="Close"
+          onclick={handleCancel}
+        ></lightning-button>
+        <template if:true={rowData.errorCode}>
+          <template if:false={showAgentforceCard}>
+            <lightning-button
+              variant="brand"
+              label="Generate"
+              title="Generate"
+              icon-name="utility:sparkles"
+              icon-position="right"
+              onclick={handleAskAgentforce}
+              class="slds-m-left_x-small"
+            ></lightning-button>
+          </template>
+        </template>
+        <template if:false={rowData.errorCode}>
+          <template if:true={rowData.shouldConnectToEnvHub}>
+            <lightning-button
+              variant="brand"
+              label="Environment Hub Member"
+              title="Environment Hub Member"
+              onclick={handleEnvHubMemberNavigate}
+              class="slds-m-left_x-small"
+            ></lightning-button>
+          </template>
+        </template>
+      </footer>
+    </div>
+  </section>
+  <div class="slds-backdrop slds-backdrop_open"></div>
 </template>

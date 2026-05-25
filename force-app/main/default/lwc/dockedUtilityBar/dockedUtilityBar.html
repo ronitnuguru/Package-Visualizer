@@ -60,7 +60,8 @@
             size="small"
           ></lightning-icon>
           <span class="slds-utility-bar__text slds-var-p-left_xx-small"
-            >Announcements</span>
+            >Announcements</span
+          >
         </button>
       </li>
     </ul>
@@ -81,9 +82,7 @@
             </span>
           </div>
           <div class="slds-media__body">
-            <span id="panel-heading-01">
-              Limits
-            </span>
+            <span id="panel-heading-01"> Limits </span>
           </div>
         </div>
         <div class="slds-col_bump-left slds-shrink-none">
@@ -94,6 +93,7 @@
           >
             <lightning-icon
               icon-name="utility:sparkles"
+              variant="brand"
               size="x-small"
             ></lightning-icon>
             <span class="slds-assistive-text">Generative AI - Limits</span>
@@ -133,9 +133,7 @@
             </span>
           </div>
           <div class="slds-media__body">
-            <span id="panel-heading-0">
-              Resources
-            </span>
+            <span id="panel-heading-0"> Resources </span>
           </div>
         </div>
         <div class="slds-col_bump-left slds-shrink-none">
@@ -183,8 +181,13 @@
         </template>
         <template if:true={resourcesNotAvailableView}>
           <div class="slds-align_absolute-center">
-            <lightning-empty-state title="Hmm..." illustration-name="success:new">
-              <p slot="description">We were unable to retrieve any resources...</p>
+            <lightning-empty-state
+              title="Hmm..."
+              illustration-name="success:new"
+            >
+              <p slot="description">
+                We were unable to retrieve any resources...
+              </p>
             </lightning-empty-state>
           </div>
         </template>
@@ -245,9 +248,7 @@
               </span>
             </div>
             <div class="slds-media__body">
-              <span>
-                AppAnalytics Requests
-              </span>
+              <span> AppAnalytics Requests </span>
             </div>
           </div>
           <div class="slds-col_bump-left slds-shrink-none">
@@ -317,9 +318,20 @@
           </template>
           <template if:true={appAnalyticsNotAvailableView}>
             <div class="">
-              <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
-                <p slot="description">We were unable to retrieve any AppAnalytics requests from the past 24 hours...</p>
-                <lightning-button variant="brand" label="Refresh" slot="cta" onclick={handleAppAnalyticsRefresh}>
+              <lightning-empty-state
+                title="Hmm…"
+                illustration-name="noresults:search"
+              >
+                <p slot="description">
+                  We were unable to retrieve any AppAnalytics requests from the
+                  past 24 hours...
+                </p>
+                <lightning-button
+                  variant="brand"
+                  label="Refresh"
+                  slot="cta"
+                  onclick={handleAppAnalyticsRefresh}
+                >
                 </lightning-button>
               </lightning-empty-state>
             </div>
@@ -371,9 +383,7 @@
             </span>
           </div>
           <div class="slds-media__body">
-            <span id="panel-heading-04">
-              Announcements
-            </span>
+            <span id="panel-heading-04"> Announcements </span>
           </div>
         </div>
         <div class="slds-col_bump-left slds-shrink-none">
@@ -397,7 +407,9 @@
               icon-name="utility:help_doc_ext"
               size="x-small"
             ></lightning-icon>
-            <span class="slds-assistive-text">AppExchange Developer Center</span>
+            <span class="slds-assistive-text"
+              >AppExchange Developer Center</span
+            >
           </button>
           <button
             class="slds-button slds-button_icon slds-button_icon"
@@ -408,7 +420,10 @@
               icon-name="utility:trailblazer_ext"
               size="x-small"
             ></lightning-icon>
-          <span class="slds-assistive-text">AppExchange &amp; ISV Technical Enablement Partner Community Group</span>
+            <span class="slds-assistive-text"
+              >AppExchange &amp; ISV Technical Enablement Partner Community
+              Group</span
+            >
           </button>
           <button
             class="slds-button slds-button_icon slds-button_icon"
@@ -432,8 +447,13 @@
         </template>
         <template if:true={announcementsNotAvailableView}>
           <div class="slds-align_absolute-center">
-            <lightning-empty-state title="Hmm..." illustration-name="success:new">
-              <p slot="description">We were unable to retrieve any announcements...</p>
+            <lightning-empty-state
+              title="Hmm..."
+              illustration-name="success:new"
+            >
+              <p slot="description">
+                We were unable to retrieve any announcements...
+              </p>
             </lightning-empty-state>
           </div>
         </template>

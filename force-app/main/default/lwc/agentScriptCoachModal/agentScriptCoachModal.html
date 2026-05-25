@@ -472,69 +472,14 @@
                 value="variables"
               >
                 <template lwc:if={hasVariables}>
-                  <table
-                    class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered"
+                  <lightning-datatable
+                    key-field="key"
+                    data={variableTableRows}
+                    columns={variableTableColumns}
+                    show-row-number-column
+                    hide-checkbox-column
                   >
-                    <thead>
-                      <tr class="slds-line-height_reset">
-                        <th scope="col">
-                          <div class="slds-truncate">Name</div>
-                        </th>
-                        <th scope="col">
-                          <div class="slds-truncate">Type</div>
-                        </th>
-                        <th scope="col">
-                          <div class="slds-truncate">Kind</div>
-                        </th>
-                        <th scope="col">
-                          <div class="slds-truncate">Visibility</div>
-                        </th>
-                        <th scope="col">
-                          <div class="slds-truncate">Concern</div>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <template
-                        for:each={parsedResponse.variables}
-                        for:item="variable"
-                      >
-                        <tr key={variable.key}>
-                          <td>
-                            <div class="slds-truncate">
-                              <code>{variable.name}</code>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="slds-truncate">{variable.type}</div>
-                          </td>
-                          <td>
-                            <div class="slds-truncate">
-                              <lightning-badge
-                                label={variable.kind}
-                                class="slds-theme_inverse"
-                              ></lightning-badge>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="slds-truncate">
-                              {variable.visibility}
-                            </div>
-                          </td>
-                          <td>
-                            <div class="slds-truncate">
-                              <template lwc:if={variable.hasConcern}>
-                                <span class="slds-text-color_error"
-                                  >{variable.concern}</span
-                                >
-                              </template>
-                              <template lwc:else>—</template>
-                            </div>
-                          </td>
-                        </tr>
-                      </template>
-                    </tbody>
-                  </table>
+                  </lightning-datatable>
                 </template>
                 <template lwc:else>
                   <div class="slds-p-around_medium">
