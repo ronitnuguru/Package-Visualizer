@@ -72,6 +72,9 @@ const columns = [
 ];
 
 export default class PackageVersionSubscriberList extends LightningElement {
+  static SEARCH_MIN_LENGTH = 3;
+  static SEARCH_MAX_LENGTH = 100;
+
   @api subscriberPackageId;
   @api packageSubscriberVersionId;
   @api packageType;
@@ -149,7 +152,7 @@ export default class PackageVersionSubscriberList extends LightningElement {
     return [
       { label: "Americas", value: "NA" },
       { label: "EMEA", value: "EMEA" },
-      { label: "Asia Pacific", value: "APAC" },
+      { label: "Asia Pacific", value: "APAC" }
     ];
   }
 
@@ -180,7 +183,7 @@ export default class PackageVersionSubscriberList extends LightningElement {
       "SystemModstamp"
     ];
 
-    this.loadInstancesFromTrust().then(result => {
+    this.loadInstancesFromTrust().then((result) => {
       this.instanceList = result;
     });
   }
@@ -198,7 +201,7 @@ export default class PackageVersionSubscriberList extends LightningElement {
       const response = await fetch(trustEndPoint);
       instances = await response.json();
       this.displayInstanceSpinner = false;
-      return instances.map(instance => ({
+      return instances.map((instance) => ({
         key: instance.key,
         location: instance.location
       }));
@@ -278,7 +281,7 @@ export default class PackageVersionSubscriberList extends LightningElement {
         subscriberLimit: this.subscriberLimit,
         subscriberOffset: this.subscriberOffset
       })
-        .then(result => {
+        .then((result) => {
           this.displaySpinner = false;
           this.displayDatatableSpinner = false;
           this.versionSubscribersList = true;
@@ -287,9 +290,8 @@ export default class PackageVersionSubscriberList extends LightningElement {
             if (result.length === 0) {
               this.disableInfiniteLoad = false;
             } else {
-              this.versionSubscribersData = this.versionSubscribersData.concat(
-                result
-              );
+              this.versionSubscribersData =
+                this.versionSubscribersData.concat(result);
             }
           } else {
             this.versionSubscribersData = result;
@@ -299,7 +301,7 @@ export default class PackageVersionSubscriberList extends LightningElement {
           this.displayEmptyView =
             this.versionSubscribersData.length === 0 ? true : false;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           this.versionSubscribersData = undefined;
           this.displaySpinner = false;
@@ -438,7 +440,7 @@ export default class PackageVersionSubscriberList extends LightningElement {
       : `direction:ltr;width:100%;`;
     this.subscriberOffset = 0;
     this.disableInfiniteLoad = true;
-    if(this.regionsValues.length !== 0 && this.regionsValues.length !== 5){
+    if (this.regionsValues.length !== 0 && this.regionsValues.length !== 5) {
       this.getFilteredInstanceList();
     } else {
       this.selectedInstancesString = undefined;
@@ -449,21 +451,25 @@ export default class PackageVersionSubscriberList extends LightningElement {
   }
 
   getFilteredInstanceList() {
-    const instances = this.instanceList.filter(instance =>
+    const instances = this.instanceList.filter((instance) =>
       this.regionsValues.includes(instance.location)
     );
     this.selectedInstancesString = instances
-      .map(instance => {
+      .map((instance) => {
         return instance.key;
       })
       .join("~");
-}
+  }
 
   handleSearchTermChange(event) {
     const isEnterKey = event.keyCode === 13;
     if (isEnterKey) {
-      this.searchTerm = event.target.value;
-      if (this.searchTerm.length >= 3) {
+      this.searchTerm = String(event.target.value || "")
+        .trim()
+        .slice(0, PackageVersionSubscriberList.SEARCH_MAX_LENGTH);
+      if (
+        this.searchTerm.length >= PackageVersionSubscriberList.SEARCH_MIN_LENGTH
+      ) {
         this.subscriberOffset = 0;
         this.loadVersionSubscribersList(true, false);
       } else if (this.searchTerm === "") {

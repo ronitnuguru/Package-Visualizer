@@ -7,6 +7,8 @@ import DOCKEDUTILITYBARMESSAGECHANNEL from "@salesforce/messageChannel/DockedUti
 import hasViewSetup from "@salesforce/userPermission/ViewSetup";
 
 export default class PackageLauncher extends NavigationMixin(LightningElement) {
+  static SEARCH_MAX_LENGTH = 100;
+
   @api packageFilterList;
   @api packageTypes;
 
@@ -26,7 +28,7 @@ export default class PackageLauncher extends NavigationMixin(LightningElement) {
   }
 
   get is2GP() {
-    return this.packageTypes === '2GP and Unlocked Packages' ? true : false;
+    return this.packageTypes === "2GP and Unlocked Packages" ? true : false;
   }
 
   handleCancel() {
@@ -37,16 +39,16 @@ export default class PackageLauncher extends NavigationMixin(LightningElement) {
     this[NavigationMixin.Navigate]({
       type: "standard__webPage",
       attributes: {
-          url: "https://appexchange.salesforce.com/"
+        url: "https://appexchange.salesforce.com/"
       }
     });
   }
 
-  launchAgentx(){
+  launchAgentx() {
     this[NavigationMixin.Navigate]({
       type: "standard__webPage",
       attributes: {
-          url: "https://agentexchange.salesforce.com/"
+        url: "https://agentexchange.salesforce.com/"
       }
     });
   }
@@ -75,7 +77,7 @@ export default class PackageLauncher extends NavigationMixin(LightningElement) {
     this.dispatchEvent(new CustomEvent("cancel"));
   }
 
-  handleAnnouncementsClick(){
+  handleAnnouncementsClick() {
     publish(this.messageContext, DOCKEDUTILITYBARMESSAGECHANNEL, {
       dockedBarControls: "Announcements",
       announcementsOpen: true
@@ -126,7 +128,10 @@ export default class PackageLauncher extends NavigationMixin(LightningElement) {
   }
 
   handleSearchInputChange(event) {
-    const searchString = event.target.value;
+    const searchString = String(event.target.value || "").slice(
+      0,
+      PackageLauncher.SEARCH_MAX_LENGTH
+    );
     this.dispatchEvent(new CustomEvent("search", { detail: searchString }));
   }
 }

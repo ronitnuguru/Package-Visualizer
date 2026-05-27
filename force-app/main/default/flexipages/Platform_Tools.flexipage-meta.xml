@@ -35,6 +35,12 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
+                <componentName>orgExpirationCard</componentName>
+                <identifier>c_orgExpirationCard</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
                 <componentInstanceProperties>
                     <name>templatePrompts</name>
                     <value
@@ -50,12 +56,6 @@
                 </componentInstanceProperties>
                 <componentName>agentforcePromptGenerator</componentName>
                 <identifier>c_agentforcePromptGenerator</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentName>orgExpirationCard</componentName>
-                <identifier>c_orgExpirationCard</identifier>
             </componentInstance>
         </itemInstances>
         <name>region3</name>

@@ -107,6 +107,18 @@ export default class InAppGuidanceCard extends NavigationMixin(
     });
   }
 
+  handleAgentforceLabs() {
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: `https://labs.agentforce.com/start`
+      },
+      state: {
+        target: "_blank"
+      }
+    });
+  }
+
   handleInAppPrompt() {
     this.displayInAppPrompt = true;
   }

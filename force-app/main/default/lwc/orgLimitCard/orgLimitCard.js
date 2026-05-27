@@ -1,25 +1,24 @@
-import { LightningElement } from 'lwc';
-import genAiLimitsModal from 'c/genAiLimitsModal';
+import { LightningElement } from "lwc";
+import genAiLimitsModal from "c/genAiLimitsModal";
 
 export default class OrgLimitCard extends LightningElement {
+  limitsData;
 
-    limitsData;
+  handleGenAiOrgLimitsModal() {
+    this.openModal({
+      headerLabel: "Generative AI Summary - Org Limits"
+    });
+  }
 
-    handleGenAiOrgLimitsModal(){
-        this.openModal({
-            headerLabel: "Generative AI Summary - Org Limits",
-        });
-    }
+  async openModal(details) {
+    await genAiLimitsModal.open({
+      label: details.headerLabel,
+      size: "medium",
+      content: JSON.stringify(this.limitsData)
+    });
+  }
 
-    async openModal(details){
-        const result = await genAiLimitsModal.open({
-          label: details.headerLabel,
-          size: 'medium',
-          content: JSON.stringify(this.limitsData)
-        });
-    }
-
-    updateLimits(event){
-        this.limitsData = event.detail;
-    }
+  updateLimits(event) {
+    this.limitsData = event.detail;
+  }
 }

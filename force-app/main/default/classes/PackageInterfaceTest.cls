@@ -225,6 +225,49 @@ private class PackageInterfaceTest {
     TEST.stopTest();
   }
 
+  @isTest
+  public static void testGetWhereClauseRejectsUnsafeFieldName() {
+    List<ObjectWrappers.FilterWrapper> fltList = new List<ObjectWrappers.FilterWrapper>();
+    fltList.add(
+      createFilterObject(
+        'OrgName FROM User WHERE Name != null',
+        'Acme',
+        'SEARCH'
+      )
+    );
+
+    Test.startTest();
+    try {
+      Package2Interface.getWhereClause(fltList);
+      Assert.fail('Expected unsafe filter field name to be rejected.');
+    } catch (Exception e) {
+      Assert.isTrue(
+        e.getTypeName().contains('AuraHandledException'),
+        'Unsafe filter field names should throw a handled exception.'
+      );
+    }
+    Test.stopTest();
+  }
+
+  @isTest
+  public static void testGetWhereClauseEscapesSearchWildcards() {
+    List<ObjectWrappers.FilterWrapper> fltList = new List<ObjectWrappers.FilterWrapper>();
+    fltList.add(createFilterObject('OrgName', 'Acme_%', 'SEARCH'));
+
+    Test.startTest();
+    String whereClause = Package2Interface.getWhereClause(fltList);
+    Test.stopTest();
+
+    Assert.isTrue(
+      whereClause.contains('OrgName LIKE'),
+      'Search filters should still use LIKE.'
+    );
+    Assert.isTrue(
+      whereClause.contains('Acme\\_\\%'),
+      'Search wildcard characters should be escaped.'
+    );
+  }
+
   /**************************************************************************************
    * @Description  Test class for Where Clouse use Cases Logic.
    **************************************************************************************/

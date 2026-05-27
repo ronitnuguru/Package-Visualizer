@@ -1,44 +1,49 @@
 <template>
-    <template if:true={displaySpinner}>
-        <lightning-spinner
-          alternative-text="Loading"
-          size="medium"
-          variant="brand"
-        ></lightning-spinner>
-    </template>
-    <template lwc:if={limits}>
-        <div class="">
-            <template if:false={hideSearch}>
-                <div onkeyup={handleKeyUp} class="slds-m-top_small">
-                    <lightning-input
-                        name="search-limits"
-                        placeholder="Search Limits"
-                        label="Search Limits"
-                        type="search"
-                        variant="label-hidden"
-                        onchange={handleSearchInputChange}
-                        value={searchQuery}
-                        autocomplete="off" 
-                    ></lightning-input>
-                </div>
-            </template>
-            <template for:each={limitsFilterList} for:item="limit">
-                <c-docked-limits-bar
-                    key={limit.label}
-                    name={limit.label}
-                    max={limit.max}
-                    remaining={limit.rem}
-                    percentage={limit.percentage}
-                    class="slds-p-around_x-small"
-                ></c-docked-limits-bar>
-            </template>
+  <template if:true={displaySpinner}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="medium"
+      variant="brand"
+    ></lightning-spinner>
+  </template>
+  <template lwc:if={limits}>
+    <div class="">
+      <template if:false={hideSearch}>
+        <div class="slds-m-top_small">
+          <lightning-input
+            name="search-limits"
+            placeholder="Search Limits"
+            label="Search Limits"
+            type="search"
+            variant="label-hidden"
+            onchange={handleSearchInputChange}
+            value={searchQuery}
+            autocomplete="off"
+          ></lightning-input>
         </div>
-    </template>
-    <template lwc:elseif={error}>
-        <div class="slds-var-p-around_x-small">
-            <lightning-empty-state title="Hmm..." illustration-name="noresults:unknown">
-              <p slot="description">We were unable to retrieve any limits for your org...</p>
-            </lightning-empty-state>
-        </div>  
-    </template>
+      </template>
+      <template for:each={limitsFilterList} for:item="limit">
+        <c-docked-limits-bar
+          key={limit.label}
+          name={limit.label}
+          max={limit.max}
+          remaining={limit.rem}
+          percentage={limit.percentage}
+          class="slds-p-around_x-small"
+        ></c-docked-limits-bar>
+      </template>
+    </div>
+  </template>
+  <template lwc:elseif={error}>
+    <div class="slds-var-p-around_x-small">
+      <lightning-empty-state
+        title="Hmm..."
+        illustration-name="noresults:unknown"
+      >
+        <p slot="description">
+          We were unable to retrieve any limits for your org...
+        </p>
+      </lightning-empty-state>
+    </div>
+  </template>
 </template>

@@ -82,6 +82,7 @@ export default class TrustInstanceDetail extends NavigationMixin(
   response;
 
   modelsValue = "sfdc_ai__DefaultBedrockAnthropicClaude45Haiku";
+  currentPkgVersionId = "04tRh000001bOxFIAU";
 
   connectedCallback() {
     this.trustUrl = `https://status.salesforce.com/instances/${this.instanceKey}`;
@@ -266,6 +267,15 @@ export default class TrustInstanceDetail extends NavigationMixin(
       .finally(() => {
         this.displaySpinner = false;
       });
+  }
+
+  handleExtensionInstall() {
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`
+      }
+    });
   }
 
   handleAdvisoryLink(event) {

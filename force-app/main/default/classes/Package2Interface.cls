@@ -714,7 +714,7 @@ global with sharing class Package2Interface { // NOPMD
   ) {
     string whereClause = '';
     for (ObjectWrappers.FilterWrapper fw : FilterWrapperList) {
-      string fName = String.escapeSingleQuotes(fw.fieldName);
+      string fName = getSafeFilterFieldName(fw.fieldName);
       string value = fw.value;
       if (!String.isBlank(fName) && !String.isBlank(value)) {
         if (!String.isBlank(whereClause)) {
@@ -745,7 +745,7 @@ global with sharing class Package2Interface { // NOPMD
             fName +
             ' LIKE ' +
             '\'%' +
-            String.escapeSingleQuotes(value) +
+            escapeSoqlLikeValue(value) +
             '%\'';
         } else if ('BOOLEAN'.equals(fw.dataType)) {
           whereClause =
@@ -779,6 +779,31 @@ global with sharing class Package2Interface { // NOPMD
       }
     }
     return whereClause;
+  }
+
+  @TestVisible
+  private static String getSafeFilterFieldName(String fieldName) {
+    if (String.isBlank(fieldName)) {
+      return null;
+    }
+    String trimmedFieldName = fieldName.trim();
+    if (
+      !Pattern.matches(
+        '^[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)?$',
+        trimmedFieldName
+      )
+    ) {
+      throw new AuraHandledException('Invalid filter field name.');
+    }
+    return trimmedFieldName;
+  }
+
+  @TestVisible
+  private static String escapeSoqlLikeValue(String value) {
+    return String.escapeSingleQuotes(value)
+      .replace('\\', '\\\\')
+      .replace('%', '\\%')
+      .replace('_', '\\_');
   }
 
   private static string getVersionRangeWhereClause(

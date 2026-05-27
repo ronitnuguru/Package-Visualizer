@@ -66,7 +66,12 @@ const columns = [
   }
 ];
 
-export default class PackagePushUpgradesView extends NavigationMixin(LightningElement) {
+export default class PackagePushUpgradesView extends NavigationMixin(
+  LightningElement
+) {
+  static SEARCH_MIN_LENGTH = 3;
+  static SEARCH_MAX_LENGTH = 100;
+
   @api packageVersionNumber;
   @api packageSubscriberVersionId;
   @api subscriberPackageId;
@@ -169,12 +174,12 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
     */
 
   packageMatchingInfo = {
-    primaryField: { fieldPath: 'Name' }
+    primaryField: { fieldPath: "Name" }
   };
 
   packageDisplayInfo = {
-    primaryField: 'Name',
-    additionalFields: ['sfLma__Release_Date__c']
+    primaryField: "Name",
+    additionalFields: ["sfLma__Release_Date__c"]
   };
 
   get displayManagedPackageType() {
@@ -185,7 +190,7 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
     return [
       { label: "Americas", value: "NA" },
       { label: "EMEA", value: "EMEA" },
-      { label: "Asia Pacific", value: "APAC" },
+      { label: "Asia Pacific", value: "APAC" }
     ];
   }
 
@@ -213,24 +218,24 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
       "instanceName"
     ];
     this.pushUpgradeBreadCrumbLabel = `Subscribers on version lower than ${this.packageVersionNumber}`;
-    this.loadInstancesFromTrust().then(result => {
+    this.loadInstancesFromTrust().then((result) => {
       this.instanceList = result;
     });
 
     this.packageVersionFilter = {
       criteria: [
         {
-          fieldPath: 'sfLma__Package__r.sfLma__Package_ID__c',
-          operator: 'eq',
+          fieldPath: "sfLma__Package__r.sfLma__Package_ID__c",
+          operator: "eq",
           value: `${this.subscriberPackageId}`
         },
         {
-          fieldPath: 'sfLma__Version_ID__c',
-          operator: 'lt',
+          fieldPath: "sfLma__Version_ID__c",
+          operator: "lt",
           value: `${this.packageSubscriberVersionId}`
         }
       ]
-    }
+    };
   }
 
   disconnectedCallback() {
@@ -246,7 +251,7 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
       const response = await fetch(trustEndPoint);
       instances = await response.json();
       this.displayInstanceSpinner = false;
-      return instances.map(instance => ({
+      return instances.map((instance) => ({
         key: instance.key,
         location: instance.location
       }));
@@ -264,7 +269,7 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
   lowerPackageVersions(result) {
     this.packageVersions = result;
     if (result.data) {
-      this.packageVersionsData = result.data.map(version => version.Id);
+      this.packageVersionsData = result.data.map((version) => version.Id);
       this.packageVersionsData = this.packageVersionsData
         .toString()
         .replaceAll(",", "~");
@@ -300,7 +305,7 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
       }
     ];
     let editableFields = this.template.querySelectorAll(".edit-field");
-    editableFields.forEach(input => {
+    editableFields.forEach((input) => {
       if (input.value) {
         wrapper.push({
           fieldName: input.name,
@@ -358,7 +363,7 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
       subscriberLimit: this.subscriberLimit,
       subscriberOffset: this.subscriberOffset
     })
-      .then(result => {
+      .then((result) => {
         this.displaySpinner = false;
         this.displayDatatableSpinner = false;
         this.versionSubscribersList = true;
@@ -367,9 +372,8 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
           if (result.length === 0) {
             this.disableInfiniteLoad = false;
           } else {
-            this.versionSubscribersData = this.versionSubscribersData.concat(
-              result
-            );
+            this.versionSubscribersData =
+              this.versionSubscribersData.concat(result);
           }
         } else {
           this.versionSubscribersData = result;
@@ -380,7 +384,7 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
           this.versionSubscribersData.length === 0 ? true : false;
         return result;
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         this.versionSubscribersData = undefined;
         this.displaySpinner = false;
@@ -474,11 +478,13 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
 
   getSelectedRows(event) {
     this.selectedRows = event.detail.selectedRows;
-    this.upgradeSubscribers = event.detail.selectedRows.map(row => row.orgKey);
+    this.upgradeSubscribers = event.detail.selectedRows.map(
+      (row) => row.orgKey
+    );
 
     this.displayUpgradeButton =
       this.upgradeSubscribers.length <= 10000 &&
-        this.upgradeSubscribers.length !== 0
+      this.upgradeSubscribers.length !== 0
         ? false
         : true;
   }
@@ -487,8 +493,7 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
     this.filteredSubscriberPackageVersionID = event.detail.value;
   }
 
-  
-  handleFilteredRecordPickerSubscriberPackageVersionIDChange(event){
+  handleFilteredRecordPickerSubscriberPackageVersionIDChange(event) {
     this.filteredRecordPickerSubscriberPackageVersionID = event.detail.recordId;
   }
 
@@ -535,14 +540,14 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
     if (this.disableInfiniteLoad && this.subscriberOffset <= 1950) {
       this.subscriberOffset = this.subscriberOffset + this.subscriberLimit;
       this.getSubscribersFromVersions(this.displayFilterMeta, true);
-    } else if (this.subscriberOffset === 2000){
-        this.dispatchEvent(
-          new ShowToastEvent({
-            title: `Push Upgrades Limit`,
-            message: `You can only choose up to 2050 subscribers for push upgrade requests`,
-            variant: "info"
-          })
-        );
+    } else if (this.subscriberOffset === 2000) {
+      this.dispatchEvent(
+        new ShowToastEvent({
+          title: `Push Upgrades Limit`,
+          message: `You can only choose up to 2050 subscribers for push upgrade requests`,
+          variant: "info"
+        })
+      );
     }
   }
 
@@ -622,8 +627,8 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
   handleFilterSubmit() {
     this.displayFilterMeta =
       this.selectedOrgStatusOptions.length !== 0 ||
-        this.selectedOrgTypeOptions.length !== 0 ||
-        this.regionsValues.length !== 0
+      this.selectedOrgTypeOptions.length !== 0 ||
+      this.regionsValues.length !== 0
         ? true
         : false;
     this.filterState = false;
@@ -645,11 +650,11 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
   }
 
   getFilteredInstanceList() {
-    const instances = this.instanceList.filter(instance =>
+    const instances = this.instanceList.filter((instance) =>
       this.regionsValues.includes(instance.location)
     );
     this.selectedInstancesString = instances
-      .map(instance => {
+      .map((instance) => {
         return instance.key;
       })
       .join("~");
@@ -658,8 +663,10 @@ export default class PackagePushUpgradesView extends NavigationMixin(LightningEl
   handleSearchTermChange(event) {
     const isEnterKey = event.keyCode === 13;
     if (isEnterKey) {
-      this.searchTerm = event.target.value;
-      if (this.searchTerm.length >= 3) {
+      this.searchTerm = String(event.target.value || "")
+        .trim()
+        .slice(0, PackagePushUpgradesView.SEARCH_MAX_LENGTH);
+      if (this.searchTerm.length >= PackagePushUpgradesView.SEARCH_MIN_LENGTH) {
         this.subscriberOffset = 0;
         this.getSubscribersFromVersions(true, false);
       } else if (this.searchTerm === "") {

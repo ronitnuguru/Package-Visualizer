@@ -123,21 +123,25 @@
                   </template>
                   <div class="slds-card__body slds-card__body_inner">
                     <template if:true={displayExtensionIllustration}>
-                      <div
-                        class="slds-illustration slds-illustration_small slds-text-align_center"
-                      >
-                        <lightning-icon
-                          icon-name="utility:einstein"
-                          size="medium"
-                          variant="warning"
-                        ></lightning-icon>
-                        <h3 class="slds-text-heading_small slds-m-top_small">
-                          Agentforce Extension Required
-                        </h3>
-                        <p class="slds-m-top_x-small">
-                          Install the Agentforce extension package to generate
-                          AI summaries of Trust instance status.
-                        </p>
+                      <div class="slds-p-around_medium">
+                        <lightning-empty-state
+                          title="Hmm..."
+                          illustration-name="noresults:search"
+                        >
+                          <p slot="description">
+                            Looks like you may have not installed the Agentforce
+                            dependent extension managed package. Or you don't
+                            have the necessary permissions or configuration to
+                            perform Agentforce related functionalities. Please
+                            contact your admin for further assistance...
+                          </p>
+                          <lightning-button
+                            variant="brand"
+                            label="Install Managed Package"
+                            slot="cta"
+                            onclick={handleExtensionInstall}
+                          ></lightning-button>
+                        </lightning-empty-state>
                       </div>
                     </template>
                     <template if:true={parsedResponse}>

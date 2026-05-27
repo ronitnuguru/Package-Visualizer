@@ -5,6 +5,9 @@ import chartJs from "@salesforce/resourceUrl/chartJs";
 import getSubscriberChartData from "@salesforce/apex/PackageVisualizerCtrl.getSubscriberChartData";
 
 export default class SubscribersChartsPanel extends LightningElement {
+  static SEARCH_MIN_LENGTH = 3;
+  static SEARCH_MAX_LENGTH = 100;
+
   @api subscriberPackageId;
   @api packageSubscriberVersionId;
   @api selectedOrgTypeOptionsString;
@@ -40,7 +43,7 @@ export default class SubscribersChartsPanel extends LightningElement {
         this.displaySpinner = false;
         this.prepData();
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         this.displaySpinner = false;
         this.dispatchEvent(
@@ -136,14 +139,17 @@ export default class SubscribersChartsPanel extends LightningElement {
         }
       ];
     }
-    if (this.searchTerm !== undefined) {
-      if (this.searchTerm.length >= 3) {
-        wrapper.push({
-          fieldName: "OrgName",
-          value: this.searchTerm,
-          dataType: "SEARCH"
-        });
-      }
+    const normalizedSearchTerm = String(this.searchTerm || "")
+      .trim()
+      .slice(0, SubscribersChartsPanel.SEARCH_MAX_LENGTH);
+    if (
+      normalizedSearchTerm.length >= SubscribersChartsPanel.SEARCH_MIN_LENGTH
+    ) {
+      wrapper.push({
+        fieldName: "OrgName",
+        value: normalizedSearchTerm,
+        dataType: "SEARCH"
+      });
     }
     if (this.applyFilters) {
       if (
@@ -182,18 +188,18 @@ export default class SubscribersChartsPanel extends LightningElement {
         filterWrapper: wrapper,
         groupByField: this.chartValue
       })
-        .then(result => {
+        .then((result) => {
           this.chartData = result;
-          this.chartFields = result.map(field => {
+          this.chartFields = result.map((field) => {
             return field[this.chartValue];
           });
-          this.chartVals = result.map(value => {
+          this.chartVals = result.map((value) => {
             return value.expr0;
           });
           this.displaySpinner = false;
           this.createCharts();
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           this.displaySpinner = false;
           // Toast for Failure

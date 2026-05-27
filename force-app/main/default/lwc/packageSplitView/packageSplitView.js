@@ -1,25 +1,26 @@
 import { LightningElement, wire, api } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { NavigationMixin } from "lightning/navigation";
-import agentforcePromptModalGenerator from 'c/agentforcePromptModalGenerator';
+import agentforcePromptModalGenerator from "c/agentforcePromptModalGenerator";
 import hasPackageVisualizerPushUpgrade from "@salesforce/customPermission/Package_Visualizer_Push_Upgrade";
-import { publish, subscribe, unsubscribe, MessageContext } from "lightning/messageService";
+import {
+  publish,
+  subscribe,
+  unsubscribe,
+  MessageContext
+} from "lightning/messageService";
 import PACAKGEEDITMESSAGECHANNEL from "@salesforce/messageChannel/PackageEditMessageChannel__c";
 import DOCKEDUTILITYBARMESSAGECHANNEL from "@salesforce/messageChannel/DockedUtilityBarMessageChannel__c";
 import get2GPPackageList from "@salesforce/apexContinuation/PackageVisualizerCtrl.get2GPPackageList";
 import get1GPPackageList from "@salesforce/apexContinuation/PackageVisualizerCtrl.get1GPPackageList";
 import hasPackageVisualizerCore from "@salesforce/customPermission/Package_Visualizer_Core";
 
-// Debounce utility function
-const debounce = (func, delay) => {
-  let timeoutId;
-  return function debounced(...args) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func.apply(this, args), delay);
-  };
-};
+export default class PackageSplitView extends NavigationMixin(
+  LightningElement
+) {
+  static SEARCH_MIN_LENGTH = 3;
+  static SEARCH_MAX_LENGTH = 100;
 
-export default class PackageSplitView extends NavigationMixin(LightningElement) {
   containerStyle = `slds-split-view_container slds-is-open slds-show_medium`;
   containerCollapsed = false;
   displaySpinner = true;
@@ -60,17 +61,14 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
   @api packageTypes;
 
   get is2GP() {
-    return (this.packageTypes === '2GP and Unlocked Packages') ? true : false;
+    return this.selectedPackageType === "2GP and Unlocked Packages";
+  }
+
+  get selectedPackageType() {
+    return this.packageTypes || "2GP and Unlocked Packages";
   }
 
   connectedCallback() {
-    if (this.packageTypes === undefined) {
-      this.packageTypes = '2GP and Unlocked Packages';
-    }
-
-    // Initialize debounced search with 300ms delay
-    this.debouncedSearch = debounce(this.searchInputChange.bind(this), 300);
-
     if (this.isPackageVisualizerEnabled) {
       this.getPackages(0, "asc");
     } else {
@@ -81,13 +79,13 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
     this.subscription = subscribe(
       this.messageContext,
       PACAKGEEDITMESSAGECHANNEL,
-      message => {
-          this.displayEditView = true;
-          this.template.querySelector("lightning-tabset").activeTabValue =
-            "details";
-          this.displayPackageTab = true;
-          this.displayVersionsTab = false;
-          this.displaySubscribersTab = false;
+      () => {
+        this.displayEditView = true;
+        this.template.querySelector("lightning-tabset").activeTabValue =
+          "details";
+        this.displayPackageTab = true;
+        this.displayVersionsTab = false;
+        this.displaySubscribersTab = false;
       }
     );
   }
@@ -106,11 +104,11 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
     return hasPackageVisualizerPushUpgrade;
   }
 
-  get isManaged(){
+  get isManaged() {
     return this.currentPackage.containerOptions === "Managed" ? true : false;
   }
 
-  handleEdit(){
+  handleEdit() {
     this.refreshPackages("asc", false, 0);
   }
 
@@ -118,14 +116,17 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
     this.displaySpinner = true;
 
     try {
-      const result = this.packageTypes === '2GP and Unlocked Packages'
-        ? await get2GPPackageList({ sortDirection })
-        : await get1GPPackageList({ sortDirection });
+      const result =
+        this.selectedPackageType === "2GP and Unlocked Packages"
+          ? await get2GPPackageList({ sortDirection })
+          : await get1GPPackageList({ sortDirection });
 
       // Pre-compute searchable text for optimized filtering
-      this.packageList = result.map(pkg => ({
+      this.packageList = result.map((pkg) => ({
         ...pkg,
-        _searchText: `${pkg.name || ''}|${pkg.namespacePrefix || ''}|${pkg.description || ''}|${pkg.containerOptions || ''}|${pkg.id || ''}`.toLowerCase()
+        _searchText: `${pkg.name || ""}|${pkg.namespacePrefix || ""}|${
+          pkg.description || ""
+        }|${pkg.containerOptions || ""}|${pkg.id || ""}`.toLowerCase()
       }));
 
       if (this.packageList.length === 0) {
@@ -138,12 +139,13 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
         this.detailsStyle = `padding-left: 26.5rem;`;
       }
     } catch (error) {
-      console.error('Package fetch failed:', error);
+      console.error("Package fetch failed:", error);
       this.packageList = undefined;
       this.dispatchEvent(
         new ShowToastEvent({
           title: "Failed to load packages",
-          message: error?.body?.message || error?.message || 'An error occurred',
+          message:
+            error?.body?.message || error?.message || "An error occurred",
           variant: "error"
         })
       );
@@ -156,7 +158,7 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
     this.refreshPackages("asc", false, 0);
   }
 
-  refreshPackages(sortDirection, sortDirectionDisplay, packageIndex){
+  refreshPackages(sortDirection, sortDirectionDisplay, packageIndex) {
     this.getPackages(packageIndex, sortDirection);
     this.currentPackageIndex = packageIndex;
     this.relativeDateTime = Date.now();
@@ -173,8 +175,12 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
     this.sortDirectionDisplay = sortDirectionDisplay;
   }
 
-  packageUpdate(){
-    this.refreshPackages(this.sortDirection, this.sortDirectionDisplay, this.currentPackageIndex);
+  packageUpdate() {
+    this.refreshPackages(
+      this.sortDirection,
+      this.sortDirectionDisplay,
+      this.currentPackageIndex
+    );
   }
 
   handleClosedSplitView() {
@@ -249,7 +255,7 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
 
   handleUnlockedPackageFilter() {
     this.packageFilterList = this.packageList.filter(
-      packageType => packageType.containerOptions === "Unlocked"
+      (packageType) => packageType.containerOptions === "Unlocked"
     );
     this.filterLabel = `Unlocked Packages`;
     this.searchQuery = "";
@@ -259,7 +265,7 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
 
   handleManagedPackageFilter() {
     this.packageFilterList = this.packageList.filter(
-      packageType => packageType.containerOptions === "Managed"
+      (packageType) => packageType.containerOptions === "Managed"
     );
     this.filterLabel = `Managed Packages`;
     this.searchQuery = "";
@@ -296,8 +302,8 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
   }
 
   handleSearchInputChange(event) {
-    const searchString = event.target.value;
-    this.debouncedSearch(searchString);
+    const searchString = event.target.value || "";
+    this.searchInputChange(searchString);
   }
 
   handlePackageLauncherSearchChange(event) {
@@ -305,16 +311,20 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
   }
 
   searchInputChange(searchString) {
-    if (searchString.length >= 3) {
-      const searchLower = searchString.toLowerCase();
-      this.packageFilterList = this.packageList.filter(row =>
-        row._searchText && row._searchText.includes(searchLower)
+    const normalizedSearch = String(searchString).slice(
+      0,
+      PackageSplitView.SEARCH_MAX_LENGTH
+    );
+    if (normalizedSearch.length >= PackageSplitView.SEARCH_MIN_LENGTH) {
+      const searchLower = normalizedSearch.toLowerCase();
+      this.packageFilterList = this.packageList.filter(
+        (row) => row._searchText && row._searchText.includes(searchLower)
       );
       this.filterLabel = `All Packages`;
     } else {
       this.packageFilterList = this.packageList;
     }
-    this.searchQuery = searchString;
+    this.searchQuery = normalizedSearch;
     this.packageListSize = this.packageFilterList.length;
   }
 
@@ -353,7 +363,7 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
     });
   }
 
-  handleAnnouncementsClick(){
+  handleAnnouncementsClick() {
     publish(this.messageContext, DOCKEDUTILITYBARMESSAGECHANNEL, {
       dockedBarControls: "Announcements",
       announcementsOpen: true
@@ -367,7 +377,7 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
     });
   }
 
-  handleSetupAssistantClick(){
+  handleSetupAssistantClick() {
     this.displaySetupAssistant = !this.displaySetupAssistant;
   }
 
@@ -390,49 +400,47 @@ export default class PackageSplitView extends NavigationMixin(LightningElement) 
     this.displayPackageLauncher = false;
   }
 
-  handlePlatformTools(){
+  handlePlatformTools() {
     this[NavigationMixin.Navigate]({
       type: "standard__navItemPage",
       attributes: {
-        apiName: "pkgviz__Platform_Tools",
-      },
-    });
-  }
-
-  navigateScratchOrgBuild(){
-    this[NavigationMixin.Navigate]({
-      type: "standard__component",
-      attributes: {
-        componentName: "pkgviz__scratchDefFileBuildCard",
+        apiName: "pkgviz__Platform_Tools"
       }
     });
   }
 
-  openAskAgentforce(event){
+  navigateScratchOrgBuild() {
+    this[NavigationMixin.Navigate]({
+      type: "standard__component",
+      attributes: {
+        componentName: "pkgviz__scratchDefFileBuildCard"
+      }
+    });
+  }
+
+  openAskAgentforce(event) {
     switch (event.target.value) {
       case "packagesOverview":
         this.openModal({
           headerLabel: "Ask Agentforce",
           userPrompt: `How to develop and use Second-Generation Packaging (2GP) in Salesforce?`,
           systemPrompt: `You are an AI assistant that generates responses in a well-structured, readable rich text format suitable for rendering in HTML. Your output should follow these guidelines: 1. **Use HTML Formatting:** - Format key points using <strong> for emphasis and <ul> or <ol> for lists. - Use <p> for paragraphs to ensure readability. - Include <code> for inline code snippets and <pre><code> for blocks of code when needed. 2. **Ensure Readability & Structure:** - Break content into **logical sections** with headings and spacing. - Use **bullet points and numbered lists** for better clarity. - Avoid long, dense paragraphs—use line breaks where necessary. 3. **Enhance User Experience:** - Include relevant hyperlinks (<a href="URL">Link Text</a>) when mentioning external resources. - When listing examples, format them clearly in <blockquote> or <code> where applicable. - Maintain **consistent indentation** and spacing for readability. Do not include unnecessary white spaces. Do not include heading tags and stay consistent with paragraph tags`
-        })
+        });
         break;
       default:
         break;
     }
   }
-  async openModal(details){
-    const result = await agentforcePromptModalGenerator.open({
+  async openModal(details) {
+    await agentforcePromptModalGenerator.open({
       label: details.headerLabel,
-      size: 'medium',
+      size: "medium",
       content: {
-          userPrompt: details.userPrompt,
-          systemPrompt: details.systemPrompt
+        userPrompt: details.userPrompt,
+        systemPrompt: details.systemPrompt
       }
-    });   
+    });
   }
 
-  handleInAppGuidanceWalkthrough(){
-
-  }
+  handleInAppGuidanceWalkthrough() {}
 }
