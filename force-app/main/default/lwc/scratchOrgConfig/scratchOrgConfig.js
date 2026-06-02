@@ -560,7 +560,6 @@ export const DEFAULT_FIELDS = {
   ],
   mobileSettings: [boolField("enableS1EncryptedStoragePref2", false)],
   einsteinGptSettings: [boolField("enableEinsteinGptPlatform")],
-  botSettings: [boolField("enableBots")],
   customerDataPlatformSettings: [boolField("enableCustomerDataPlatform")],
   analyticsSettings: [boolField("enableInsights")],
   devHubSettings: [boolField("enableDevOpsCenterGA")],
@@ -590,8 +589,7 @@ export const TEMPLATES = {
     edition: "Partner Developer",
     features: ["Einstein1AIPlatform"],
     settings: {
-      einsteinGptSettings: { enableEinsteinGptPlatform: true },
-      botSettings: { enableBots: true }
+      einsteinGptSettings: { enableEinsteinGptPlatform: true }
     }
   },
   dataCloud: {

@@ -951,6 +951,28 @@ public with sharing class PackageVisualizerCtrl {
     }
   }
 
+  @AuraEnabled
+  public static Object invokeChatModelsGenAi(
+    String className,
+    String methodName,
+    String modelName,
+    String userPrompt,
+    String systemPrompt
+  ) {
+    try {
+      Callable callableInstance = (Callable) Type.forName(className)
+        .newInstance();
+      Map<String, Object> payload = new Map<String, Object>{
+        'modelName' => modelName,
+        'userPrompt' => userPrompt,
+        'systemPrompt' => systemPrompt
+      };
+      return (String) callableInstance.call(methodName, payload);
+    } catch (Exception e) {
+      throw new AuraHandledException(e.getMessage());
+    }
+  }
+
   @AuraEnabled(continuation=true)
   public static Object invokeGenAiPromptTemplate(
     String className,

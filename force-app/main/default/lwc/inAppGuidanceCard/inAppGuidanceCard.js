@@ -2,6 +2,7 @@ import { LightningElement } from "lwc";
 import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { AGENT_SCRIPTS } from "./agentScriptsData.js";
+import { SKILLS } from "./skillsData.js";
 import getInstalledPackages from "@salesforce/apex/PackageVisualizerCtrl.getInstalledPackages";
 import AgentScriptCoachModal from "c/agentScriptCoachModal";
 
@@ -24,6 +25,7 @@ export default class InAppGuidanceCard extends NavigationMixin(
   title = "AgentExchange Showcase";
   iconName = "utility:salesforce1";
   agentScripts = AGENT_SCRIPTS;
+  skills = SKILLS;
   resourcesData = [
     {
       label: "Agentforce Extension",
@@ -112,6 +114,35 @@ export default class InAppGuidanceCard extends NavigationMixin(
       type: "standard__webPage",
       attributes: {
         url: `https://labs.agentforce.com/start`
+      },
+      state: {
+        target: "_blank"
+      }
+    });
+  }
+
+  handleAgentSkills() {
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: `https://agentskills.io/home`
+      },
+      state: {
+        target: "_blank"
+      }
+    });
+  }
+
+  navigateToSkillGithub(event) {
+    // Get the skill data from the event target's data attribute
+    const skillIndex = event.target.dataset.index;
+    const selectedSkill = this.skills[skillIndex];
+
+    // Navigate to the skill's GitHub link in a new tab
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: selectedSkill.githubLink
       },
       state: {
         target: "_blank"
@@ -221,6 +252,34 @@ export default class InAppGuidanceCard extends NavigationMixin(
     }
   }
 
+  handleCopySkillCli(event) {
+    const skillIndex = event.currentTarget.dataset.index;
+    const skill = this.skills[skillIndex];
+    if (!skill || !skill.cli) {
+      return;
+    }
+    const text = skill.cli;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(text)
+        .then(() => {
+          this.dispatchEvent(
+            new ShowToastEvent({
+              title: "Success",
+              message: "Text copied to clipboard",
+              variant: "success"
+            })
+          );
+        })
+        .catch((err) => {
+          console.error("Failed to copy CLI command:", err);
+          this.fallbackCopyToClipboard(text);
+        });
+    } else {
+      this.fallbackCopyToClipboard(text);
+    }
+  }
+
   fallbackCopyToClipboard(text) {
     const textArea = document.createElement("textarea");
     textArea.value = text;
@@ -243,5 +302,12 @@ export default class InAppGuidanceCard extends NavigationMixin(
       console.error("Fallback copy to clipboard failed:", err);
     }
     document.body.removeChild(textArea);
+  }
+
+  handleLearnMore() {
+    window.open(
+      "https://help.salesforce.com/s/articleView?id=ai.agent_mcp_connect_register.htm&type=5",
+      "_blank"
+    );
   }
 }

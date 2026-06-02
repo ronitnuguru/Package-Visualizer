@@ -17,7 +17,9 @@
             size="medium"
             class="slds-m-right_small"
           ></lightning-icon>
-          <a href={license.id} target="_blank" class="tile-style">{license.name}</a>
+          <a href={license.id} target="_blank" class="tile-style"
+            >{license.name}</a
+          >
         </h3>
         <lightning-button-group slot="actions">
           <template if:false={showAgentforceCard}>
@@ -40,9 +42,7 @@
             <div class="slds-col">
               <dl class="slds-list_horizontal slds-wrap">
                 <template if:true={license.leadName}>
-                  <dt class="slds-item_label slds-text-color_weak">
-                    Lead:
-                  </dt>
+                  <dt class="slds-item_label slds-text-color_weak">Lead:</dt>
                   <dd class="slds-item_detail slds-truncate">
                     <a href={license.leadId} target="_blank"
                       >{license.leadName}</a
@@ -50,9 +50,7 @@
                   </dd>
                 </template>
                 <template if:true={license.accountName}>
-                  <dt class="slds-item_label slds-text-color_weak">
-                    Account:
-                  </dt>
+                  <dt class="slds-item_label slds-text-color_weak">Account:</dt>
                   <dd class="slds-item_detail slds-truncate">
                     <a href={license.accountId} target="_blank"
                       >{license.accountName}</a
@@ -60,9 +58,7 @@
                   </dd>
                 </template>
                 <template if:true={license.contactName}>
-                  <dt class="slds-item_label slds-text-color_weak">
-                    Contact:
-                  </dt>
+                  <dt class="slds-item_label slds-text-color_weak">Contact:</dt>
                   <dd class="slds-item_detail slds-truncate">
                     <a href={license.contactId} target="_blank"
                       >{license.contactName}</a
@@ -82,9 +78,7 @@
                   </dd>
                 </template>
                 <template if:true={license.licenseStatus}>
-                  <dt class="slds-item_label slds-text-color_weak">
-                    Status:
-                  </dt>
+                  <dt class="slds-item_label slds-text-color_weak">Status:</dt>
                   <dd class="slds-item_detail slds-truncate">
                     {license.licenseStatus}
                   </dd>
@@ -113,7 +107,9 @@
             </div>
           </div>
           <template if:true={showAgentforceCard}>
-            <div class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium card-style">
+            <div
+              class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium card-style"
+            >
               <lightning-card>
                 <template if:true={displayAgentforceSpinner}>
                   <div class="slds-p-vertical_medium">
@@ -138,11 +134,21 @@
                       <div class="slds-p-around_medium">
                         <lightning-empty-state
                           title="Hmm..."
-                          illustration-name="noresults:search">
+                          illustration-name="noresults:search"
+                        >
                           <p slot="description">
-                            Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance...
+                            Looks like you may have not installed the Agentforce
+                            dependent extension managed package. Or you don't
+                            have the necessary permissions or configuration to
+                            perform Agentforce related functionalities. Please
+                            contact your admin for further assistance...
                           </p>
-                          <lightning-button variant="brand" label="Install Managed Package" slot="cta" onclick={handleExtensionInstall}>
+                          <lightning-button
+                            variant="brand"
+                            label="Install Managed Package"
+                            slot="cta"
+                            onclick={handleExtensionInstall}
+                          >
                           </lightning-button>
                         </lightning-empty-state>
                       </div>
@@ -151,26 +157,41 @@
                       <template if:true={parsedResponse}>
                         <div class="slds-p-around_small">
                           <div class="slds-p-bottom_small">
-                            <div class="slds-grid slds-grid_vertical-align-center slds-p-bottom_xx-small">
+                            <div
+                              class="slds-grid slds-grid_vertical-align-center slds-p-bottom_xx-small"
+                            >
                               <template lwc:if={license.accountName}>
-                                <span class="slds-text-heading_small slds-p-right_x-small">{license.accountName}</span>
+                                <span
+                                  class="slds-text-heading_small slds-p-right_x-small"
+                                  >{license.accountName}</span
+                                >
                               </template>
                               <template lwc:elseif={license.leadName}>
-                                <span class="slds-text-heading_small slds-p-right_x-small">{license.leadName}</span>
+                                <span
+                                  class="slds-text-heading_small slds-p-right_x-small"
+                                  >{license.leadName}</span
+                                >
                               </template>
                               <template if:true={parsedResponse.healthScore}>
-                                <lightning-badge label={parsedResponse.healthScore} class={parsedResponse.healthScoreClass}></lightning-badge>
+                                <lightning-badge
+                                  label={parsedResponse.healthScore}
+                                  class={parsedResponse.healthScoreClass}
+                                ></lightning-badge>
                               </template>
                             </div>
                             <template if:true={parsedResponse.seatUtilization}>
-                              <div class="slds-text-body_regular slds-p-top_xx-small">
+                              <div
+                                class="slds-text-body_regular slds-p-top_xx-small"
+                              >
                                 {parsedResponse.seatUtilization}
                               </div>
                             </template>
                           </div>
                           <template if:true={parsedResponse.healthRationale}>
                             <div class="slds-p-bottom_small">
-                              <div class="slds-text-body_regular">{parsedResponse.healthRationale}</div>
+                              <div class="slds-text-body_regular">
+                                {parsedResponse.healthRationale}
+                              </div>
                             </div>
                           </template>
 
@@ -179,34 +200,60 @@
                               <dt class="slds-p-bottom_xx-small">
                                 <strong>Expiration Outlook:</strong>
                               </dt>
-                              <dd class="slds-var-m-left_none">{parsedResponse.expirationOutlook}</dd>
+                              <dd class="slds-var-m-left_none">
+                                {parsedResponse.expirationOutlook}
+                              </dd>
                             </div>
                           </template>
 
-                          <div class="slds-grid slds-wrap slds-gutters slds-p-bottom_small">
+                          <div
+                            class="slds-grid slds-wrap slds-gutters slds-p-bottom_small"
+                          >
                             <template if:true={parsedResponse.churnRiskFactors}>
-                              <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                              <div
+                                class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"
+                              >
                                 <dt class="slds-p-bottom_xx-small">
                                   <strong>Churn Risk Factors:</strong>
                                 </dt>
                                 <dd class="slds-var-m-left_none">
                                   <ul class="slds-list_dotted">
-                                    <template for:each={parsedResponse.churnRiskFactors} for:item="risk">
-                                      <li key={risk} class="slds-p-vertical_xx-small">{risk}</li>
+                                    <template
+                                      for:each={parsedResponse.churnRiskFactors}
+                                      for:item="risk"
+                                    >
+                                      <li
+                                        key={risk}
+                                        class="slds-p-vertical_xx-small"
+                                      >
+                                        {risk}
+                                      </li>
                                     </template>
                                   </ul>
                                 </dd>
                               </div>
                             </template>
-                            <template if:true={parsedResponse.recommendedActions}>
-                              <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <template
+                              if:true={parsedResponse.recommendedActions}
+                            >
+                              <div
+                                class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"
+                              >
                                 <dt class="slds-p-bottom_xx-small">
                                   <strong>Recommended Actions:</strong>
                                 </dt>
                                 <dd class="slds-var-m-left_none">
                                   <ul class="slds-list_dotted">
-                                    <template for:each={parsedResponse.recommendedActions} for:item="action">
-                                      <li key={action} class="slds-p-vertical_xx-small">{action}</li>
+                                    <template
+                                      for:each={parsedResponse.recommendedActions}
+                                      for:item="action"
+                                    >
+                                      <li
+                                        key={action}
+                                        class="slds-p-vertical_xx-small"
+                                      >
+                                        {action}
+                                      </li>
                                     </template>
                                   </ul>
                                 </dd>
@@ -214,14 +261,26 @@
                             </template>
                           </div>
 
-                          <template if:true={parsedResponse.engagementSuggestions}>
+                          <template
+                            if:true={parsedResponse.engagementSuggestions}
+                          >
                             <dt class="slds-p-bottom_xx-small">
                               <strong>Engagement Suggestions:</strong>
                             </dt>
-                            <dd class="slds-var-m-left_none slds-p-bottom_small">
+                            <dd
+                              class="slds-var-m-left_none slds-p-bottom_small"
+                            >
                               <ul class="slds-list_dotted">
-                                <template for:each={parsedResponse.engagementSuggestions} for:item="suggestion">
-                                  <li key={suggestion} class="slds-p-vertical_xx-small">{suggestion}</li>
+                                <template
+                                  for:each={parsedResponse.engagementSuggestions}
+                                  for:item="suggestion"
+                                >
+                                  <li
+                                    key={suggestion}
+                                    class="slds-p-vertical_xx-small"
+                                  >
+                                    {suggestion}
+                                  </li>
                                 </template>
                               </ul>
                             </dd>
@@ -232,7 +291,9 @@
                               <dt class="slds-p-bottom_xx-small">
                                 <strong>Customer Profile:</strong>
                               </dt>
-                              <dd class="slds-var-m-left_none">{parsedResponse.customerProfile}</dd>
+                              <dd class="slds-var-m-left_none">
+                                {parsedResponse.customerProfile}
+                              </dd>
                             </div>
                           </template>
                         </div>
@@ -267,7 +328,8 @@
               >
               </lightning-vertical-navigation-item-icon>
             </template>
-            
+
+            <!--
             <lightning-vertical-navigation-item-icon
               label="Agentforce"
               name="generative_ai"
@@ -276,7 +338,6 @@
             >
             </lightning-vertical-navigation-item-icon>
 
-            <!--
             <lightning-vertical-navigation-item-icon
               label="Generative AI"
               name="summary_ai"
@@ -366,9 +427,7 @@
                 ></lightning-button-icon>
               </lightning-button-group>
               <div></div>
-              <div
-                class="slds-grid slds-gutters slds-var-p-around_medium"
-              >
+              <div class="slds-grid slds-gutters slds-var-p-around_medium">
                 <template if:false={displayEditView}>
                   <div class="slds-col slds-var-p-around_small">
                     <template if:false={expirationToggle}>
@@ -562,7 +621,9 @@
         </template>
 
         <template if:true={displayGenAiSummary}>
-          <div class="slds-border_left slds-border_bottom slds-border_right slds-border_top slds-var-m-top_medium timeline-card-style">
+          <div
+            class="slds-border_left slds-border_bottom slds-border_right slds-border_top slds-var-m-top_medium timeline-card-style"
+          >
             <c-gen-ai-response-card
               title-header="Generative AI Summary - License"
               title-icon="standard:panel_detail"

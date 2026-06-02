@@ -1,7 +1,7 @@
 # Namespace-prefixing for AgentScript targets
 
 **Date:** 2026-05-29
-**Skill:** `distributing-agentscripts`
+**Skill:** `sf-2gp-distributing-agentscripts`
 **Status:** Approved
 
 ## Problem

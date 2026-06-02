@@ -15,3 +15,5 @@ package.xml
 **/*.ts
 
 Claude.md
+
+**/docs/**

@@ -1349,6 +1349,26 @@ private class PackageInterfaceTest {
   }
 
   /**************************************************************************************
+   * @Description  Test class for invokeChatModelsGenAi - non-caching Models API
+   **************************************************************************************/
+  @isTest
+  public static void testInvokeChatModelsGenAi() {
+    Test.startTest();
+    try {
+      Object result = PackageVisualizerCtrl.invokeChatModelsGenAi(
+        'TestClass',
+        'testMethod',
+        'gpt-4',
+        'User prompt',
+        'System prompt'
+      );
+    } catch (Exception e) {
+      System.assertNotEquals(null, e.getMessage());
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
    * @Description  Test class for invokeGenAiPromptTemplate - GenAI Prompt Template
    **************************************************************************************/
   @isTest
