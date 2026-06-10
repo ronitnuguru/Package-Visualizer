@@ -1118,6 +1118,25 @@ public with sharing class PackageVisualizerCtrl {
   }
 
   /**************************************************************************************
+   * @Description  Self-heals the Tooling API callout/token URLs before the app
+   * makes its first callout, in case a package upgrade reset them to the shipped
+   * placeholder while the Named Credential toggle stayed on. Safe to call on
+   * every page load: it's a no-op when the toggle is off or the URLs are already
+   * configured, and it never throws (returns false on failure) so it can't block
+   * the UI. Must run in its own transaction (ConnectApi writes), so it's a
+   * separate @AuraEnabled call invoked before the continuation-based load.
+   * @return true when callouts can route through the Named Credential.
+   **************************************************************************************/
+  @AuraEnabled
+  public static Boolean ensureToolingUrlsConfigured() {
+    try {
+      return ToolingCredentialService.ensureUrlsConfigured();
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  /**************************************************************************************
    * @Description  Sets the packaged Named Credential's callout URL to this org's
    * My Domain URL, and ensures the core Package Visualizer permission set has
    * access to the External Credential principal. First (separate, committed) step

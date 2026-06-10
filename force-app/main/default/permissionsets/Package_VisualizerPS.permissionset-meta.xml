@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <classAccesses>
         <apexClass>LimitsController</apexClass>
@@ -44,6 +44,11 @@
         <enabled>true</enabled>
         <name>Package_Visualizer_Core</name>
     </customPermissions>
+    <externalCredentialPrincipalAccesses>
+        <enabled>true</enabled>
+        <externalCredentialPrincipal
+    >Package_Visualizer_External_Credential-PackageVisualizerPrincipal</externalCredentialPrincipal>
+    </externalCredentialPrincipalAccesses>
     <description>Package Visualizer Permission Set.</description>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Package Visualizer Permission</label>

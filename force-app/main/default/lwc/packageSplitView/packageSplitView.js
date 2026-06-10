@@ -13,6 +13,7 @@ import PACAKGEEDITMESSAGECHANNEL from "@salesforce/messageChannel/PackageEditMes
 import DOCKEDUTILITYBARMESSAGECHANNEL from "@salesforce/messageChannel/DockedUtilityBarMessageChannel__c";
 import get2GPPackageList from "@salesforce/apexContinuation/PackageVisualizerCtrl.get2GPPackageList";
 import get1GPPackageList from "@salesforce/apexContinuation/PackageVisualizerCtrl.get1GPPackageList";
+import ensureToolingUrlsConfigured from "@salesforce/apex/PackageVisualizerCtrl.ensureToolingUrlsConfigured";
 import hasPackageVisualizerCore from "@salesforce/customPermission/Package_Visualizer_Core";
 
 export default class PackageSplitView extends NavigationMixin(
@@ -116,6 +117,13 @@ export default class PackageSplitView extends NavigationMixin(
     this.displaySpinner = true;
 
     try {
+      // Self-heal the callout/token URLs before the continuation callout. A
+      // package upgrade can reset them to the shipped placeholder while the
+      // Named Credential toggle stays on, which otherwise fails with a cryptic
+      // TLS "unrecognized_name". This runs in its own transaction (ConnectApi
+      // writes can't share a transaction with a callout) and never throws.
+      await ensureToolingUrlsConfigured();
+
       const result =
         this.selectedPackageType === "2GP and Unlocked Packages"
           ? await get2GPPackageList({ sortDirection })

@@ -1,6 +1,8 @@
 <template>
   <template if:false={displaySetupAssistant}>
-    <div class="slds-is-absolute slds-grid package-split-grid slds-var-p-bottom_xx-large">
+    <div
+      class="slds-is-absolute slds-grid package-split-grid slds-var-p-bottom_xx-large"
+    >
       <template if:true={packageList}>
         <div class={containerStyle}>
           <button
@@ -32,7 +34,9 @@
             class="slds-split-view slds-grid slds-grid_vertical slds-grow split-style"
           >
             <header class="slds-var-p-around_medium">
-              <div class="slds-grid slds-grid_vertical-align-center slds-var-m-bottom_xx-small">
+              <div
+                class="slds-grid slds-grid_vertical-align-center slds-var-m-bottom_xx-small"
+              >
                 <div class="slds-has-flexi-truncate">
                   <div class="slds-media slds-media_center">
                     <div class="slds-media__figure">
@@ -44,8 +48,12 @@
                       ></lightning-dynamic-icon>
                     </div>
                     <div class="slds-media__body">
-                      <h1 class="slds-text-heading_small slds-text-color_default slds-var-p-right_x-small">
-                        <span class="slds-grid slds-has-flexi-truncate slds-grid_vertical-align-center">
+                      <h1
+                        class="slds-text-heading_small slds-text-color_default slds-var-p-right_x-small"
+                      >
+                        <span
+                          class="slds-grid slds-has-flexi-truncate slds-grid_vertical-align-center"
+                        >
                           <span class="slds-truncate" title="Packages">
                             Packages
                           </span>
@@ -56,20 +64,11 @@
                       <div class="slds-no-flex slds-grid">
                         <lightning-button-icon
                           icon-name="utility:setup_assistant_guide"
-                          variant="border-filled"
+                          variant="brand"
                           tooltip="Setup Assistant"
                           class="slds-var-m-right_x-small"
                           onclick={handleSetupAssistantClick}
                         ></lightning-button-icon>
-                        <!--
-                        <lightning-button-icon
-                          icon-name="utility:walkthroughs"
-                          variant="border-filled"
-                          tooltip="In App Guidance Walkthrough"
-                          class="slds-var-m-right_x-small"
-                          onclick={handleInAppGuidanceWalkthrough}
-                        ></lightning-button-icon>
-                        -->
                         <!--
                         <lightning-button-icon
                           icon-name="utility:agent_astro"
@@ -82,15 +81,28 @@
                         -->
                         <lightning-button-icon
                           icon-name="utility:connected_apps"
-                          variant="border-filled"
+                          variant="brand"
                           tooltip="Platform Tools"
                           class="slds-var-m-right_x-small"
                           onclick={handlePlatformTools}
                         ></lightning-button-icon>
-                        <lightning-button-menu alternative-text="Show menu" icon-name="utility:salesforce1" menu-alignment="auto" class="slds-var-m-right_x-small">
-                          <lightning-menu-item prefix-icon-name="utility:dx_org_test" label="Create Orgs" onclick={handleCreateOrgs}></lightning-menu-item>
-                          <lightning-menu-item prefix-icon-name="utility:dx_org_dev" label="Build Scratch Org Definition File" onclick={navigateScratchOrgBuild}></lightning-menu-item>
-                      </lightning-button-menu>
+                        <lightning-button-menu
+                          alternative-text="Show menu"
+                          icon-name="utility:salesforce1"
+                          menu-alignment="auto"
+                          class="slds-var-m-right_x-small"
+                        >
+                          <lightning-menu-item
+                            prefix-icon-name="utility:dx_org_test"
+                            label="Create Orgs"
+                            onclick={handleCreateOrgs}
+                          ></lightning-menu-item>
+                          <lightning-menu-item
+                            prefix-icon-name="utility:dx_org_dev"
+                            label="Build Scratch Org Definition File"
+                            onclick={navigateScratchOrgBuild}
+                          ></lightning-menu-item>
+                        </lightning-button-menu>
                         <lightning-button-menu
                           alternative-text="Show menu"
                           variant="border-filled"
@@ -134,8 +146,12 @@
                 </div>
               </div>
               <template if:true={packageList}>
-                <div class="slds-grid slds-grid_vertical-align-center slds-var-p-bottom_xx-small">
-                  <p class="slds-text-body_small slds-text-color_weak slds-truncate">
+                <div
+                  class="slds-grid slds-grid_vertical-align-center slds-var-p-bottom_xx-small"
+                >
+                  <p
+                    class="slds-text-body_small slds-text-color_weak slds-truncate"
+                  >
                     {packageListSize} items • Sorted by Name
                     <br />
                     {filterLabel} • Updated&nbsp;
@@ -243,10 +259,9 @@
             <template if:false={displaySpinner}>
               <template if:true={packageList}>
                 <div class="slds-grid slds-grid_vertical">
-                  <div
-                    class="slds-split-view__list-header slds-grid">
+                  <div class="slds-split-view__list-header slds-grid">
                     <span class="slds-assistive-text">Sorted by:</span>
-                    <span onclick={handleSort} style="cursor: pointer;">
+                    <span onclick={handleSort} style="cursor: pointer">
                       Name&nbsp;
                       <template if:true={sortDirectionDisplay}>
                         <lightning-icon
@@ -288,9 +303,17 @@
                 </div>
               </template>
               <template if:false={packageList}>
-                <div class="slds-align_absolute-center slds-text-heading_small slds-var-p-around_xx-small">
-                  <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
-                    <p slot="description">We were unable to retrieve any 2GP Packages associated with this org...</p>
+                <div
+                  class="slds-align_absolute-center slds-text-heading_small slds-var-p-around_xx-small"
+                >
+                  <lightning-empty-state
+                    title="Hmm…"
+                    illustration-name="noresults:search"
+                  >
+                    <p slot="description">
+                      We were unable to retrieve any 2GP Packages associated
+                      with this org...
+                    </p>
                   </lightning-empty-state>
                 </div>
               </template>
@@ -370,9 +393,9 @@
                         id={currentPackage.id}
                         package-type={currentPackage.containerOptions}
                         namespace-prefix={currentPackage.namespacePrefix}
-                      > 
+                      >
                       </c-package1-versions-view>
-                  </template>
+                    </template>
                   </template>
                 </div>
               </lightning-tab>
@@ -396,7 +419,7 @@
               </template>
               <template if:false={is2GP}>
                 <template if:true={currentPackage.namespacePrefix}>
-                    <lightning-tab
+                  <lightning-tab
                     icon-name="standard:swarm_request"
                     label="Subscribers"
                     value="subscribers"

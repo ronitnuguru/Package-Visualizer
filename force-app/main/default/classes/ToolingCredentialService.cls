@@ -47,6 +47,14 @@ global with sharing class ToolingCredentialService {
   // Path appended to the org My Domain to form the OAuth token endpoint.
   @TestVisible
   private static final String OAUTH_TOKEN_PATH = '/services/oauth2/token';
+  // The placeholder host the Named/External Credential metadata ships with. Both
+  // URLs carry this until setup points them at the subscriber's My Domain. Used to
+  // detect an unconfigured credential — a package upgrade that re-pushes the
+  // credential metadata resets the runtime URLs back to this placeholder while the
+  // Use_Named_Credential__c toggle (a persisted custom setting) stays on, so the
+  // toggle alone can't be trusted to mean "callouts will work".
+  @TestVisible
+  private static final String PLACEHOLDER_HOST = 'loopback.placeholder.com';
   // Must match the <label> in the packaged External Credential metadata —
   // updateExternalCredential requires masterLabel in the payload.
   @TestVisible
@@ -110,6 +118,54 @@ global with sharing class ToolingCredentialService {
       status.externalCredentialStatus = 'Unknown';
     }
     return status;
+  }
+
+  /**
+   * @Description  Self-heals the runtime callout/token URLs when the Named
+   * Credential path is enabled but the URLs still point at the shipped
+   * placeholder (or are blank). This happens after a package upgrade re-pushes
+   * the credential metadata: the Use_Named_Credential__c toggle persists in a
+   * custom setting and stays on, but the URLs revert to the placeholder, so
+   * every callout fails with a TLS "unrecognized_name" against
+   * loopback.placeholder.com. Re-points both URLs at the subscriber's My Domain.
+   *
+   * Does ConnectApi writes only (no HTTP callout), so it is safe to invoke in its
+   * own transaction immediately before a callout — it must NOT share a
+   * transaction with a callout, or the platform throws "uncommitted work
+   * pending". A no-op when the toggle is off or the URLs are already configured.
+   * Swallows failures (returns false) so it can never block page load on its own;
+   * the subsequent callout surfaces a specific error if config is genuinely
+   * broken.
+   * @return true when the URLs are configured (already or after healing); false
+   * when the toggle is off or healing failed.
+   */
+  global static Boolean ensureUrlsConfigured() {
+    if (!Package2Interface.isNamedCredentialEnabled()) {
+      return false;
+    }
+    IntegrationStatus status = getStatus();
+    if (
+      isConfiguredUrl(status.namedCredentialUrl) &&
+      isConfiguredUrl(status.tokenUrl)
+    ) {
+      return true;
+    }
+    try {
+      configureCalloutUrl();
+      configureTokenUrl();
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  /**
+   * @Description  A callout URL is "configured" when it is non-blank and no
+   * longer points at the shipped placeholder host.
+   */
+  @TestVisible
+  private static Boolean isConfiguredUrl(String url) {
+    return String.isNotBlank(url) && !url.contains(PLACEHOLDER_HOST);
   }
 
   /**
@@ -390,6 +446,18 @@ global with sharing class ToolingCredentialService {
         AccessLevel.USER_MODE
       );
     } catch (Exception e) {
+      // In a subscriber org the resolved permission set is managed-installed, so
+      // SetupEntityAccess DML against it throws CANNOT_MODIFY_MANAGED_OBJECT — a
+      // managed permission set can't be modified at runtime by any means. That's
+      // expected and non-fatal: the principal access is shipped declaratively in
+      // the packaged permission set's <externalCredentialPrincipalAccesses>, and
+      // the Tooling callout authorizes through the Named Credential's
+      // AllowedManagedPackageNamespaces allow-list regardless. Swallow that
+      // specific case (and an already-granted race) so the setup wizard proceeds;
+      // only genuinely unexpected failures surface.
+      if (e.getMessage().contains('CANNOT_MODIFY_MANAGED_OBJECT')) {
+        return;
+      }
       throw new CredentialServiceException(
         'Unable to grant external credential principal access: ' +
         e.getMessage(),

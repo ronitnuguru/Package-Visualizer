@@ -185,6 +185,56 @@ private class ToolingCredentialServiceTest {
   }
 
   /**************************************************************************************
+   * @Description  isConfiguredUrl treats blank, null, and placeholder-host URLs as
+   * NOT configured, and a real My Domain URL as configured. This is the predicate
+   * the self-heal uses to decide whether the runtime URLs reverted to the shipped
+   * placeholder (e.g. after a package upgrade).
+   **************************************************************************************/
+  @isTest
+  static void shouldDetectConfiguredVsPlaceholderUrls() {
+    Test.startTest();
+    Assert.isFalse(
+      ToolingCredentialService.isConfiguredUrl(null),
+      'null URL is not configured'
+    );
+    Assert.isFalse(
+      ToolingCredentialService.isConfiguredUrl(''),
+      'blank URL is not configured'
+    );
+    Assert.isFalse(
+      ToolingCredentialService.isConfiguredUrl(
+        'https://loopback.placeholder.com'
+      ),
+      'placeholder URL is not configured'
+    );
+    Assert.isTrue(
+      ToolingCredentialService.isConfiguredUrl(
+        'https://acme.my.salesforce.com'
+      ),
+      'a real My Domain URL is configured'
+    );
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  ensureUrlsConfigured is a no-op returning false when the Named
+   * Credential toggle is off — it must never attempt ConnectApi writes or throw
+   * when the legacy path is in use.
+   **************************************************************************************/
+  @isTest
+  static void shouldNoOp_WhenToggleOffOnEnsureUrls() {
+    Package2Interface.useNamedCredentialOverride = false;
+    Test.startTest();
+    Boolean ready = ToolingCredentialService.ensureUrlsConfigured();
+    Test.stopTest();
+    Assert.isFalse(
+      ready,
+      'ensureUrlsConfigured returns false when the NC toggle is off'
+    );
+    Package2Interface.useNamedCredentialOverride = null;
+  }
+
+  /**************************************************************************************
    * @Description  getRunningNamespace returns the bare namespace prefix (or empty
    * string), never the dotted 'namespace.ClassName' form, so it's safe to use as
    * the AllowedManagedPackageNamespaces parameter value when rebuilding the Named
