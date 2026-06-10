@@ -235,6 +235,57 @@ private class ToolingCredentialServiceTest {
   }
 
   /**************************************************************************************
+   * @Description  isAlreadyExists recognizes the ConnectApi "name already used"
+   * error (the signal to fall back from create to update) and ignores others.
+   **************************************************************************************/
+  @isTest
+  static void shouldDetectAlreadyExistsError() {
+    Test.startTest();
+    Assert.isTrue(
+      ToolingCredentialService.isAlreadyExists(
+        new ToolingCredentialService.CredentialServiceException(
+          'This Name already exists or has been previously used.'
+        )
+      ),
+      'should detect the already-exists signal'
+    );
+    Assert.isFalse(
+      ToolingCredentialService.isAlreadyExists(
+        new ToolingCredentialService.CredentialServiceException(
+          'some other error'
+        )
+      ),
+      'unrelated errors are not already-exists'
+    );
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  provisionCredentials wraps ConnectApi failures as a service
+   * exception rather than leaking a raw ConnectApi exception. ConnectApi credential
+   * mutations aren't mockable in tests, so this exercises the wrap path; if no
+   * exception is raised in this context that is acceptable.
+   **************************************************************************************/
+  @isTest
+  static void shouldWrapError_WhenProvisioning() {
+    Test.startTest();
+    try {
+      ToolingCredentialService.provisionCredentials();
+    } catch (ToolingCredentialService.CredentialServiceException e) {
+      Assert.isTrue(
+        e.getMessage().contains('Tooling'),
+        'wrapped message should mention the Tooling credential: ' +
+        e.getMessage()
+      );
+    } catch (Exception other) {
+      Assert.fail(
+        'ConnectApi errors must be wrapped, not leaked: ' + other.getTypeName()
+      );
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
    * @Description  getRunningNamespace returns the bare namespace prefix (or empty
    * string), never the dotted 'namespace.ClassName' form, so it's safe to use as
    * the AllowedManagedPackageNamespaces parameter value when rebuilding the Named
