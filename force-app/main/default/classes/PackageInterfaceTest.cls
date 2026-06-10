@@ -2359,8 +2359,8 @@ private class PackageInterfaceTest {
       'NC path should use a callout endpoint'
     );
     Assert.isTrue(
-      host.endsWith('Package_Visualizer_Named_Credential'),
-      'callout host should target the packaged Named Credential'
+      host.endsWith('pkgviz_Tooling_Named_Credential'),
+      'callout host should target the subscriber-owned Tooling Named Credential'
     );
     Assert.isTrue(
       baseUrl.endsWith('/services/data/v61.0/tooling/'),
