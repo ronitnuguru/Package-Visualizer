@@ -15,12 +15,7 @@
 These were verified live against org `PkgViz` (`pkgvisualizerlwc2020.my.salesforce.com`) before this plan was written:
 
 - **Defect A confirmed.** The packaged External Credential `pkgviz__Package_Visualizer_External_Credential` has `AuthProviderUrl = https://loopback.placeholder.com` in a real org. For the Client Credentials flow this IS the OAuth token endpoint, so token acquisition fails.
-- **Verified ConnectApi shape** (compiles against the org):
-  - `ConnectApi.ExternalCredentialInput`: `.developerName` (String), `.masterLabel` (String), `.authenticationProtocol` (`ConnectApi.CredentialAuthenticationProtocol`), `.parameters` (`List<ConnectApi.ExternalCredentialParameterInput>`).
-  - `ConnectApi.ExternalCredentialParameterInput`: `.parameterName` (String), `.parameterType` (`ConnectApi.ExternalCredentialParameterType`), `.parameterValue` (String). **There is no `parameterGroup` property** on this input type.
-  - `ConnectApi.NamedCredentials.updateExternalCredential(String developerName, ConnectApi.ExternalCredentialInput input)` returns `ConnectApi.ExternalCredential`.
-  - `ConnectApi.ExternalCredentialParameterType.AuthProviderUrl` enum value exists.
-- **Known risk:** `getExternalCredential(...).parameters` returns only `AuthProviderUrl` (not the protocol-variant or the named principal — those surface elsewhere). `updateExternalCredential` is expected to behave like `updateNamedCredential`: it may delete parameters not re-supplied. Task 1 includes a live-verification step to lock down exactly what must be preserved before the Apex is finalized.
+- **Verified ConnectApi shape and `updateExternalCredential` behavior** — see Task 0 (✅ DONE) below for the full, live-verified findings. Headline: `updateExternalCredential` is a full-state replace, so `configureTokenUrl()` MUST set `authenticationProtocolVariant` (a property) and re-supply `input.principals`, or the named principal and its stored OAuth secret are destroyed. Task 1's code already incorporates this.
 
 ## File Structure
 
