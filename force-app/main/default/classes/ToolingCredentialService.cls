@@ -117,7 +117,7 @@ global with sharing class ToolingCredentialService {
     status.principalName = PRINCIPAL_NAME;
     try {
       ConnectApi.NamedCredential nc = ConnectApi.NamedCredentials.getNamedCredential(
-        Package2Interface.getQualifiedNamedCredentialName()
+        NEW_NC_DEVNAME
       );
       status.namedCredentialUrl = nc.calloutUrl;
     } catch (Exception e) {
@@ -125,7 +125,7 @@ global with sharing class ToolingCredentialService {
     }
     try {
       ConnectApi.ExternalCredential ec = ConnectApi.NamedCredentials.getExternalCredential(
-        Package2Interface.getQualifiedExternalCredentialName()
+        NEW_EC_DEVNAME
       );
       status.externalCredentialStatus = String.valueOf(ec.authenticationStatus);
       if (ec.parameters != null) {
@@ -293,17 +293,16 @@ global with sharing class ToolingCredentialService {
     if (!Package2Interface.isNamedCredentialEnabled()) {
       return false;
     }
-    IntegrationStatus status = getStatus();
-    if (
-      isConfiguredUrl(status.namedCredentialUrl) &&
-      isConfiguredUrl(status.tokenUrl)
-    ) {
-      return true;
-    }
+    // Verify-only: report whether the subscriber-owned Named Credential exists and
+    // points at a real (non-placeholder) URL. Does NOT create it — creation is a
+    // ConnectApi write that can't share a transaction with the callout that follows
+    // on load, so provisioning stays in the wizard's own transaction. If the
+    // credential is missing the app prompts the admin to run Setup.
     try {
-      configureCalloutUrl();
-      configureTokenUrl();
-      return true;
+      ConnectApi.NamedCredential nc = ConnectApi.NamedCredentials.getNamedCredential(
+        NEW_NC_DEVNAME
+      );
+      return isConfiguredUrl(nc.calloutUrl);
     } catch (Exception e) {
       return false;
     }
@@ -502,7 +501,7 @@ global with sharing class ToolingCredentialService {
       );
     }
     ConnectApi.CredentialInput credInput = new ConnectApi.CredentialInput();
-    credInput.externalCredential = Package2Interface.getQualifiedExternalCredentialName();
+    credInput.externalCredential = NEW_EC_DEVNAME;
     credInput.principalType = ConnectApi.CredentialPrincipalType.NamedPrincipal;
     credInput.principalName = principalName;
     credInput.authenticationProtocol = ConnectApi.CredentialAuthenticationProtocol.Oauth;
