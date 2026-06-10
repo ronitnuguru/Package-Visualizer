@@ -616,6 +616,102 @@ global with sharing class ToolingCredentialService {
     }
   }
 
+  // Dev name of the unmanaged permission set the wizard creates to hold the
+  // Tooling External Credential principal grant when no unmanaged Package_VisualizerPS
+  // exists. SetupEntityAccess DML must target an UNMANAGED perm set — the managed
+  // packaged perm set rejects it with CANNOT_MODIFY_MANAGED_OBJECT.
+  @TestVisible
+  private static final String TOOLING_ACCESS_PERMSET = 'pkgviz_Tooling_Access';
+
+  /**
+   * @Description  Grants the subscriber-owned External Credential's named principal
+   * access via SetupEntityAccess, targeting an UNMANAGED permission set (the managed
+   * packaged perm set rejects the DML). Resolves the principal id via ConnectApi,
+   * finds or creates an unmanaged perm set, and inserts the grant if absent.
+   * Idempotent and non-fatal on the managed-object case (defensive).
+   * @throws CredentialServiceException when the principal can't be resolved.
+   */
+  global static void grantNewPrincipalAccess() {
+    Id principalId = getNewPrincipalId();
+    if (principalId == null) {
+      throw new CredentialServiceException(
+        'Tooling External Credential principal not found: ' + PRINCIPAL_NAME
+      );
+    }
+    Id permissionSetId = resolveUnmanagedPermissionSetId();
+
+    List<SetupEntityAccess> existing = [
+      SELECT Id
+      FROM SetupEntityAccess
+      WHERE ParentId = :permissionSetId AND SetupEntityId = :principalId
+      LIMIT 1
+    ];
+    if (!existing.isEmpty()) {
+      return;
+    }
+    try {
+      insert new SetupEntityAccess(
+        ParentId = permissionSetId,
+        SetupEntityId = principalId
+      );
+    } catch (Exception e) {
+      if (e.getMessage().contains('CANNOT_MODIFY_MANAGED_OBJECT')) {
+        return; // defensive: never block setup on a grant edge case
+      }
+      throw new CredentialServiceException(
+        'Unable to grant Tooling principal access: ' + e.getMessage(),
+        e
+      );
+    }
+  }
+
+  /**
+   * @Description  Resolves the platform id of the NEW External Credential's named
+   * principal via ConnectApi (principals can't be queried with SOQL).
+   */
+  private static Id getNewPrincipalId() {
+    try {
+      List<ConnectApi.ExternalCredentialPrincipal> principals = ConnectApi.NamedCredentials.getExternalCredential(
+          NEW_EC_DEVNAME
+        )
+        .principals;
+      if (principals != null) {
+        for (ConnectApi.ExternalCredentialPrincipal p : principals) {
+          if (p.principalName == PRINCIPAL_NAME) {
+            return p.id;
+          }
+        }
+      }
+    } catch (Exception e) {
+      // credential absent/unreadable — treat as not found
+    }
+    return null;
+  }
+
+  /**
+   * @Description  Returns an UNMANAGED permission set id to hold the grant. Prefers
+   * an existing unmanaged Package_VisualizerPS; otherwise creates (idempotently) a
+   * dedicated unmanaged perm set. Never returns a managed (NamespacePrefix != null)
+   * perm set, because SetupEntityAccess DML against it fails.
+   */
+  private static Id resolveUnmanagedPermissionSetId() {
+    List<PermissionSet> existing = [
+      SELECT Id
+      FROM PermissionSet
+      WHERE Name = :TOOLING_ACCESS_PERMSET AND NamespacePrefix = NULL
+      LIMIT 1
+    ];
+    if (!existing.isEmpty()) {
+      return existing[0].Id;
+    }
+    PermissionSet ps = new PermissionSet(
+      Name = TOOLING_ACCESS_PERMSET,
+      Label = 'Package Visualizer Tooling Access'
+    );
+    insert ps;
+    return ps.Id;
+  }
+
   /**
    * @Description  Resolves the platform Id of the External Credential's named
    * principal via ConnectApi (the principal can't be queried with SOQL). Used as
