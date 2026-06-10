@@ -117,11 +117,13 @@ export default class PackageSplitView extends NavigationMixin(
     this.displaySpinner = true;
 
     try {
-      // Self-heal the callout/token URLs before the continuation callout. A
-      // package upgrade can reset them to the shipped placeholder while the
-      // Named Credential toggle stays on, which otherwise fails with a cryptic
-      // TLS "unrecognized_name". This runs in its own transaction (ConnectApi
-      // writes can't share a transaction with a callout) and never throws.
+      // Read-only readiness check before the continuation callout: confirms the
+      // subscriber-owned Tooling Named Credential exists and points at a real
+      // (non-placeholder) URL. It does NOT create or repair anything — credential
+      // provisioning is a ConnectApi write that can't share a transaction with a
+      // callout, so it lives in the Setup wizard. If this returns false the
+      // credential is missing/unconfigured and the admin must run Setup; the call
+      // never throws, so it can't block the load itself.
       await ensureToolingUrlsConfigured();
 
       const result =

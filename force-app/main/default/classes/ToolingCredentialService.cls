@@ -643,15 +643,19 @@ global with sharing class ToolingCredentialService {
       SELECT Id
       FROM SetupEntityAccess
       WHERE ParentId = :permissionSetId AND SetupEntityId = :principalId
+      WITH USER_MODE
       LIMIT 1
     ];
     if (!existing.isEmpty()) {
       return;
     }
     try {
-      insert new SetupEntityAccess(
-        ParentId = permissionSetId,
-        SetupEntityId = principalId
+      Database.insert(
+        new SetupEntityAccess(
+          ParentId = permissionSetId,
+          SetupEntityId = principalId
+        ),
+        AccessLevel.USER_MODE
       );
     } catch (Exception e) {
       if (e.getMessage().contains('CANNOT_MODIFY_MANAGED_OBJECT')) {

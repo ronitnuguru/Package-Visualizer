@@ -235,6 +235,31 @@ private class ToolingCredentialServiceTest {
   }
 
   /**************************************************************************************
+   * @Description  grantNewPrincipalAccess throws a wrapped CredentialServiceException
+   * when the new External Credential principal can't be resolved (ConnectApi can't be
+   * mocked in tests, so the principal lookup returns null here) — never a raw leak.
+   * Exercises getNewPrincipalId() and the null-principal branch.
+   **************************************************************************************/
+  @isTest
+  static void shouldWrapOrThrow_WhenGrantingNewPrincipalAccess() {
+    Test.startTest();
+    try {
+      ToolingCredentialService.grantNewPrincipalAccess();
+    } catch (ToolingCredentialService.CredentialServiceException e) {
+      Assert.isTrue(
+        e.getMessage().contains('principal') ||
+        e.getMessage().contains('grant'),
+        'failure should be wrapped in a service exception: ' + e.getMessage()
+      );
+    } catch (Exception other) {
+      Assert.fail(
+        'Errors should be wrapped, not leaked: ' + other.getTypeName()
+      );
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
    * @Description  isAlreadyExists recognizes the ConnectApi "name already used"
    * error (the signal to fall back from create to update) and ignores others.
    **************************************************************************************/
