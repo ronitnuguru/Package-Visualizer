@@ -4,6 +4,14 @@
  * @Description  Interface Class for making thats make all call out for 2GP Visualizer application.
  *******************************************************************************************/
 global with sharing class Package2Interface { // NOPMD
+  /**
+   * @Description Thrown when a Tooling/REST callout on the Named Credential path
+   * returns a non-200 status, carrying the HTTP status and response body so the
+   * UI can show a specific cause instead of an empty result.
+   */
+  global class ToolingCalloutException extends Exception {
+  }
+
   /**************************************************************************************
    * @Description  AgentScript Coach platform-cache constants and helpers. The Coach
    * sends a static rubric + a static AgentScript body to the Models API and gets back
@@ -658,7 +666,7 @@ global with sharing class Package2Interface { // NOPMD
         EncodingUtil.urlEncode(queryString, 'UTF-8')
     );
     req.setMethod('GET');
-    req.setHeader('Authorization', 'Bearer ' + getSessionId());
+    applyAuth(req);
     req.setHeader('Content-Type', 'application/json');
     Http h = new Http();
     HttpResponse res = h.send(req);
@@ -670,9 +678,17 @@ global with sharing class Package2Interface { // NOPMD
       if (m.containsKey('records')) {
         records = (List<Object>) m.get('records');
       }
+      return records;
     }
-    if (res.getStatusCode() == 401) {
-      String result = res.getBody();
+    // On the Named Credential path, surface failures so the UI shows a real cause
+    // rather than an empty list. The legacy session path keeps its prior behavior.
+    if (useNamedCredential()) {
+      throw new ToolingCalloutException(
+        'Tooling API callout failed (HTTP ' +
+          res.getStatusCode() +
+          '): ' +
+          res.getBody()
+      );
     }
     return records;
   }
@@ -693,16 +709,156 @@ global with sharing class Package2Interface { // NOPMD
     }
   }
 
+  // Developer name of the packaged Named Credential that fronts the org's own
+  // Tooling/REST API via OAuth Client Credentials. The 'callout:' endpoint is
+  // namespace-qualified at runtime (pkgviz__ when installed) so the same code
+  // works in a namespaced subscriber org and a local scratch org.
+  @TestVisible
+  private static final String NAMED_CREDENTIAL_DEVNAME = 'Package_Visualizer_Named_Credential';
+  @TestVisible
+  private static final String EXTERNAL_CREDENTIAL_DEVNAME = 'Package_Visualizer_External_Credential';
+
+  // Cached per-transaction read of the Use_Named_Credential__c toggle.
+  @TestVisible
+  private static Boolean useNamedCredentialOverride = null;
+
+  /**
+   * @Description  Whether callouts should route through the packaged Named
+   * Credential (true) or the legacy Visualforce session-id path (false).
+   * Reads the protected hierarchy Custom Setting org default; cached for the
+   * transaction. A test can force the value via useNamedCredentialOverride.
+   * @return true when the Named Credential path is enabled.
+   */
+  @TestVisible
+  private static Boolean useNamedCredential() {
+    if (useNamedCredentialOverride != null) {
+      return useNamedCredentialOverride;
+    }
+    Integration_Settings__c settings = Integration_Settings__c.getOrgDefaults();
+    return settings != null && settings.Use_Named_Credential__c == true;
+  }
+
   /**************************************************************************************
-   * @Description	Method for getting the current org base URL for tooling API
+   * @Description	Public read of the Named Credential toggle, for the migration
+   * UI / status checks.
+   * @return true when callouts route through the Named Credential.
+   **************************************************************************************/
+  global static Boolean isNamedCredentialEnabled() {
+    return useNamedCredential();
+  }
+
+  /**************************************************************************************
+   * @Description	Persists the Named Credential toggle on the org-default
+   * Integration Settings. Called by the migration tool only after a verified
+   * test callout. Resets the per-transaction cache so the new value takes effect.
+   * @param enabled  true to route callouts through the Named Credential.
+   **************************************************************************************/
+  global static void setNamedCredentialEnabled(Boolean enabled) {
+    Integration_Settings__c settings = Integration_Settings__c.getOrgDefaults();
+    if (settings.Id == null) {
+      settings.SetupOwnerId = UserInfo.getOrganizationId();
+    }
+    settings.Use_Named_Credential__c = enabled;
+    upsert settings;
+    useNamedCredentialOverride = null;
+  }
+
+  /**************************************************************************************
+   * @Description	Runs a minimal Tooling API query through the Named Credential
+   * path, regardless of the current toggle. Used by the migration tool to verify
+   * OAuth is configured before enabling the toggle org-wide. Returns the query
+   * records on HTTP 200, or null on any non-200 response.
+   * @return Query records on success; null otherwise.
+   **************************************************************************************/
+  global static List<Object> testNamedCredentialCallout() {
+    Boolean previousOverride = useNamedCredentialOverride;
+    try {
+      useNamedCredentialOverride = true;
+      HttpRequest req = new HttpRequest();
+      req.setEndpoint(
+        getBaseURL('tooling') +
+          'query?q=' +
+          EncodingUtil.urlEncode('SELECT Id FROM Package2 LIMIT 1', 'UTF-8')
+      );
+      req.setMethod('GET');
+      applyAuth(req);
+      req.setHeader('Content-Type', 'application/json');
+      HttpResponse res = new Http().send(req);
+      if (res.getStatusCode() == 200) {
+        Map<String, Object> body = (Map<String, Object>) JSON.deserializeUntyped(
+          res.getBody()
+        );
+        return body.containsKey('records')
+          ? (List<Object>) body.get('records')
+          : new List<Object>();
+      }
+      throw new ToolingCalloutException(
+        'Test callout failed (HTTP ' +
+          res.getStatusCode() +
+          '): ' +
+          res.getBody()
+      );
+    } finally {
+      useNamedCredentialOverride = previousOverride;
+    }
+  }
+
+  /**************************************************************************************
+   * @Description	Returns the host portion of a Salesforce API endpoint. When the
+   * Named Credential path is enabled, returns the namespace-qualified
+   * 'callout:<NamedCredential>' reference so the platform injects the OAuth
+   * bearer token (generateAuthorizationHeader). Otherwise returns the current
+   * org domain URL used with the legacy session-id header. Shared by all
+   * Tooling/REST callouts so they route consistently.
+   **************************************************************************************/
+  global static String getApiHost() {
+    if (useNamedCredential()) {
+      return 'callout:' + getQualifiedNamedCredentialName();
+    }
+    return URL.getOrgDomainUrl().toExternalForm();
+  }
+
+  /**************************************************************************************
+   * @Description	Returns the Named Credential developer name qualified with the
+   * running namespace ('pkgviz__Package_Visualizer_Named_Credential' when
+   * installed, unqualified in a local/scratch org). Used for both the
+   * 'callout:' endpoint and ConnectApi management calls so they always target
+   * the same credential.
+   **************************************************************************************/
+  global static String getQualifiedNamedCredentialName() {
+    String ns = getPackageNamespace();
+    return (String.isBlank(ns) ? '' : ns + '__') + NAMED_CREDENTIAL_DEVNAME;
+  }
+
+  /**************************************************************************************
+   * @Description	Returns the External Credential developer name qualified with
+   * the running namespace, for ConnectApi management calls.
+   **************************************************************************************/
+  global static String getQualifiedExternalCredentialName() {
+    String ns = getPackageNamespace();
+    return (String.isBlank(ns) ? '' : ns + '__') + EXTERNAL_CREDENTIAL_DEVNAME;
+  }
+
+  /**************************************************************************************
+   * @Description	Method for getting the current org base URL for tooling API.
+   * Builds on getApiHost() so callouts honor the Named Credential toggle.
    **************************************************************************************/
   global static string getBaseURL(String apiType) {
-    String baseURL =
-      URL.getOrgDomainUrl().toExternalForm() +
+    return getApiHost() +
       '/services/data/v61.0/' +
       String.escapeSingleQuotes(apiType) +
       '/';
-    return baseURL;
+  }
+
+  /**************************************************************************************
+   * @Description	Apply authentication to a Tooling/REST API request. On the
+   * Named Credential path the platform injects the Authorization header, so this
+   * is a no-op. On the legacy path it adds the Visualforce session-id bearer.
+   **************************************************************************************/
+  global static void applyAuth(HttpRequest req) {
+    if (!useNamedCredential()) {
+      req.setHeader('Authorization', 'Bearer ' + getSessionId());
+    }
   }
 
   /**************************************************************************************
@@ -966,7 +1122,7 @@ global with sharing class Package2Interface { // NOPMD
           '/'
       );
       req.setMethod('PATCH');
-      req.setHeader('Authorization', 'Bearer ' + getSessionId());
+      applyAuth(req);
       req.setHeader('Content-Type', 'application/json;charset=UTF-8');
       req.setHeader('Accept', 'application/json');
       req.setBody(httpBody);

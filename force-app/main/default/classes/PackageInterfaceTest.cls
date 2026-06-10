@@ -2323,4 +2323,171 @@ private class PackageInterfaceTest {
       'Cache miss with non-resolvable Callable must surface as AuraHandledException'
     );
   }
+
+  /**************************************************************************************
+   * @Description  getApiHost returns the org-domain host on the legacy path.
+   **************************************************************************************/
+  @isTest
+  static void shouldReturnOrgDomainHost_WhenNamedCredentialDisabled() {
+    Package2Interface.useNamedCredentialOverride = false;
+    Test.startTest();
+    String host = Package2Interface.getApiHost();
+    Test.stopTest();
+    Assert.isFalse(
+      host.startsWith('callout:'),
+      'Legacy path should not use a callout endpoint'
+    );
+    Assert.isTrue(
+      host.startsWith('https://'),
+      'Legacy path should return the org domain URL'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  getApiHost returns the callout: reference on the NC path, and
+   * getBaseURL builds the full versioned callout endpoint.
+   **************************************************************************************/
+  @isTest
+  static void shouldReturnCalloutHost_WhenNamedCredentialEnabled() {
+    Package2Interface.useNamedCredentialOverride = true;
+    Test.startTest();
+    String host = Package2Interface.getApiHost();
+    String baseUrl = Package2Interface.getBaseURL('tooling');
+    Test.stopTest();
+    Assert.isTrue(
+      host.startsWith('callout:'),
+      'NC path should use a callout endpoint'
+    );
+    Assert.isTrue(
+      host.endsWith('Package_Visualizer_Named_Credential'),
+      'callout host should target the packaged Named Credential'
+    );
+    Assert.isTrue(
+      baseUrl.endsWith('/services/data/v61.0/tooling/'),
+      'getBaseURL should append the versioned tooling path'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  applyAuth adds the session-id bearer on the legacy path.
+   **************************************************************************************/
+  @isTest
+  static void shouldSetBearerHeader_WhenNamedCredentialDisabled() {
+    Package2Interface.useNamedCredentialOverride = false;
+    HttpRequest req = new HttpRequest();
+    Test.startTest();
+    Package2Interface.applyAuth(req);
+    Test.stopTest();
+    Assert.isNotNull(
+      req.getHeader('Authorization'),
+      'Legacy path should set the Authorization header'
+    );
+    Assert.isTrue(
+      req.getHeader('Authorization').startsWith('Bearer '),
+      'Authorization header should be a bearer token'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  applyAuth is a no-op on the NC path (platform injects header).
+   **************************************************************************************/
+  @isTest
+  static void shouldNotSetBearerHeader_WhenNamedCredentialEnabled() {
+    Package2Interface.useNamedCredentialOverride = true;
+    HttpRequest req = new HttpRequest();
+    Test.startTest();
+    Package2Interface.applyAuth(req);
+    Test.stopTest();
+    Assert.isNull(
+      req.getHeader('Authorization'),
+      'NC path should not set the Authorization header'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  isNamedCredentialEnabled reflects the override flag.
+   **************************************************************************************/
+  @isTest
+  static void shouldReportEnabledState_FromOverride() {
+    Package2Interface.useNamedCredentialOverride = true;
+    Test.startTest();
+    Boolean enabled = Package2Interface.isNamedCredentialEnabled();
+    Test.stopTest();
+    Assert.isTrue(enabled, 'Should report enabled when override is true');
+  }
+
+  /**************************************************************************************
+   * @Description  setNamedCredentialEnabled persists the toggle to the org default.
+   **************************************************************************************/
+  @isTest
+  static void shouldPersistToggle_WhenSet() {
+    Test.startTest();
+    Package2Interface.setNamedCredentialEnabled(true);
+    Test.stopTest();
+    Integration_Settings__c settings = Integration_Settings__c.getOrgDefaults();
+    Assert.isTrue(
+      settings.Use_Named_Credential__c,
+      'Toggle should be persisted as true on the org default'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  testNamedCredentialCallout returns records on a 200 response.
+   **************************************************************************************/
+  @isTest
+  static void shouldReturnRecords_WhenTestCalloutSucceeds() {
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    Test.startTest();
+    List<Object> records = Package2Interface.testNamedCredentialCallout();
+    Test.stopTest();
+    Assert.isNotNull(
+      records,
+      'A 200 response should yield a (possibly empty) record list'
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  On the Named Credential path, a non-200 Tooling response surfaces
+   * as a ToolingCalloutException instead of an empty list.
+   **************************************************************************************/
+  @isTest
+  static void shouldThrow_WhenNamedCredentialCalloutNon200() {
+    Package2Interface.useNamedCredentialOverride = true;
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    Test.startTest();
+    Boolean threw = false;
+    try {
+      // A FROM clause the mock does not match -> mock returns HTTP 401
+      Package2Interface.submitQuery('SELECT Id FROM Account LIMIT 1');
+    } catch (Package2Interface.ToolingCalloutException e) {
+      threw = true;
+      Assert.isTrue(
+        e.getMessage().contains('401'),
+        'message should include the HTTP status: ' + e.getMessage()
+      );
+    }
+    Test.stopTest();
+    Assert.isTrue(
+      threw,
+      'non-200 on the NC path must throw ToolingCalloutException'
+    );
+    Package2Interface.useNamedCredentialOverride = null;
+  }
+
+  /**************************************************************************************
+   * @Description  On the legacy session path, a non-200 Tooling response still
+   * returns an empty list (unchanged behavior), never throwing.
+   **************************************************************************************/
+  @isTest
+  static void shouldReturnEmpty_WhenLegacyPathNon200() {
+    Package2Interface.useNamedCredentialOverride = false;
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    Test.startTest();
+    List<Object> result = Package2Interface.submitQuery(
+      'SELECT Id FROM Account LIMIT 1'
+    );
+    Test.stopTest();
+    Assert.areEqual(0, result.size(), 'legacy path returns empty on non-200');
+    Package2Interface.useNamedCredentialOverride = null;
+  }
 }
