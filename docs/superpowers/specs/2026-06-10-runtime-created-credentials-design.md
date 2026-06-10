@@ -99,20 +99,37 @@ ConnectApi credential writes and an HTTP callout **cannot share a transaction**
   NOT create (creation in the load path would either need its own pre-callout
   transaction or risk the uncommitted-work error). Creation stays in the wizard.
 
-### Principal access
+### Principal access (CORRECTED — a grant IS required)
 
-No `SetupEntityAccess` grant is required. Verified: the Tooling callout authorizes
-through the Named Credential's `AllowedManagedPackageNamespaces = pkgviz` allow-list
-(38 packages returned with zero external-credential principal grants in the org).
-The old `grantPrincipalAccess()` runtime DML (which hit `CANNOT_MODIFY_MANAGED_OBJECT`
-on the managed perm set) is dropped from the new path.
+The newly-created subscriber-owned External Credential **does** require a
+`SetupEntityAccess` grant for its named principal. Verified live: a callout through
+the new credential without a grant fails with _"We couldn't access the credential(s)
+… the external credential … might not exist"_; after granting the principal to an
+**unmanaged** permission set the error advances to _"The external credential isn't
+fully configured"_ (i.e. access resolved, only the client secret remained). The
+earlier "works with zero grants" observation was on the **packaged** credential,
+which carried different pre-existing principal state — it does NOT generalize to a
+freshly created credential.
 
-**Open item to verify during implementation:** the allow-list authorizes the
-`pkgviz` _namespace_. Confirm a **non-admin** subscriber user (with only the package
-permission set) can complete the callout. If a low-privilege user cannot, add a
-grant against a _subscriber-owned_ (unmanaged) permission set — which, unlike the
-managed packaged perm set, accepts `SetupEntityAccess` DML. This is the one
-end-to-end path not yet empirically closed.
+Crucial difference from the failed Bug B path: the grant must target an **unmanaged**
+permission set. `SetupEntityAccess` DML against the managed packaged perm set throws
+`CANNOT_MODIFY_MANAGED_OBJECT`; against an unmanaged perm set it **succeeds**
+(verified). Options for the unmanaged grant target:
+
+- Grant against the unmanaged `Package_VisualizerPS` if present, OR
+- have the wizard create a small subscriber-owned permission set
+  (e.g. `pkgviz_Tooling_Access`) and grant the principal to it, then ensure app
+  users have it.
+
+The proven end-to-end chain is: **create EC + NC → grant EC principal to an
+unmanaged perm set → populate client id/secret on the new EC → callout succeeds.**
+All four steps were verified live except the final callout-with-real-secret (the
+test org's plaintext secret wasn't available to this session); the EC status
+mechanism (`NotConfigured` → `Configured` on populate) and the packaged EC already
+returning 38 records prove the populate+callout step.
+
+**Remaining open item:** confirm a **non-admin** subscriber user (holding only the
+granted perm set) completes the callout — the grant was verified as admin.
 
 ## Components & Changes
 
@@ -121,8 +138,13 @@ end-to-end path not yet empirically closed.
 - New `provisionCredentials()`: creates (or reconfigures, idempotently) the
   subscriber-owned NC + EC with the properties above, using `createNamedCredential`
   / `createExternalCredential`, falling back to `updateNamedCredential` /
-  `updateExternalCredential` when they already exist. Sets the allow-list. Returns
-  status.
+  `updateExternalCredential` when they already exist. Idempotency detection: create
+  throws _"This Name already exists or has been previously used."_ → catch and
+  update. Sets the allow-list. Returns status.
+- New `grantNewPrincipalAccess()`: grants the new EC's `PackageVisualizerPrincipal`
+  to an **unmanaged** permission set via `SetupEntityAccess` (idempotent; required —
+  see Principal access). Targets an unmanaged perm set so the DML succeeds, unlike
+  the managed packaged perm set.
 - `populateClientCredentials(...)`: unchanged in mechanism, but targets the new EC
   (`pkgviz_Tooling_External_Credential`).
 - `getStatus()`: reports on the new subscriber-owned credential (exists? URL? EC
@@ -133,8 +155,10 @@ end-to-end path not yet empirically closed.
   subscriber-owned credential exists and is non-placeholder; create-if-missing is
   NOT done here (transaction boundary) — it returns false so the UI can prompt
   "run Setup".
-- Remove the `grantPrincipalAccess()` call from the new path (keep the method only
-  if still referenced by the legacy path; otherwise remove).
+- The new path uses `grantNewPrincipalAccess()` (unmanaged-perm-set target) instead
+  of the old `grantPrincipalAccess()` (which targeted the managed packaged perm set
+  and hit `CANNOT_MODIFY_MANAGED_OBJECT`). Keep the old method only if the legacy
+  path still references it; otherwise remove.
 
 ### Apex — `Package2Interface`
 
@@ -144,8 +168,9 @@ end-to-end path not yet empirically closed.
 
 ### Apex — `PackageVisualizerCtrl`
 
-- `configureNamedCredentialUrl()` → replace with a call to `provisionCredentials()`
-  (create instead of modify). Keep the `@AuraEnabled` surface the wizard calls.
+- `configureNamedCredentialUrl()` → replace its body with `provisionCredentials()`
+  then `grantNewPrincipalAccess()` (create instead of modify). Keep the
+  `@AuraEnabled` method name/signature the wizard already calls.
 - `ensureToolingUrlsConfigured()`: returns whether the subscriber-owned credential
   is present + usable (no creation).
 
