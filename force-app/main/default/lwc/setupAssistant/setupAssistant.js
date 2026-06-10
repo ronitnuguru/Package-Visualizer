@@ -177,7 +177,7 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
         .then(() => {
           this.showToolingToast(
             "Success",
-            "Test callout succeeded. The package now has access to the Tooling API.",
+            "Tooling API credentials created and enabled. The package can now query the Tooling API.",
             "success"
           );
           this.loadIntegrationStatus();
