@@ -453,6 +453,34 @@ public with sharing class PackageVisualizerCtrl {
     }
   }
 
+  /**************************************************************************************
+   * @Description  Get the Namespace Registry record matching the given namespace prefix.
+   * @param namespacePrefix The namespace prefix to look up in the Namespace Registry.
+   * @return ObjectWrappers.NamespaceRegistryWrapper with the record Id, Name and
+   *         NamespacePrefix, or null when the NamespaceRegistry object is unavailable.
+   **************************************************************************************/
+  @AuraEnabled(cacheable=true)
+  public static ObjectWrappers.NamespaceRegistryWrapper getNamespaceRegistry(
+    String namespacePrefix
+  ) {
+    try {
+      String queryString = ' SELECT Id, Name, NamespacePrefix FROM NamespaceRegistry WHERE NamespacePrefix = :namespacePrefix WITH USER_MODE LIMIT 1 ';
+      if (Type.forName('NamespaceRegistry') != null) {
+        sObject result = Database.query(queryString);
+        ObjectWrappers.NamespaceRegistryWrapper namespaceRegistry = new ObjectWrappers.NamespaceRegistryWrapper();
+        namespaceRegistry.id = result.get('Id');
+        namespaceRegistry.name = result.get('Name');
+        namespaceRegistry.namespacePrefix = result.get('NamespacePrefix');
+        return namespaceRegistry;
+      }
+      return null;
+    } catch (Exception e) {
+      throw new AuraHandledException(
+        'Could not find a Namespace Registry record associated with this namespace'
+      );
+    }
+  }
+
   @AuraEnabled(continuation=true)
   public static List<ObjectWrappers.LMALicenseWrapper> getPackageVersionLicenses(
     List<ObjectWrappers.FilterWrapper> filterWrapper,
@@ -1073,5 +1101,90 @@ public with sharing class PackageVisualizerCtrl {
       throw new AuraHandledException('Not found: ' + name);
     }
     return (String) results[0].get('Id');
+  }
+
+  /**************************************************************************************
+   * @Description  Returns the current Tooling API integration status for the
+   * migration setup page (My Domain, Named Credential URL, External Credential
+   * status, and the runtime toggle).
+   **************************************************************************************/
+  @AuraEnabled
+  public static ToolingCredentialService.IntegrationStatus getIntegrationStatus() {
+    try {
+      return ToolingCredentialService.getStatus();
+    } catch (Exception e) {
+      throw new AuraHandledException(e.getMessage());
+    }
+  }
+
+  /**************************************************************************************
+   * @Description  Sets the packaged Named Credential's callout URL to this org's
+   * My Domain URL, and ensures the core Package Visualizer permission set has
+   * access to the External Credential principal. First (separate, committed) step
+   * of the migration wizard's "Test & Enable" action.
+   *
+   * The principal-access grant lives here — running as the real admin — so the
+   * ConnectApi lookup and SetupEntityAccess DML execute reliably in a user-mode
+   * context (rather than in a post-install script, which would run as the package
+   * ghost user where those operations are unreliable). Because the LWC calls this
+   * method in a separate transaction before verifyAndEnableNamedCredential(), the
+   * grant is committed by the time the test callout runs. Idempotent, so it's a
+   * no-op once granted.
+   * @return The URL that was applied.
+   **************************************************************************************/
+  @AuraEnabled
+  public static String configureNamedCredentialUrl() {
+    try {
+      String url = ToolingCredentialService.configureCalloutUrl();
+      ToolingCredentialService.configureTokenUrl();
+      ToolingCredentialService.grantPrincipalAccess();
+      return url;
+    } catch (Exception e) {
+      throw new AuraHandledException(e.getMessage());
+    }
+  }
+
+  /**************************************************************************************
+   * @Description  Populates the OAuth client id/secret (from the admin's
+   * External Client App) onto the External Credential's named principal.
+   * @param clientId      OAuth consumer key.
+   * @param clientSecret  OAuth consumer secret.
+   **************************************************************************************/
+  @AuraEnabled
+  public static void populateClientCredentials(
+    String clientId,
+    String clientSecret
+  ) {
+    try {
+      ToolingCredentialService.populateClientCredentials(
+        ToolingCredentialService.PRINCIPAL_NAME,
+        clientId,
+        clientSecret
+      );
+    } catch (Exception e) {
+      throw new AuraHandledException(e.getMessage());
+    }
+  }
+
+  /**************************************************************************************
+   * @Description  Runs a lightweight Tooling query through the Named Credential
+   * path. On success, enables the Named Credential toggle so all callouts switch
+   * over. On failure, leaves the toggle off and returns the error.
+   * @return 'success' when the test callout succeeds and the toggle is enabled.
+   **************************************************************************************/
+  @AuraEnabled
+  public static String verifyAndEnableNamedCredential() {
+    try {
+      Package2Interface.testNamedCredentialCallout();
+      Package2Interface.setNamedCredentialEnabled(true);
+      return 'success';
+    } catch (AuraHandledException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new AuraHandledException(
+        'Test callout failed. Verify the External Client App, client credentials, token URL, and run-as user. Details: ' +
+        e.getMessage()
+      );
+    }
   }
 }
