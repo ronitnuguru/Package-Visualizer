@@ -1137,27 +1137,27 @@ public with sharing class PackageVisualizerCtrl {
   }
 
   /**************************************************************************************
-   * @Description  Sets the packaged Named Credential's callout URL to this org's
-   * My Domain URL, and ensures the core Package Visualizer permission set has
-   * access to the External Credential principal. First (separate, committed) step
-   * of the migration wizard's "Test & Enable" action.
+   * @Description  Creates the subscriber-owned Named + External Credential the app
+   * uses for the Tooling self-callout (pointed at this org's My Domain) and grants
+   * the External Credential principal access. First (separate, committed) step of
+   * the migration wizard's "Test & Enable" action.
    *
-   * The principal-access grant lives here — running as the real admin — so the
-   * ConnectApi lookup and SetupEntityAccess DML execute reliably in a user-mode
-   * context (rather than in a post-install script, which would run as the package
-   * ghost user where those operations are unreliable). Because the LWC calls this
-   * method in a separate transaction before verifyAndEnableNamedCredential(), the
-   * grant is committed by the time the test callout runs. Idempotent, so it's a
-   * no-op once granted.
-   * @return The URL that was applied.
+   * Creates rather than modifies: the packaged credential's URL is a managed
+   * component and can't be modified in a subscriber org, but a credential created
+   * at runtime is subscriber-owned (unmanaged) and freely configurable. The grant
+   * targets an unmanaged permission set (the managed packaged perm set rejects
+   * SetupEntityAccess DML). Runs as the real admin in a user-mode context, in a
+   * separate transaction before verifyAndEnableNamedCredential(), so the
+   * credentials + grant are committed by the time the test callout runs.
+   * Idempotent: reuses existing credentials/grant on re-run.
+   * @return The My Domain URL the credentials were pointed at.
    **************************************************************************************/
   @AuraEnabled
   public static String configureNamedCredentialUrl() {
     try {
-      String url = ToolingCredentialService.configureCalloutUrl();
-      ToolingCredentialService.configureTokenUrl();
-      ToolingCredentialService.grantPrincipalAccess();
-      return url;
+      ToolingCredentialService.provisionCredentials();
+      ToolingCredentialService.grantNewPrincipalAccess();
+      return URL.getOrgDomainUrl().toExternalForm();
     } catch (Exception e) {
       throw new AuraHandledException(e.getMessage());
     }
