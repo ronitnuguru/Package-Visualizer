@@ -18,15 +18,19 @@ global with sharing class ToolingCredentialService {
   // Developer name of the packaged permission set that fronts External Credential
   // principal access. We reuse the core Package Visualizer permission set (every
   // app user already has it, and the whole app runs on Tooling API callouts) so
-  // there's no separate integration permission set to assign. The principal-access
-  // grant is shipped DECLARATIVELY in this permission set's
-  // <externalCredentialPrincipalAccesses> block (verified to deploy on current API
-  // — the historical "invalid cross reference id" failure no longer occurs). The
-  // runtime grantPrincipalAccess() below is a best-effort fallback for the
-  // packaging/dev org where the permission set isn't yet managed; in a subscriber
-  // org the permission set is managed-installed and SetupEntityAccess DML against
-  // it throws CANNOT_MODIFY_MANAGED_OBJECT, which that method now swallows as a
-  // non-fatal no-op.
+  // there's no separate integration permission set to assign.
+  //
+  // The principal-access grant is NOT packaged. The declarative
+  // <externalCredentialPrincipalAccesses> block fails `sf package version create`
+  // with "Package_VisualizerPS: invalid cross reference id" (confirmed 2026-06-10)
+  // because the External Credential principal isn't resolvable in the build
+  // context. The runtime grantPrincipalAccess() below is a best-effort grant for
+  // the packaging/dev org where the permission set isn't yet managed; in a
+  // subscriber org the permission set is managed-installed and SetupEntityAccess
+  // DML against it throws CANNOT_MODIFY_MANAGED_OBJECT, which that method swallows
+  // as a non-fatal no-op. The grant is not actually required for the callout —
+  // authorization flows through the Named Credential's
+  // AllowedManagedPackageNamespaces allow-list.
   @TestVisible
   private static final String CALLOUT_PERMISSION_SET_NAME = 'Package_VisualizerPS';
   // ConnectApi.NamedCredentialParameterType name of the managed-package namespace
