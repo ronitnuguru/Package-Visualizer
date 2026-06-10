@@ -35,64 +35,24 @@ These were verified live against org `PkgViz` (`pkgvisualizerlwc2020.my.salesfor
 
 ---
 
-## Task 0: Confirm the live `updateExternalCredential` preservation behavior
+## Task 0: ✅ DONE — `updateExternalCredential` behavior verified live
 
-This is a **spike**, not a code change. It removes the one remaining unknown (what `updateExternalCredential` drops) so Task 1's Apex is correct on the first write. It mutates a credential in the `PkgViz` org, then restores it.
+This spike was run against `PkgViz` before implementation. **Findings (these are now load-bearing facts — Task 1 code below already incorporates them):**
 
-**Files:** none (anonymous Apex only).
+1. **`updateExternalCredential` is a FULL-STATE REPLACE.** Anything not re-supplied is deleted. Supplying only the `AuthProviderUrl` param **wipes the named principal AND its stored client id/secret** (verified: principals went 1→0, status `Configured`→`NotConfigured`). This is the same "drops what you don't re-supply" hazard the codebase documents for the Named Credential allow-list — but here it is **destructive to the OAuth secret**. Task 1's method MUST re-supply `input.principals`.
+2. **The OAuth protocol variant is a PROPERTY, not a parameter.** Setting `input.parameters` with an `AuthProtocolVariant` param fails to compile (`AuthProtocolVariant` is not a valid `ExternalCredentialParameterType`). It must be set as `input.authenticationProtocolVariant = ConnectApi.CredentialAuthenticationProtocolVariant.ClientCredentialsClientSecret`. Omitting the variant makes the update reject `AuthProviderUrl` with: _"The authentication protocol 'Oauth' doesn't support the following external credential parameter type(s): AuthProviderUrl."_
+3. **Verified valid enum values:**
+   - `ConnectApi.ExternalCredentialParameterType`: only `AuthProviderUrl`, `SigningCertificate`, `JwtBodyClaim`, `JwtHeaderClaim`.
+   - `ConnectApi.CredentialAuthenticationProtocolVariant`: `ClientCredentialsClientSecret`, `JwtBearer` (NOT `ClientCredentials`, NOT `AuthorizationCode`).
+   - `ConnectApi.CredentialPrincipalType`: `NamedPrincipal`, `PerUserPrincipal`.
+4. **Verified input shapes:**
+   - `ConnectApi.ExternalCredentialInput`: `.developerName`, `.masterLabel`, `.authenticationProtocol`, `.authenticationProtocolVariant`, `.parameters`, `.principals`. (No `.externalCredentialParameters`, no `.description`.)
+   - `ConnectApi.ExternalCredentialParameterInput`: `.parameterName`, `.parameterType`, `.parameterValue`. (No `.parameterGroup`.)
+   - `ConnectApi.ExternalCredentialPrincipalInput`: `.principalName`, `.principalType`, `.sequenceNumber`. (No `.description`, no `.parameterGroup`.)
+5. **Re-supplying `input.principals` PRESERVES the stored client secret** (verified: after a token-URL update that re-supplied the principal, status stayed `Configured` and a subsequent callout's auth was intact). So wizard ordering is NOT fragile — the token-URL update is safe to run before or after `populateClientCredentials`.
+6. The packaged principal is `PackageVisualizerPrincipal` / `NamedPrincipal` / `sequenceNumber = 1`. EC master label is exactly `Package Visualizer External Credential`.
 
-- [ ] **Step 1: Read current EC state and attempt a minimal update**
-
-Save to `$CLAUDE_JOB_DIR/tmp/spike_ec_update.apex`:
-
-```apex
-String ecName = 'pkgviz__Package_Visualizer_External_Credential';
-String testTokenUrl = 'https://pkgvisualizerlwc2020.my.salesforce.com/services/oauth2/token';
-
-ConnectApi.ExternalCredentialInput input = new ConnectApi.ExternalCredentialInput();
-input.developerName = ecName;
-input.masterLabel = 'Package Visualizer External Credential';
-input.authenticationProtocol = ConnectApi.CredentialAuthenticationProtocol.Oauth;
-
-ConnectApi.ExternalCredentialParameterInput tokenParam = new ConnectApi.ExternalCredentialParameterInput();
-tokenParam.parameterName = 'AuthProviderUrl';
-tokenParam.parameterType = ConnectApi.ExternalCredentialParameterType.AuthProviderUrl;
-tokenParam.parameterValue = testTokenUrl;
-input.parameters = new List<ConnectApi.ExternalCredentialParameterInput>{ tokenParam };
-
-try {
-  ConnectApi.ExternalCredential ec = ConnectApi.NamedCredentials.updateExternalCredential(ecName, input);
-  System.debug('UPDATE OK');
-} catch (Exception e) {
-  System.debug('UPDATE ERR: ' + e.getMessage());
-}
-
-// Re-read to see what survived
-ConnectApi.ExternalCredential after = ConnectApi.NamedCredentials.getExternalCredential(ecName);
-System.debug('AFTER PROTOCOL: ' + after.authenticationProtocol);
-for (ConnectApi.ExternalCredentialParameter pr : after.parameters) {
-  System.debug('AFTER PARAM ' + pr.parameterName + '=' + pr.parameterValue);
-}
-ConnectApi.ExternalCredentialPrincipal[] princ = after.principals;
-System.debug('AFTER PRINCIPALS: ' + (princ == null ? 'null' : String.valueOf(princ.size())));
-```
-
-Run: `sf apex run --target-org PkgViz --file "$CLAUDE_JOB_DIR/tmp/spike_ec_update.apex" 2>&1 | grep -iE "UPDATE OK|UPDATE ERR|AFTER"`
-
-- [ ] **Step 2: Interpret the result and record what must be preserved**
-
-Expected one of:
-
-- `UPDATE OK` + `AFTER PARAM AuthProviderUrl=https://pkgvisualizerlwc2020...token` and principals still present → the update is safe with just the token param. Record: "no extra preservation needed."
-- `UPDATE ERR: You can't delete the ... parameter ...` (mirrors the NC allow-list error) → record the exact parameter name(s) it refuses to drop; those must be re-supplied in Task 1, exactly as `ToolingCredentialService.parametersToPreserve()` does for the Named Credential.
-
-Write the conclusion as a comment at the top of the Task 1 diff so the implementer (or reviewer) can see why the preservation list is shaped the way it is.
-
-- [ ] **Step 3: Restore the placeholder so the org is back to a known state**
-
-Save to `$CLAUDE_JOB_DIR/tmp/spike_ec_restore.apex` (same as Step 1 but `parameterValue = 'https://loopback.placeholder.com'`, plus any params Step 2 said must be preserved), run it, and confirm `AFTER PARAM AuthProviderUrl=https://loopback.placeholder.com`.
-
-Run: `sf apex run --target-org PkgViz --file "$CLAUDE_JOB_DIR/tmp/spike_ec_restore.apex" 2>&1 | grep -iE "UPDATE OK|UPDATE ERR|AFTER PARAM"`
+**Org state:** left restored to original (`AuthProviderUrl=https://loopback.placeholder.com`, principal present, `Configured`). No further spike action needed.
 
 ---
 
@@ -150,9 +110,22 @@ Near the other `@TestVisible private static final String` constants at the top o
   private static final String OAUTH_TOKEN_PATH = '/services/oauth2/token';
 ```
 
-- [ ] **Step 4: Add `configureTokenUrl()`**
+- [ ] **Step 4: Add the `EXTERNAL_CREDENTIAL_LABEL` and principal constants**
 
-Add this method after `configureCalloutUrl()`. (Re-supply any parameters Task 0 Step 2 proved must be preserved; the version below supplies only `AuthProviderUrl` — if Task 0 showed the update drops the principal or protocol variant, this method MUST be expanded to re-supply them, exactly mirroring `parametersToPreserve()` for the NC.)
+Near `NAMED_CREDENTIAL_LABEL` / the other constants, add:
+
+```apex
+  // Must match the <label> in the packaged External Credential metadata —
+  // updateExternalCredential requires masterLabel in the payload.
+  @TestVisible
+  private static final String EXTERNAL_CREDENTIAL_LABEL = 'Package Visualizer External Credential';
+```
+
+Note: `PRINCIPAL_NAME` (`'PackageVisualizerPrincipal'`) already exists on this class and is reused below for the principal re-supply.
+
+- [ ] **Step 5: Add `configureTokenUrl()` (verified shape — re-supplies principal to avoid wiping the secret)**
+
+Add after `configureCalloutUrl()`. **Critical (verified in Task 0):** `updateExternalCredential` is a full-state replace. You MUST set `authenticationProtocolVariant` (a property, not a param) AND re-supply `input.principals`, or the named principal and its stored client id/secret are destroyed.
 
 ```apex
   /**
@@ -160,6 +133,13 @@ Add this method after `configureCalloutUrl()`. (Re-supply any parameters Task 0 
    * endpoint for the Client Credentials flow) to the running org's My Domain token
    * endpoint. The packaged credential ships this as a placeholder; it differs per
    * subscriber org and isn't known at package time, so it's set at runtime.
+   *
+   * updateExternalCredential is a FULL-STATE REPLACE: anything not re-supplied is
+   * deleted. The protocol variant (ClientCredentialsClientSecret) must be set as the
+   * authenticationProtocolVariant property — it is NOT a parameter type, and without
+   * it the platform rejects the AuthProviderUrl parameter. The named principal must
+   * be re-supplied or it (and its stored, encrypted client id/secret) is wiped;
+   * re-supplying it preserves the stored secret.
    * @return The token URL that was applied.
    * @throws CredentialServiceException when the ConnectApi update fails.
    */
@@ -170,8 +150,9 @@ Add this method after `configureCalloutUrl()`. (Re-supply any parameters Task 0 
     try {
       ConnectApi.ExternalCredentialInput input = new ConnectApi.ExternalCredentialInput();
       input.developerName = ecName;
-      input.masterLabel = NAMED_CREDENTIAL_LABEL == null ? ecName : EXTERNAL_CREDENTIAL_LABEL;
+      input.masterLabel = EXTERNAL_CREDENTIAL_LABEL;
       input.authenticationProtocol = ConnectApi.CredentialAuthenticationProtocol.Oauth;
+      input.authenticationProtocolVariant = ConnectApi.CredentialAuthenticationProtocolVariant.ClientCredentialsClientSecret;
 
       ConnectApi.ExternalCredentialParameterInput tokenParam = new ConnectApi.ExternalCredentialParameterInput();
       tokenParam.parameterName = AUTH_PROVIDER_URL_PARAM;
@@ -179,6 +160,16 @@ Add this method after `configureCalloutUrl()`. (Re-supply any parameters Task 0 
       tokenParam.parameterValue = tokenUrl;
       input.parameters = new List<ConnectApi.ExternalCredentialParameterInput>{
         tokenParam
+      };
+
+      // Re-supply the named principal or updateExternalCredential deletes it
+      // (and the stored client id/secret with it).
+      ConnectApi.ExternalCredentialPrincipalInput principal = new ConnectApi.ExternalCredentialPrincipalInput();
+      principal.principalName = PRINCIPAL_NAME;
+      principal.principalType = ConnectApi.CredentialPrincipalType.NamedPrincipal;
+      principal.sequenceNumber = 1;
+      input.principals = new List<ConnectApi.ExternalCredentialPrincipalInput>{
+        principal
       };
 
       ConnectApi.NamedCredentials.updateExternalCredential(ecName, input);
@@ -190,23 +181,6 @@ Add this method after `configureCalloutUrl()`. (Re-supply any parameters Task 0 
       );
     }
   }
-```
-
-- [ ] **Step 5: Add the `EXTERNAL_CREDENTIAL_LABEL` constant**
-
-The packaged EC's master label is `Package Visualizer External Credential` (verified live). Add near `NAMED_CREDENTIAL_LABEL`:
-
-```apex
-  // Must match the <label> in the packaged External Credential metadata —
-  // updateExternalCredential requires masterLabel in the payload.
-  @TestVisible
-  private static final String EXTERNAL_CREDENTIAL_LABEL = 'Package Visualizer External Credential';
-```
-
-Then simplify the `input.masterLabel` line in `configureTokenUrl()` to:
-
-```apex
-      input.masterLabel = EXTERNAL_CREDENTIAL_LABEL;
 ```
 
 - [ ] **Step 6: Verify it compiles against the org**
