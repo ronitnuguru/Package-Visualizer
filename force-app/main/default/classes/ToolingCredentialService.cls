@@ -142,6 +142,135 @@ global with sharing class ToolingCredentialService {
   }
 
   /**
+   * @Description  Creates (or reconfigures, idempotently) the subscriber-owned
+   * Named + External Credential the app uses for the Tooling self-callout. Unlike
+   * the packaged credential, these are created at runtime and are therefore
+   * unmanaged — their URL and parameters are freely settable in a subscriber org,
+   * which sidesteps the CANNOT_MODIFY_MANAGED_OBJECT lock on packaged credentials.
+   * Points the NC callout URL at the running org's My Domain, the EC token URL at
+   * the org's /services/oauth2/token, and adds the pkgviz namespace allow-list so
+   * packaged Apex may call through the NC.
+   *
+   * ConnectApi writes only (no callout) — safe to run in the wizard's own
+   * transaction, must NOT share a transaction with a Tooling callout.
+   * @throws CredentialServiceException on ConnectApi failure.
+   */
+  global static void provisionCredentials() {
+    String myDomain = URL.getOrgDomainUrl().toExternalForm();
+    provisionExternalCredential(myDomain);
+    provisionNamedCredential(myDomain);
+  }
+
+  private static void provisionExternalCredential(String myDomain) {
+    ConnectApi.ExternalCredentialInput input = new ConnectApi.ExternalCredentialInput();
+    input.developerName = NEW_EC_DEVNAME;
+    input.masterLabel = NEW_EC_LABEL;
+    input.authenticationProtocol = ConnectApi.CredentialAuthenticationProtocol.Oauth;
+    input.authenticationProtocolVariant = ConnectApi.CredentialAuthenticationProtocolVariant.ClientCredentialsClientSecret;
+
+    ConnectApi.ExternalCredentialParameterInput tokenParam = new ConnectApi.ExternalCredentialParameterInput();
+    tokenParam.parameterName = AUTH_PROVIDER_URL_PARAM;
+    tokenParam.parameterType = ConnectApi.ExternalCredentialParameterType.AuthProviderUrl;
+    tokenParam.parameterValue = myDomain + OAUTH_TOKEN_PATH;
+    input.parameters = new List<ConnectApi.ExternalCredentialParameterInput>{
+      tokenParam
+    };
+
+    ConnectApi.ExternalCredentialPrincipalInput principal = new ConnectApi.ExternalCredentialPrincipalInput();
+    principal.principalName = PRINCIPAL_NAME;
+    principal.principalType = ConnectApi.CredentialPrincipalType.NamedPrincipal;
+    principal.sequenceNumber = 1;
+    input.principals = new List<ConnectApi.ExternalCredentialPrincipalInput>{
+      principal
+    };
+
+    try {
+      ConnectApi.NamedCredentials.createExternalCredential(input);
+    } catch (Exception e) {
+      if (isAlreadyExists(e)) {
+        try {
+          ConnectApi.NamedCredentials.updateExternalCredential(
+            NEW_EC_DEVNAME,
+            input
+          );
+        } catch (Exception updateEx) {
+          throw new CredentialServiceException(
+            'Unable to configure the Tooling External Credential: ' +
+            updateEx.getMessage(),
+            updateEx
+          );
+        }
+      } else {
+        throw new CredentialServiceException(
+          'Unable to create the Tooling External Credential: ' + e.getMessage(),
+          e
+        );
+      }
+    }
+  }
+
+  private static void provisionNamedCredential(String myDomain) {
+    ConnectApi.NamedCredentialInput input = new ConnectApi.NamedCredentialInput();
+    input.developerName = NEW_NC_DEVNAME;
+    input.masterLabel = NEW_NC_LABEL;
+    input.calloutUrl = myDomain;
+    input.type = ConnectApi.NamedCredentialType.SecuredEndpoint;
+
+    ConnectApi.NamedCredentialCalloutOptionsInput options = new ConnectApi.NamedCredentialCalloutOptionsInput();
+    options.generateAuthorizationHeader = true;
+    options.allowMergeFieldsInBody = false;
+    options.allowMergeFieldsInHeader = false;
+    input.calloutOptions = options;
+
+    ConnectApi.ExternalCredentialInput ecRef = new ConnectApi.ExternalCredentialInput();
+    ecRef.developerName = NEW_EC_DEVNAME;
+    input.externalCredentials = new List<ConnectApi.ExternalCredentialInput>{
+      ecRef
+    };
+
+    ConnectApi.NamedCredentialParameterInput allowList = new ConnectApi.NamedCredentialParameterInput();
+    allowList.parameterName = ALLOWED_NAMESPACES_TYPE;
+    allowList.parameterType = ConnectApi.NamedCredentialParameterType.AllowedManagedPackageNamespaces;
+    allowList.parameterValue = PACKAGE_NAMESPACE;
+    input.parameters = new List<ConnectApi.NamedCredentialParameterInput>{
+      allowList
+    };
+
+    try {
+      ConnectApi.NamedCredentials.createNamedCredential(input);
+    } catch (Exception e) {
+      if (isAlreadyExists(e)) {
+        try {
+          ConnectApi.NamedCredentials.updateNamedCredential(
+            NEW_NC_DEVNAME,
+            input
+          );
+        } catch (Exception updateEx) {
+          throw new CredentialServiceException(
+            'Unable to configure the Tooling Named Credential: ' +
+            updateEx.getMessage(),
+            updateEx
+          );
+        }
+      } else {
+        throw new CredentialServiceException(
+          'Unable to create the Tooling Named Credential: ' + e.getMessage(),
+          e
+        );
+      }
+    }
+  }
+
+  /**
+   * @Description  True when a ConnectApi create failed because the developer name
+   * is already taken — the signal to fall back to update (idempotent re-run).
+   */
+  @TestVisible
+  private static Boolean isAlreadyExists(Exception e) {
+    return e.getMessage() != null && e.getMessage().contains('already exists');
+  }
+
+  /**
    * @Description  Self-heals the runtime callout/token URLs when the Named
    * Credential path is enabled but the URLs still point at the shipped
    * placeholder (or are blank). This happens after a package upgrade re-pushes
