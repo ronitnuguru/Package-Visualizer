@@ -718,6 +718,11 @@ global with sharing class Package2Interface { // NOPMD
   @TestVisible
   private static final String EXTERNAL_CREDENTIAL_DEVNAME = 'Package_Visualizer_External_Credential';
 
+  // Subscriber-owned Named Credential created by the setup wizard at runtime.
+  // Unmanaged, so referenced by bare dev name (no pkgviz__ prefix).
+  @TestVisible
+  private static final String NEW_NC_DEVNAME = 'pkgviz_Tooling_Named_Credential';
+
   // Cached per-transaction read of the Use_Named_Credential__c toggle.
   @TestVisible
   private static Boolean useNamedCredentialOverride = null;
@@ -813,7 +818,7 @@ global with sharing class Package2Interface { // NOPMD
    **************************************************************************************/
   global static String getApiHost() {
     if (useNamedCredential()) {
-      return 'callout:' + getQualifiedNamedCredentialName();
+      return 'callout:' + NEW_NC_DEVNAME;
     }
     return URL.getOrgDomainUrl().toExternalForm();
   }

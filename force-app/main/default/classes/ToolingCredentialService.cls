@@ -68,6 +68,19 @@ global with sharing class ToolingCredentialService {
   @TestVisible
   private static final String EXTERNAL_CREDENTIAL_LABEL = 'Package Visualizer External Credential';
 
+  // Subscriber-owned (unmanaged) credentials the wizard CREATES at runtime. These
+  // are NOT the packaged pkgviz__ credentials (whose URL is a managed component and
+  // cannot be modified in a subscriber org). Unmanaged → URL/params freely settable.
+  // No namespace prefix: subscriber-owned components carry no managed namespace.
+  @TestVisible
+  private static final String NEW_NC_DEVNAME = 'pkgviz_Tooling_Named_Credential';
+  @TestVisible
+  private static final String NEW_EC_DEVNAME = 'pkgviz_Tooling_External_Credential';
+  @TestVisible
+  private static final String NEW_NC_LABEL = 'Package Visualizer Tooling Named Credential';
+  @TestVisible
+  private static final String NEW_EC_LABEL = 'Package Visualizer Tooling External Credential';
+
   global class CredentialServiceException extends Exception {
   }
 
