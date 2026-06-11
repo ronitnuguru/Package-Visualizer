@@ -818,7 +818,11 @@ global with sharing class Package2Interface { // NOPMD
    **************************************************************************************/
   global static String getApiHost() {
     if (useNamedCredential()) {
-      return 'callout:' + NEW_NC_DEVNAME;
+      // Route through the PACKAGED Named Credential (namespace-qualified to
+      // pkgviz__Package_Visualizer_Named_Credential when installed). The subscriber
+      // admin sets its callout URL to their My Domain in Setup; the platform injects
+      // the OAuth bearer token via generateAuthorizationHeader.
+      return 'callout:' + getQualifiedNamedCredentialName();
     }
     return URL.getOrgDomainUrl().toExternalForm();
   }
