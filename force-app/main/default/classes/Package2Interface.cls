@@ -818,11 +818,13 @@ global with sharing class Package2Interface { // NOPMD
    **************************************************************************************/
   global static String getApiHost() {
     if (useNamedCredential()) {
-      // Route through the PACKAGED Named Credential (namespace-qualified to
-      // pkgviz__Package_Visualizer_Named_Credential when installed). The subscriber
-      // admin sets its callout URL to their My Domain in Setup; the platform injects
-      // the OAuth bearer token via generateAuthorizationHeader.
-      return 'callout:' + getQualifiedNamedCredentialName();
+      // Route through the subscriber-owned Named Credential CREATED at runtime by
+      // ToolingCredentialService.provisionCredentials(). It is unmanaged (bare
+      // name, no pkgviz__ prefix), so its callout URL is set to the subscriber's My
+      // Domain at setup time — sidestepping the managed-component URL lock that
+      // makes a PACKAGED Named Credential's URL uneditable in a subscriber org
+      // (verified: packaged NC URL can't be changed by Apex or admin Setup UI).
+      return 'callout:' + NEW_NC_DEVNAME;
     }
     return URL.getOrgDomainUrl().toExternalForm();
   }

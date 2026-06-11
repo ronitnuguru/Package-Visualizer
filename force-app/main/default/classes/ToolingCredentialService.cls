@@ -117,7 +117,7 @@ global with sharing class ToolingCredentialService {
     status.principalName = PRINCIPAL_NAME;
     try {
       ConnectApi.NamedCredential nc = ConnectApi.NamedCredentials.getNamedCredential(
-        Package2Interface.getQualifiedNamedCredentialName()
+        NEW_NC_DEVNAME
       );
       status.namedCredentialUrl = nc.calloutUrl;
     } catch (Exception e) {
@@ -125,7 +125,7 @@ global with sharing class ToolingCredentialService {
     }
     try {
       ConnectApi.ExternalCredential ec = ConnectApi.NamedCredentials.getExternalCredential(
-        Package2Interface.getQualifiedExternalCredentialName()
+        NEW_EC_DEVNAME
       );
       status.externalCredentialStatus = String.valueOf(ec.authenticationStatus);
       if (ec.parameters != null) {
@@ -300,7 +300,7 @@ global with sharing class ToolingCredentialService {
     // credential is missing the app prompts the admin to run Setup.
     try {
       ConnectApi.NamedCredential nc = ConnectApi.NamedCredentials.getNamedCredential(
-        Package2Interface.getQualifiedNamedCredentialName()
+        NEW_NC_DEVNAME
       );
       return isConfiguredUrl(nc.calloutUrl);
     } catch (Exception e) {
@@ -383,7 +383,7 @@ global with sharing class ToolingCredentialService {
       );
     }
     ConnectApi.CredentialInput credInput = new ConnectApi.CredentialInput();
-    credInput.externalCredential = Package2Interface.getQualifiedExternalCredentialName();
+    credInput.externalCredential = NEW_EC_DEVNAME;
     credInput.principalType = ConnectApi.CredentialPrincipalType.NamedPrincipal;
     credInput.principalName = principalName;
     credInput.authenticationProtocol = ConnectApi.CredentialAuthenticationProtocol.Oauth;
