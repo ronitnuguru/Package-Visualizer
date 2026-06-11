@@ -528,8 +528,26 @@ global with sharing class ToolingCredentialService {
       Name = TOOLING_ACCESS_PERMSET,
       Label = 'Package Visualizer Tooling Access'
     );
-    insert ps;
-    return ps.Id;
+    try {
+      insert ps;
+      return ps.Id;
+    } catch (DmlException e) {
+      // PermissionSet labels are globally unique. If a perm set with this label
+      // already exists (e.g. created in a prior run, or a namespaced copy from the
+      // managed package), the insert throws DUPLICATE_MASTER_LABEL. Recover by
+      // re-querying for the existing one by name rather than failing the grant.
+      List<PermissionSet> race = [
+        SELECT Id
+        FROM PermissionSet
+        WHERE Name = :TOOLING_ACCESS_PERMSET
+        ORDER BY NamespacePrefix NULLS FIRST
+        LIMIT 1
+      ];
+      if (!race.isEmpty()) {
+        return race[0].Id;
+      }
+      throw e;
+    }
   }
 
   private static ConnectApi.CredentialValueInput buildValue(

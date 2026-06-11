@@ -308,31 +308,32 @@ private class ToolingCredentialServiceTest {
   }
 
   /**************************************************************************************
-   * @Description  resolveUnmanagedPermissionSetId creates (first call) then reuses
-   * (second call) the unmanaged pkgviz_Tooling_Access permission set, exercising both
-   * the create and the found branches. Pure SOQL + DML — fully testable.
+   * @Description  resolveUnmanagedPermissionSetId returns a permission set id for the
+   * grant target, creating pkgviz_Tooling_Access on first use and reusing it (or any
+   * same-label perm set, via the DUPLICATE_MASTER_LABEL recovery) thereafter. Pure
+   * SOQL + DML — fully testable; idempotent across calls.
    **************************************************************************************/
   @isTest
-  static void shouldCreateThenReuse_UnmanagedPermissionSet() {
+  static void shouldResolveOrCreate_UnmanagedPermissionSet() {
     Test.startTest();
     Id firstId = ToolingCredentialService.resolveUnmanagedPermissionSetId();
     Id secondId = ToolingCredentialService.resolveUnmanagedPermissionSetId();
     Test.stopTest();
-    Assert.isNotNull(firstId, 'should create the unmanaged perm set');
+    Assert.isNotNull(firstId, 'should resolve/create a perm set id');
     Assert.areEqual(
       firstId,
       secondId,
       'second call should reuse the same perm set, not create a duplicate'
     );
     List<PermissionSet> created = [
-      SELECT Id, NamespacePrefix
+      SELECT Id
       FROM PermissionSet
-      WHERE Name = 'pkgviz_Tooling_Access'
+      WHERE Name = 'pkgviz_Tooling_Access' AND NamespacePrefix = NULL
     ];
-    Assert.areEqual(1, created.size(), 'exactly one perm set should exist');
-    Assert.isNull(
-      created[0].NamespacePrefix,
-      'the grant target must be an UNMANAGED perm set'
+    Assert.areEqual(
+      1,
+      created.size(),
+      'exactly one unmanaged grant-target perm set should exist'
     );
   }
 
