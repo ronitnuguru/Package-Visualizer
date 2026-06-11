@@ -84,79 +84,48 @@ private class ToolingCredentialServiceTest {
   }
 
   /**************************************************************************************
-   * @Description  configureCalloutUrl wraps ConnectApi failures as a service
-   * exception rather than leaking the raw ConnectApi exception.
+   * @Description  configureCalloutUrl is a DEPRECATED no-op stub (superseded by
+   * provisionCredentials). It returns the running org My Domain URL without touching
+   * the packaged credential.
    **************************************************************************************/
   @isTest
-  static void shouldWrapConnectApiError_WhenConfiguringUrl() {
+  static void shouldReturnMyDomain_WhenConfiguringUrl() {
     Test.startTest();
-    try {
-      ToolingCredentialService.configureCalloutUrl();
-    } catch (ToolingCredentialService.CredentialServiceException e) {
-      Assert.isTrue(
-        e.getMessage().contains('Unable to set the Named Credential URL'),
-        'ConnectApi failures should be wrapped in a service exception'
-      );
-    } catch (Exception other) {
-      Assert.fail(
-        'ConnectApi errors should be wrapped, not leaked: ' +
-        other.getTypeName()
-      );
-    }
+    String url = ToolingCredentialService.configureCalloutUrl();
     Test.stopTest();
+    Assert.isTrue(
+      url.startsWith('https://'),
+      'configureCalloutUrl returns the org My Domain URL: ' + url
+    );
   }
 
   /**************************************************************************************
-   * @Description  configureTokenUrl wraps ConnectApi failures as a service
-   * exception rather than leaking the raw ConnectApi exception. ConnectApi
-   * credential mutations can't be mocked in tests, so this typically takes the
-   * failure path; the assertion only requires that failures are wrapped (never a
-   * raw/leaked exception), exercising the External-Credential update path that
-   * sets the OAuth token URL.
+   * @Description  configureTokenUrl is a DEPRECATED no-op stub (superseded by
+   * provisionCredentials). It returns the running org OAuth token endpoint URL.
    **************************************************************************************/
   @isTest
-  static void shouldWrapConnectApiError_WhenConfiguringTokenUrl() {
+  static void shouldReturnTokenEndpoint_WhenConfiguringTokenUrl() {
     Test.startTest();
-    try {
-      ToolingCredentialService.configureTokenUrl();
-    } catch (ToolingCredentialService.CredentialServiceException e) {
-      Assert.isTrue(
-        e.getMessage()
-          .contains('Unable to set the External Credential token URL'),
-        'ConnectApi failures should be wrapped in a service exception: ' +
-        e.getMessage()
-      );
-    } catch (Exception other) {
-      Assert.fail(
-        'ConnectApi errors should be wrapped, not leaked: ' +
-        other.getTypeName()
-      );
-    }
+    String url = ToolingCredentialService.configureTokenUrl();
     Test.stopTest();
+    Assert.isTrue(
+      url.endsWith('/services/oauth2/token'),
+      'configureTokenUrl returns the org token endpoint URL: ' + url
+    );
   }
 
   /**************************************************************************************
-   * @Description  grantPrincipalAccess resolves the core Package Visualizer
-   * permission set and the External Credential principal, then grants access. ConnectApi can't be
-   * mocked in tests, so the principal lookup typically returns "not found" here —
-   * the assertion only requires that failures are wrapped in a service exception
-   * (never a raw/leaked exception), exercising the permission-set query and
-   * principal-resolution paths.
+   * @Description  grantPrincipalAccess is a DEPRECATED no-op stub (superseded by
+   * grantNewPrincipalAccess). It must complete without throwing.
    **************************************************************************************/
   @isTest
-  static void shouldWrapOrSucceed_WhenGrantingPrincipalAccess() {
+  static void shouldNotThrow_WhenGrantingPrincipalAccess() {
     Test.startTest();
     try {
       ToolingCredentialService.grantPrincipalAccess();
-    } catch (ToolingCredentialService.CredentialServiceException e) {
-      Assert.isTrue(
-        e.getMessage().contains('principal') ||
-        e.getMessage().contains('Permission set'),
-        'Failures should be wrapped in a service exception: ' + e.getMessage()
-      );
     } catch (Exception other) {
       Assert.fail(
-        'Errors should be wrapped, not leaked: ' + other.getTypeName()
+        'Deprecated no-op stub should not throw: ' + other.getTypeName()
       );
     }
     Test.stopTest();
@@ -325,36 +294,6 @@ private class ToolingCredentialServiceTest {
     Assert.isFalse(
       namespacePrefix.contains('.'),
       'Running namespace should be a bare prefix, not a qualified class name'
-    );
-  }
-
-  /**************************************************************************************
-   * @Description  parametersToPreserve always re-supplies the
-   * AllowedManagedPackageNamespaces allow-list with a non-blank value (the running
-   * namespace, or the package's fixed namespace when reflection resolves nothing in
-   * the namespace/packaging org). This is what prevents updateNamedCredential from
-   * dropping the protected parameter ("You can't delete the named credential
-   * parameter type AllowedManagedPackageNamespaces ...").
-   **************************************************************************************/
-  @isTest
-  static void shouldAlwaysSupplyAllowedNamespaces_WhenBuildingParameters() {
-    Test.startTest();
-    List<ConnectApi.NamedCredentialParameterInput> params = ToolingCredentialService.parametersToPreserve();
-    Test.stopTest();
-    Assert.areEqual(
-      1,
-      params.size(),
-      'Exactly the namespace allow-list parameter should be supplied'
-    );
-    ConnectApi.NamedCredentialParameterInput allowList = params[0];
-    Assert.areEqual(
-      ConnectApi.NamedCredentialParameterType.AllowedManagedPackageNamespaces,
-      allowList.parameterType,
-      'The preserved parameter must be the managed-package namespace allow-list'
-    );
-    Assert.isTrue(
-      String.isNotBlank(allowList.parameterValue),
-      'The allow-list value must never be blank, or the protected parameter is dropped'
     );
   }
 }

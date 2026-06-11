@@ -318,146 +318,28 @@ global with sharing class ToolingCredentialService {
   }
 
   /**
-   * @Description  Sets the Named Credential's callout URL to the running org's
-   * My Domain URL. The URL differs per subscriber org and isn't known at
-   * package time, so it's set at runtime. Preserves the external-credential
-   * link, callout options, and the managed-package namespace allow-list on
-   * update.
-   * @return The URL that was applied.
-   * @throws CredentialServiceException when the ConnectApi update fails.
+   * @Description  DEPRECATED — superseded by provisionCredentials(), which creates a
+   * subscriber-owned Named Credential at runtime. The original implementation tried
+   * to modify the PACKAGED Named Credential's URL, which is impossible in a
+   * subscriber org (its URL is a managed component: CANNOT_MODIFY_MANAGED_OBJECT).
+   * Retained as a no-op stub only because the global signature shipped in released
+   * package versions and cannot be removed. Returns the running org My Domain URL.
+   * @return The running org My Domain URL.
    */
   global static String configureCalloutUrl() {
-    String myDomainUrl = URL.getOrgDomainUrl().toExternalForm();
-    String ncName = Package2Interface.getQualifiedNamedCredentialName();
-    try {
-      ConnectApi.NamedCredentialInput input = new ConnectApi.NamedCredentialInput();
-      input.developerName = ncName;
-      input.masterLabel = NAMED_CREDENTIAL_LABEL;
-      input.calloutUrl = myDomainUrl;
-      input.type = ConnectApi.NamedCredentialType.SecuredEndpoint;
-
-      ConnectApi.NamedCredentialCalloutOptionsInput options = new ConnectApi.NamedCredentialCalloutOptionsInput();
-      options.generateAuthorizationHeader = true;
-      options.allowMergeFieldsInBody = false;
-      options.allowMergeFieldsInHeader = false;
-      input.calloutOptions = options;
-
-      ConnectApi.ExternalCredentialInput ecRef = new ConnectApi.ExternalCredentialInput();
-      ecRef.developerName = Package2Interface.getQualifiedExternalCredentialName();
-      input.externalCredentials = new List<ConnectApi.ExternalCredentialInput>{
-        ecRef
-      };
-
-      // updateNamedCredential treats this input as the credential's COMPLETE
-      // parameter set and deletes anything not represented. The fields above only
-      // express the Url (calloutUrl) and Authentication (externalCredentials)
-      // parameters, so the packaged credential's AllowedManagedPackageNamespaces
-      // allow-list — the parameter that lets pkgviz code call out through it —
-      // would be dropped. That deletion isn't allowed on a managed-package
-      // credential and surfaces as "You can't delete the named credential
-      // parameter type AllowedManagedPackageNamespaces ... because the named
-      // credential is from a managed package." Re-supply only that allow-list so
-      // it survives the update without disturbing other platform-managed
-      // parameters.
-      input.parameters = parametersToPreserve();
-
-      ConnectApi.NamedCredentials.updateNamedCredential(ncName, input);
-      return myDomainUrl;
-    } catch (Exception e) {
-      throw new CredentialServiceException(
-        'Unable to set the Named Credential URL: ' + e.getMessage(),
-        e
-      );
-    }
+    return URL.getOrgDomainUrl().toExternalForm();
   }
 
   /**
-   * @Description  Sets the External Credential's AuthProviderUrl (the OAuth token
-   * endpoint for the Client Credentials flow) to the running org's My Domain token
-   * endpoint. The packaged credential ships this as a placeholder; it differs per
-   * subscriber org and isn't known at package time, so it's set at runtime.
-   *
-   * updateExternalCredential is a FULL-STATE REPLACE: anything not re-supplied is
-   * deleted. The protocol variant (ClientCredentialsClientSecret) must be set as the
-   * authenticationProtocolVariant property — it is NOT a parameter type, and without
-   * it the platform rejects the AuthProviderUrl parameter. The named principal must
-   * be re-supplied or it (and its stored, encrypted client id/secret) is wiped;
-   * re-supplying it preserves the stored secret.
-   * @return The token URL that was applied.
-   * @throws CredentialServiceException when the ConnectApi update fails.
+   * @Description  DEPRECATED — superseded by provisionCredentials(), which sets the
+   * token URL on a subscriber-owned External Credential created at runtime. The
+   * packaged External Credential can't be modified in a subscriber org. Retained as
+   * a no-op stub only because the global signature shipped in released package
+   * versions and cannot be removed. Returns the running org token endpoint URL.
+   * @return The running org OAuth token endpoint URL.
    */
   global static String configureTokenUrl() {
-    String tokenUrl = URL.getOrgDomainUrl().toExternalForm() + OAUTH_TOKEN_PATH;
-    String ecName = Package2Interface.getQualifiedExternalCredentialName();
-    try {
-      ConnectApi.ExternalCredentialInput input = new ConnectApi.ExternalCredentialInput();
-      input.developerName = ecName;
-      input.masterLabel = EXTERNAL_CREDENTIAL_LABEL;
-      input.authenticationProtocol = ConnectApi.CredentialAuthenticationProtocol.Oauth;
-      input.authenticationProtocolVariant = ConnectApi.CredentialAuthenticationProtocolVariant.ClientCredentialsClientSecret;
-
-      ConnectApi.ExternalCredentialParameterInput tokenParam = new ConnectApi.ExternalCredentialParameterInput();
-      tokenParam.parameterName = AUTH_PROVIDER_URL_PARAM;
-      tokenParam.parameterType = ConnectApi.ExternalCredentialParameterType.AuthProviderUrl;
-      tokenParam.parameterValue = tokenUrl;
-      input.parameters = new List<ConnectApi.ExternalCredentialParameterInput>{
-        tokenParam
-      };
-
-      // Re-supply the named principal or updateExternalCredential deletes it
-      // (and the stored client id/secret with it).
-      ConnectApi.ExternalCredentialPrincipalInput principal = new ConnectApi.ExternalCredentialPrincipalInput();
-      principal.principalName = PRINCIPAL_NAME;
-      principal.principalType = ConnectApi.CredentialPrincipalType.NamedPrincipal;
-      principal.sequenceNumber = 1;
-      input.principals = new List<ConnectApi.ExternalCredentialPrincipalInput>{
-        principal
-      };
-
-      ConnectApi.NamedCredentials.updateExternalCredential(ecName, input);
-      return tokenUrl;
-    } catch (Exception e) {
-      throw new CredentialServiceException(
-        'Unable to set the External Credential token URL: ' + e.getMessage(),
-        e
-      );
-    }
-  }
-
-  /**
-   * @Description  Builds the parameter set to pass on updateNamedCredential so the
-   * managed-package namespace allow-list survives the update. Because
-   * updateNamedCredential replaces the credential's entire parameter set and the
-   * convenience fields (calloutUrl, externalCredentials) only express the Url and
-   * Authentication parameters, the AllowedManagedPackageNamespaces parameter would
-   * otherwise be deleted — which the platform forbids on a managed-package
-   * credential ("You can't delete the named credential parameter type
-   * AllowedManagedPackageNamespaces ..."). Only that allow-list is rebuilt and
-   * re-supplied: echoing every platform-reported parameter is unsafe because some
-   * carry credential/component references in fields this copy can't reproduce, and
-   * re-supplying them with those references blank makes updateNamedCredential fail
-   * with "We couldn't access the credential(s) ... the named credential null might
-   * not exist." The value is the running namespace when reflection resolves it
-   * (installed subscriber org) and otherwise the package's fixed namespace — never
-   * blank — so the protected parameter is always present, even in the
-   * namespace/packaging org where reflection returns nothing.
-   * @return The parameters to re-supply on update.
-   */
-  @TestVisible
-  private static List<ConnectApi.NamedCredentialParameterInput> parametersToPreserve() {
-    List<ConnectApi.NamedCredentialParameterInput> preserved = new List<ConnectApi.NamedCredentialParameterInput>();
-
-    String allowedNamespaces = getRunningNamespace();
-    if (String.isBlank(allowedNamespaces)) {
-      allowedNamespaces = PACKAGE_NAMESPACE;
-    }
-
-    ConnectApi.NamedCredentialParameterInput allowList = new ConnectApi.NamedCredentialParameterInput();
-    allowList.parameterName = ALLOWED_NAMESPACES_TYPE;
-    allowList.parameterType = ConnectApi.NamedCredentialParameterType.AllowedManagedPackageNamespaces;
-    allowList.parameterValue = allowedNamespaces;
-    preserved.add(allowList);
-    return preserved;
+    return URL.getOrgDomainUrl().toExternalForm() + OAUTH_TOKEN_PATH;
   }
 
   /**
@@ -537,82 +419,15 @@ global with sharing class ToolingCredentialService {
   }
 
   /**
-   * @Description  Grants the core Package Visualizer permission set access to the
-   * External Credential's named principal by inserting a SetupEntityAccess row.
-   * This is the runtime equivalent of a permission set's
-   * <externalCredentialPrincipalAccesses> block, which can't be packaged in 2GP
-   * (package version create fails with "invalid cross reference id" because the
-   * principal isn't resolvable in the build context). Idempotent: a no-op when
-   * the grant already exists, so it's safe to re-run.
-   *
-   * All SOQL/DML here runs in user mode (WITH USER_MODE / AccessLevel.USER_MODE)
-   * so the running admin's CRUD/FLS governs the grant — the operation is also
-   * gated upstream by the Manage Named Credentials permission required to reach
-   * the wizard that calls it.
-   * @throws CredentialServiceException when the permission set or principal can't
-   * be resolved, or the SetupEntityAccess insert fails.
+   * @Description  DEPRECATED — superseded by grantNewPrincipalAccess(), which grants
+   * the subscriber-owned External Credential principal to an UNMANAGED permission
+   * set. This original grant targeted the managed packaged permission set, where
+   * SetupEntityAccess DML throws CANNOT_MODIFY_MANAGED_OBJECT in a subscriber org.
+   * Retained as a no-op stub only because the global signature shipped in released
+   * package versions and cannot be removed.
    */
   global static void grantPrincipalAccess() {
-    List<PermissionSet> permSets = [
-      SELECT Id
-      FROM PermissionSet
-      WHERE Name = :CALLOUT_PERMISSION_SET_NAME
-      WITH USER_MODE
-      LIMIT 1
-    ];
-    if (permSets.isEmpty()) {
-      throw new CredentialServiceException(
-        'Permission set not found: ' + CALLOUT_PERMISSION_SET_NAME
-      );
-    }
-    Id permissionSetId = permSets[0].Id;
-
-    Id principalId = getPrincipalId();
-    if (principalId == null) {
-      throw new CredentialServiceException(
-        'External credential principal not found: ' + PRINCIPAL_NAME
-      );
-    }
-
-    // Idempotency: skip when the grant is already in place (safe to re-run).
-    List<SetupEntityAccess> existing = [
-      SELECT Id
-      FROM SetupEntityAccess
-      WHERE ParentId = :permissionSetId AND SetupEntityId = :principalId
-      WITH USER_MODE
-      LIMIT 1
-    ];
-    if (!existing.isEmpty()) {
-      return;
-    }
-
-    try {
-      Database.insert(
-        new SetupEntityAccess(
-          ParentId = permissionSetId,
-          SetupEntityId = principalId
-        ),
-        AccessLevel.USER_MODE
-      );
-    } catch (Exception e) {
-      // In a subscriber org the resolved permission set is managed-installed, so
-      // SetupEntityAccess DML against it throws CANNOT_MODIFY_MANAGED_OBJECT — a
-      // managed permission set can't be modified at runtime by any means. That's
-      // expected and non-fatal: the principal access is shipped declaratively in
-      // the packaged permission set's <externalCredentialPrincipalAccesses>, and
-      // the Tooling callout authorizes through the Named Credential's
-      // AllowedManagedPackageNamespaces allow-list regardless. Swallow that
-      // specific case (and an already-granted race) so the setup wizard proceeds;
-      // only genuinely unexpected failures surface.
-      if (e.getMessage().contains('CANNOT_MODIFY_MANAGED_OBJECT')) {
-        return;
-      }
-      throw new CredentialServiceException(
-        'Unable to grant external credential principal access: ' +
-        e.getMessage(),
-        e
-      );
-    }
+    // No-op: see grantNewPrincipalAccess() for the supported runtime grant.
   }
 
   // Dev name of the unmanaged permission set the wizard creates to hold the
@@ -713,31 +528,6 @@ global with sharing class ToolingCredentialService {
     );
     insert ps;
     return ps.Id;
-  }
-
-  /**
-   * @Description  Resolves the platform Id of the External Credential's named
-   * principal via ConnectApi (the principal can't be queried with SOQL). Used as
-   * the SetupEntityAccess.SetupEntityId target. Returns null when the credential
-   * or principal isn't present/readable so callers can treat it as "not found".
-   */
-  private static Id getPrincipalId() {
-    try {
-      List<ConnectApi.ExternalCredentialPrincipal> principals = ConnectApi.NamedCredentials.getExternalCredential(
-          Package2Interface.getQualifiedExternalCredentialName()
-        )
-        .principals;
-      if (principals != null) {
-        for (ConnectApi.ExternalCredentialPrincipal principal : principals) {
-          if (principal.principalName == PRINCIPAL_NAME) {
-            return principal.id;
-          }
-        }
-      }
-    } catch (Exception e) {
-      // Credential absent or not readable in this context — treat as not found.
-    }
-    return null;
   }
 
   private static ConnectApi.CredentialValueInput buildValue(
