@@ -280,6 +280,63 @@ private class ToolingCredentialServiceTest {
   }
 
   /**************************************************************************************
+   * @Description  provisionNamedCredential builds the Named Credential input
+   * (callout URL, SecuredEndpoint type, EC link, pkgviz namespace allow-list) before
+   * the ConnectApi create call. ConnectApi mutations aren't mockable, so the create
+   * throws here — but the input-building body executes and any failure surfaces as a
+   * wrapped CredentialServiceException, never a raw leak.
+   **************************************************************************************/
+  @isTest
+  static void shouldWrapError_WhenProvisioningNamedCredential() {
+    Test.startTest();
+    try {
+      ToolingCredentialService.provisionNamedCredential(
+        'https://example.my.salesforce.com'
+      );
+    } catch (ToolingCredentialService.CredentialServiceException e) {
+      Assert.isTrue(
+        e.getMessage().contains('Tooling Named Credential'),
+        'failure should be wrapped mentioning the Tooling Named Credential: ' +
+        e.getMessage()
+      );
+    } catch (Exception other) {
+      Assert.fail(
+        'ConnectApi errors must be wrapped, not leaked: ' + other.getTypeName()
+      );
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  resolveUnmanagedPermissionSetId creates (first call) then reuses
+   * (second call) the unmanaged pkgviz_Tooling_Access permission set, exercising both
+   * the create and the found branches. Pure SOQL + DML — fully testable.
+   **************************************************************************************/
+  @isTest
+  static void shouldCreateThenReuse_UnmanagedPermissionSet() {
+    Test.startTest();
+    Id firstId = ToolingCredentialService.resolveUnmanagedPermissionSetId();
+    Id secondId = ToolingCredentialService.resolveUnmanagedPermissionSetId();
+    Test.stopTest();
+    Assert.isNotNull(firstId, 'should create the unmanaged perm set');
+    Assert.areEqual(
+      firstId,
+      secondId,
+      'second call should reuse the same perm set, not create a duplicate'
+    );
+    List<PermissionSet> created = [
+      SELECT Id, NamespacePrefix
+      FROM PermissionSet
+      WHERE Name = 'pkgviz_Tooling_Access'
+    ];
+    Assert.areEqual(1, created.size(), 'exactly one perm set should exist');
+    Assert.isNull(
+      created[0].NamespacePrefix,
+      'the grant target must be an UNMANAGED perm set'
+    );
+  }
+
+  /**************************************************************************************
    * @Description  getRunningNamespace returns the bare namespace prefix (or empty
    * string), never the dotted 'namespace.ClassName' form, so it's safe to use as
    * the AllowedManagedPackageNamespaces parameter value when rebuilding the Named

@@ -209,6 +209,7 @@ global with sharing class ToolingCredentialService {
     }
   }
 
+  @TestVisible
   private static void provisionNamedCredential(String myDomain) {
     ConnectApi.NamedCredentialInput input = new ConnectApi.NamedCredentialInput();
     input.developerName = NEW_NC_DEVNAME;
@@ -512,6 +513,7 @@ global with sharing class ToolingCredentialService {
    * dedicated unmanaged perm set. Never returns a managed (NamespacePrefix != null)
    * perm set, because SetupEntityAccess DML against it fails.
    */
+  @TestVisible
   private static Id resolveUnmanagedPermissionSetId() {
     List<PermissionSet> existing = [
       SELECT Id
