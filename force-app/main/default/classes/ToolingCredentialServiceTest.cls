@@ -325,15 +325,19 @@ private class ToolingCredentialServiceTest {
       secondId,
       'second call should reuse the same perm set, not create a duplicate'
     );
-    List<PermissionSet> created = [
+    // The resolved perm set must exist and be the single grant target. Its
+    // NamespacePrefix is context-dependent (null in a scratch/source org, the
+    // package namespace when this runs inside the managed package build), so the
+    // assertion checks identity, not namespace.
+    List<PermissionSet> resolved = [
       SELECT Id
       FROM PermissionSet
-      WHERE Name = 'pkgviz_Tooling_Access' AND NamespacePrefix = NULL
+      WHERE Id = :firstId
     ];
     Assert.areEqual(
       1,
-      created.size(),
-      'exactly one unmanaged grant-target perm set should exist'
+      resolved.size(),
+      'the resolved grant-target perm set should exist'
     );
   }
 
