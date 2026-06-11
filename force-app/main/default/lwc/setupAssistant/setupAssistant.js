@@ -38,6 +38,7 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   isEditingCredentials = false;
   isSavingCredentials = false;
   isTestingNamedCredential = false;
+  isProvisioning = false;
 
   connectedCallback() {
     this.loadIntegrationStatus();
@@ -92,16 +93,55 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
       : "Not configured";
   }
 
+  // Step 1 — the subscriber-owned Named/External Credential exist (provisioned).
+  // Detected via a non-placeholder Named Credential URL in the status DTO.
+  get isProvisioned() {
+    return (
+      this.integrationStatus &&
+      this.integrationStatus.namedCredentialUrl &&
+      !this.integrationStatus.namedCredentialUrl.includes(
+        "loopback.placeholder.com"
+      )
+    );
+  }
+
+  // Step 3 — "Enabled for Callouts" is on for the Named Credential. The runtime
+  // credential is created Disabled and only an admin can enable it in Setup.
+  get isCalloutEnabled() {
+    return (
+      this.integrationStatus &&
+      this.integrationStatus.calloutStatus === "Enabled"
+    );
+  }
+
+  get provisionDisabled() {
+    return this.isProvisioning || this.isProvisioned;
+  }
+
+  // Saving the secret requires the credential to exist first (Step 1), which is
+  // why provisioning is now the explicit first step — it eliminates the previous
+  // "external credential might not exist" failure.
+  get saveCredentialsBlocked() {
+    return !this.isProvisioned;
+  }
+
   get saveCredentialsDisabled() {
     return (
       !this.toolingClientId ||
       !this.toolingClientSecret ||
-      this.isSavingCredentials
+      this.isSavingCredentials ||
+      this.saveCredentialsBlocked
     );
   }
 
+  // Test & Confirm is the final step: it needs the secret saved (EC Configured)
+  // and callouts enabled on the Named Credential.
   get testAndEnableDisabled() {
-    return !this.isToolingCredentialConfigured || this.isTestingNamedCredential;
+    return (
+      !this.isToolingCredentialConfigured ||
+      !this.isCalloutEnabled ||
+      this.isTestingNamedCredential
+    );
   }
 
   get showCredentialEditFields() {
@@ -169,15 +209,53 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     })();
   }
 
-  testAndEnableNamedCredential() {
-    this.isTestingNamedCredential = true;
+  // Step 1 — provision the subscriber-owned Named + External Credential (URL set to
+  // this org's My Domain) and grant the principal. Runs in its own transaction; no
+  // callout, so it's safe. Must run before the secret is saved (Step 4).
+  provisionToolingCredentials() {
+    this.isProvisioning = true;
     (async () => {
       await configureNamedCredentialUrl()
-        .then(() => verifyAndEnableNamedCredential())
         .then(() => {
           this.showToolingToast(
             "Success",
-            "Tooling API credentials created and enabled. The package can now query the Tooling API.",
+            "Tooling API credentials created. Next: create your External Client App, then enable callouts on the Named Credential.",
+            "success"
+          );
+          this.loadIntegrationStatus();
+        })
+        .catch((error) => {
+          this.showToolingToast(
+            "Error",
+            this.reduceToolingError(error),
+            "error"
+          );
+        })
+        .finally(() => {
+          this.isProvisioning = false;
+        });
+    })();
+  }
+
+  // Step 3 — deep link to the Named Credentials Setup page so the admin can toggle
+  // "Enabled for Callouts" on the Package Visualizer Tooling Named Credential.
+  // (Apex cannot set this flag — no ConnectApi property and the Apex Metadata API
+  // doesn't support NamedCredential — so this is an unavoidable guided manual step.)
+  navigateToNamedCredentials() {
+    window.open("/lightning/setup/NamedCredential/home", "_blank");
+  }
+
+  // Step 5 — Test & Confirm: run a live Tooling callout (ApexClass, present in every
+  // org) through the credential. On success, flip the toggle so the app routes all
+  // callouts through the secure OAuth path.
+  testAndEnableNamedCredential() {
+    this.isTestingNamedCredential = true;
+    (async () => {
+      await verifyAndEnableNamedCredential()
+        .then(() => {
+          this.showToolingToast(
+            "Success",
+            "Tooling API connection verified and enabled. The package now queries the Tooling API securely.",
             "success"
           );
           this.loadIntegrationStatus();

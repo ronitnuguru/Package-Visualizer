@@ -303,6 +303,47 @@
                           </li>
                         </template>
                         <li class="slds-progress__item">
+                          <template if:false={isProvisioned}>
+                            <div class="slds-progress__marker">
+                              <span class="slds-assistive-text">Active</span>
+                            </div>
+                          </template>
+                          <template if:true={isProvisioned}>
+                            <span class="slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:success"
+                                variant="success"
+                                size="x-small"
+                              ></lightning-icon>
+                            </span>
+                          </template>
+                          <div
+                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                          >
+                            <div class="slds-col">
+                              <strong class="slds-text-title_caps">
+                                Provision Tooling Credentials
+                              </strong>
+                              <p class="slds-var-m-top_xx-small">
+                                Creates the Named Credential and External
+                                Credential this org uses to call its own Tooling
+                                API, pointed at your My Domain. One click
+                                &mdash; no typing required.
+                              </p>
+                            </div>
+                            <div class="slds-shrink-none slds-var-m-left_small">
+                              <lightning-button-icon
+                                icon-name="utility:add"
+                                variant="brand"
+                                onclick={provisionToolingCredentials}
+                                disabled={provisionDisabled}
+                                title="Provision Tooling Credentials"
+                                alternative-text="Provision Tooling Credentials"
+                              ></lightning-button-icon>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="slds-progress__item">
                           <template if:false={isNamedCredentialEnabled}>
                             <div class="slds-progress__marker">
                               <span class="slds-assistive-text">Active</span>
@@ -580,6 +621,51 @@
                           </div>
                         </li>
                         <li class="slds-progress__item">
+                          <template if:false={isCalloutEnabled}>
+                            <div class="slds-progress__marker">
+                              <span class="slds-assistive-text">Active</span>
+                            </div>
+                          </template>
+                          <template if:true={isCalloutEnabled}>
+                            <span class="slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:success"
+                                variant="success"
+                                size="x-small"
+                              ></lightning-icon>
+                            </span>
+                          </template>
+                          <div
+                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                          >
+                            <div class="slds-col">
+                              <strong class="slds-text-title_caps">
+                                Enable Callouts on the Named Credential
+                              </strong>
+                              <p class="slds-var-m-top_xx-small">
+                                Open the
+                                <strong
+                                  >Package Visualizer Named Credential</strong
+                                >
+                                and turn on
+                                <strong>Enabled for Callouts</strong>, then
+                                Save. This one-time toggle is required by the
+                                platform and can&rsquo;t be set automatically.
+                              </p>
+                            </div>
+                            <div class="slds-shrink-none slds-var-m-left_small">
+                              <lightning-button-icon
+                                icon-name="utility:setup"
+                                variant="brand"
+                                onclick={navigateToNamedCredentials}
+                                disabled={isSetupEnabled}
+                                title="Open Named Credentials Setup"
+                                alternative-text="Open Named Credentials Setup"
+                              ></lightning-button-icon>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="slds-progress__item">
                           <template if:false={isNamedCredentialEnabled}>
                             <div class="slds-progress__marker">
                               <span class="slds-assistive-text">Active</span>
@@ -599,7 +685,7 @@
                           >
                             <div class="slds-col">
                               <strong class="slds-text-title_caps">
-                                Test &amp; Enable Tooling API
+                                Test &amp; Confirm Tooling API
                               </strong>
                               <p class="slds-var-m-top_xx-small">
                                 Points the callout endpoint at this org's My

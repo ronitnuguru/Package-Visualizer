@@ -43,6 +43,14 @@ public with sharing class ToolingAPICalloutMock implements HttpCalloutMock {
         '{"size":1,"totalSize":1,"done":true,"queryLocator":null,"entityTypeName":"MetadataPackage","records":[{"attributes":{"type":"MetadataPackage","url":"/services/data/v61.0/tooling/sobjects/MetadataPackage/03300000000000AAA"},"Id":"03300000000000AAA","Name":"Dummy 1GP","NamespacePrefix":"dummyns","PackageCategory":"Package","SystemModstamp":"2024-01-01T00:00:00.000+0000"}]}'
       );
       res.setStatusCode(200);
+    } else if (req.getEndpoint().contains('FROM+ApexClass')) {
+      //ApexClass Success — the universal Tooling object the wizard's
+      //"Test & Confirm" (testNamedCredentialCallout) queries to prove the secure
+      //connection in any org, Dev Hub or not.
+      res.setBody(
+        '{"size":1,"totalSize":1,"done":true,"queryLocator":null,"entityTypeName":"ApexClass","records":[{"attributes":{"type":"ApexClass","url":"/services/data/v61.0/tooling/sobjects/ApexClass/01p000000000000AAA"},"Id":"01p000000000000AAA"}]}'
+      );
+      res.setStatusCode(200);
     } else {
       //Failure
       res.setStatusCode(401);

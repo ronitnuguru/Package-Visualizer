@@ -770,10 +770,14 @@ global with sharing class Package2Interface { // NOPMD
 
   /**************************************************************************************
    * @Description	Runs a minimal Tooling API query through the Named Credential
-   * path, regardless of the current toggle. Used by the migration tool to verify
-   * OAuth is configured before enabling the toggle org-wide. Returns the query
-   * records on HTTP 200, or null on any non-200 response.
-   * @return Query records on success; null otherwise.
+   * path, regardless of the current toggle. Used by the setup wizard's
+   * "Test & Confirm" step to verify the OAuth self-callout works before enabling the
+   * toggle org-wide. Queries ApexClass — a Tooling object present in EVERY org — so
+   * the test proves the secure connection regardless of whether this is a Dev Hub
+   * (Package2 only exists in Dev Hub orgs; querying it would falsely fail the test in
+   * non-Dev-Hub orgs even when auth is working). Returns the query records on HTTP
+   * 200, or throws on any non-200 response.
+   * @return Query records on success.
    **************************************************************************************/
   global static List<Object> testNamedCredentialCallout() {
     Boolean previousOverride = useNamedCredentialOverride;
@@ -783,7 +787,7 @@ global with sharing class Package2Interface { // NOPMD
       req.setEndpoint(
         getBaseURL('tooling') +
           'query?q=' +
-          EncodingUtil.urlEncode('SELECT Id FROM Package2 LIMIT 1', 'UTF-8')
+          EncodingUtil.urlEncode('SELECT Id FROM ApexClass LIMIT 1', 'UTF-8')
       );
       req.setMethod('GET');
       applyAuth(req);

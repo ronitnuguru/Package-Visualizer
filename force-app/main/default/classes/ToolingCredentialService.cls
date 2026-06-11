@@ -101,6 +101,14 @@ global with sharing class ToolingCredentialService {
     global Boolean useNamedCredential;
     @AuraEnabled
     global String principalName;
+    // Whether the Named Credential's "Enabled for Callouts" flag is on. The
+    // runtime-created NC starts Disabled and Apex cannot enable it (no ConnectApi
+    // property; the Apex Metadata API doesn't support NamedCredential), so the
+    // admin must toggle it in Setup. The wizard reads this to show that step's
+    // completion. Values mirror ConnectApi.NamedCredentialCalloutStatus
+    // ('Enabled' / 'Disabled'), or null when the credential isn't created yet.
+    @AuraEnabled
+    global String calloutStatus;
   }
 
   /**
@@ -120,8 +128,10 @@ global with sharing class ToolingCredentialService {
         NEW_NC_DEVNAME
       );
       status.namedCredentialUrl = nc.calloutUrl;
+      status.calloutStatus = String.valueOf(nc.calloutStatus);
     } catch (Exception e) {
       status.namedCredentialUrl = null;
+      status.calloutStatus = null;
     }
     try {
       ConnectApi.ExternalCredential ec = ConnectApi.NamedCredentials.getExternalCredential(
