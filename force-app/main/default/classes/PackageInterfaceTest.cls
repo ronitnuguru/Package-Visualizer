@@ -29,7 +29,9 @@ private class PackageInterfaceTest {
     list<ObjectWrappers.PackageWrapper1> Package1List = PackageVisualizerCtrl.get1GPPackageList(
       'DESC'
     );
-    system.assertEquals(0, Package1List.size());
+    // ToolingAPICalloutMock returns one MetadataPackage record, exercising the
+    // record-processing loop in getPackage1.
+    system.assertEquals(1, Package1List.size());
     Test.stopTest();
   }
 
@@ -95,7 +97,7 @@ private class PackageInterfaceTest {
       '10',
       '10'
     );
-    system.assertEquals(0, Package1VersionList.size());
+    system.assertEquals(1, Package1VersionList.size());
     TEST.stopTest();
   }
 
@@ -1176,7 +1178,9 @@ private class PackageInterfaceTest {
     Test.startTest();
     Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
     Boolean installed = PackageVisualizerCtrl.verifyUnlockedPackageInstalled();
-    System.assertEquals(false, installed);
+    // ToolingAPICalloutMock returns one InstalledSubscriberPackage record, so the
+    // verification reports installed=true (exercises the size()==1 branch).
+    System.assertEquals(true, installed);
     Test.stopTest();
   }
 
@@ -2359,8 +2363,8 @@ private class PackageInterfaceTest {
       'NC path should use a callout endpoint'
     );
     Assert.isTrue(
-      host.endsWith('pkgviz_Tooling_Named_Credential'),
-      'callout host should target the subscriber-owned Tooling Named Credential'
+      host.endsWith('Package_Visualizer_Named_Credential'),
+      'callout host should target the packaged Named Credential (namespace-qualified when installed)'
     );
     Assert.isTrue(
       baseUrl.endsWith('/services/data/v61.0/tooling/'),
