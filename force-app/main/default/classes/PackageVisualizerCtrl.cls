@@ -1196,6 +1196,10 @@ public with sharing class PackageVisualizerCtrl {
     try {
       Package2Interface.testNamedCredentialCallout();
       Package2Interface.setNamedCredentialEnabled(true);
+      AppAnalyticsLogger.log(
+        PackageVisualizerInteractions.MIGRATED_TO_ECA,
+        UserInfo.getOrganizationId()
+      );
       return 'success';
     } catch (AuraHandledException e) {
       throw e;
