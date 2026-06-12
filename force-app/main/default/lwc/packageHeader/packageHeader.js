@@ -2,6 +2,7 @@ import { LightningElement, api, wire } from "lwc";
 import isLMA from "@salesforce/apex/PackageVisualizerCtrl.isLMA";
 import isFmaParameter from "@salesforce/apex/PackageVisualizerCtrl.isFmaParameter";
 import getLmaPackage from "@salesforce/apex/PackageVisualizerCtrl.getLmaPackage";
+import getNamespaceRegistry from "@salesforce/apex/PackageVisualizerCtrl.getNamespaceRegistry";
 import { publish, MessageContext } from "lightning/messageService";
 import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
@@ -65,7 +66,10 @@ export default class PackageHeader extends NavigationMixin(LightningElement) {
   }
 
   handlePackageManager() {
-    window.open(`/lightning/setup/Package/${this.id.split("-").shift()}/view`, "_blank");
+    window.open(
+      `/lightning/setup/Package/${this.id.split("-").shift()}/view`,
+      "_blank"
+    );
   }
 
   handleEdit() {
@@ -114,50 +118,52 @@ export default class PackageHeader extends NavigationMixin(LightningElement) {
     }
   }
 
-  handleLmaNavigate(id){
+  handleLmaNavigate(id) {
     this[NavigationMixin.Navigate]({
-      type: 'standard__recordPage',
+      type: "standard__recordPage",
       attributes: {
         recordId: id,
-        actionName: 'view'
+        actionName: "view"
       }
     });
   }
 
-  handleFmaNavigate(id){
+  handleFmaNavigate(id) {
     this[NavigationMixin.Navigate]({
       type: "standard__recordRelationshipPage",
       attributes: {
         recordId: id,
         objectApiName: "sfLma__Package__c",
         relationshipApiName: "sfFma__Feature_Parameters__r",
-        actionName: "view",
-      },
+        actionName: "view"
+      }
     });
   }
 
-  getLmaPackage(navigateType){
+  getLmaPackage(navigateType) {
     (async () => {
       this.displaySpinner = true;
       await getLmaPackage({
         subscriberPackageId: this.subscriberPackageId
       })
-        .then(result => {
+        .then((result) => {
           this.displaySpinner = false;
-          if(navigateType === 'License Management Package'){
+          if (navigateType === "License Management Package") {
             this.handleLmaNavigate(result.id);
-          } else if (navigateType === 'Feature Parameters'){
+          } else if (navigateType === "Feature Parameters") {
             this.handleFmaNavigate(result.id);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           this.displaySpinner = false;
           let toastUrl;
-          if(navigateType === 'License Management Package'){
-            toastUrl = 'https://developer.salesforce.com/docs/atlas.en-us.workbook_lma.meta/workbook_lma/lma_associate_package.htm';
-          } else if (navigateType === 'Feature Parameters'){
-            toastUrl = 'https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_fma_create_feature_parameters.htm';
+          if (navigateType === "License Management Package") {
+            toastUrl =
+              "https://developer.salesforce.com/docs/atlas.en-us.workbook_lma.meta/workbook_lma/lma_associate_package.htm";
+          } else if (navigateType === "Feature Parameters") {
+            toastUrl =
+              "https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_fma_create_feature_parameters.htm";
           }
 
           this.dispatchEvent(
@@ -166,9 +172,9 @@ export default class PackageHeader extends NavigationMixin(LightningElement) {
               message: `We were unable to navigate to ${this.name}'s ${navigateType}. {0}`,
               messageData: [
                 {
-                    url: toastUrl,
-                    label: 'Learn More'
-                },
+                  url: toastUrl,
+                  label: "Learn More"
+                }
               ],
               variant: "error"
             })
@@ -178,10 +184,38 @@ export default class PackageHeader extends NavigationMixin(LightningElement) {
   }
 
   handleLMA() {
-    this.getLmaPackage('License Management Package');
+    this.getLmaPackage("License Management Package");
   }
 
-  handleFMA(){
-    this.getLmaPackage('Feature Parameters');
+  handleFMA() {
+    this.getLmaPackage("Feature Parameters");
+  }
+
+  handleNamespaceRegistry() {
+    (async () => {
+      await getNamespaceRegistry({
+        namespacePrefix: this.namespacePrefix
+      })
+        .then((result) => {
+          this[NavigationMixin.Navigate]({
+            type: "standard__recordPage",
+            attributes: {
+              recordId: result.id,
+              objectApiName: "NamespaceRegistry",
+              actionName: "view"
+            }
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+          this.dispatchEvent(
+            new ShowToastEvent({
+              title: "Error",
+              message: `We were unable to navigate to the Namespace Registry for ${this.name}.`,
+              variant: "error"
+            })
+          );
+        });
+    })();
   }
 }

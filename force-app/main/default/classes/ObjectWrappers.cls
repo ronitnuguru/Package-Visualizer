@@ -323,6 +323,18 @@ global with sharing class ObjectWrappers {
     public Object packageSubsriberId;
   }
 
+  /**************************************************************************************
+   * @Description  Wrapper Class for a Namespace Registry record. ObjectWrappers.NamespaceRegistryWrapper
+   **************************************************************************************/
+  public class NamespaceRegistryWrapper {
+    @AuraEnabled
+    public Object id;
+    @AuraEnabled
+    public Object name;
+    @AuraEnabled
+    public Object namespacePrefix;
+  }
+
   public class LMALicenseHistoryWrapper {
     @AuraEnabled
     public Object Id;

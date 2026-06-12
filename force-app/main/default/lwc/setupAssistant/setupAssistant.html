@@ -5,7 +5,8 @@
         <div class="slds-media__figure">
           <span class="slds-icon_container">
             <lightning-icon
-              icon-name="utility:setup_assistant_guide"
+              icon-name="standard:bill_of_materials"
+              size="large"
             ></lightning-icon>
           </span>
         </div>
@@ -110,8 +111,12 @@
       </header>
     </div>
     <div class="slds-card__body slds-card__body_inner">
-      <template if:true={alert}>
-        <div class="slds-notify slds-notify_alert" role="alert">
+      <template for:each={alerts} for:item="alertItem">
+        <div
+          key={alertItem.key}
+          class="slds-notify slds-notify_alert slds-var-m-bottom_xx-small"
+          role="alert"
+        >
           <span class="slds-assistive-text">info</span>
           <span
             class="slds-icon_container slds-icon-utility-user slds-var-m-right_x-small"
@@ -122,7 +127,7 @@
               variant="inverse"
             ></lightning-icon>
           </span>
-          <h2>{alert}</h2>
+          <h2>{alertItem.message}</h2>
         </div>
       </template>
       <ol class="slds-setup-assistant">
@@ -141,9 +146,9 @@
                       class="slds-setup-assistant__step-summary-title slds-text-heading_small"
                     >
                       <lightning-icon
-                        icon-name="utility:component_customization"
-                        size="small"
-                        class="slds-var-p-right_small"
+                        icon-name="standard:action_list_component"
+                        size="medium"
+                        class="slds-var-m-right_small"
                       ></lightning-icon>
                       Component Setup and Customization
                     </h3>
@@ -163,6 +168,7 @@
                                   icon-name="utility:warning"
                                   variant="warning"
                                   size="x-small"
+                                  class="icon-style"
                                 ></lightning-icon>
                               </span>
                             </template>
@@ -172,6 +178,7 @@
                                   icon-name="utility:success"
                                   variant="success"
                                   size="x-small"
+                                  class="icon-style"
                                 ></lightning-icon>
                               </span>
                             </template>
@@ -234,6 +241,7 @@
                                 icon-name="utility:success"
                                 variant="success"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                           </template>
@@ -273,6 +281,7 @@
                                   icon-name="utility:success"
                                   variant="success"
                                   size="x-small"
+                                  class="icon-style"
                                 ></lightning-icon>
                               </span>
                             </template>
@@ -302,6 +311,7 @@
                             </div>
                           </li>
                         </template>
+                        <!-- Step 1: Provision -->
                         <li class="slds-progress__item">
                           <template if:false={isProvisioned}>
                             <div class="slds-progress__marker">
@@ -314,6 +324,7 @@
                                 icon-name="utility:success"
                                 variant="success"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                           </template>
@@ -343,6 +354,55 @@
                             </div>
                           </div>
                         </li>
+                        <!-- Step 2: Enable Callouts (must happen before ECA so the NC exists to edit) -->
+                        <li class="slds-progress__item">
+                          <template if:false={isCalloutEnabled}>
+                            <div class="slds-progress__marker">
+                              <span class="slds-assistive-text">Active</span>
+                            </div>
+                          </template>
+                          <template if:true={isCalloutEnabled}>
+                            <span class="slds-progress__marker">
+                              <lightning-icon
+                                icon-name="utility:success"
+                                variant="success"
+                                size="x-small"
+                                class="icon-style"
+                              ></lightning-icon>
+                            </span>
+                          </template>
+                          <div
+                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                          >
+                            <div class="slds-col">
+                              <strong class="slds-text-title_caps">
+                                Enable Callouts on the Named Credential
+                              </strong>
+                              <p class="slds-var-m-top_xx-small">
+                                Open the
+                                <strong
+                                  >Package Visualizer Tooling Named
+                                  Credential</strong
+                                >
+                                and turn on
+                                <strong>Enabled for Callouts</strong>, then
+                                Save. This one-time toggle is required by the
+                                platform and can&rsquo;t be set automatically.
+                              </p>
+                            </div>
+                            <div class="slds-shrink-none slds-var-m-left_small">
+                              <lightning-button-icon
+                                icon-name="utility:record_consent"
+                                variant="brand"
+                                onclick={navigateToNamedCredentials}
+                                disabled={isSetupEnabled}
+                                title="Open Named Credentials Setup"
+                                alternative-text="Open Named Credentials Setup"
+                              ></lightning-button-icon>
+                            </div>
+                          </div>
+                        </li>
+                        <!-- Step 3: Create External Client App -->
                         <li class="slds-progress__item">
                           <template if:false={isNamedCredentialEnabled}>
                             <div class="slds-progress__marker">
@@ -355,6 +415,7 @@
                                 icon-name="utility:success"
                                 variant="success"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                           </template>
@@ -382,8 +443,8 @@
                                     <lightning-card>
                                       <h3 slot="title" class="slds-truncate">
                                         <lightning-icon
-                                          icon-name="utility:new"
-                                          size="small"
+                                          icon-name="standard:record_create"
+                                          size="medium"
                                           class="slds-m-right_small"
                                         ></lightning-icon>
                                         Create ECA
@@ -447,8 +508,8 @@
                                     <lightning-card>
                                       <h3 slot="title" class="slds-truncate">
                                         <lightning-icon
-                                          icon-name="utility:edit"
-                                          size="small"
+                                          icon-name="standard:record_update"
+                                          size="medium"
                                           class="slds-m-right_small"
                                         ></lightning-icon>
                                         Edit ECA
@@ -500,6 +561,48 @@
                             </div>
                           </div>
                         </li>
+                        <!-- Step 4: Grant Permission Set Access (auto-assigned to the provisioning admin; manual for other users) -->
+                        <li class="slds-progress__item">
+                          <span class="slds-progress__marker">
+                            <lightning-icon
+                              icon-name="utility:success"
+                              variant="success"
+                              size="x-small"
+                              class="icon-style"
+                            ></lightning-icon>
+                          </span>
+                          <div
+                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                          >
+                            <div class="slds-col">
+                              <strong class="slds-text-title_caps">
+                                Grant Tooling API Permission Set Access
+                              </strong>
+                              <p class="slds-var-m-top_xx-small">
+                                The
+                                <strong
+                                  >Package Visualizer Tooling Access</strong
+                                >
+                                permission set was automatically created and
+                                assigned to you when you provisioned
+                                credentials. For any additional users who need
+                                Tooling API access, assign them this permission
+                                set manually.
+                              </p>
+                            </div>
+                            <div class="slds-shrink-none slds-var-m-left_small">
+                              <lightning-button-icon
+                                icon-name="action:manage_perm_sets"
+                                variant="brand"
+                                onclick={navigateToPermissionSets}
+                                disabled={isSetupEnabled}
+                                title="Open Permission Sets Setup"
+                                alternative-text="Open Permission Sets Setup"
+                              ></lightning-button-icon>
+                            </div>
+                          </div>
+                        </li>
+                        <!-- Step 5: Save ECA credentials -->
                         <li class="slds-progress__item">
                           <template if:false={isToolingCredentialConfigured}>
                             <div class="slds-progress__marker">
@@ -512,6 +615,7 @@
                                 icon-name="utility:success"
                                 variant="success"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                           </template>
@@ -544,7 +648,7 @@
                                 <lightning-card>
                                   <h3 slot="title" class="slds-truncate">
                                     <lightning-icon
-                                      icon-name="utility:password"
+                                      icon-name="standard:password"
                                       size="medium"
                                       class="slds-m-right_small"
                                     ></lightning-icon>
@@ -558,41 +662,50 @@
                                     ></lightning-button>
                                   </template>
                                   <div class="slds-var-p-horizontal_medium">
-                                    <template
-                                      if:true={showCredentialEditFields}
-                                    >
-                                      <lightning-input
-                                        type="text"
-                                        label="Consumer Key"
-                                        value={toolingClientId}
-                                        onchange={handleToolingClientIdChange}
-                                        class="slds-var-m-bottom_x-small"
-                                        required
-                                      ></lightning-input>
-                                      <lightning-input
-                                        type="password"
-                                        label="Consumer Secret"
-                                        value={toolingClientSecret}
-                                        onchange={handleToolingClientSecretChange}
-                                        required
-                                      ></lightning-input>
+                                    <template if:true={isSavingCredentials}>
+                                      <lightning-spinner
+                                        alternative-text="Saving credentials"
+                                        size="small"
+                                        class="slds-var-m-vertical_small"
+                                      ></lightning-spinner>
                                     </template>
-                                    <template
-                                      if:false={showCredentialEditFields}
-                                    >
-                                      <lightning-input
-                                        type="text"
-                                        label="Consumer Key"
-                                        value="••••••••••••••••••••••••"
-                                        disabled
-                                        class="slds-var-m-bottom_x-small"
-                                      ></lightning-input>
-                                      <lightning-input
-                                        type="password"
-                                        label="Consumer Secret"
-                                        value="••••••••••••••••••••••••"
-                                        disabled
-                                      ></lightning-input>
+                                    <template if:false={isSavingCredentials}>
+                                      <template
+                                        if:true={showCredentialEditFields}
+                                      >
+                                        <lightning-input
+                                          type="text"
+                                          label="Consumer Key"
+                                          value={toolingClientId}
+                                          onchange={handleToolingClientIdChange}
+                                          class="slds-var-m-bottom_x-small"
+                                          required
+                                        ></lightning-input>
+                                        <lightning-input
+                                          type="password"
+                                          label="Consumer Secret"
+                                          value={toolingClientSecret}
+                                          onchange={handleToolingClientSecretChange}
+                                          required
+                                        ></lightning-input>
+                                      </template>
+                                      <template
+                                        if:false={showCredentialEditFields}
+                                      >
+                                        <lightning-input
+                                          type="text"
+                                          label="Consumer Key"
+                                          value="••••••••••••••••••••••••"
+                                          disabled
+                                          class="slds-var-m-bottom_x-small"
+                                        ></lightning-input>
+                                        <lightning-input
+                                          type="password"
+                                          label="Consumer Secret"
+                                          value="••••••••••••••••••••••••"
+                                          disabled
+                                        ></lightning-input>
+                                      </template>
                                     </template>
                                   </div>
                                   <template if:true={showCredentialEditFields}>
@@ -620,51 +733,7 @@
                             </template>
                           </div>
                         </li>
-                        <li class="slds-progress__item">
-                          <template if:false={isCalloutEnabled}>
-                            <div class="slds-progress__marker">
-                              <span class="slds-assistive-text">Active</span>
-                            </div>
-                          </template>
-                          <template if:true={isCalloutEnabled}>
-                            <span class="slds-progress__marker">
-                              <lightning-icon
-                                icon-name="utility:success"
-                                variant="success"
-                                size="x-small"
-                              ></lightning-icon>
-                            </span>
-                          </template>
-                          <div
-                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
-                          >
-                            <div class="slds-col">
-                              <strong class="slds-text-title_caps">
-                                Enable Callouts on the Named Credential
-                              </strong>
-                              <p class="slds-var-m-top_xx-small">
-                                Open the
-                                <strong
-                                  >Package Visualizer Named Credential</strong
-                                >
-                                and turn on
-                                <strong>Enabled for Callouts</strong>, then
-                                Save. This one-time toggle is required by the
-                                platform and can&rsquo;t be set automatically.
-                              </p>
-                            </div>
-                            <div class="slds-shrink-none slds-var-m-left_small">
-                              <lightning-button-icon
-                                icon-name="utility:setup"
-                                variant="brand"
-                                onclick={navigateToNamedCredentials}
-                                disabled={isSetupEnabled}
-                                title="Open Named Credentials Setup"
-                                alternative-text="Open Named Credentials Setup"
-                              ></lightning-button-icon>
-                            </div>
-                          </div>
-                        </li>
+                        <!-- Step 6: Test & Confirm -->
                         <li class="slds-progress__item">
                           <template if:false={isNamedCredentialEnabled}>
                             <div class="slds-progress__marker">
@@ -677,6 +746,7 @@
                                 icon-name="utility:success"
                                 variant="success"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                           </template>
@@ -688,21 +758,10 @@
                                 Test &amp; Confirm Tooling API
                               </strong>
                               <p class="slds-var-m-top_xx-small">
-                                Points the callout endpoint at this org's My
-                                Domain, runs a live Tooling API callout through
-                                the Named Credential for secure connection
+                                Runs a live Tooling API callout through the
+                                Named Credential to verify the secure OAuth
+                                connection end-to-end.
                               </p>
-                              <div class="slds-var-m-top_x-small">
-                                <span class="slds-text-title"
-                                  >OAuth Token URL</span
-                                >
-                                <lightning-input
-                                  type="text"
-                                  variant="label-hidden"
-                                  value={tokenUrlDisplay}
-                                  read-only
-                                ></lightning-input>
-                              </div>
                             </div>
                             <div class="slds-shrink-none slds-var-m-left_small">
                               <lightning-button-icon
@@ -795,9 +854,9 @@
                         class="slds-setup-assistant__step-summary-title slds-text-heading_small"
                       >
                         <lightning-icon
-                          icon-name="utility:toggle"
-                          size="small"
-                          class="slds-var-p-right_small"
+                          icon-name="standard:toggle"
+                          size="medium"
+                          class="slds-var-m-right_small"
                         ></lightning-icon>
                         Enable Dev Hub Features
                       </h3>
@@ -869,9 +928,9 @@
                         class="slds-setup-assistant__step-summary-title slds-text-heading_small"
                       >
                         <lightning-icon
-                          icon-name="utility:record_create"
-                          size="small"
-                          class="slds-var-p-right_small"
+                          icon-name="standard:record_create"
+                          size="medium"
+                          class="slds-var-m-right_small"
                         ></lightning-icon>
                         Create and Register Your Namespace
                       </h3>
@@ -895,6 +954,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -936,6 +996,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1007,9 +1068,9 @@
                         class="slds-setup-assistant__step-summary-title slds-text-heading_small"
                       >
                         <lightning-icon
-                          icon-name="utility:user_role"
-                          size="small"
-                          class="slds-var-p-right_small"
+                          icon-name="standard:user_role"
+                          size="medium"
+                          class="slds-var-m-right_small"
                         ></lightning-icon>
                         Provision Access to Developers
                       </h3>
@@ -1040,6 +1101,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1071,6 +1133,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1099,6 +1162,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1162,9 +1226,9 @@
                         class="slds-setup-assistant__step-summary-title slds-text-heading_small"
                       >
                         <lightning-icon
-                          icon-name="utility:apex"
-                          size="small"
-                          class="slds-var-p-right_small"
+                          icon-name="standard:apex"
+                          size="medium"
+                          class="slds-var-m-right_small"
                         ></lightning-icon>
                         Develop and Manage Apps via Developer Experience (DX)
                       </h3>
@@ -1188,6 +1252,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1225,6 +1290,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1261,6 +1327,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1306,6 +1373,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1336,6 +1404,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1366,6 +1435,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1399,6 +1469,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1461,9 +1532,9 @@
                         class="slds-setup-assistant__step-summary-title slds-text-heading_small"
                       >
                         <lightning-icon
-                          icon-name="utility:dx_pipeline"
-                          size="small"
-                          class="slds-var-p-right_small"
+                          icon-name="standard:dx_pipeline"
+                          size="medium"
+                          class="slds-var-m-right_small"
                         ></lightning-icon>
                         Incorporate CLI into your Application Lifecycle
                         Management
@@ -1493,6 +1564,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1539,6 +1611,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1586,6 +1659,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1630,6 +1704,7 @@
                                 icon-name="utility:info"
                                 variant="info"
                                 size="x-small"
+                                class="icon-style"
                               ></lightning-icon>
                             </span>
                             <div
@@ -1768,9 +1843,9 @@
                       class="slds-setup-assistant__step-summary-title slds-text-heading_small"
                     >
                       <lightning-icon
-                        icon-name="utility:shield"
-                        size="small"
-                        class="slds-var-p-right_small"
+                        icon-name="custom:custom73"
+                        size="medium"
+                        class="slds-var-m-right_small"
                       ></lightning-icon>
                       Security Review
                     </h3>
@@ -1801,6 +1876,7 @@
                               icon-name="utility:info"
                               variant="info"
                               size="x-small"
+                              class="icon-style"
                             ></lightning-icon>
                           </span>
                           <div
@@ -1827,6 +1903,7 @@
                               icon-name="utility:info"
                               variant="info"
                               size="x-small"
+                              class="icon-style"
                             ></lightning-icon>
                           </span>
                           <div
@@ -1853,6 +1930,7 @@
                               icon-name="utility:info"
                               variant="info"
                               size="x-small"
+                              class="icon-style"
                             ></lightning-icon>
                           </span>
                           <div
@@ -1882,6 +1960,7 @@
                                   icon-name="utility:warning"
                                   variant="warning"
                                   size="x-small"
+                                  class="icon-style"
                                 ></lightning-icon>
                               </span>
                             </template>
@@ -1892,6 +1971,7 @@
                                   alternative-text="Success!"
                                   variant="success"
                                   size="x-small"
+                                  class="icon-style"
                                 ></lightning-icon>
                               </span>
                             </template>
@@ -1979,9 +2059,9 @@
                         class="slds-setup-assistant__step-summary-title slds-text-heading_small"
                       >
                         <lightning-icon
-                          icon-name="utility:salesforce1"
-                          size="small"
-                          class="slds-var-p-right_small"
+                          icon-name="standard:default"
+                          size="medium"
+                          class="slds-var-m-right_small"
                         ></lightning-icon>
                         Develop and Extend Salesforce Products
                       </h3>
@@ -2000,7 +2080,7 @@
                         <lightning-tabset variant="scoped">
                           <lightning-tab
                             label="Agentforce"
-                            icon-name="utility:agent_astro"
+                            icon-name="standard:agent_astro"
                           >
                             <c-setup-assistant-agentforce
                               org-id={orgId}
@@ -2008,7 +2088,7 @@
                           </lightning-tab>
                           <lightning-tab
                             label="Data360"
-                            icon-name="utility:data_cloud"
+                            icon-name="standard:data_cloud"
                           >
                             <c-setup-assistant-data-cloud
                               org-id={orgId}
@@ -2016,7 +2096,7 @@
                           </lightning-tab>
                           <lightning-tab
                             label="Slack"
-                            icon-name="utility:slack"
+                            icon-name="standard:slack"
                           >
                             <c-setup-assistant-slack
                               org-id={orgId}
@@ -2052,9 +2132,9 @@
                       class="slds-setup-assistant__step-summary-title slds-text-heading_small"
                     >
                       <lightning-icon
-                        icon-name="utility:alert"
-                        size="small"
-                        class="slds-var-p-right_small"
+                        icon-name="custom:custom53"
+                        size="medium"
+                        class="slds-var-m-right_small"
                       ></lightning-icon>
                       1GP &rarr; 2GP Package Migration (Generally Available)
                     </h3>

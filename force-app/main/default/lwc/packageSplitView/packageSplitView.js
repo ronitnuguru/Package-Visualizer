@@ -1,5 +1,4 @@
 import { LightningElement, wire, api } from "lwc";
-import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { NavigationMixin } from "lightning/navigation";
 import agentforcePromptModalGenerator from "c/agentforcePromptModalGenerator";
 import hasPackageVisualizerPushUpgrade from "@salesforce/customPermission/Package_Visualizer_Push_Upgrade";
@@ -30,6 +29,7 @@ export default class PackageSplitView extends NavigationMixin(
   selectedTab = "details";
 
   packageList;
+  packageLoadErrors = [];
   packageFilterList;
   filterLabel = `All Packages`;
   packageListSize = 0;
@@ -115,6 +115,7 @@ export default class PackageSplitView extends NavigationMixin(
 
   async getPackages(packageIndex, sortDirection) {
     this.displaySpinner = true;
+    this.packageLoadErrors = [];
 
     try {
       // Read-only readiness check before the continuation callout: confirms the
@@ -150,15 +151,14 @@ export default class PackageSplitView extends NavigationMixin(
       }
     } catch (error) {
       console.error("Package fetch failed:", error);
-      this.packageList = undefined;
-      this.dispatchEvent(
-        new ShowToastEvent({
-          title: "Failed to load packages",
-          message:
-            error?.body?.message || error?.message || "An error occurred",
-          variant: "error"
-        })
-      );
+      this.packageList = false;
+      this.packageLoadErrors = [
+        ...this.packageLoadErrors,
+        "We were not able to retrieve any packages. " +
+          (error?.body?.message ||
+            error?.message ||
+            "An unexpected error occurred.")
+      ];
     } finally {
       this.displaySpinner = false;
     }

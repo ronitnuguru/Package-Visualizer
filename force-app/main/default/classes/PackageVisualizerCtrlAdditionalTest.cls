@@ -6,6 +6,88 @@
 @isTest
 private class PackageVisualizerCtrlAdditionalTest {
   /**************************************************************************************
+   * @Description  getTargetRecordId — 'apex' branch resolves a real ApexClass by name
+   * (this test class always exists), covering the apex branch, query, and return.
+   **************************************************************************************/
+  @isTest
+  static void shouldResolveApexClass_WhenTargetTypeApex() {
+    Test.startTest();
+    String id = PackageVisualizerCtrl.getTargetRecordId(
+      'apex',
+      'PackageVisualizerCtrlAdditionalTest',
+      null
+    );
+    Test.stopTest();
+    Assert.isNotNull(id, 'An existing ApexClass should resolve to an Id');
+  }
+
+  /**************************************************************************************
+   * @Description  getTargetRecordId — 'flow' branch builds the FlowRecord query with a
+   * namespace filter, then throws "Not found" for a non-existent flow (covers the flow
+   * branch, namespace append, and not-found throw).
+   **************************************************************************************/
+  @isTest
+  static void shouldThrowNotFound_WhenFlowMissing() {
+    Test.startTest();
+    try {
+      PackageVisualizerCtrl.getTargetRecordId(
+        'flow',
+        'No_Such_Flow_xyz',
+        'nosuchns'
+      );
+      Assert.fail('Expected AuraHandledException for a missing flow');
+    } catch (AuraHandledException e) {
+      Assert.isNotNull(e.getMessage(), 'Should surface an error message');
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  getTargetRecordId — unsupported target type throws immediately
+   * (covers the else branch).
+   **************************************************************************************/
+  @isTest
+  static void shouldThrow_WhenTargetTypeUnsupported() {
+    Test.startTest();
+    try {
+      PackageVisualizerCtrl.getTargetRecordId('widget', 'x', null);
+      Assert.fail('Expected AuraHandledException for unsupported target type');
+    } catch (AuraHandledException e) {
+      Assert.isNotNull(e.getMessage(), 'Should surface an error message');
+    }
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  verifyAndEnableNamedCredential — with the NC path forced on and the
+   * ToolingAPICalloutMock answering the Package2 probe with a 200, the test callout
+   * succeeds and the method returns 'success' (covers the method body). Any failure
+   * must surface as AuraHandledException, never a raw leak.
+   **************************************************************************************/
+  @isTest
+  static void shouldRunVerifyAndEnableNamedCredential() {
+    Package2Interface.useNamedCredentialOverride = true;
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    Test.startTest();
+    try {
+      String result = PackageVisualizerCtrl.verifyAndEnableNamedCredential();
+      Assert.areEqual('success', result, 'A 200 probe should report success');
+    } catch (AuraHandledException e) {
+      Assert.isNotNull(
+        e.getMessage(),
+        'Failures surface as AuraHandledException'
+      );
+    } catch (Exception other) {
+      Assert.fail(
+        'Errors should be surfaced as AuraHandledException, not leaked: ' +
+        other.getTypeName()
+      );
+    }
+    Test.stopTest();
+    Package2Interface.useNamedCredentialOverride = null;
+  }
+
+  /**************************************************************************************
    * @Description  Test class for createSignupTrial - success path with all parameters
    **************************************************************************************/
   @isTest

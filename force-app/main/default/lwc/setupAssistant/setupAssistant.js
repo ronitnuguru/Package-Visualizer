@@ -18,9 +18,24 @@ import populateClientCredentials from "@salesforce/apex/PackageVisualizerCtrl.po
 import verifyAndEnableNamedCredential from "@salesforce/apex/PackageVisualizerCtrl.verifyAndEnableNamedCredential";
 
 export default class SetupAssistant extends NavigationMixin(LightningElement) {
+  // Accepts either a single message string (e.g. the static small-screen notice)
+  // or an array of message strings. Normalized via the alerts getter so the
+  // template can render one banner per message.
   @api alert;
   @api packageListAvailable;
   @api packageTypes;
+
+  // Normalizes the alert input to a list of non-empty messages, keyed for the
+  // template's for:each. Tolerates a string, an array of strings, or empty input.
+  get alerts() {
+    if (!this.alert) {
+      return [];
+    }
+    const messages = Array.isArray(this.alert) ? this.alert : [this.alert];
+    return messages
+      .filter((message) => message)
+      .map((message, index) => ({ key: index, message }));
+  }
 
   isPBO;
 
@@ -77,20 +92,6 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
       this.integrationStatus &&
       this.integrationStatus.externalCredentialStatus === "Configured"
     );
-  }
-
-  get isTokenUrlConfigured() {
-    return (
-      this.integrationStatus &&
-      this.integrationStatus.tokenUrl &&
-      !this.integrationStatus.tokenUrl.includes("loopback.placeholder.com")
-    );
-  }
-
-  get tokenUrlDisplay() {
-    return this.integrationStatus && this.integrationStatus.tokenUrl
-      ? this.integrationStatus.tokenUrl
-      : "Not configured";
   }
 
   // Step 1 — the subscriber-owned Named/External Credential exist (provisioned).
@@ -242,7 +243,16 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   // (Apex cannot set this flag — no ConnectApi property and the Apex Metadata API
   // doesn't support NamedCredential — so this is an unavoidable guided manual step.)
   navigateToNamedCredentials() {
-    window.open("/lightning/setup/NamedCredential/home", "_blank");
+    // Deep link straight to the provisioned Named Credential's detail page so the
+    // admin lands on the record to toggle "Enabled for Callouts". The Id is
+    // resolved server-side in the integration status; before provisioning (or if
+    // it can't be read) fall back to the general Named Credentials list.
+    const ncId =
+      this.integrationStatus && this.integrationStatus.namedCredentialId;
+    const url = ncId
+      ? `/lightning/setup/NamedCredential/${ncId}/view`
+      : "/lightning/setup/NamedCredential/home";
+    window.open(url, "_blank");
   }
 
   // Step 5 — Test & Confirm: run a live Tooling callout (ApexClass, present in every
@@ -463,7 +473,16 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   }
 
   navigateToPermissionSets() {
-    window.open("/lightning/setup/PermSets/home", "_blank");
+    // Deep link straight to the Tooling Access perm set's Manage Assignments page
+    // so the admin can grant additional users access without searching the list.
+    // The Id is resolved server-side in the integration status; before the perm
+    // set exists (or if it can't be read) fall back to the general list.
+    const permSetId =
+      this.integrationStatus && this.integrationStatus.toolingPermissionSetId;
+    const url = permSetId
+      ? `/lightning/setup/PermSets/${permSetId}/PermissionSetAssignment/home`
+      : "/lightning/setup/PermSets/home";
+    window.open(url, "_blank");
   }
 
   navigateToExternalClientApps() {

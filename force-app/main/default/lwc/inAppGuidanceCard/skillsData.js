@@ -11,10 +11,10 @@ export const SKILLS = [
   },
   {
     id: "skill-2",
-    name: "sf-skills",
+    name: "Salesforce Development Skills",
     description:
       "Curated collection of AI prompts, rules, and executable skills from Salesforce. Covers metadata creation, Flow development, Apex patterns, Experience Sites, web apps, and more. 16+ skills + prompts + rules.",
-    createdBy: "Salesforce",
+    createdBy: "Salesforce Engineering",
     bestFor: "Following official Salesforce patterns and standards",
     cli: "npx skills add forcedotcom/afv-library",
     githubLink: "https://github.com/forcedotcom/sf-skills"

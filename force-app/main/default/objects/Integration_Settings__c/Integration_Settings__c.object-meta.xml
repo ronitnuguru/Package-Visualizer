@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <description
+  >Runtime configuration for Package Visualizer integrations. Controls whether Tooling/REST API callouts use the packaged Named Credential or the legacy Visualforce session-id path.</description>
+    <enableFeeds>false</enableFeeds>
+    <label>Integration Settings</label>
+    <!-- NOTE: Must be Protected in the SHIPPED package so subscribers can't flip the
+         Use_Named_Credential__c toggle and bypass migration verification. Set to Public
+         only for direct deploys to a production/DevHub org (Protected can't deploy there).
+         REVERT to Protected before running `sf package version create`. -->
+    <visibility>Protected</visibility>
+</CustomObject>

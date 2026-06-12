@@ -11,3 +11,7 @@
 .list_item {
   padding-left: 0.8rem;
 }
+
+.icon-style {
+  --slds-c-icon-color-background: white;
+}

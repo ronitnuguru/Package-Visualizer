@@ -462,7 +462,10 @@
       </template>
       <template if:false={displaySpinner}>
         <template if:false={packageList}>
-          <c-setup-assistant package-types={packageTypes}></c-setup-assistant>
+          <c-setup-assistant
+            package-types={packageTypes}
+            alert={packageLoadErrors}
+          ></c-setup-assistant>
         </template>
       </template>
     </div>

@@ -10,7 +10,7 @@
                 alternative-text="icon"
                 title={name}
                 size="large"
-                style="cursor:pointer"
+                style="cursor: pointer"
                 onclick={handleInAppPrompt}
               ></lightning-icon>
             </template>
@@ -27,16 +27,10 @@
           </div>
           <div class="slds-media__body">
             <p class="slds-page-header__name-meta">
-              <template if:true={type}>
-                {type}
-              </template>
+              <template if:true={type}> {type} </template>
               <template if:false={type}>
-                <template if:true={namespacePrefix}>
-                  Managed
-                </template>
-                <template if:false={namespacePrefix}>
-                  Unmanaged
-                </template>
+                <template if:true={namespacePrefix}> Managed </template>
+                <template if:false={namespacePrefix}> Unmanaged </template>
               </template>
             </p>
             <div class="slds-page-header__name">
@@ -44,9 +38,7 @@
                 <h1>
                   <span class="slds-page-header__title slds-truncate"
                     >{name}&nbsp;
-                    <span if:true={namespacePrefix}>
-                      ({namespacePrefix})
-                    </span>
+                    <span if:true={namespacePrefix}> ({namespacePrefix}) </span>
                   </span>
                 </h1>
               </div>
@@ -64,13 +56,13 @@
                   label="Edit"
                   icon-name="utility:edit"
                   onclick={handleEdit}
-              ></lightning-button>
+                ></lightning-button>
               </template>
               <template if:false={type}>
                 <lightning-button
                   label="Package Manager"
                   onclick={handlePackageManager}
-              ></lightning-button>
+                ></lightning-button>
               </template>
               <template if:true={displayAppAnalyticsButton}>
                 <lightning-button
@@ -78,6 +70,12 @@
                   icon-name="utility:setup_modal"
                   onclick={handleAppAnalytics}
                 ></lightning-button>
+                <lightning-button-icon
+                  tooltip="Namespace Registry"
+                  icon-name="utility:dataspaces"
+                  variant="border-filled"
+                  onclick={handleNamespaceRegistry}
+                ></lightning-button-icon>
                 <template if:true={displayLMA}>
                   <lightning-button-icon
                     icon-name="utility:package"

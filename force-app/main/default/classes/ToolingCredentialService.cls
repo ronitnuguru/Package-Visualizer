@@ -109,6 +109,18 @@ global with sharing class ToolingCredentialService {
     // ('Enabled' / 'Disabled'), or null when the credential isn't created yet.
     @AuraEnabled
     global String calloutStatus;
+    // Record Id of the runtime-created Named Credential, used by the wizard to
+    // deep-link straight to its Setup detail page (/lightning/setup/
+    // NamedCredential/{id}/view) so the admin can toggle "Enabled for Callouts"
+    // without hunting through the list. Null until the credential is provisioned.
+    @AuraEnabled
+    global Id namedCredentialId;
+    // Record Id of the runtime-created Tooling Access permission set, used by the
+    // wizard to deep-link straight to its Manage Assignments page so the admin can
+    // grant additional users access. Null until the perm set has been created
+    // (which happens during provisioning).
+    @AuraEnabled
+    global Id toolingPermissionSetId;
   }
 
   /**
@@ -129,6 +141,19 @@ global with sharing class ToolingCredentialService {
       );
       status.namedCredentialUrl = nc.calloutUrl;
       status.calloutStatus = String.valueOf(nc.calloutStatus);
+      // ConnectApi doesn't expose the record Id, so resolve it via SOQL for the
+      // Setup deep link. The NC is confirmed to exist by the getNamedCredential
+      // call above; an empty result just leaves the link on its general fallback.
+      List<NamedCredential> ncRecords = [
+        SELECT Id
+        FROM NamedCredential
+        WHERE DeveloperName = :NEW_NC_DEVNAME
+        WITH USER_MODE
+        LIMIT 1
+      ];
+      if (!ncRecords.isEmpty()) {
+        status.namedCredentialId = ncRecords[0].Id;
+      }
     } catch (Exception e) {
       status.namedCredentialUrl = null;
       status.calloutStatus = null;
@@ -147,6 +172,20 @@ global with sharing class ToolingCredentialService {
       }
     } catch (Exception e) {
       status.externalCredentialStatus = 'Unknown';
+    }
+    // Resolve the unmanaged Tooling Access perm set Id for the Setup deep link.
+    // Read-only (unlike resolveUnmanagedPermissionSetId, which creates one when
+    // missing) — a status read must not have side effects. Stays null until
+    // provisioning creates the perm set.
+    List<PermissionSet> psRecords = [
+      SELECT Id
+      FROM PermissionSet
+      WHERE Name = :TOOLING_ACCESS_PERMSET AND NamespacePrefix = NULL
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    if (!psRecords.isEmpty()) {
+      status.toolingPermissionSetId = psRecords[0].Id;
     }
     return status;
   }
@@ -204,11 +243,19 @@ global with sharing class ToolingCredentialService {
             input
           );
         } catch (Exception updateEx) {
-          throw new CredentialServiceException(
-            'Unable to configure the Tooling External Credential: ' +
-            updateEx.getMessage(),
-            updateEx
-          );
+          // update failed (e.g. permission context changed) — delete and recreate
+          try {
+            ConnectApi.NamedCredentials.deleteExternalCredential(
+              NEW_EC_DEVNAME
+            );
+            ConnectApi.NamedCredentials.createExternalCredential(input);
+          } catch (Exception retryEx) {
+            throw new CredentialServiceException(
+              'Unable to configure the Tooling External Credential: ' +
+              retryEx.getMessage(),
+              retryEx
+            );
+          }
         }
       } else {
         throw new CredentialServiceException(
@@ -257,11 +304,17 @@ global with sharing class ToolingCredentialService {
             input
           );
         } catch (Exception updateEx) {
-          throw new CredentialServiceException(
-            'Unable to configure the Tooling Named Credential: ' +
-            updateEx.getMessage(),
-            updateEx
-          );
+          // update failed — delete and recreate
+          try {
+            ConnectApi.NamedCredentials.deleteNamedCredential(NEW_NC_DEVNAME);
+            ConnectApi.NamedCredentials.createNamedCredential(input);
+          } catch (Exception retryEx) {
+            throw new CredentialServiceException(
+              'Unable to configure the Tooling Named Credential: ' +
+              retryEx.getMessage(),
+              retryEx
+            );
+          }
         }
       } else {
         throw new CredentialServiceException(
@@ -472,25 +525,56 @@ global with sharing class ToolingCredentialService {
       WITH USER_MODE
       LIMIT 1
     ];
+    if (existing.isEmpty()) {
+      try {
+        Database.insert(
+          new SetupEntityAccess(
+            ParentId = permissionSetId,
+            SetupEntityId = principalId
+          ),
+          AccessLevel.USER_MODE
+        );
+      } catch (Exception e) {
+        if (!e.getMessage().contains('CANNOT_MODIFY_MANAGED_OBJECT')) {
+          throw new CredentialServiceException(
+            'Unable to grant Tooling principal access: ' + e.getMessage(),
+            e
+          );
+        }
+      }
+    }
+    assignPermissionSetToCurrentUser(permissionSetId);
+  }
+
+  /**
+   * @Description  Assigns the Tooling Access permission set to the running user
+   * so the admin who clicks Provision immediately has the EC principal access
+   * needed to make callouts. Idempotent — no-op if already assigned.
+   */
+  @TestVisible
+  private static void assignPermissionSetToCurrentUser(Id permissionSetId) {
+    Id userId = UserInfo.getUserId();
+    List<PermissionSetAssignment> existing = [
+      SELECT Id
+      FROM PermissionSetAssignment
+      WHERE AssigneeId = :userId AND PermissionSetId = :permissionSetId
+      WITH USER_MODE
+      LIMIT 1
+    ];
     if (!existing.isEmpty()) {
       return;
     }
     try {
       Database.insert(
-        new SetupEntityAccess(
-          ParentId = permissionSetId,
-          SetupEntityId = principalId
+        new PermissionSetAssignment(
+          AssigneeId = userId,
+          PermissionSetId = permissionSetId
         ),
         AccessLevel.USER_MODE
       );
     } catch (Exception e) {
-      if (e.getMessage().contains('CANNOT_MODIFY_MANAGED_OBJECT')) {
-        return; // defensive: never block setup on a grant edge case
-      }
-      throw new CredentialServiceException(
-        'Unable to grant Tooling principal access: ' + e.getMessage(),
-        e
-      );
+      // Non-fatal: if the assignment fails (e.g. license limit), don't block
+      // the rest of provisioning — the admin can assign manually.
     }
   }
 
