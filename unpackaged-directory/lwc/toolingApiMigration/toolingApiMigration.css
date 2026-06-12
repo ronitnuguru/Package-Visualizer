@@ -1,0 +1,13 @@
+.list_ordered {
+  list-style: decimal;
+  margin-left: 1.2rem;
+}
+
+.border-bottom {
+  border-bottom: 1px var(--lwc-colorBorderSeparatorAlt, rgb(221, 219, 218))
+    solid;
+}
+
+.list_item {
+  padding-left: 0.8rem;
+}

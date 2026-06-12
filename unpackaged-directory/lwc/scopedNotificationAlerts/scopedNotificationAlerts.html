@@ -1,0 +1,24 @@
+<template>
+    <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info" role="status">
+        <div class="slds-media__figure">
+            <lightning-icon
+                size="small"
+                icon-name="utility:info"
+                alternative-text="info"
+                title="info"
+                variant="inverse"
+            ></lightning-icon>
+        </div>
+        <div class="slds-media__body">
+            <div>
+                Strengthen this package's security and session handling by setting up a new External Client App (ECA).
+                <lightning-button
+                    variant="base"
+                    label="Upgrade"
+                    onclick={handleOpenModal}
+                    class="slds-m-left_x-small"
+                ></lightning-button>
+            </div>
+        </div>
+    </div>
+</template>
