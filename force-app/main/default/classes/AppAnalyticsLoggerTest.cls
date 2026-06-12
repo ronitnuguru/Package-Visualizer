@@ -22,7 +22,7 @@ private class AppAnalyticsLoggerTest {
     AppAnalyticsLogger.disableForTest = false;
     Test.startTest();
     AppAnalyticsLogger.log(
-      PackageVisualizerInteractions.USING_LEGACY_SESSION_ID,
+      PackageVisualizerInteractions.MIGRATED_TO_ECA,
       UserInfo.getOrganizationId()
     );
     Test.stopTest();
