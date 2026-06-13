@@ -656,13 +656,6 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     );
   }
 
-  navigateToTop20VulnDevPost() {
-    window.open(
-      "https://developer.salesforce.com/blogs/2023/08/the-top-20-vulnerabilities-found-in-the-appexchange-security-review",
-      "_blank"
-    );
-  }
-
   navigateToIsvToolingTrailhead() {
     window.open(
       "https://trailhead.salesforce.com/content/learn/modules/isvforce_basics/isvforce_basics_tools_resources",

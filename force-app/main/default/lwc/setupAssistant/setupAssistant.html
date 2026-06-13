@@ -5,8 +5,8 @@
         <div class="slds-media__figure">
           <span class="slds-icon_container">
             <lightning-icon
-              icon-name="standard:bill_of_materials"
-              size="large"
+              icon-name="doctype:slack_lists"
+              size="medium"
             ></lightning-icon>
           </span>
         </div>
@@ -156,7 +156,7 @@
                       class="slds-progress slds-progress_vertical slds-progress_success"
                     >
                       <ol
-                        class="slds-progress__list slds-progress__list-bordered border-bottom"
+                        class="slds-progress__list slds-progress__list-bordered slds-border_bottom"
                       >
                         <template if:true={is2GP}>
                           <li class="slds-progress__item">
@@ -777,7 +777,7 @@
                       <ol class="list_ordered">
                         <li class="list_item">
                           <div
-                            class="slds-progress__item_content slds-grid slds-grid_align-spread border-bottom"
+                            class="slds-progress__item_content slds-grid slds-grid_align-spread slds-border_bottom"
                           >
                             <div class="slds-col">
                               <strong class="slds-text-title_caps">
@@ -791,7 +791,7 @@
                             </div>
                             <div class="slds-shrink-none slds-var-m-left_small">
                               <lightning-button-icon
-                                icon-name="utility:bundle_config"
+                                icon-name="utility:setup"
                                 variant="brand"
                                 onclick={navigateToRemoteSiteSettings}
                                 disabled={isSetupEnabled}
@@ -816,7 +816,7 @@
                             </div>
                             <div class="slds-shrink-none slds-var-m-left_small">
                               <lightning-button-icon
-                                icon-name="utility:bundle_config"
+                                icon-name="utility:setup"
                                 variant="brand"
                                 onclick={navigateToCSPTrustedSites}
                                 disabled={isSetupEnabled}
@@ -1554,7 +1554,7 @@
                         class="slds-progress slds-progress_vertical slds-progress_success"
                       >
                         <ol
-                          class="slds-progress__list slds-progress__list-bordered border-bottom"
+                          class="slds-progress__list slds-progress__list-bordered slds-border_bottom"
                         >
                           <li class="slds-progress__item">
                             <span
@@ -1746,7 +1746,7 @@
                         <ol class="list_ordered">
                           <li class="list_item">
                             <div
-                              class="slds-progress__item_content slds-grid slds-grid_align-spread border-bottom"
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread slds-border_bottom"
                             >
                               <div class="slds-col">
                                 <strong class="slds-text-title_caps">
@@ -1779,7 +1779,7 @@
                           </li>
                           <li class="list_item">
                             <div
-                              class="slds-progress__item_content slds-grid slds-grid_align-spread border-bottom"
+                              class="slds-progress__item_content slds-grid slds-grid_align-spread slds-border_bottom"
                             >
                               <div class="slds-col">
                                 <strong class="slds-text-title_caps">
@@ -1918,34 +1918,6 @@
                                 icon-name="utility:trailhead_ext"
                                 variant="brand"
                                 onclick={navigateToManageAppxListingTrail}
-                              ></lightning-button-icon>
-                            </div>
-                          </div>
-                        </li>
-                        <li class="slds-progress__item">
-                          <span
-                            class="slds-icon_container slds-icon-utility-success slds-progress__marker"
-                          >
-                            <lightning-icon
-                              icon-name="utility:info"
-                              variant="info"
-                              size="x-small"
-                              class="icon-style"
-                            ></lightning-icon>
-                          </span>
-                          <div
-                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
-                          >
-                            <div class="slds-col">
-                              Review and learn how to mitigate the top 20
-                              vulnerabilities found in the AppExchange Security
-                              Review
-                            </div>
-                            <div class="slds-shrink-none slds-var-m-left_small">
-                              <lightning-button-icon
-                                icon-name="utility:help_doc_ext"
-                                variant="brand"
-                                onclick={navigateToTop20VulnDevPost}
                               ></lightning-button-icon>
                             </div>
                           </div>
