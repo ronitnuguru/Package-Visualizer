@@ -1,0 +1,159 @@
+<template>
+  <template lwc:if={mcpLoading}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="medium"
+      variant="brand"
+    ></lightning-spinner>
+  </template>
+  <template lwc:elseif={hasMcpServers}>
+    <lightning-accordion
+      allow-multiple-sections-open
+      class="slds-border_top slds-border_right slds-border_bottom slds-border_left card-style mcp-accordion"
+    >
+      <template for:each={mcpServers} for:item="server">
+        <lightning-accordion-section
+          key={server.id}
+          name={server.id}
+          label={server.label}
+        >
+          <div
+            class="slds-border_top slds-border_right slds-border_bottom slds-border_left card-style"
+          >
+            <lightning-card>
+              <h3 slot="title" class="slds-truncate" title={server.label}>
+                <lightning-icon
+                  icon-name="standard:sparkles"
+                  size="medium"
+                  class="slds-m-right_small"
+                ></lightning-icon>
+                {server.label}
+              </h3>
+              <template lwc:if={server.hasTools}>
+                <div
+                  slot="actions"
+                  class="slds-grid slds-grid_vertical-align-center"
+                >
+                  <lightning-button-group>
+                    <lightning-button-icon
+                      icon-name="utility:setup"
+                      variant="border-filled"
+                      tooltip="View Agentforce Registry"
+                      data-server-id={server.id}
+                      onclick={navigateToMcpSetup}
+                    ></lightning-button-icon>
+                    <lightning-button-icon
+                      icon-name="utility:copy"
+                      variant="border-filled"
+                      tooltip="Copy Subagent Block"
+                      data-server-id={server.id}
+                      onclick={handleCopyMcpAgentScript}
+                    ></lightning-button-icon>
+                  </lightning-button-group>
+                </div>
+              </template>
+              <div class="slds-card__body slds-card__body_inner">
+                <template lwc:if={server.hasTools}>
+                  <lightning-accordion
+                    allow-multiple-sections-open
+                    class="slds-m-bottom_x-small"
+                  >
+                    <lightning-accordion-section
+                      name="subagentBlock"
+                      label="Subagent Block"
+                    >
+                      <pre
+                        class="agentscript-pre slds-scrollable_y"
+                      ><code class="agentscript-code">{server.agentScriptBody}</code></pre>
+                    </lightning-accordion-section>
+                  </lightning-accordion>
+                  <lightning-tabset variant="vertical">
+                    <template for:each={server.tools} for:item="tool">
+                      <lightning-tab
+                        key={tool.developerName}
+                        label={tool.name}
+                        icon-name="standard:invocable_action"
+                      >
+                        <div
+                          class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
+                        >
+                          <lightning-card variant="narrow">
+                            <h3 slot="title" class="slds-truncate">
+                              <lightning-icon
+                                icon-name="standard:invocable_action"
+                                size="medium"
+                                class="slds-m-right_small"
+                              ></lightning-icon>
+                              Agent Action Blocks
+                            </h3>
+                            <lightning-button-group slot="actions">
+                              <lightning-button-icon
+                                icon-name="utility:setup"
+                                variant="border-filled"
+                                tooltip="View Agentforce Asset"
+                                data-gen-ai-function-id={tool.genAiFunctionId}
+                                onclick={navigateToGenAiFunction}
+                              ></lightning-button-icon>
+                              <lightning-button-icon
+                                icon-name="utility:copy"
+                                variant="border-filled"
+                                tooltip="Copy Action Block"
+                                data-tool-id={tool.developerName}
+                                data-server-id={server.id}
+                                onclick={handleCopyMcpTool}
+                              ></lightning-button-icon>
+                            </lightning-button-group>
+                            <div class="slds-card__body slds-card__body_inner">
+                              <pre
+                                class="agentscript-pre slds-scrollable_y"
+                              ><code class="agentscript-code">{tool.actionBlock}</code></pre>
+                            </div>
+                          </lightning-card>
+                        </div>
+                      </lightning-tab>
+                    </template>
+                  </lightning-tabset>
+                </template>
+                <template lwc:else>
+                  <div class="slds-p-around_medium">
+                    <lightning-empty-state
+                      title="Hmm..."
+                      illustration-name="success:new"
+                    >
+                      <p slot="description">
+                        No tools have been accepted for this MCP server yet. Add
+                        tools in the MCP server's Agentforce Registry for more
+                        details
+                      </p>
+                      <lightning-button
+                        label="View Agentforce Registry"
+                        slot="cta"
+                        data-server-id={server.id}
+                        onclick={navigateToMcpSetup}
+                      ></lightning-button>
+                    </lightning-empty-state>
+                  </div>
+                </template>
+              </div>
+            </lightning-card>
+          </div>
+        </lightning-accordion-section>
+      </template>
+    </lightning-accordion>
+  </template>
+  <template lwc:else>
+    <div class="slds-p-around_medium">
+      <lightning-empty-state title="Hmm…" illustration-name="success:new">
+        <p slot="description">
+          Looks like we do not have any associated MCP servers yet...
+        </p>
+        <lightning-button
+          label="Learn More"
+          slot="cta"
+          onclick={handleLearnMore}
+        >
+        </lightning-button>
+      </lightning-empty-state>
+    </div>
+  </template>
+</template>

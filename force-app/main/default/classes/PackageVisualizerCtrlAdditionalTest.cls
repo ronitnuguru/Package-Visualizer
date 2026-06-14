@@ -787,4 +787,44 @@ private class PackageVisualizerCtrlAdditionalTest {
     }
     Test.stopTest();
   }
+
+  /**************************************************************************************
+   * @Description  getMcpServers delegates to Package2Interface and returns the parsed
+   * MCP server list under the Tooling API mock, covering the thin controller method.
+   **************************************************************************************/
+  @isTest
+  static void shouldReturnMcpServers_WhenToolingApiResponds() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    List<ObjectWrappers.McpServerWrapper> servers = PackageVisualizerCtrl.getMcpServers();
+    Test.stopTest();
+    Assert.isFalse(servers.isEmpty(), 'Expected at least one MCP server');
+    ObjectWrappers.McpServerWrapper deepWiki = null;
+    for (ObjectWrappers.McpServerWrapper srv : servers) {
+      if ('DeepWiki'.equals(srv.serverName)) {
+        deepWiki = srv;
+      }
+    }
+    Assert.isNotNull(deepWiki, 'DeepWiki server should be present and parsed');
+    // Tools come from the accepted GenAiFunctions (3 of them).
+    Assert.isTrue(deepWiki.hasTools, 'DeepWiki should have wired tools');
+    Assert.areEqual(3, deepWiki.toolCount, 'DeepWiki should expose 3 tools');
+    ObjectWrappers.McpToolWrapper askQuestion = null;
+    for (ObjectWrappers.McpToolWrapper t : deepWiki.tools) {
+      if ('ask_question'.equals(t.name)) {
+        askQuestion = t;
+      }
+    }
+    Assert.isNotNull(askQuestion, 'ask_question tool should be present');
+    Assert.areEqual(
+      'a03e6bc51a04135009c34ba31664837d4',
+      askQuestion.developerName,
+      'Tool developerName should come from the GenAiFunction'
+    );
+    Assert.areEqual(
+      'mcptoolx5fx5faskx5fquestion',
+      askQuestion.operationName,
+      'Tool operationName should be the derived ESR target tail'
+    );
+  }
 }

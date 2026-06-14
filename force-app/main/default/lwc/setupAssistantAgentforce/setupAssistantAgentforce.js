@@ -5,14 +5,12 @@ const columns = [
   {
     label: "Component Name",
     fieldName: "componentName",
-    iconName: "utility:component_customization",
-    fixedWidth: 280
+    iconName: "utility:component_customization"
   },
   {
     label: "Metadata Name",
     fieldName: "metadataUrl",
     iconName: "utility:database",
-    fixedWidth: 280,
     type: "url",
     typeAttributes: {
       label: {
@@ -25,15 +23,25 @@ const columns = [
     label: "2GP",
     fieldName: "1gp",
     iconName: "utility:funding_requirement",
-    type: "boolean",
-    fixedWidth: 70
+    type: "boolean"
   },
   {
     label: "1GP",
     fieldName: "2gp",
     iconName: "utility:funding_requirement",
-    type: "boolean",
-    fixedWidth: 70
+    type: "boolean"
+  },
+  {
+    label: "Next Gen Builder",
+    fieldName: "nextGenBuilder",
+    iconName: "utility:builder",
+    type: "boolean"
+  },
+  {
+    label: "Legacy Builder",
+    fieldName: "legacyBuilder",
+    iconName: "utility:builder",
+    type: "boolean"
   }
 ];
 
@@ -48,6 +56,8 @@ export default class SetupAssistantAgentforce extends NavigationMixin(
       metadataName: "AiAuthoringBundle",
       "1gp": false,
       "2gp": false,
+      nextGenBuilder: true,
+      legacyBuilder: false,
       metadataUrl:
         "https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_aiauthoringbundle.htm"
     },
@@ -56,14 +66,18 @@ export default class SetupAssistantAgentforce extends NavigationMixin(
       metadataName: "GenAiFunction",
       "1gp": true,
       "2gp": true,
+      nextGenBuilder: true,
+      legacyBuilder: true,
       metadataUrl:
         "https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/packaging_packageable_components.htm#mdc_genaifunction"
     },
     {
-      componentName: "Agent Topics",
+      componentName: "Subagents",
       metadataName: "GenAiPlugin",
       "1gp": true,
       "2gp": true,
+      nextGenBuilder: false,
+      legacyBuilder: true,
       metadataUrl:
         "https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/packaging_packageable_components.htm#mdc_genaiplugin"
     },
@@ -72,6 +86,8 @@ export default class SetupAssistantAgentforce extends NavigationMixin(
       metadataName: "GenAiPromptTemplate",
       "1gp": true,
       "2gp": true,
+      nextGenBuilder: true,
+      legacyBuilder: true,
       metadataUrl:
         "https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/packaging_packageable_components.htm#mdc_genaiprompttemplate"
     },
@@ -80,6 +96,8 @@ export default class SetupAssistantAgentforce extends NavigationMixin(
       metadataName: "BotTemplate",
       "1gp": true,
       "2gp": true,
+      nextGenBuilder: false,
+      legacyBuilder: true,
       metadataUrl:
         "https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/packaging_packageable_components.htm#mdc_bot_template"
     },
@@ -88,6 +106,8 @@ export default class SetupAssistantAgentforce extends NavigationMixin(
       metadataName: "GenAiPlannerBundle",
       "1gp": true,
       "2gp": true,
+      nextGenBuilder: false,
+      legacyBuilder: true,
       metadataUrl:
         "https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/packaging_packageable_components.htm#mdc_genaiplannerbundle"
     },
@@ -96,6 +116,8 @@ export default class SetupAssistantAgentforce extends NavigationMixin(
       metadataName: "LightningTypeBundle",
       "1gp": true,
       "2gp": true,
+      nextGenBuilder: true,
+      legacyBuilder: true,
       metadataUrl:
         "https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/packaging_packageable_components.htm#mdc_lightning_types"
     }

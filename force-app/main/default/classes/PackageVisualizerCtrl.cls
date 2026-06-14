@@ -27,6 +27,15 @@ public with sharing class PackageVisualizerCtrl {
     return packageList;
   }
 
+  /**************************************************************************************
+   * @Description  Get the list of MCP servers (ExternalServiceRegistration rows with
+   * RegistrationProviderType = 'ModelContextProtocol') registered in this org.
+   **************************************************************************************/
+  @AuraEnabled(continuation=true)
+  public static List<ObjectWrappers.McpServerWrapper> getMcpServers() {
+    return Package2Interface.getMcpServers();
+  }
+
   @AuraEnabled(continuation=true)
   public static list<ObjectWrappers.PackageWrapper1> get1GPPackageList(
     String sortDirection

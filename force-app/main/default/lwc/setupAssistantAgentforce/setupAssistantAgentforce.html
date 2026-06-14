@@ -1,21 +1,19 @@
 <template>
-  <lightning-tabset variant="vertical">
+  <lightning-tabset variant="scoped">
     <lightning-tab label="Manageability Rules" icon-name="standard:table">
-      <lightning-card hide-header>
-        <div class="slds-grid slds-col">
-          <lightning-datatable
-            key-field="id"
-            data={data}
-            columns={columns}
-            hide-checkbox-column
-          ></lightning-datatable>
-        </div>
-      </lightning-card>
+      <div class="">
+        <lightning-datatable
+          key-field="id"
+          data={data}
+          columns={columns}
+          hide-checkbox-column
+        ></lightning-datatable>
+      </div>
     </lightning-tab>
     <lightning-tab label="Developer Environments" icon-name="standard:apex">
       <lightning-card hide-header>
-        <lightning-tabset>
-          <lightning-tab label="Scratch Orgs">
+        <lightning-tabset variant="scoped">
+          <lightning-tab label="Scratch Orgs" icon-name="standard:default">
             <div
               class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small"
               role="status"
@@ -78,7 +76,10 @@
               </div>
             </div>
           </lightning-tab>
-          <lightning-tab label="Developer &amp; Demo Orgs ">
+          <lightning-tab
+            label="Developer &amp; Demo Orgs "
+            icon-name="standard:default"
+          >
             <template lwc:if={orgId}>
               <div
                 class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small"
@@ -111,7 +112,6 @@
             Features:
             <ul class="slds-list_dotted">
               <li>Agentforce</li>
-              <li>Digital Engagement</li>
             </ul>
           </lightning-tab>
         </lightning-tabset>

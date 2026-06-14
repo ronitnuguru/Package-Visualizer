@@ -17,3 +17,8 @@ package.xml
 Claude.md
 
 **/docs/**
+
+# MCP GenAiFunctions are minted per-org post-install (org-scoped invocationTarget IDs);
+# keep as local dev fixtures only, never package them. The MCP Servers tab discovers
+# tools live via the Tooling API instead.
+force-app/main/default/genAiFunctions

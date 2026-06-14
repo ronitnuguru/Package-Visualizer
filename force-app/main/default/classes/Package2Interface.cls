@@ -1313,4 +1313,263 @@ global with sharing class Package2Interface { // NOPMD
     }
     return response;
   }
+
+  // Tooling Schema strings can be large; cap parsing at 256 KB to stay well clear
+  // of the Apex heap limit when many servers are returned at once.
+  private static final Integer MCP_SCHEMA_MAX_LENGTH = 262144;
+
+  /**************************************************************************************
+   * @Description  Live discovery of MCP servers registered in the org. MCP servers
+   * are ExternalServiceRegistration rows whose RegistrationProviderType is
+   * 'ModelContextProtocol'; each carries a Schema JSON document describing the
+   * server, its tools and their input/output fields.
+   **************************************************************************************/
+  public static List<ObjectWrappers.McpServerWrapper> getMcpServers() {
+    // ExternalServiceRegistration is a Tooling-only object: it is never in the
+    // enterprise schema, so Type.forName() always returns null for it — guarding
+    // on that would disable the feature in every org. Instead we let the Tooling
+    // callout run and rely on the submitQuery try/catch below to degrade
+    // gracefully if the object or integration isn't available.
+    List<ObjectWrappers.McpServerWrapper> servers = new List<ObjectWrappers.McpServerWrapper>();
+    // serverLabel -> the parsed I/O of each tool the server's Schema advertises,
+    // keyed by tool name. Used to enrich the accepted-tool (GenAiFunction) list.
+    Map<String, Map<String, ObjectWrappers.McpToolWrapper>> schemaToolsByServer = new Map<String, Map<String, ObjectWrappers.McpToolWrapper>>();
+    // Only surface ESRs that were distributed by this ISV package:
+    // NamespacePrefix = 'pkgviz' AND ManageableState = 'installed'.
+    // Subscriber-created (unmanaged) servers are excluded.
+    String queryString = 'SELECT Id, MasterLabel, DeveloperName, Description, NamedCredential, Status, Schema FROM ExternalServiceRegistration WHERE RegistrationProviderType = \'ModelContextProtocol\' AND NamespacePrefix = \'pkgviz\' AND ManageableState = \'installed\' ORDER BY MasterLabel LIMIT 200';
+    List<Object> records;
+    try {
+      records = submitQuery(queryString);
+    } catch (Exception e) {
+      throw new AuraHandledException(
+        'Unable to load MCP servers. Confirm the Tooling API integration is configured.'
+      );
+    }
+    for (Object record : records) {
+      Map<String, Object> row = (Map<String, Object>) record;
+      ObjectWrappers.McpServerWrapper srv = new ObjectWrappers.McpServerWrapper();
+      srv.id = (String) row.get('Id');
+      srv.label = (String) row.get('MasterLabel');
+      srv.description = (String) row.get('Description');
+      srv.namedCredential = (String) row.get('NamedCredential');
+      srv.status = (String) row.get('Status');
+      srv.isActive = 'Complete'.equalsIgnoreCase(srv.status);
+      srv.setupUrl =
+        '/lightning/setup/AgentforceRegistry/' +
+        toSetupRecordId(srv.id) +
+        '/view?setup__source=MCP_SERVER';
+      srv.tools = new List<ObjectWrappers.McpToolWrapper>();
+      // Parse the Schema for server metadata + per-tool I/O shapes (not the tool list
+      // itself — accepted tools come from GenAiFunctionDefinition below).
+      schemaToolsByServer.put(
+        srv.label,
+        parseMcpSchema((String) row.get('Schema'), srv)
+      );
+      servers.add(srv);
+    }
+
+    // Attach the accepted tools (GenAiFunctions the subscriber added during MCP setup).
+    // These are the only tools that produce a deployable AgentScript action, so the
+    // displayed/generated tool list is GenAiFunction-driven.
+    attachAcceptedTools(servers, schemaToolsByServer);
+
+    for (ObjectWrappers.McpServerWrapper srv : servers) {
+      srv.toolCount = srv.tools.size();
+      srv.hasTools = !srv.tools.isEmpty();
+    }
+    return servers;
+  }
+
+  private static String toSetupRecordId(String recordId) {
+    return String.isBlank(recordId) || recordId.length() <= 15
+      ? recordId
+      : recordId.substring(0, 15);
+  }
+
+  /**************************************************************************************
+   * @Description  Query GenAiFunctionDefinition for accepted mcpTool functions and
+   * correlate them to their server by MasterLabel suffix ("<tool> - <ServerLabel>").
+   * Enriches each tool with the input/output shapes parsed from the server Schema and
+   * the derived AgentScript target (operation name). A failure here only leaves servers
+   * tool-less — it never blanks the server list.
+   *
+   * Note: correlation is best-effort by label. Two servers sharing a MasterLabel would
+   * collide; that is out of scope (subscriber-controlled naming).
+   **************************************************************************************/
+  private static void attachAcceptedTools(
+    List<ObjectWrappers.McpServerWrapper> servers,
+    Map<String, Map<String, ObjectWrappers.McpToolWrapper>> schemaToolsByServer
+  ) {
+    Map<String, ObjectWrappers.McpServerWrapper> serverByLabel = new Map<String, ObjectWrappers.McpServerWrapper>();
+    for (ObjectWrappers.McpServerWrapper srv : servers) {
+      serverByLabel.put(srv.label, srv);
+    }
+    List<Object> funcs;
+    try {
+      funcs = submitQuery(
+        'SELECT Id, DeveloperName, MasterLabel, Description, InvocationTargetType FROM GenAiFunctionDefinition WHERE InvocationTargetType = \'mcpTool\' LIMIT 2000'
+      );
+    } catch (Exception e) {
+      // GenAiFunctionDefinition may be permission-gated even when ESR isn't. Degrade
+      // to tool-less servers rather than failing the whole list.
+      return;
+    }
+    for (Object f : funcs) {
+      Map<String, Object> row = (Map<String, Object>) f;
+      String masterLabel = (String) row.get('MasterLabel');
+      // MasterLabel format: "<toolName> - <ServerLabel>". Split on the LAST " - " so a
+      // tool name containing " - " doesn't break the server match.
+      Integer sep = masterLabel == null ? -1 : masterLabel.lastIndexOf(' - ');
+      if (sep < 0) {
+        continue;
+      }
+      String toolName = masterLabel.substring(0, sep);
+      String serverLabel = masterLabel.substring(sep + 3);
+      ObjectWrappers.McpServerWrapper srv = serverByLabel.get(serverLabel);
+      if (srv == null) {
+        continue;
+      }
+      ObjectWrappers.McpToolWrapper tool = new ObjectWrappers.McpToolWrapper();
+      tool.name = toolName;
+      tool.genAiFunctionId = (String) row.get('Id');
+      tool.developerName = (String) row.get('DeveloperName');
+      tool.masterLabel = masterLabel;
+      tool.description = (String) row.get('Description');
+      tool.operationName = deriveOperationName(toolName);
+      tool.isWired = true;
+      // Enrich I/O from the Schema tool of the same name, when available.
+      Map<String, ObjectWrappers.McpToolWrapper> schemaTools = schemaToolsByServer.get(
+        serverLabel
+      );
+      ObjectWrappers.McpToolWrapper schemaTool = schemaTools == null
+        ? null
+        : schemaTools.get(toolName);
+      tool.inputs = schemaTool == null
+        ? new List<ObjectWrappers.McpIoFieldWrapper>()
+        : schemaTool.inputs;
+      tool.outputs = schemaTool == null
+        ? new List<ObjectWrappers.McpIoFieldWrapper>()
+        : schemaTool.outputs;
+      srv.tools.add(tool);
+    }
+  }
+
+  /**************************************************************************************
+   * @Description  Derive the AgentScript action target tail from a tool name. The
+   * platform encodes the ESR operation as 'mcptool__<toolName>' with each underscore
+   * hex-encoded as 'x5f' (0x5F). e.g. 'ask_question' -> 'mcptoolx5fx5faskx5fquestion'.
+   **************************************************************************************/
+  private static String deriveOperationName(String toolName) {
+    if (String.isBlank(toolName)) {
+      return null;
+    }
+    return ('mcptool__' + toolName).replace('_', 'x5f');
+  }
+
+  /**************************************************************************************
+   * @Description  Parse the Schema JSON of one MCP server. Sets the server's scalar
+   * metadata (serverName/version/protocolVersion) and returns the per-tool I/O shapes
+   * keyed by tool name. A bad schema flips schemaParseFailed and returns an empty map —
+   * it must never blank out the whole server list, so the parse is fully contained here.
+   **************************************************************************************/
+  private static Map<String, ObjectWrappers.McpToolWrapper> parseMcpSchema(
+    String schemaJson,
+    ObjectWrappers.McpServerWrapper srv
+  ) {
+    Map<String, ObjectWrappers.McpToolWrapper> schemaTools = new Map<String, ObjectWrappers.McpToolWrapper>();
+    srv.schemaParseFailed = false;
+    if (String.isBlank(schemaJson)) {
+      return schemaTools;
+    }
+    if (schemaJson.length() > MCP_SCHEMA_MAX_LENGTH) {
+      srv.schemaParseFailed = true;
+      return schemaTools;
+    }
+    try {
+      Map<String, Object> root = (Map<String, Object>) JSON.deserializeUntyped(
+        schemaJson
+      );
+      Object descriptorObj = root.get('serverDescriptor');
+      if (descriptorObj instanceof Map<String, Object>) {
+        Map<String, Object> descriptor = (Map<String, Object>) descriptorObj;
+        srv.protocolVersion = (String) descriptor.get('protocolVersion');
+        Object serverInfoObj = descriptor.get('serverInfo');
+        if (serverInfoObj instanceof Map<String, Object>) {
+          Map<String, Object> serverInfo = (Map<String, Object>) serverInfoObj;
+          srv.serverName = (String) serverInfo.get('name');
+          srv.serverVersion = (String) serverInfo.get('version');
+        }
+      }
+      Object toolsObj = root.get('tools');
+      if (toolsObj instanceof List<Object>) {
+        for (Object toolObj : (List<Object>) toolsObj) {
+          if (!(toolObj instanceof Map<String, Object>)) {
+            continue;
+          }
+          Map<String, Object> tool = (Map<String, Object>) toolObj;
+          ObjectWrappers.McpToolWrapper toolWrapper = new ObjectWrappers.McpToolWrapper();
+          toolWrapper.name = (String) tool.get('name');
+          toolWrapper.inputs = parseIoFields(tool.get('inputSchema'));
+          toolWrapper.outputs = parseIoFields(tool.get('outputSchema'));
+          if (toolWrapper.name != null) {
+            schemaTools.put(toolWrapper.name, toolWrapper);
+          }
+        }
+      }
+    } catch (Exception e) {
+      // One malformed schema must not break the whole list — never rethrow.
+      srv.schemaParseFailed = true;
+    }
+    return schemaTools;
+  }
+
+  /**************************************************************************************
+   * @Description  Flatten a JSON-Schema object node ('properties' + 'required') into
+   * a list of field wrappers. Vendor extension keys (prefixed 'x-') are ignored.
+   * Properties whose type is expressed via 'anyOf' fall back to 'string'.
+   **************************************************************************************/
+  private static List<ObjectWrappers.McpIoFieldWrapper> parseIoFields(
+    Object schemaObj
+  ) {
+    List<ObjectWrappers.McpIoFieldWrapper> fields = new List<ObjectWrappers.McpIoFieldWrapper>();
+    if (!(schemaObj instanceof Map<String, Object>)) {
+      return fields;
+    }
+    Map<String, Object> schema = (Map<String, Object>) schemaObj;
+    Object propsObj = schema.get('properties');
+    if (!(propsObj instanceof Map<String, Object>)) {
+      return fields;
+    }
+    Map<String, Object> props = (Map<String, Object>) propsObj;
+    Set<String> requiredNames = new Set<String>();
+    Object requiredObj = schema.get('required');
+    if (requiredObj instanceof List<Object>) {
+      for (Object req : (List<Object>) requiredObj) {
+        if (req instanceof String) {
+          requiredNames.add((String) req);
+        }
+      }
+    }
+    for (String propName : props.keySet()) {
+      if (propName != null && propName.startsWith('x-')) {
+        continue;
+      }
+      ObjectWrappers.McpIoFieldWrapper field = new ObjectWrappers.McpIoFieldWrapper();
+      field.name = propName;
+      field.isRequired = requiredNames.contains(propName);
+      field.type = 'string';
+      Object propDefObj = props.get(propName);
+      if (propDefObj instanceof Map<String, Object>) {
+        Map<String, Object> propDef = (Map<String, Object>) propDefObj;
+        Object typeObj = propDef.get('type');
+        if (typeObj instanceof String) {
+          field.type = (String) typeObj;
+        }
+        // else: 'anyOf' (or anything else) falls back to the 'string' default.
+      }
+      fields.add(field);
+    }
+    return fields;
+  }
 }

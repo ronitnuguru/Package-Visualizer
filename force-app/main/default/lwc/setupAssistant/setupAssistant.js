@@ -8,6 +8,7 @@ import hasViewSetup from "@salesforce/userPermission/ViewSetup";
 import CREATEORGMESSAGECHANNEL from "@salesforce/messageChannel/CreateOrgMessageChannel__c";
 import DOCKEDUTILITYBARMESSAGECHANNEL from "@salesforce/messageChannel/DockedUtilityBarMessageChannel__c";
 import { publish, MessageContext } from "lightning/messageService";
+import { SETUP_GUIDE_MARKDOWN } from "./setupGuide";
 import getProfileId from "@salesforce/apex/PackageVisualizerCtrl.getProfileId";
 import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
 import getOrgDetails from "@salesforce/apex/PackageVisualizerCtrl.getOrgDetails";
@@ -509,6 +510,32 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
 
   navigateToChecklistBuilder() {
     window.open("https://checklistbuilder.herokuapp.com/", "_blank");
+  }
+
+  // Copies the full 2GP/ISV setup guide (markdown) to the clipboard so the user
+  // can paste it into an AI assistant. Mirrors setupGuide.md; runtime source is
+  // the imported SETUP_GUIDE_MARKDOWN string.
+  copyAiSetupGuide() {
+    const text = SETUP_GUIDE_MARKDOWN;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(text)
+        .then(() => {
+          this.dispatchEvent(
+            new ShowToastEvent({
+              title: "Success",
+              message: "LLM guide copied to clipboard",
+              variant: "success"
+            })
+          );
+        })
+        .catch((err) => {
+          console.error("Failed to copy setup guide:", err);
+          this.fallbackCopyToClipboard(text);
+        });
+    } else {
+      this.fallbackCopyToClipboard(text);
+    }
   }
 
   handleCopyCommand(event) {

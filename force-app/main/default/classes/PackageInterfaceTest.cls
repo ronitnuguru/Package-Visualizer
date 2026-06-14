@@ -1290,6 +1290,130 @@ private class PackageInterfaceTest {
   }
 
   /**************************************************************************************
+   * @Description  Test class for Package2Interface.getMcpServers — the valid DeepWiki
+   * record: its accepted tools now come from GenAiFunctionDefinition (3 of them),
+   * correlated by MasterLabel suffix, with per-tool I/O enriched from the Schema only
+   * for the tool the Schema declares (ask_question). setupUrl is parsed correctly.
+   **************************************************************************************/
+  @isTest
+  public static void testGetMcpServers() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    List<ObjectWrappers.McpServerWrapper> result = Package2Interface.getMcpServers();
+    Test.stopTest();
+
+    // The mock returns two ESR records (one valid, one malformed).
+    System.assertEquals(2, result.size());
+
+    // Locate the valid DeepWiki server by its label.
+    ObjectWrappers.McpServerWrapper deepWiki = null;
+    for (ObjectWrappers.McpServerWrapper srv : result) {
+      if ('DeepWikiAgentExchange'.equals(srv.label)) {
+        deepWiki = srv;
+      }
+    }
+    System.assertNotEquals(null, deepWiki);
+    System.assertEquals('DeepWiki', deepWiki.serverName);
+    System.assertEquals('2.14.3', deepWiki.serverVersion);
+    System.assertEquals('2025-11-25', deepWiki.protocolVersion);
+    System.assertEquals(true, deepWiki.isActive);
+    System.assertEquals(false, deepWiki.schemaParseFailed);
+
+    // Tools are now driven by the three accepted GenAiFunctions, not the Schema.
+    System.assertEquals(3, deepWiki.toolCount);
+    System.assertEquals(true, deepWiki.hasTools);
+    System.assertEquals(3, deepWiki.tools.size());
+
+    // Locate tools by name (GenAiFunction order is not guaranteed).
+    ObjectWrappers.McpToolWrapper askQuestion = null;
+    ObjectWrappers.McpToolWrapper readWikiStructure = null;
+    for (ObjectWrappers.McpToolWrapper t : deepWiki.tools) {
+      if ('ask_question'.equals(t.name)) {
+        askQuestion = t;
+      } else if ('read_wiki_structure'.equals(t.name)) {
+        readWikiStructure = t;
+      }
+    }
+
+    // ask_question is the only tool the Schema declares, so it gets enriched I/O.
+    System.assertNotEquals(null, askQuestion);
+    System.assertEquals(
+      'a03e6bc51a04135009c34ba31664837d4',
+      askQuestion.developerName
+    );
+    System.assertEquals(
+      'ask_question - DeepWikiAgentExchange',
+      askQuestion.masterLabel
+    );
+    System.assertEquals(
+      'mcptoolx5fx5faskx5fquestion',
+      askQuestion.operationName
+    );
+    System.assertEquals(true, askQuestion.isWired);
+    System.assertEquals(2, askQuestion.inputs.size());
+    System.assertEquals(1, askQuestion.outputs.size());
+
+    // x-fastmcp-wrap-result is a vendor key and must be ignored, leaving one output.
+    System.assertEquals('result', askQuestion.outputs[0].name);
+
+    // Exactly the two declared inputs are required.
+    Integer requiredCount = 0;
+    for (ObjectWrappers.McpIoFieldWrapper input : askQuestion.inputs) {
+      if (input.isRequired) {
+        requiredCount++;
+      }
+    }
+    System.assertEquals(2, requiredCount);
+
+    // read_wiki_structure is wired but absent from the Schema, so its I/O is empty.
+    System.assertNotEquals(null, readWikiStructure);
+    System.assertEquals(
+      'aa031583691bb3a808b7f47a10d5bffca',
+      readWikiStructure.developerName
+    );
+    System.assertEquals(
+      'mcptoolx5fx5freadx5fwikix5fstructure',
+      readWikiStructure.operationName
+    );
+    System.assertEquals(true, readWikiStructure.isWired);
+    System.assertNotEquals(null, readWikiStructure.inputs);
+    System.assertEquals(0, readWikiStructure.inputs.size());
+
+    System.assertEquals(
+      '/lightning/setup/AgentforceRegistry/0Xq000000000001/view?setup__source=MCP_SERVER',
+      deepWiki.setupUrl
+    );
+  }
+
+  /**************************************************************************************
+   * @Description  Test class for Package2Interface.getMcpServers — a malformed Schema
+   * sets schemaParseFailed and leaves tools empty without throwing or dropping the
+   * record from the list. BrokenServer also has no matching GenAiFunctions (none end
+   * with " - BrokenServer"), so it stays tool-less: hasTools is false.
+   **************************************************************************************/
+  @isTest
+  public static void testGetMcpServersSchemaParseFailure() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    List<ObjectWrappers.McpServerWrapper> result = Package2Interface.getMcpServers();
+    Test.stopTest();
+
+    // The malformed record is still returned alongside the valid one.
+    System.assertEquals(2, result.size());
+
+    ObjectWrappers.McpServerWrapper broken = null;
+    for (ObjectWrappers.McpServerWrapper srv : result) {
+      if ('BrokenServer'.equals(srv.label)) {
+        broken = srv;
+      }
+    }
+    System.assertNotEquals(null, broken);
+    System.assertEquals(true, broken.schemaParseFailed);
+    System.assertEquals(0, broken.tools.size());
+    System.assertEquals(false, broken.hasTools);
+  }
+
+  /**************************************************************************************
    * @Description  Test class for Package Dependencies wrapper classes
    **************************************************************************************/
   @isTest

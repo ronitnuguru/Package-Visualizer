@@ -51,6 +51,35 @@ public with sharing class ToolingAPICalloutMock implements HttpCalloutMock {
         '{"size":1,"totalSize":1,"done":true,"queryLocator":null,"entityTypeName":"ApexClass","records":[{"attributes":{"type":"ApexClass","url":"/services/data/v61.0/tooling/sobjects/ApexClass/01p000000000000AAA"},"Id":"01p000000000000AAA"}]}'
       );
       res.setStatusCode(200);
+    } else if (req.getEndpoint().contains('FROM+ExternalServiceRegistration')) {
+      //ExternalServiceRegistration (MCP servers) Success — two records exercise
+      //the getMcpServers parse loop: one valid DeepWiki schema and one whose
+      //Schema is malformed JSON, proving a bad schema sets schemaParseFailed
+      //without breaking the whole list. The embedded Schema string is the
+      //JSON-escaped schema document (each " in the doc is written as \" in the
+      //response body, i.e. \\" inside this Apex literal).
+      res.setBody(
+        '{"size":2,"totalSize":2,"done":true,"queryLocator":null,"entityTypeName":"ExternalServiceRegistration","records":[' +
+          '{"attributes":{"type":"ExternalServiceRegistration","url":"/services/data/v61.0/tooling/sobjects/ExternalServiceRegistration/0Xq000000000001AAA"},"Id":"0Xq000000000001AAA","MasterLabel":"DeepWikiAgentExchange","DeveloperName":"DeepWikiAgentExchange","Description":"DeepWiki MCP server","NamedCredential":"DeepWikiAgentExchange","Status":"Complete","Schema":"{\\"serverDescriptor\\":{\\"protocolVersion\\":\\"2025-11-25\\",\\"serverInfo\\":{\\"name\\":\\"DeepWiki\\",\\"version\\":\\"2.14.3\\"},\\"instructions\\":\\"Ask DeepWiki\\"},\\"tools\\":[{\\"name\\":\\"ask_question\\",\\"description\\":\\"Ask a question about a repo\\",\\"inputSchema\\":{\\"properties\\":{\\"repoName\\":{\\"type\\":\\"string\\"},\\"question\\":{\\"type\\":\\"string\\"}},\\"required\\":[\\"repoName\\",\\"question\\"],\\"type\\":\\"object\\"},\\"outputSchema\\":{\\"properties\\":{\\"result\\":{\\"type\\":\\"string\\"}},\\"required\\":[\\"result\\"],\\"type\\":\\"object\\",\\"x-fastmcp-wrap-result\\":true}}],\\"resources\\":[]}"},' +
+          '{"attributes":{"type":"ExternalServiceRegistration","url":"/services/data/v61.0/tooling/sobjects/ExternalServiceRegistration/0Xq000000000002BBB"},"Id":"0Xq000000000002BBB","MasterLabel":"BrokenServer","DeveloperName":"BrokenServer","Description":"Malformed schema server","NamedCredential":"BrokenServer","Status":"Complete","Schema":"{not valid"}' +
+          ']}'
+      );
+      res.setStatusCode(200);
+    } else if (req.getEndpoint().contains('FROM+GenAiFunctionDefinition')) {
+      //GenAiFunctionDefinition (accepted MCP tools) Success — three mcpTool
+      //functions whose MasterLabel suffix "<tool> - DeepWikiAgentExchange"
+      //correlates them to the DeepWikiAgentExchange ESR above. None end with
+      //" - BrokenServer", so BrokenServer stays tool-less. Only ask_question
+      //is declared in the ESR Schema, so the other two get empty I/O but are
+      //still wired.
+      res.setBody(
+        '{"size":3,"totalSize":3,"done":true,"queryLocator":null,"entityTypeName":"GenAiFunctionDefinition","records":[' +
+          '{"attributes":{"type":"GenAiFunctionDefinition","url":"/services/data/v61.0/tooling/sobjects/GenAiFunctionDefinition/a03e6bc51a04135009c34ba31664837d4"},"DeveloperName":"a03e6bc51a04135009c34ba31664837d4","MasterLabel":"ask_question - DeepWikiAgentExchange","Description":"Ask any question about a GitHub repository.","InvocationTargetType":"mcpTool"},' +
+          '{"attributes":{"type":"GenAiFunctionDefinition","url":"/services/data/v61.0/tooling/sobjects/GenAiFunctionDefinition/a7c219cf2c38f39fab681fad2522dfe8a"},"DeveloperName":"a7c219cf2c38f39fab681fad2522dfe8a","MasterLabel":"read_wiki_contents - DeepWikiAgentExchange","Description":"View documentation about a GitHub repository.","InvocationTargetType":"mcpTool"},' +
+          '{"attributes":{"type":"GenAiFunctionDefinition","url":"/services/data/v61.0/tooling/sobjects/GenAiFunctionDefinition/aa031583691bb3a808b7f47a10d5bffca"},"DeveloperName":"aa031583691bb3a808b7f47a10d5bffca","MasterLabel":"read_wiki_structure - DeepWikiAgentExchange","Description":"Get a list of documentation topics.","InvocationTargetType":"mcpTool"}' +
+          ']}'
+      );
+      res.setStatusCode(200);
     } else {
       //Failure
       res.setStatusCode(401);

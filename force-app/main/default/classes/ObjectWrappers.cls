@@ -470,4 +470,84 @@ global with sharing class ObjectWrappers {
     @AuraEnabled
     public String subscriberPackageVersionId { get; set; }
   }
+
+  /**************************************************************************************
+   * @Description  Wrapper Class for an MCP Server (ExternalServiceRegistration with
+   * RegistrationProviderType = 'ModelContextProtocol'). ObjectWrappers.McpServerWrapper
+   **************************************************************************************/
+  public class McpServerWrapper {
+    @AuraEnabled
+    public String id { get; set; }
+    @AuraEnabled
+    public String label { get; set; }
+    @AuraEnabled
+    public String serverName { get; set; }
+    @AuraEnabled
+    public String serverVersion { get; set; }
+    @AuraEnabled
+    public String protocolVersion { get; set; }
+    @AuraEnabled
+    public String description { get; set; }
+    @AuraEnabled
+    public String namedCredential { get; set; }
+    @AuraEnabled
+    public String status { get; set; }
+    @AuraEnabled
+    public Boolean isActive { get; set; }
+    @AuraEnabled
+    public Integer toolCount { get; set; }
+    @AuraEnabled
+    public String setupUrl { get; set; }
+    @AuraEnabled
+    public Boolean schemaParseFailed { get; set; }
+    // True when at least one accepted tool (GenAiFunction) was matched to this server.
+    @AuraEnabled
+    public Boolean hasTools { get; set; }
+    @AuraEnabled
+    public List<McpToolWrapper> tools { get; set; }
+  }
+
+  /**************************************************************************************
+   * @Description  Wrapper Class for a single MCP tool exposed by a server. A tool is an
+   * accepted GenAiFunction (InvocationTargetType = 'mcpTool'), enriched with the
+   * input/output field shapes parsed from the server's Schema. ObjectWrappers.McpToolWrapper
+   **************************************************************************************/
+  public class McpToolWrapper {
+    @AuraEnabled
+    public String name { get; set; }
+    @AuraEnabled
+    public String description { get; set; }
+    // GenAiFunction Id — used to build the Agentforce Assets deep-link URL.
+    @AuraEnabled
+    public String genAiFunctionId { get; set; }
+    // GenAiFunction DeveloperName — used as the AgentScript action key and source.
+    @AuraEnabled
+    public String developerName { get; set; }
+    // GenAiFunction MasterLabel — used verbatim as the AgentScript action label.
+    @AuraEnabled
+    public String masterLabel { get; set; }
+    // ESR operation name (e.g. mcptoolx5fx5faskx5fquestion) — the AgentScript target tail.
+    @AuraEnabled
+    public String operationName { get; set; }
+    // True when this tool maps to a GenAiFunction (always true under GenAiFunction-driven discovery).
+    @AuraEnabled
+    public Boolean isWired { get; set; }
+    @AuraEnabled
+    public List<McpIoFieldWrapper> inputs { get; set; }
+    @AuraEnabled
+    public List<McpIoFieldWrapper> outputs { get; set; }
+  }
+
+  /**************************************************************************************
+   * @Description  Wrapper Class for a single MCP tool input/output field.
+   * ObjectWrappers.McpIoFieldWrapper
+   **************************************************************************************/
+  public class McpIoFieldWrapper {
+    @AuraEnabled
+    public String name { get; set; }
+    @AuraEnabled
+    public String type { get; set; }
+    @AuraEnabled
+    public Boolean isRequired { get; set; }
+  }
 }
