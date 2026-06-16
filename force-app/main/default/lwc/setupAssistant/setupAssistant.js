@@ -366,25 +366,28 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   // "disallowed endpoint". So we resolve the URL via NavigationMixin.GenerateUrl
   // first, then open it in a new tab. External (http) links are already
   // allowlisted and can be opened directly.
-  openOrgPage(url) {
-    if (url.startsWith("http")) {
-      window.open(url, "_blank");
+  openOrgPage(url, existingTab) {
+    // The new tab must be opened synchronously inside the originating click
+    // handler so it inherits the browser's user-activation gesture. If we waited
+    // for an Apex call to resolve before calling window.open, the gesture would
+    // be gone and the popup blocker would force the page to load in the current
+    // window instead of a new tab. Callers that do async work before navigating
+    // open the blank tab themselves and pass it in (a Window exposes a boolean
+    // `closed`; a click Event does not).
+    const reuseTab = existingTab && typeof existingTab.closed === "boolean";
+    const newTab = reuseTab ? existingTab : window.open("", "_blank");
+    if (!newTab) {
       return;
     }
-    this[NavigationMixin.GenerateUrl]({
-      type: "standard__webPage",
-      attributes: { url }
-    })
-      .then((generatedUrl) => {
-        window.open(generatedUrl, "_blank");
-      })
-      .catch((error) => {
-        console.error(error);
-        this[NavigationMixin.Navigate]({
-          type: "standard__webPage",
-          attributes: { url }
-        });
-      });
+    // Internal Setup paths are relative to this org's Lightning domain; loading
+    // the absolute same-origin URL in the tab triggers a normal Lightning route
+    // (same as bookmarking the page). We deliberately do NOT route internal
+    // links through NavigationMixin's standard__webPage type — for a relative
+    // path it generates a /lightning/webpage/<encoded> "External Web Page"
+    // wrapper that renders blank instead of the real Setup page.
+    newTab.location.href = url.startsWith("http")
+      ? url
+      : window.location.origin + url;
   }
 
   navigateToDevHub() {
@@ -409,6 +412,9 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   }
 
   navigateToPkgVizMainPermSet() {
+    // Open the tab now, while the click gesture is live; the Apex lookup that
+    // follows is async and would otherwise leave window.open popup-blocked.
+    const tab = window.open("", "_blank");
     (async () => {
       await getNamespacePermSetId({
         label: "Package_VisualizerPS",
@@ -416,17 +422,19 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
       })
         .then((result) => {
           this.openOrgPage(
-            `/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`
+            `/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`,
+            tab
           );
         })
         .catch((error) => {
           console.error(error);
-          this.navigateToPermissionSets();
+          this.navigateToPermissionSets(tab);
         });
     })();
   }
 
   navigateToPkgVizPushUpgradePermSet() {
+    const tab = window.open("", "_blank");
     (async () => {
       await getNamespacePermSetId({
         label: "Package_Visualizer_Push_Upgrade",
@@ -434,29 +442,32 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
       })
         .then((result) => {
           this.openOrgPage(
-            `/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`
+            `/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`,
+            tab
           );
         })
         .catch((error) => {
           console.error(error);
-          this.navigateToPermissionSets();
+          this.navigateToPermissionSets(tab);
         });
     })();
   }
 
   navigateLimitedAccessUserProfiile() {
+    const tab = window.open("", "_blank");
     (async () => {
       await getProfileId({
         label: "Limited Access User"
       })
         .then((result) => {
           this.openOrgPage(
-            `/lightning/setup/EnhancedProfiles/page?address=%2F${result}`
+            `/lightning/setup/EnhancedProfiles/page?address=%2F${result}`,
+            tab
           );
         })
         .catch((error) => {
           console.error(error);
-          this.openOrgPage("/lightning/setup/EnhancedProfiles/home");
+          this.openOrgPage("/lightning/setup/EnhancedProfiles/home", tab);
         });
     })();
   }
@@ -493,7 +504,7 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     window.open("https://salesforce.quip.com/f3SWA340YbFH", "_blank");
   }
 
-  navigateToPermissionSets() {
+  navigateToPermissionSets(existingTab) {
     // Deep link straight to the Tooling Access perm set's Manage Assignments page
     // so the admin can grant additional users access without searching the list.
     // The Id is resolved server-side in the integration status; before the perm
@@ -503,7 +514,7 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     const url = permSetId
       ? `/lightning/setup/PermSets/${permSetId}/PermissionSetAssignment/home`
       : "/lightning/setup/PermSets/home";
-    this.openOrgPage(url);
+    this.openOrgPage(url, existingTab);
   }
 
   navigateToExternalClientApps() {

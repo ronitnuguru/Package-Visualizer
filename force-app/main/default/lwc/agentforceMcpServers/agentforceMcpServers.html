@@ -125,12 +125,17 @@
                         tools in the MCP server's Agentforce Registry for more
                         details
                       </p>
-                      <lightning-button
-                        label="View Agentforce Registry"
-                        slot="cta"
-                        data-server-id={server.id}
-                        onclick={navigateToMcpSetup}
-                      ></lightning-button>
+                      <lightning-button-group slot="cta">
+                        <lightning-button
+                          label="View Agentforce Registry"
+                          data-server-id={server.id}
+                          onclick={navigateToMcpSetup}
+                        ></lightning-button>
+                        <lightning-button
+                          label="Provision Permission Set"
+                          onclick={navigateToMcpRegistrationPermSet}
+                        ></lightning-button>
+                      </lightning-button-group>
                     </lightning-empty-state>
                   </div>
                 </template>
@@ -147,12 +152,16 @@
         <p slot="description">
           Looks like we do not have any associated MCP servers yet...
         </p>
-        <lightning-button
-          label="Learn More"
-          slot="cta"
-          onclick={handleLearnMore}
-        >
-        </lightning-button>
+        <lightning-button-group slot="cta">
+          <lightning-button label="Learn More" onclick={handleLearnMore}>
+          </lightning-button>
+          <lightning-button
+            variant="brand"
+            label="Install Managed Package"
+            onclick={handleExtensionInstall}
+          >
+          </lightning-button>
+        </lightning-button-group>
       </lightning-empty-state>
     </div>
   </template>

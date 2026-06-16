@@ -6,9 +6,12 @@ import {
   buildToolActionBlock
 } from "./mcpAgentScript.js";
 import getMcpServers from "@salesforce/apexContinuation/PackageVisualizerCtrl.getMcpServers";
+import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
 
 const MCP_LEARN_MORE_URL =
   "https://help.salesforce.com/s/articleView?id=ai.agent_mcp_connect_register.htm&type=5";
+
+const MANAGED_PACKAGE_VERSION_ID = "04tRh000001bSUbIAM";
 
 export default class AgentforceMcpServers extends NavigationMixin(
   LightningElement
@@ -74,12 +77,7 @@ export default class AgentforceMcpServers extends NavigationMixin(
     if (!server || !server.setupUrl) {
       return;
     }
-    this[NavigationMixin.Navigate]({
-      type: "standard__webPage",
-      attributes: {
-        url: server.setupUrl
-      }
-    });
+    this.openOrgPage(server.setupUrl);
   }
 
   navigateToGenAiFunction(event) {
@@ -87,12 +85,9 @@ export default class AgentforceMcpServers extends NavigationMixin(
     if (!genAiFunctionId) {
       return;
     }
-    this[NavigationMixin.Navigate]({
-      type: "standard__webPage",
-      attributes: {
-        url: `/lightning/setup/AgentAssetLibrary/${genAiFunctionId}/editAction`
-      }
-    });
+    this.openOrgPage(
+      `/lightning/setup/AgentAssetLibrary/${genAiFunctionId}/editAction`
+    );
   }
 
   handleCopyMcpAgentScript(event) {
@@ -119,6 +114,67 @@ export default class AgentforceMcpServers extends NavigationMixin(
 
   handleLearnMore() {
     window.open(MCP_LEARN_MORE_URL, "_blank");
+  }
+
+  navigateToMcpRegistrationPermSet() {
+    (async () => {
+      await getNamespacePermSetId({
+        label: "Package_Visualizer_MCP_Registration",
+        namespace: "pkgviz"
+      })
+        .then((result) => {
+          this.openOrgPage(
+            `/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`
+          );
+        })
+        .catch((error) => {
+          console.error(error);
+          this.openOrgPage("/lightning/setup/PermSets/home");
+          this.dispatchEvent(
+            new ShowToastEvent({
+              title: "Couldn't open the permission set",
+              message:
+                (error && error.body && error.body.message) ||
+                "Confirm the Package_Visualizer_MCP_Registration permission set is installed, then try again.",
+              variant: "error"
+            })
+          );
+        });
+    })();
+  }
+
+  // Opens an in-org page in a new browser tab. Under Lightning Web Security,
+  // window.open only accepts URLs produced by the navigation service; a
+  // manually built URL (e.g. window.location.origin + path) is rejected as a
+  // "disallowed endpoint". So we resolve the URL via NavigationMixin.GenerateUrl
+  // first, then open it in a new tab. External (http) links are already
+  // allowlisted and can be opened directly.
+  openOrgPage(url) {
+    if (url.startsWith("http")) {
+      window.open(url, "_blank");
+      return;
+    }
+    this[NavigationMixin.GenerateUrl]({
+      type: "standard__webPage",
+      attributes: { url }
+    })
+      .then((generatedUrl) => {
+        window.open(generatedUrl, "_blank");
+      })
+      .catch((error) => {
+        console.error(error);
+        this[NavigationMixin.Navigate]({
+          type: "standard__webPage",
+          attributes: { url }
+        });
+      });
+  }
+
+  handleExtensionInstall() {
+    window.open(
+      `/packaging/installPackage.apexp?p0=${MANAGED_PACKAGE_VERSION_ID}`,
+      "_blank"
+    );
   }
 
   copyTextToClipboard(text) {
