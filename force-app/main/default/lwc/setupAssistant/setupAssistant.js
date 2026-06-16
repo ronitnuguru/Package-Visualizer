@@ -253,7 +253,7 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     const url = ncId
       ? `/lightning/setup/NamedCredential/${ncId}/view`
       : "/lightning/setup/NamedCredential/home";
-    window.open(url, "_blank");
+    this.openOrgPage(url);
   }
 
   // Step 5 — Test & Confirm: run a live Tooling callout (ApexClass, present in every
@@ -360,8 +360,35 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     this.dispatchEvent(new CustomEvent("back"));
   }
 
+  // Opens an in-org page in a new browser tab. Under Lightning Web Security,
+  // window.open only accepts URLs produced by the navigation service; a
+  // manually built URL (e.g. window.location.origin + path) is rejected as a
+  // "disallowed endpoint". So we resolve the URL via NavigationMixin.GenerateUrl
+  // first, then open it in a new tab. External (http) links are already
+  // allowlisted and can be opened directly.
+  openOrgPage(url) {
+    if (url.startsWith("http")) {
+      window.open(url, "_blank");
+      return;
+    }
+    this[NavigationMixin.GenerateUrl]({
+      type: "standard__webPage",
+      attributes: { url }
+    })
+      .then((generatedUrl) => {
+        window.open(generatedUrl, "_blank");
+      })
+      .catch((error) => {
+        console.error(error);
+        this[NavigationMixin.Navigate]({
+          type: "standard__webPage",
+          attributes: { url }
+        });
+      });
+  }
+
   navigateToDevHub() {
-    window.open("/lightning/setup/DevHub/home", "_blank");
+    this.openOrgPage("/lightning/setup/DevHub/home");
   }
 
   navigateToCLI() {
@@ -372,16 +399,12 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   }
 
   navigateToNamespace() {
-    window.open(
-      "/lightning/o/NamespaceRegistry/list?filterName=Recent",
-      "_blank"
-    );
+    this.openOrgPage("/lightning/o/NamespaceRegistry/list?filterName=Recent");
   }
 
   navigateToEnvHub() {
-    window.open(
-      "/lightning/o/EnvironmentHubMember/list?filterName=Recent",
-      "_blank"
+    this.openOrgPage(
+      "/lightning/o/EnvironmentHubMember/list?filterName=Recent"
     );
   }
 
@@ -392,9 +415,8 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
         namespace: "pkgviz"
       })
         .then((result) => {
-          window.open(
-            `/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`,
-            "_blank"
+          this.openOrgPage(
+            `/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`
           );
         })
         .catch((error) => {
@@ -411,9 +433,8 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
         namespace: "pkgviz"
       })
         .then((result) => {
-          window.open(
-            `/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`,
-            "_blank"
+          this.openOrgPage(
+            `/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`
           );
         })
         .catch((error) => {
@@ -429,14 +450,13 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
         label: "Limited Access User"
       })
         .then((result) => {
-          window.open(
-            `/lightning/setup/EnhancedProfiles/page?address=%2F${result}`,
-            "_blank"
+          this.openOrgPage(
+            `/lightning/setup/EnhancedProfiles/page?address=%2F${result}`
           );
         })
         .catch((error) => {
           console.error(error);
-          window.open("/lightning/setup/EnhancedProfiles/home", "_blank");
+          this.openOrgPage("/lightning/setup/EnhancedProfiles/home");
         });
     })();
   }
@@ -483,22 +503,19 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     const url = permSetId
       ? `/lightning/setup/PermSets/${permSetId}/PermissionSetAssignment/home`
       : "/lightning/setup/PermSets/home";
-    window.open(url, "_blank");
+    this.openOrgPage(url);
   }
 
   navigateToExternalClientApps() {
-    window.open(
-      "/lightning/setup/ManageExternalClientApplication/home",
-      "_blank"
-    );
+    this.openOrgPage("/lightning/setup/ManageExternalClientApplication/home");
   }
 
   navigateToRemoteSiteSettings() {
-    window.open("/lightning/setup/SecurityRemoteProxy/home", "_blank");
+    this.openOrgPage("/lightning/setup/SecurityRemoteProxy/home");
   }
 
   navigateToCSPTrustedSites() {
-    window.open("/lightning/setup/SecurityCspTrustedSite/home", "_blank");
+    this.openOrgPage("/lightning/setup/SecurityCspTrustedSite/home");
   }
 
   navigateTo2GPMigrationDocs() {
@@ -716,9 +733,8 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   }
 
   navigateToCodeBuilder() {
-    window.open(
-      `/runtime_developerplatform_codebuilder/codebuilder.app?launch=true`,
-      "_blank"
+    this.openOrgPage(
+      "/runtime_developerplatform_codebuilder/codebuilder.app?launch=true"
     );
   }
 
