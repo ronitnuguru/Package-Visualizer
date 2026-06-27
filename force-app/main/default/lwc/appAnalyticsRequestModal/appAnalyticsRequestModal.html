@@ -30,7 +30,10 @@
         class="slds-modal__content slds-var-p-around_medium"
         id="modal-content-id-1"
       >
-        <div class="slds-notify slds-notify_alert slds-m-bottom_xx-small" role="alert">
+        <div
+          class="slds-notify slds-notify_alert slds-m-bottom_xx-small"
+          role="alert"
+        >
           <span class="slds-assistive-text">info</span>
           <span
             class="slds-icon_container slds-icon-utility-warning slds-var-m-right_x-small"
@@ -39,23 +42,22 @@
               size="small"
               icon-name="utility:tableau"
               alternative-text="tableau"
-              title="Analytics Studio"
+              title="CRM Analytics Studio"
               variant="inverse"
             ></lightning-icon>
           </span>
           <h2>
-            Explore and Visualize AppAnalytics Data in <a target="_blank" href="/analytics/home">CRM Analytics</a>
+            Explore and Visualize AppAnalytics Data in
+            <a target="_blank" href="/analytics/home">CRM Analytics</a>
           </h2>
         </div>
         <template if:true={viewData.errorMessage}>
           <div
-          class="slds-scoped-notification slds-media slds-media_center slds-theme_error" 
-          role="status"
+            class="slds-scoped-notification slds-media slds-media_center slds-theme_error"
+            role="status"
           >
             <div class="slds-media__figure">
-              <span
-              class="slds-icon_container slds-icon-utility-warning"
-              >
+              <span class="slds-icon_container slds-icon-utility-warning">
                 <lightning-icon
                   size="small"
                   icon-name="utility:error"
@@ -66,8 +68,13 @@
               </span>
             </div>
             <div class="slds-media__body">
-              <p>{viewData.errorMessage}&nbsp;
-                <a href="https://developer.salesforce.com/docs/atlas.en-us.packagingGuide.meta/packagingGuide/app_analytics_recommendations.htm" target="_blank">Recommendations</a>
+              <p>
+                {viewData.errorMessage}&nbsp;
+                <a
+                  href="https://developer.salesforce.com/docs/atlas.en-us.packagingGuide.meta/packagingGuide/app_analytics_recommendations.htm"
+                  target="_blank"
+                  >Recommendations</a
+                >
               </p>
             </div>
           </div>
@@ -227,15 +234,20 @@
               <div
                 class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
               >
-                <ul class="slds-list_horizontal slds-has-inline-block-links_space slds-grid slds-wrap slds-grid_align-spread">
+                <ul
+                  class="slds-list_horizontal slds-has-inline-block-links_space slds-grid slds-wrap slds-grid_align-spread"
+                >
                   <template
                     for:each={packageIdsList}
                     for:item="pkg"
                     for:index="index"
                   >
-                  <li class="slds-item slds-col" key={pkg}>
-                    <lightning-badge label={pkg} icon-name="utility:package"></lightning-badge>
-                  </li>
+                    <li class="slds-item slds-col" key={pkg}>
+                      <lightning-badge
+                        label={pkg}
+                        icon-name="utility:package"
+                      ></lightning-badge>
+                    </li>
                   </template>
                 </ul>
               </div>
@@ -254,15 +266,20 @@
               <div
                 class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
               >
-              <ul class="slds-list_horizontal slds-has-inline-block-links_space slds-grid slds-wrap slds-grid_align-spread">
+                <ul
+                  class="slds-list_horizontal slds-has-inline-block-links_space slds-grid slds-wrap slds-grid_align-spread"
+                >
                   <template
                     for:each={organizationIdsList}
                     for:item="org"
                     for:index="index"
                   >
-                  <li class="slds-item slds-col" key={org}>
-                    <lightning-badge label={org} icon-name="utility:salesforce1"></lightning-badge>
-                  </li>
+                    <li class="slds-item slds-col" key={org}>
+                      <lightning-badge
+                        label={org}
+                        icon-name="utility:salesforce1"
+                      ></lightning-badge>
+                    </li>
                   </template>
                 </ul>
               </div>
@@ -275,7 +292,10 @@
           Close
         </button>
         <template if:true={viewData.downloadUrl}>
-          <button class="slds-button slds-button_brand" onclick={handleDownload}>
+          <button
+            class="slds-button slds-button_brand"
+            onclick={handleDownload}
+          >
             Download
           </button>
         </template>

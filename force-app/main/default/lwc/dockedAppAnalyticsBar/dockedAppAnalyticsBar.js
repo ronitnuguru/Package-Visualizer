@@ -18,52 +18,58 @@ export default class DockedAppAnalyticsBar extends LightningElement {
   @api errorMessage;
   @api fileType;
   @api fileCompression;
-  @api querySubmittedTime
+  @api querySubmittedTime;
   @api packageIds;
   @api organizationIds;
 
   @wire(MessageContext) messageContext;
 
-  get displayLoadingIcon(){
-    return (this.requestState === 'New' || this.requestState === 'Pending') ? true : false;
+  get displayLoadingIcon() {
+    return this.requestState === "New" || this.requestState === "Pending"
+      ? true
+      : false;
   }
 
-  get displaySuccessIcon(){
-    return (this.requestState === 'Complete' || this.requestState === 'Delivered') ? true : false;
+  get displaySuccessIcon() {
+    return this.requestState === "Complete" ? true : false;
   }
 
-  get displayWarningIcon(){
-    return (this.requestState === 'Expired' || this.requestState === 'NoData') ? true : false;
+  get displayWarningIcon() {
+    return this.requestState === "Expired" || this.requestState === "NoData"
+      ? true
+      : false;
   }
 
   get displayErrorIcon() {
-    return (this.requestState === 'Error'|| this.requestState === 'Failed') ? true : false;
+    return this.requestState === "Failed" ? true : false;
   }
 
-  handleViewModal(){
-    this.dispatchEvent(new CustomEvent("expand",
-      {
+  handleViewModal() {
+    this.dispatchEvent(
+      new CustomEvent("expand", {
         detail: {
-        name: this.name,
-        type: this.type,
-        id: this.key,
-        requestState: this.requestState,
-        appDataType: this.appDataType,
-        downloadSize: this.downloadSize,
-        endTime: this.endTime,
-        startTime: this.startTime,
-        downloadExpirationTime: this.downloadExpirationTime,
-        downloadUrl: this.downloadUrl,
-        errorMessage: this.errorMessage,
-        fileType: this.fileType,
-        fileCompression: this.fileCompression,
-        querySubmittedTime: this.querySubmittedTime,
-        packageIds: this.packageIds,
-        organizationIds: this.organizationIds
-    }}));
+          name: this.name,
+          type: this.type,
+          id: this.key,
+          requestState: this.requestState,
+          appDataType: this.appDataType,
+          downloadSize: this.downloadSize,
+          endTime: this.endTime,
+          startTime: this.startTime,
+          downloadExpirationTime: this.downloadExpirationTime,
+          downloadUrl: this.downloadUrl,
+          errorMessage: this.errorMessage,
+          fileType: this.fileType,
+          fileCompression: this.fileCompression,
+          querySubmittedTime: this.querySubmittedTime,
+          packageIds: this.packageIds,
+          organizationIds: this.organizationIds
+        }
+      })
+    );
   }
 
-  handleDownload(){
+  handleDownload() {
     window.open(this.downloadUrl, "_blank");
   }
 
@@ -79,7 +85,7 @@ export default class DockedAppAnalyticsBar extends LightningElement {
         fileType: this.fileType,
         fileCompression: this.fileCompression
       })
-        .then(result => {
+        .then(() => {
           this.displaySpinner = false;
           this.dispatchEvent(
             new ShowToastEvent({
@@ -93,7 +99,7 @@ export default class DockedAppAnalyticsBar extends LightningElement {
             appAnalyticsRequestOpen: true
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           this.displaySpinner = false;
           // Toast for Failure

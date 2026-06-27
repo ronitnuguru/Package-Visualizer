@@ -209,7 +209,7 @@ export default class PackagePushUpgradesHistoryView extends LightningElement {
         pushRequestLimit: this.pushRequestsLimit,
         pushRequestOffset: this.pushRequestsOffset
       })
-        .then(result => {
+        .then((result) => {
           if (isViewMore) {
             if (result.length === 0) {
               this.disableInfiniteLoad = false;
@@ -227,7 +227,7 @@ export default class PackagePushUpgradesHistoryView extends LightningElement {
           this.displaySpinner = false;
           this.displayDatatableSpinner = false;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           this.pushRequestsData = undefined;
           this.displayPushHistoryView = false;
@@ -439,6 +439,41 @@ export default class PackagePushUpgradesHistoryView extends LightningElement {
     this.pushRequestsOffset = 0;
     this.loadPackagePushRequests(true, false);
     this.handleAllPushRequests();
+  }
+
+  handlePushStatusRefresh(event) {
+    const pushId = event.detail.pushId;
+    (async () => {
+      await getPackageVersionPushRequests({
+        filterWrapper: [{ fieldName: "Id", value: pushId, dataType: "STRING" }],
+        sortedBy: this.sortedBy,
+        sortDirection: this.sortDirection,
+        pushRequestLimit: 1,
+        pushRequestOffset: 0
+      })
+        .then((result) => {
+          if (result && result.length > 0) {
+            const freshRow = result[0];
+            // re-push @api props -> child banner/icons/progress update
+            this.getPushDetails(freshRow);
+            if (this.pushRequestsData) {
+              // patch the matching list row in place -> history Status column stays fresh
+              this.pushRequestsData = this.pushRequestsData.map((row) => {
+                return row.Id === freshRow.Id ? freshRow : row;
+              });
+            }
+          }
+        })
+        .catch((error) => {
+          this.dispatchEvent(
+            new ShowToastEvent({
+              title: "Something went wrong",
+              message: error,
+              variant: "error"
+            })
+          );
+        });
+    })();
   }
 
   handleSliderChange(event) {

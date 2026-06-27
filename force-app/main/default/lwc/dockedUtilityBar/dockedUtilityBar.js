@@ -169,6 +169,21 @@ export default class DockedUtilityBar extends NavigationMixin(
   appAnalyticsViewData;
   announcementsData;
 
+  // --- AppAnalytics auto-poll + coalesced notification state ---
+  _pollTimeoutId = null; // chained setTimeout handle (latency-aware)
+  _pollInFlight = false; // reentrancy guard for the continuation callout
+  _seeded = false; // baseline flag — suppress notify on the first cycle
+  _prevStateById = new Map(); // Id -> RequestState from the previous cycle
+  terminalBadgeCount = 0; // unacknowledged completions shown on the icon
+  POLL_INTERVAL_MS = 15000; // poll cadence (15s)
+  TERMINAL_STATES = ["Complete", "Expired", "Failed", "NoData"];
+  STATE_LABELS = {
+    Complete: "completed",
+    Failed: "failed",
+    Expired: "expired",
+    NoData: "returned no data"
+  };
+
   limitsNotAvailableView = false;
   resourcesNotAvailableView = false;
   appAnalyticsNotAvailableView = false;
@@ -218,11 +233,16 @@ export default class DockedUtilityBar extends NavigationMixin(
         }
       }
     );
+
+    // Seed AppAnalytics state on load so background-created requests are tracked
+    // even before the panel is opened. Silent: no spinner, no toast on this cycle.
+    this.seedAppAnalytics();
   }
 
   disconnectedCallback() {
     unsubscribe(this.subscription);
     this.subscription = null;
+    this.stopPolling();
   }
 
   handleLimitsUtilityPanel(message) {
@@ -444,6 +464,11 @@ export default class DockedUtilityBar extends NavigationMixin(
           this.displaySpinner = false;
           this.appAnalyticsNotAvailableView =
             !result || result.length === 0 ? true : false;
+          // User-visible refresh: re-baseline, clear the badge (the user is now
+          // looking at the list), and arm polling if anything is still in-flight.
+          this.seedStateMap(result);
+          this.terminalBadgeCount = 0;
+          this.startPolling();
         })
         .catch((error) => {
           console.error(error);
@@ -460,6 +485,153 @@ export default class DockedUtilityBar extends NavigationMixin(
           );
         });
     })();
+  }
+
+  // Silent on-load / arm-the-poller seed. Unlike getAppAnaltics() this never
+  // touches the shared displaySpinner and never toasts — it only establishes the
+  // baseline and starts polling when something is in-flight.
+  seedAppAnalytics() {
+    (async () => {
+      if (this._pollInFlight) {
+        return;
+      }
+      this._pollInFlight = true;
+      await getAppAnalyticsRequests({})
+        .then((result) => {
+          this.appAnalyticsData = result;
+          this.seedStateMap(result);
+          this.startPolling();
+        })
+        .catch((error) => {
+          // Silent: a background seed failure must not surface a toast.
+          console.error(error);
+        })
+        .finally(() => {
+          this._pollInFlight = false;
+        });
+    })();
+  }
+
+  // Record the current state of every request and mark the baseline as
+  // established, so the first cycle never fires notifications for stale history.
+  seedStateMap(result) {
+    this._prevStateById = new Map(
+      (result || []).map((r) => [r.Id, r.RequestState])
+    );
+    this._seeded = true;
+  }
+
+  isTerminal(state) {
+    return state != null && this.TERMINAL_STATES.includes(state);
+  }
+
+  hasInFlightRequests(list = this.appAnalyticsData) {
+    return (list || []).some((r) => !this.isTerminal(r.RequestState));
+  }
+
+  startPolling() {
+    if (this._pollTimeoutId || !this.hasInFlightRequests()) {
+      return;
+    }
+    // eslint-disable-next-line @lwc/lwc/no-async-operation
+    this._pollTimeoutId = setTimeout(() => {
+      this._pollTimeoutId = null;
+      this.pollAppAnalytics();
+    }, this.POLL_INTERVAL_MS);
+  }
+
+  stopPolling() {
+    if (this._pollTimeoutId) {
+      clearTimeout(this._pollTimeoutId);
+      this._pollTimeoutId = null;
+    }
+  }
+
+  // Silent poll tick: never touches displaySpinner. Diffs against the previous
+  // cycle, coalesces newly-terminal requests into a single toast, updates the
+  // badge, then re-arms only while requests remain in-flight.
+  pollAppAnalytics() {
+    if (this._pollInFlight) {
+      return;
+    }
+    this._pollInFlight = true;
+    (async () => {
+      await getAppAnalyticsRequests({})
+        .then((result) => {
+          const list = result || [];
+          const newlyTerminal = this._seeded
+            ? list.filter((req) => {
+                const prev = this._prevStateById.get(req.Id);
+                const wasInFlight =
+                  prev === undefined || !this.isTerminal(prev);
+                return wasInFlight && this.isTerminal(req.RequestState);
+              })
+            : [];
+          this.appAnalyticsData = result;
+          this.appAnalyticsNotAvailableView = list.length === 0 ? true : false;
+          this.seedStateMap(list);
+          if (newlyTerminal.length > 0) {
+            this.terminalBadgeCount += newlyTerminal.length;
+            this.dispatchEvent(this.buildToast(newlyTerminal));
+          }
+          // Re-arm only while something is still pending.
+          if (this.hasInFlightRequests(list)) {
+            this.startPolling();
+          } else {
+            this.stopPolling();
+          }
+        })
+        .catch((error) => {
+          // Silent: transient poll failures must not spam toasts. Retry next tick.
+          console.error(error);
+          this.startPolling();
+        })
+        .finally(() => {
+          this._pollInFlight = false;
+        });
+    })();
+  }
+
+  // Coalescing rule: at most ONE toast per cycle, regardless of burst size.
+  buildToast(newlyTerminal) {
+    if (newlyTerminal.length === 1) {
+      const req = newlyTerminal[0];
+      return new ShowToastEvent({
+        title: "AppAnalytics request finished",
+        message: `${req.Name} - ${
+          this.STATE_LABELS[req.RequestState] || req.RequestState
+        }`,
+        variant: this.toastVariant(newlyTerminal)
+      });
+    }
+    const counts = {};
+    newlyTerminal.forEach((req) => {
+      const label = this.STATE_LABELS[req.RequestState] || req.RequestState;
+      counts[label] = (counts[label] || 0) + 1;
+    });
+    const summary = Object.keys(counts)
+      .map((label) => `${counts[label]} ${label}`)
+      .join(", ");
+    return new ShowToastEvent({
+      title: `${newlyTerminal.length} AppAnalytics requests finished`,
+      message: summary,
+      variant: this.toastVariant(newlyTerminal)
+    });
+  }
+
+  // success only when every newly-terminal request completed; otherwise warning.
+  toastVariant(newlyTerminal) {
+    return newlyTerminal.every((req) => req.RequestState === "Complete")
+      ? "success"
+      : "warning";
+  }
+
+  get hasTerminalBadge() {
+    return this.terminalBadgeCount > 0;
+  }
+
+  get badgeAriaLabel() {
+    return `${this.terminalBadgeCount} finished AppAnalytics requests`;
   }
 
   handleAppAnalyticsExpand(event) {

@@ -11,28 +11,44 @@
   <template if:false={displayPushHistoryView}>
     <template if:false={displaySpinner}>
       <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
-        <p slot="description">Looks like we were unable retrieve any push upgrade requests for this package...</p>
+        <p slot="description">
+          Looks like we were unable retrieve any push upgrade requests for this
+          package...
+        </p>
       </lightning-empty-state>
     </template>
   </template>
   <template if:true={displayPushHistoryView}>
     <template if:true={displayEmptyView}>
       <template if:true={displayFilterMeta}>
-          <lightning-empty-state title="Hmm..." illustration-name="success:new">
-          <p slot="description">We could not find any results based on your filters...</p>
-          <lightning-button variant="brand" label="Edit Filters" slot="cta" onclick={handleFilterEdit}>
+        <lightning-empty-state title="Hmm..." illustration-name="success:new">
+          <p slot="description">
+            We could not find any results based on your filters...
+          </p>
+          <lightning-button
+            variant="brand"
+            label="Edit Filters"
+            slot="cta"
+            onclick={handleFilterEdit}
+          >
           </lightning-button>
         </lightning-empty-state>
       </template>
       <template if:false={displayFilterMeta}>
-        <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
-          <p slot="description">Looks like you have not scheduled any prior push upgrade requests for this package...</p>
+        <lightning-empty-state
+          title="Hmm…"
+          illustration-name="noresults:search"
+        >
+          <p slot="description">
+            Looks like you have not scheduled any prior push upgrade requests
+            for this package...
+          </p>
         </lightning-empty-state>
       </template>
     </template>
     <template if:false={displayEmptyView}>
       <div class="slds-var-p-bottom_x-small">
-        <lightning-breadcrumbs class="" style="font-weight: 700;">
+        <lightning-breadcrumbs class="" style="font-weight: 700">
           <lightning-breadcrumb
             label="All Push Requests"
             onclick={handleAllPushRequests}
@@ -53,34 +69,28 @@
       <template if:true={displayAllPushRequests}>
         <div class="slds-grid slds-var-p-bottom_x-small slds-wrap">
           <div class="slds-col">
-            <ul class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small">
+            <ul
+              class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small"
+            >
               <template if:true={pushRequestsLength}>
-                <li class="slds-item">
-                  {pushRequestsLength} Requests
-                </li>
+                <li class="slds-item">{pushRequestsLength} Requests</li>
               </template>
-              <li class="slds-item">
-                Sorted by {sortedByLabel}
-              </li>
+              <li class="slds-item">Sorted by {sortedByLabel}</li>
               <template if:true={displayFilterMeta}>
-                <li class="slds-item">
-                  Filters Enabled
-                </li>
+                <li class="slds-item">Filters Enabled</li>
               </template>
               <li class="slds-item">
-                  Updated&nbsp;<lightning-relative-date-time
+                Updated&nbsp;<lightning-relative-date-time
                   value={relativeDateTime}
                 ></lightning-relative-date-time>
               </li>
             </ul>
             <template if:true={packageVersionList}>
-              <ul class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak">
-                <li class="slds-item">
-                  {versionLimit} Package Versions
-                </li>
-                <li class="slds-item">
-                  Sorted by Created Date
-                </li>
+              <ul
+                class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak"
+              >
+                <li class="slds-item">{versionLimit} Package Versions</li>
+                <li class="slds-item">Sorted by Created Date</li>
               </ul>
             </template>
           </div>
@@ -134,7 +144,7 @@
         <div class="table-style">
           <div
             class={displayChartDockPanel}
-            style="direction:ltr;"
+            style="direction: ltr"
             aria-hidden="false"
           >
             <div class="slds-panel__header">
@@ -161,7 +171,7 @@
           </div>
           <div
             class={displayFilterDockPanel}
-            style="direction:ltr;"
+            style="direction: ltr"
             aria-hidden="false"
           >
             <div class="slds-panel__header">
@@ -264,6 +274,7 @@
         push-system-mod-stamp={pushSystemModStamp}
         onpushjobdetail={handlePushJobDetail}
         onrefresh={handleRefresh}
+        onstatusrefresh={handlePushStatusRefresh}
       ></c-package-push-job-view>
     </template>
     <template if:true={displayPackagePushJobRequests}>

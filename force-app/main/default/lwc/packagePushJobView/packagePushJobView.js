@@ -66,8 +66,22 @@ export default class PackagePushJobView extends LightningElement {
   @api pushPackageVersionId;
   @api pushScheduledStartTime;
   @api pushStartTime;
-  @api pushStatus;
   @api pushSystemModStamp;
+
+  _pushStatus;
+  _isConnected = false;
+
+  @api
+  get pushStatus() {
+    return this._pushStatus;
+  }
+  set pushStatus(value) {
+    this._pushStatus = value;
+    // After mount, a refresh into a terminal state must refresh the progress aggregate.
+    if (this._isConnected && (value === "Succeeded" || value === "Failed")) {
+      this.getPackagePushJobAggregate();
+    }
+  }
 
   displayPackagePushJobs = true;
   packagePushJobsAccordionClass = `slds-section slds-var-p-top_medium slds-is-open`;
@@ -138,6 +152,7 @@ export default class PackagePushJobView extends LightningElement {
   }
 
   connectedCallback() {
+    this._isConnected = true;
     this.loadPackagePushJobs(true, false);
     this.tableSelectedOptions = [
       "SubscriberOrganizationKey",
@@ -423,6 +438,9 @@ export default class PackagePushJobView extends LightningElement {
   handleRefresh() {
     this.pushJobsOffset = 0;
     this.loadPackagePushJobs(true, false);
+    this.dispatchEvent(
+      new CustomEvent("statusrefresh", { detail: { pushId: this.pushId } })
+    );
   }
 
   handleAbort() {
