@@ -1457,6 +1457,41 @@ private class PackageInterfaceTest {
   }
 
   /**************************************************************************************
+   * @Description  invokeMcpTool bridges to the DeepWikiMcpController Callable, which
+   * lives in the extension package. Two valid outcomes depending on context: when the
+   * extension class is absent (isolated base build) the unresolved Callable surfaces as
+   * an AuraHandledException; when both packages are deployed to one org the Callable
+   * resolves, the unmocked callout fails, and callTool returns a success=false JSON
+   * string. Accept either so the test is environment-independent.
+   **************************************************************************************/
+  @isTest
+  public static void testInvokeMcpTool() {
+    String result = null;
+    Boolean threwAura = false;
+    Test.startTest();
+    try {
+      result = PackageVisualizerCtrl.invokeMcpTool(
+        'read_wiki_contents',
+        '{"repoName":"facebook/react"}'
+      );
+    } catch (AuraHandledException e) {
+      threwAura = true;
+    }
+    Test.stopTest();
+    if (!threwAura) {
+      System.assertNotEquals(
+        null,
+        result,
+        'Resolved Callable must return a JSON string'
+      );
+      System.assert(
+        result.contains('"success":false'),
+        'Unmocked callout should yield success=false JSON: ' + result
+      );
+    }
+  }
+
+  /**************************************************************************************
    * @Description  Test class for invokePromptAndUserModelsGenAi - GenAI integration
    **************************************************************************************/
   @isTest

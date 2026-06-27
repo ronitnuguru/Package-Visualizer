@@ -85,6 +85,14 @@ export default class PackageLauncher extends NavigationMixin(LightningElement) {
     this.dispatchEvent(new CustomEvent("cancel"));
   }
 
+  handleTrailheadClick() {
+    publish(this.messageContext, DOCKEDUTILITYBARMESSAGECHANNEL, {
+      dockedBarControls: "Trailhead",
+      trailheadOpen: true
+    });
+    this.dispatchEvent(new CustomEvent("cancel"));
+  }
+
   handleCreateOrgsClick() {
     publish(this.messageContext, DOCKEDUTILITYBARMESSAGECHANNEL, {
       dockedBarControls: "CreateOrgs",

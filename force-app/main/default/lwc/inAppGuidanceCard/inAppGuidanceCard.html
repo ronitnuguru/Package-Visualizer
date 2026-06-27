@@ -115,7 +115,7 @@
                   </div>
                   <div
                     slot="footer"
-                    class="slds-grid slds-grid_vertical-align-center"
+                    class="slds-grid slds-grid_vertical-align-center slds-align_absolute-center"
                   >
                     <template lwc:if={resource.isUpgradeAvailable}>
                       <lightning-button
@@ -230,6 +230,14 @@
           <lightning-tab label="MCP Servers" icon-name="standard:mcp_server">
             <c-agentforce-mcp-servers></c-agentforce-mcp-servers>
           </lightning-tab>
+          <!--
+          <lightning-tab
+            label="Repositories"
+            icon-name="standard:maintenance_asset"
+          >
+            <c-repositories-list></c-repositories-list>
+          </lightning-tab>
+        -->
         </lightning-tabset>
       </template>
     </div>

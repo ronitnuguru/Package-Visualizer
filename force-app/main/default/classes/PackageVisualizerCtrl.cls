@@ -940,6 +940,32 @@ public with sharing class PackageVisualizerCtrl {
     }
   }
 
+  /**************************************************************************************
+   * @Description  Generic bridge to the DeepWiki MCP server (extension package) via the
+   * Callable interface. toolName names the MCP tool (e.g. 'read_wiki_contents');
+   * inputsJson is a JSON object of that tool's arguments. Returns the McpResult JSON
+   * string ({ success, toolName, result, error }) straight through to the LWC.
+   **************************************************************************************/
+  @AuraEnabled
+  public static String invokeMcpTool(String toolName, String inputsJson) {
+    try {
+      Map<String, Object> inputs = String.isBlank(inputsJson)
+        ? new Map<String, Object>()
+        : (Map<String, Object>) JSON.deserializeUntyped(inputsJson);
+      Callable callableInstance = (Callable) Type.forName(
+          'DeepWikiMcpController'
+        )
+        .newInstance();
+      Map<String, Object> payload = new Map<String, Object>{
+        'toolName' => toolName,
+        'inputs' => inputs
+      };
+      return (String) callableInstance.call('callTool', payload);
+    } catch (Exception e) {
+      throw new AuraHandledException(e.getMessage());
+    }
+  }
+
   @AuraEnabled
   public static Object invokePromptAndUserModelsGenAi(
     String className,

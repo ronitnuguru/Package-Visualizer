@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>This Message Channel contains Docked Utility Bar Controls</description>
+    <description
+  >This Message Channel contains Docked Utility Bar Controls</description>
     <isExposed>true</isExposed>
     <lightningMessageFields>
         <fieldName>createOrgsOpen</fieldName>
@@ -16,6 +17,9 @@
     </lightningMessageFields>
     <lightningMessageFields>
         <fieldName>appAnalyticsRequestOpen</fieldName>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>trailheadOpen</fieldName>
     </lightningMessageFields>
     <masterLabel>DockedUtilityBarMessageChannel</masterLabel>
 </LightningMessageChannel>

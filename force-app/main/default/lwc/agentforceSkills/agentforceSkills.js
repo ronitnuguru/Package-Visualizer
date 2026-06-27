@@ -20,6 +20,18 @@ export default class AgentforceSkills extends NavigationMixin(
     });
   }
 
+  handleAgentforceLabs() {
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: "https://labs.agentforce.com/docs/skills"
+      },
+      state: {
+        target: "_blank"
+      }
+    });
+  }
+
   navigateToSkillGithub(event) {
     const skillIndex = event.target.dataset.index;
     const selectedSkill = this.skills[skillIndex];

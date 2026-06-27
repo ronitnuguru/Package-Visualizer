@@ -47,6 +47,8 @@ $RECYCLE.BIN/
 # Local AI tooling
 .claude/
 .cursor/
+.agents/
+skills-lock.json
 
 # Local project configuration
 sfdx-project.json

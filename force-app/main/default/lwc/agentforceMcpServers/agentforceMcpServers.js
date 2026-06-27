@@ -1,5 +1,4 @@
 import { LightningElement } from "lwc";
-import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import {
   buildMcpSubagentBlock,
@@ -13,9 +12,7 @@ const MCP_LEARN_MORE_URL =
 
 const MANAGED_PACKAGE_VERSION_ID = "04tRh000001bSUbIAM";
 
-export default class AgentforceMcpServers extends NavigationMixin(
-  LightningElement
-) {
+export default class AgentforceMcpServers extends LightningElement {
   mcpServers = [];
   mcpLoading = false;
   mcpLoaded = false;
@@ -117,6 +114,9 @@ export default class AgentforceMcpServers extends NavigationMixin(
   }
 
   navigateToMcpRegistrationPermSet() {
+    // Open the tab now, while the click gesture is live; the Apex lookup that
+    // follows is async and would otherwise leave window.open popup-blocked.
+    const tab = window.open("", "_blank");
     (async () => {
       await getNamespacePermSetId({
         label: "Package_Visualizer_MCP_Registration",
@@ -124,12 +124,13 @@ export default class AgentforceMcpServers extends NavigationMixin(
       })
         .then((result) => {
           this.openOrgPage(
-            `/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`
+            `/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`,
+            tab
           );
         })
         .catch((error) => {
           console.error(error);
-          this.openOrgPage("/lightning/setup/PermSets/home");
+          this.openOrgPage("/lightning/setup/PermSets/home", tab);
           this.dispatchEvent(
             new ShowToastEvent({
               title: "Couldn't open the permission set",
@@ -143,31 +144,28 @@ export default class AgentforceMcpServers extends NavigationMixin(
     })();
   }
 
-  // Opens an in-org page in a new browser tab. Under Lightning Web Security,
-  // window.open only accepts URLs produced by the navigation service; a
-  // manually built URL (e.g. window.location.origin + path) is rejected as a
-  // "disallowed endpoint". So we resolve the URL via NavigationMixin.GenerateUrl
-  // first, then open it in a new tab. External (http) links are already
-  // allowlisted and can be opened directly.
-  openOrgPage(url) {
-    if (url.startsWith("http")) {
-      window.open(url, "_blank");
+  // Opens an in-org page in a new browser tab. The new tab must be opened
+  // synchronously inside the originating click handler so it inherits the
+  // browser's user-activation gesture. If we waited for an Apex call to resolve
+  // before calling window.open, the gesture would be gone and the popup blocker
+  // would force the page to load in the current window instead of a new tab.
+  // Callers that do async work before navigating open the blank tab themselves
+  // and pass it in (a Window exposes a boolean `closed`; a click Event does not).
+  openOrgPage(url, existingTab) {
+    const reuseTab = existingTab && typeof existingTab.closed === "boolean";
+    const newTab = reuseTab ? existingTab : window.open("", "_blank");
+    if (!newTab) {
       return;
     }
-    this[NavigationMixin.GenerateUrl]({
-      type: "standard__webPage",
-      attributes: { url }
-    })
-      .then((generatedUrl) => {
-        window.open(generatedUrl, "_blank");
-      })
-      .catch((error) => {
-        console.error(error);
-        this[NavigationMixin.Navigate]({
-          type: "standard__webPage",
-          attributes: { url }
-        });
-      });
+    // Internal Setup paths are relative to this org's Lightning domain; loading
+    // the absolute same-origin URL in the tab triggers a normal Lightning route
+    // (same as bookmarking the page). We deliberately do NOT route internal
+    // links through NavigationMixin's standard__webPage type — for a relative
+    // path it generates a /lightning/webpage/<encoded> "External Web Page"
+    // wrapper that renders blank instead of the real Setup page.
+    newTab.location.href = url.startsWith("http")
+      ? url
+      : window.location.origin + url;
   }
 
   handleExtensionInstall() {

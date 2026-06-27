@@ -73,39 +73,38 @@
                 <lightning-button-icon
                   tooltip="Namespace Registry"
                   icon-name="utility:dataspaces"
-                  variant="border-filled"
                   onclick={handleNamespaceRegistry}
+                  variant="border-filled"
                 ></lightning-button-icon>
                 <template if:true={displayLMA}>
                   <lightning-button-icon
                     icon-name="utility:package"
-                    variant="border-filled"
                     tooltip="License Management Package"
                     onclick={handleLMA}
+                    variant="border-filled"
                   ></lightning-button-icon>
                 </template>
                 <template if:true={displayFMA}>
                   <lightning-button-icon
                     icon-name="utility:slider"
-                    variant="border-filled"
                     tooltip="Feature Parameters"
                     onclick={handleFMA}
+                    variant="border-filled"
                   ></lightning-button-icon>
                 </template>
               </template>
               <template if:true={type}>
                 <lightning-button-icon
                   icon-name="utility:prompt"
-                  variant="border-filled"
                   tooltip="In App Guidance"
                   onclick={handleInAppPrompt}
+                  variant="border-filled"
                 ></lightning-button-icon>
               </template>
             </lightning-button-group>
             <lightning-button-group class="slds-hide_large">
               <lightning-button-menu
                 alternative-text="Menu"
-                variant="border-filled"
                 menu-alignment="auto"
               >
                 <template if:true={type}>

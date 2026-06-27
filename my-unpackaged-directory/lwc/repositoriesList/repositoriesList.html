@@ -1,0 +1,169 @@
+<template>
+  <div
+    class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
+  >
+    <lightning-card>
+      <h3 slot="title" class="slds-truncate">
+        <lightning-icon
+          icon-name="standard:orders"
+          size="medium"
+          class="slds-m-right_small card_header_icon"
+        ></lightning-icon>
+        Repositories
+      </h3>
+      <div class="slds-card__body slds-card__body_inner">
+        <template for:each={repos} for:item="repo" for:index="index">
+          <div
+            class="card-style slds-var-m-bottom_small slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
+            key={repo.label}
+          >
+            <lightning-card>
+              <h3 slot="title" class="slds-truncate" title={repo.label}>
+                <lightning-icon
+                  icon-name="standard:order_item"
+                  size="medium"
+                  class="slds-m-right_small"
+                ></lightning-icon>
+                {repo.label}
+              </h3>
+              <div
+                slot="actions"
+                class="slds-grid slds-grid_vertical-align-center"
+              >
+                <lightning-badge
+                  label={repo.visibility}
+                  class="slds-m-right_x-small slds-theme_inverse"
+                ></lightning-badge>
+                <lightning-button-icon
+                  icon-name="utility:dx_change_request"
+                  variant="border-filled"
+                  tooltip="GitHub Repository"
+                  data-index={index}
+                  onclick={navigateToRepo}
+                ></lightning-button-icon>
+              </div>
+              <div class="slds-card__body slds-card__body_inner">
+                <!--
+                <div class="slds-text-title_bold">{repo.repoPath}</div>
+                -->
+              </div>
+            </lightning-card>
+          </div>
+        </template>
+
+        <div
+          class="card-style slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small slds-var-m-top_small"
+        >
+          <lightning-card>
+            <h3 slot="title" class="slds-truncate">
+              <lightning-icon
+                icon-name="standard:bot"
+                size="medium"
+                class="slds-m-right_small card_header_icon"
+              ></lightning-icon>
+              Ask DeepWiki
+            </h3>
+            <div class="slds-card__body slds-card__body_inner">
+              <lightning-combobox
+                name="repository"
+                label="Repository"
+                value={selectedRepo}
+                options={repoOptions}
+                dropdown-alignment="auto"
+                onchange={handleRepoChange}
+              ></lightning-combobox>
+
+              <lightning-textarea
+                name="question"
+                label="Question"
+                placeholder='Try "How do I set up this package locally?"'
+                value={question}
+                oninput={handleQuestionChange}
+                class="slds-var-m-top_small"
+              ></lightning-textarea>
+
+              <div
+                class="slds-grid slds-grid_vertical-align-center slds-wrap slds-var-m-top_small"
+              >
+                <lightning-button-group>
+                  <lightning-button
+                    label="Find"
+                    icon-name="utility:search"
+                    onclick={handleFind}
+                  ></lightning-button>
+                  <lightning-button
+                    label="Catch Up"
+                    icon-name="utility:forward"
+                    onclick={handleCatchUp}
+                  ></lightning-button>
+                  <lightning-button
+                    label="Plan"
+                    icon-name="utility:richtextbulletedlist"
+                    onclick={handlePlan}
+                  ></lightning-button>
+                </lightning-button-group>
+                <lightning-button
+                  label="Send"
+                  variant="brand"
+                  icon-name="utility:send"
+                  icon-position="right"
+                  disabled={sendDisabled}
+                  onclick={handleSend}
+                  class="slds-m-left_x-small"
+                ></lightning-button>
+              </div>
+
+              <p
+                class="slds-text-body_small slds-text-color_weak slds-var-m-top_x-small"
+              >
+                Generative AI can produce inaccurate responses. Review responses
+                carefully.
+              </p>
+
+              <template lwc:if={isLoading}>
+                <div
+                  class="slds-is-relative slds-var-p-vertical_large slds-var-m-top_small"
+                >
+                  <lightning-spinner
+                    variant="brand"
+                    size="medium"
+                    alternative-text="Generating…"
+                  ></lightning-spinner>
+                </div>
+              </template>
+              <template lwc:elseif={hasError}>
+                <lightning-empty-state
+                  title="Hmm…"
+                  illustration-name="noresults:search"
+                >
+                  <p slot="description">{errorMessage}</p>
+                </lightning-empty-state>
+              </template>
+              <template lwc:elseif={response}>
+                <div
+                  class="card-style slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small slds-var-m-top_small"
+                >
+                  <lightning-card>
+                    <h3 slot="title" class="slds-truncate">
+                      <lightning-icon
+                        icon-name="utility:sparkles"
+                        size="x-small"
+                        class="slds-m-right_x-small card_header_icon"
+                      ></lightning-icon>
+                      {activeAction}
+                    </h3>
+                    <div class="slds-card__body slds-card__body_inner">
+                      <lightning-formatted-rich-text
+                        value={response}
+                      ></lightning-formatted-rich-text>
+                    </div>
+                  </lightning-card>
+                </div>
+              </template>
+            </div>
+          </lightning-card>
+        </div>
+      </div>
+    </lightning-card>
+  </div>
+</template>

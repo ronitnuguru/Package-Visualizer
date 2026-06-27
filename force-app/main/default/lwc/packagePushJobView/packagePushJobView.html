@@ -1,10 +1,17 @@
 <template>
   <div class="card-style">
-    <section class="slds-card slds-border_top slds-border_right slds-border_bottom slds-border_left card-style">
+    <section
+      class="slds-card slds-border_top slds-border_right slds-border_bottom slds-border_left card-style"
+    >
       <template if:true={displayStatusProgress}>
-        <header class="slds-theme_shade slds-p-around_medium slds-m-bottom_small">
+        <header
+          class="slds-theme_shade slds-p-around_medium slds-m-bottom_small"
+        >
           <div>
-            <div class="slds-grid slds-grid_align-spread slds-p-bottom_x-small" id="progress-bar-label-id-5">
+            <div
+              class="slds-grid slds-grid_align-spread slds-p-bottom_x-small"
+              id="progress-bar-label-id-5"
+            >
               <span>
                 <template if:true={pushDurationSeconds}>
                   <div>
@@ -27,12 +34,15 @@
                 class="slds-progress-bar__value slds-progress-bar__value_success"
                 style={progressStyle}
               ></span>
-            </div>       
+            </div>
           </div>
         </header>
       </template>
       <lightning-card>
-        <h3 slot="title" class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+        <h3
+          slot="title"
+          class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate"
+        >
           <template if:true={displayLoadingIcon}>
             <lightning-dynamic-icon
               type="eq"
@@ -72,7 +82,11 @@
         </h3>
         <lightning-button-group slot="actions">
           <template if:true={displayAbort}>
-            <lightning-button variant="border-filled" label="Abort" onclick={handleAbort}></lightning-button>
+            <lightning-button
+              variant="destructive"
+              label="Abort"
+              onclick={handleAbort}
+            ></lightning-button>
           </template>
         </lightning-button-group>
         <div class="slds-card__body slds-card__body_inner slds-p-bottom_medium">
@@ -81,11 +95,12 @@
               <div class="slds-media__body">
                 <div class="slds-tile__detail">
                   <div class="slds-grid slds-gutters">
-    
                     <div class="slds-col">
                       <dl class="slds-list_horizontal slds-wrap">
                         <template if:true={pushScheduledStartTime}>
-                          <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                          <dt
+                            class="slds-item_label slds-text-color_weak slds-truncate"
+                          >
                             Scheduled Start Time:
                           </dt>
                           <dd class="slds-item_detail slds-truncate">
@@ -102,7 +117,9 @@
                           </dd>
                         </template>
                         <template if:true={pushStartTime}>
-                          <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                          <dt
+                            class="slds-item_label slds-text-color_weak slds-truncate"
+                          >
                             Start Time:
                           </dt>
                           <dd class="slds-item_detail slds-truncate">
@@ -119,7 +136,9 @@
                           </dd>
                         </template>
                         <template if:true={pushEndTime}>
-                          <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                          <dt
+                            class="slds-item_label slds-text-color_weak slds-truncate"
+                          >
                             End Time:
                           </dt>
                           <dd class="slds-item_detail slds-truncate">
@@ -186,10 +205,14 @@
         </template>
         <template if:false={displayPushJobView}>
           <template if:false={displaySpinner}>
-            <div
-              class="card-style slds-card_boundary slds-p-around_large">
-              <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
-                <p slot="description">Looks like we were unable to retrieve any push job requests...</p>
+            <div class="card-style slds-card_boundary slds-p-around_large">
+              <lightning-empty-state
+                title="Hmm…"
+                illustration-name="noresults:search"
+              >
+                <p slot="description">
+                  Looks like we were unable to retrieve any push job requests...
+                </p>
               </lightning-empty-state>
             </div>
           </template>
@@ -197,37 +220,47 @@
         <template if:true={displayPushJobView}>
           <template if:true={displayEmptyView}>
             <template if:true={displayFilterMeta}>
-              <lightning-empty-state title="Hmm..." illustration-name="success:new">
-                <p slot="description">We could not find any results based on your filters...</p>
-                <lightning-button variant="brand" label="Edit Filters" slot="cta" onclick={handleFilterEdit}>
+              <lightning-empty-state
+                title="Hmm..."
+                illustration-name="success:new"
+              >
+                <p slot="description">
+                  We could not find any results based on your filters...
+                </p>
+                <lightning-button
+                  variant="brand"
+                  label="Edit Filters"
+                  slot="cta"
+                  onclick={handleFilterEdit}
+                >
                 </lightning-button>
               </lightning-empty-state>
             </template>
             <template if:false={displayFilterMeta}>
-              <div
-                class="card-style slds-card_boundary slds-p-around_large"
-              >
-                <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
-                  <p slot="description">Looks like we were unable to find any push job requests for this package...</p>
+              <div class="card-style slds-card_boundary slds-p-around_large">
+                <lightning-empty-state
+                  title="Hmm…"
+                  illustration-name="noresults:search"
+                >
+                  <p slot="description">
+                    Looks like we were unable to find any push job requests for
+                    this package...
+                  </p>
                 </lightning-empty-state>
               </div>
             </template>
           </template>
           <template if:false={displayEmptyView}>
             <div class="slds-grid slds-var-p-bottom_x-small slds-wrap">
-              <ul class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small">
+              <ul
+                class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small"
+              >
                 <template if:true={pushJobsLength}>
-                  <li class="slds-item">
-                    {pushJobsLength} Push Jobs
-                  </li>
+                  <li class="slds-item">{pushJobsLength} Push Jobs</li>
                 </template>
-                <li class="slds-item">
-                  Sorted by {sortedByLabel}
-                </li>
+                <li class="slds-item">Sorted by {sortedByLabel}</li>
                 <template if:true={displayFilterMeta}>
-                  <li class="slds-item">
-                    Filters Enabled
-                  </li>
+                  <li class="slds-item">Filters Enabled</li>
                 </template>
                 <li class="slds-item">
                   Updated&nbsp;<lightning-relative-date-time
@@ -285,11 +318,13 @@
               <div if:true={chartInit}>
                 <div
                   class={displayChartDockPanel}
-                  style="direction:ltr;"
+                  style="direction: ltr"
                   aria-hidden="false"
                 >
                   <div class="slds-panel__header">
-                    <h2 class="slds-panel__header-title slds-text-heading_small slds-truncate">
+                    <h2
+                      class="slds-panel__header-title slds-text-heading_small slds-truncate"
+                    >
                       Charts
                     </h2>
                     <button
@@ -315,11 +350,13 @@
               </div>
               <div
                 class={displayFilterDockPanel}
-                style="direction:ltr;"
+                style="direction: ltr"
                 aria-hidden="false"
               >
                 <div class="slds-panel__header">
-                  <h2 class="slds-panel__header-title slds-text-heading_small slds-truncate">
+                  <h2
+                    class="slds-panel__header-title slds-text-heading_small slds-truncate"
+                  >
                     Filters
                   </h2>
                   <button

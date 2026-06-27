@@ -4,27 +4,27 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 >
-    <label>Install Agentforce Extension Package</label>
+    <label>Enable Lightning Web Security (LWS)</label>
     <protected>true</protected>
     <values>
         <field>Description__c</field>
         <value
       xsi:type="xsd:string"
-    >Install or upgrade extension package to natively leverage embedded Agentforce and Generative AI features</value>
+    >Go to Setup's Session Settings and enable "Use Lightning Web Security for Lightning web components and Aura components" for a rich UI/UX experience</value>
     </values>
     <values>
         <field>Icon__c</field>
-        <value xsi:type="xsd:string">standard:agent_astro</value>
+        <value xsi:type="xsd:string">standard:lightning_component</value>
     </values>
     <values>
         <field>Link__c</field>
         <value
       xsi:type="xsd:string"
-    >https://appexchange.salesforce.com/appxListingDetail?listingId=632af825-58e1-4e61-a2b6-8b008449ca03</value>
+    >/lightning/setup/SecuritySession/home</value>
     </values>
     <values>
         <field>Order__c</field>
-        <value xsi:type="xsd:double">3.0</value>
+        <value xsi:type="xsd:double">1.0</value>
     </values>
     <values>
         <field>Visibility__c</field>

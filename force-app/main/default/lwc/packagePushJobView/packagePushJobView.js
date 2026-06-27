@@ -1,6 +1,5 @@
 import { LightningElement, api } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
-import LightningModal from 'lightning/modal';
 import PackagePushJobFields from "./packagePushJobFields";
 import getPackageVersionPushJobs from "@salesforce/apexContinuation/PushUpgradesCtrl.getPackageVersionPushJobs";
 import updatePackagePushRequest from "@salesforce/apex/PushUpgradesCtrl.updatePackagePushRequest";
@@ -60,7 +59,7 @@ const columns = [
   }
 ];
 
-export default class PackagePushJobView extends LightningModal  {
+export default class PackagePushJobView extends LightningElement {
   @api pushId;
   @api pushDurationSeconds;
   @api pushEndTime;
@@ -165,11 +164,11 @@ export default class PackagePushJobView extends LightningModal  {
         filterWrapper: wrapper,
         groupByField: "Status"
       })
-        .then(result => {
-          this.totalProgress = result.reduce(function(a, b) {
+        .then((result) => {
+          this.totalProgress = result.reduce(function (a, b) {
             return a + b.expr0;
           }, 0);
-          const success = result.find(jobs => jobs.Status === "Succeeded");
+          const success = result.find((jobs) => jobs.Status === "Succeeded");
           this.successProgress = success ? success.expr0 : 0;
           const successPercentage = Math.round(
             (this.successProgress / this.totalProgress) * 100
@@ -177,7 +176,7 @@ export default class PackagePushJobView extends LightningModal  {
           this.progressStyle = `width:${successPercentage}%`;
           this.displayStatusProgress = true;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
         });
     })();
@@ -217,7 +216,7 @@ export default class PackagePushJobView extends LightningModal  {
         pushJobsLimit: this.pushJobsLimit,
         pushJobsOffset: this.pushJobsOffset
       })
-        .then(result => {
+        .then((result) => {
           if (isViewMore) {
             if (result.length === 0) {
               this.disableInfiniteLoad = false;
@@ -235,7 +234,7 @@ export default class PackagePushJobView extends LightningModal  {
           this.displaySpinner = false;
           this.displayDatatableSpinner = false;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           this.pushJobsData = undefined;
           this.displayPushJobView = false;
@@ -446,7 +445,7 @@ export default class PackagePushJobView extends LightningModal  {
         packagePushRequestId: packagePushRequestId,
         status: status
       })
-        .then(result => {
+        .then(() => {
           this.displaySpinner = false;
           this.dispatchEvent(new CustomEvent("cancel"));
           this.dispatchEvent(
@@ -459,7 +458,7 @@ export default class PackagePushJobView extends LightningModal  {
           );
           this.dispatchEvent(new CustomEvent("refresh"));
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error.body.message);
           this.displaySpinner = false;
           this.dispatchEvent(

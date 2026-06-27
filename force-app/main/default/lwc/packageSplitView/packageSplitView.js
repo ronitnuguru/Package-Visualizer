@@ -380,6 +380,13 @@ export default class PackageSplitView extends NavigationMixin(
     });
   }
 
+  handleTrailheadClick() {
+    publish(this.messageContext, DOCKEDUTILITYBARMESSAGECHANNEL, {
+      dockedBarControls: "Trailhead",
+      trailheadOpen: true
+    });
+  }
+
   handleCreateOrgs() {
     publish(this.messageContext, DOCKEDUTILITYBARMESSAGECHANNEL, {
       dockedBarControls: "CreateOrgs",
