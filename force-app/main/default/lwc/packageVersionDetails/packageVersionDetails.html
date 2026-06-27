@@ -8,7 +8,10 @@
   </template>
   <div class="slds-grid slds-var-p-around_small slds-wrap">
     <template if:true={isPatchVersion}>
-      <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small" role="status">
+      <div
+        class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small"
+        role="status"
+      >
         <div class="slds-media__figure">
           <lightning-icon
             size="small"
@@ -20,7 +23,21 @@
         </div>
         <div class="slds-media__body">
           <p>
-            Non-zero patch numbers create special type of patch packages. They should only be used unless absolutely necessary. Review the <a target="_blank" href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp_create_patch_version.htm">guidelines</a> and <a target="_blank" href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp_config_upgrades.htm">ancestry</a> considerations for Patch Versions in Second-Generation Managed Packaging 
+            Non-zero patch numbers create special type of patch packages. They
+            should only be used unless absolutely necessary. Review the
+            <a
+              target="_blank"
+              href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp_create_patch_version.htm"
+              >guidelines</a
+            >
+            and
+            <a
+              target="_blank"
+              href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp_config_upgrades.htm"
+              >ancestry</a
+            >
+            considerations for Patch Versions in Second-Generation Managed
+            Packaging
           </p>
         </div>
       </div>
@@ -163,9 +180,7 @@
             <div
               class="slds-form-element__control input-style-size slds-var-p-bottom_x-small"
             >
-            <div class="slds-form-element__static">
-              {packageDescription}
-            </div>
+              <div class="slds-form-element__static">{packageDescription}</div>
             </div>
           </div>
         </template>
@@ -303,10 +318,11 @@
             <div
               class="slds-form-element__control input-style-size slds-var-p-bottom_x-small slds-truncate"
             >
-              <a 
+              <a
                 href={packageReleaseVersionUrl}
                 target="_blank"
-                class="install-url">
+                class="install-url"
+              >
                 {packageReleaseVersion}
               </a>
             </div>
@@ -344,7 +360,7 @@
       </div>
     </div>
   </div>
-  <div class="slds-card__footer">
+  <div class="slds-card__footer slds-align_absolute-center">
     <template if:false={editMode}>
       <div class="slds-grid slds-grid_align-end">
         <div class="slds-show_large">
@@ -429,10 +445,12 @@
                 </button>
                 <header class="slds-popover__header">
                   <div
-                    class="slds-media slds-media_center slds-has-flexi-truncate "
+                    class="slds-media slds-media_center slds-has-flexi-truncate"
                   >
                     <div class="slds-media__figure">
-                      <span class="slds-icon_container slds-icon-utility-warning">
+                      <span
+                        class="slds-icon_container slds-icon-utility-warning"
+                      >
                         <lightning-icon
                           size="small"
                           icon-name="utility:warning"
@@ -459,8 +477,7 @@
                   <p>
                     Code Coverage could not be retrieved for this package
                     version.&nbsp;
-                    <a href={codeCoverageLink} target="_blank"
-                      >Learn More</a>
+                    <a href={codeCoverageLink} target="_blank">Learn More</a>
                   </p>
                 </div>
               </section>
@@ -496,14 +513,14 @@
         </div>
         <div class="slds-hide_large">
           <lightning-button
-              variant="brand"
-              label="Edit"
-              title="Edit"
-              onclick={handleEdit}
-              icon-name="utility:edit"
-              icon-position="right"
-              class="slds-var-m-right_x-small"
-            >
+            variant="brand"
+            label="Edit"
+            title="Edit"
+            onclick={handleEdit}
+            icon-name="utility:edit"
+            icon-position="right"
+            class="slds-var-m-right_x-small"
+          >
           </lightning-button>
           <lightning-button-group>
             <lightning-button
@@ -536,10 +553,10 @@
     <template if:true={editMode}>
       <div class="slds-align_absolute-center">
         <lightning-button
-        label="Cancel"
-        title="Cancel"
-        onclick={handleEditCancel}
-        class="slds-var-m-left_x-small"
+          label="Cancel"
+          title="Cancel"
+          onclick={handleEditCancel}
+          class="slds-var-m-left_x-small"
         ></lightning-button>
         <lightning-button
           variant="brand"

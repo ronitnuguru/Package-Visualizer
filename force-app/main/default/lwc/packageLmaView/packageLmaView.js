@@ -1,7 +1,6 @@
 import { LightningElement, api, wire } from "lwc";
-import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { NavigationMixin } from "lightning/navigation";
-import { encodeDefaultFieldValues } from 'lightning/pageReferenceUtils';
+import { encodeDefaultFieldValues } from "lightning/pageReferenceUtils";
 import PackageLmaFields from "./packageLmaFields";
 import getLMAVersion from "@salesforce/apex/PackageVisualizerCtrl.getLMAVersion";
 import getPackageVersionLicenses from "@salesforce/apexContinuation/PackageVisualizerCtrl.getPackageVersionLicenses";
@@ -129,7 +128,6 @@ export default class PackageLmaView extends NavigationMixin(LightningElement) {
 
   lmaData;
   displayEmptyLMA;
-  versionIcon;
   versionLink;
   packageLink;
   packageVersionId;
@@ -183,10 +181,6 @@ export default class PackageLmaView extends NavigationMixin(LightningElement) {
   lmaVersion(result) {
     if (result.data) {
       this.lmaData = result.data;
-      this.versionIcon =
-        this.lmaData.isBeta === false
-          ? "utility:package"
-          : "utility:package_org_beta";
       this.versionLink = `/lightning/r/sfLma__Package_Version__c/${this.lmaData.id}/view`;
       this.packageLink = `/lightning/r/sfLma__Package__c/${this.lmaData.lmaPackageId}/view`;
       this.packageVersionId = this.lmaData.id;
@@ -224,7 +218,7 @@ export default class PackageLmaView extends NavigationMixin(LightningElement) {
     }
   }
 
-  toggleGenAiLicensesAccordion(){
+  toggleGenAiLicensesAccordion() {
     this.displayGenAiLicenses = !this.displayGenAiLicenses;
     this.genAiLicensesAccordionClass = this.displayGenAiLicenses
       ? `slds-section slds-var-p-top_medium slds-is-open`
@@ -264,7 +258,7 @@ export default class PackageLmaView extends NavigationMixin(LightningElement) {
         lmaLicensesLimit: this.lmaLicensesLimit,
         lmaLicensesOffset: this.lmaLicensesOffset
       })
-        .then(result => {
+        .then((result) => {
           if (isViewMore) {
             if (result.length === 0) {
               this.disableInfiniteLoad = false;
@@ -282,7 +276,7 @@ export default class PackageLmaView extends NavigationMixin(LightningElement) {
           this.displayDatatableSpinner = false;
           this.displaySpinner = false;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           this.lmaLicensesData = undefined;
           this.displayLmaLicensesView = false;
@@ -449,17 +443,16 @@ export default class PackageLmaView extends NavigationMixin(LightningElement) {
       _sendToId = null;
     }
 
-    var pageRef = {
+    const pageRef = {
       type: "standard__quickAction",
       attributes: {
         apiName: "Global.SendEmail"
       },
       state: {
         recordId: _sendToId,
-        defaultFieldValues:
-          encodeDefaultFieldValues({
-            RelatedToId: _licencseId
-          })
+        defaultFieldValues: encodeDefaultFieldValues({
+          RelatedToId: _licencseId
+        })
       }
     };
     this[NavigationMixin.Navigate](pageRef);
@@ -471,7 +464,7 @@ export default class PackageLmaView extends NavigationMixin(LightningElement) {
     return match ? match[1] : null;
   }
 
-  navigateToHelpLma(){
+  navigateToHelpLma() {
     this[NavigationMixin.Navigate]({
       type: "standard__webPage",
       attributes: {

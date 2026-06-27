@@ -7,27 +7,22 @@
     ></lightning-spinner>
   </template>
   <template if:true={lmaData}>
-    <div class="slds-var-p-around_medium slds-page-header">
-      <article class="slds-tile slds-media">
-        <div class="slds-media__figure">
-          <lightning-icon
-            icon-name={versionIcon}
-            size="medium"
-            slot="media"
-            class="icon-style"
-          ></lightning-icon>
-        </div>
-        <div class="slds-media__body">
-          <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
-            <h3 class="slds-tile__title slds-truncate slds-text-link tile-style">
-              <a href={versionLink} target="_blank"
-                >{lmaData.name}</a
-              >
-            </h3>
-          </div>
-          <div class="slds-tile__detail">
+    <div class="">
+      <div
+        class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
+      >
+        <lightning-card>
+          <h3 slot="title" class="slds-truncate slds-text-link">
+            <lightning-icon
+              icon-name="standard:shipment"
+              size="medium"
+              class="slds-m-right_small icon-style"
+            ></lightning-icon>
+            <a href={versionLink} target="_blank">{lmaData.name}</a>
+          </h3>
+          <div class="slds-card__body slds-card__body_inner">
             <div class="slds-grid slds-gutters slds-wrap">
-              <div class="slds-col slds-truncate">
+              <div class="slds-col slds-size_5-of-12">
                 <dl class="slds-list_horizontal slds-wrap">
                   <dt
                     class="slds-item_label slds-text-color_weak slds-truncate"
@@ -85,8 +80,8 @@
               </div>
             </div>
           </div>
-        </div>
-      </article>
+        </lightning-card>
+      </div>
     </div>
 
     <!--
@@ -118,7 +113,7 @@
         </button>
       </h3>
       -->
-      <!--
+    <!--
       <template if:true={displayGenAiLicenses}>
         <div
           aria-hidden="true"
@@ -160,9 +155,7 @@
               class="slds-var-p-right_xx-small"
             ></lightning-icon>
           </template>
-          <span class="slds-truncate">
-            Licenses
-          </span>
+          <span class="slds-truncate"> Licenses </span>
         </button>
       </h3>
       <template if:true={displayAllLicenses}>
@@ -174,24 +167,46 @@
           <div class="slds-card slds-var-p-horizontal_medium">
             <template if:false={displayLmaLicensesView}>
               <template if:false={displaySpinner}>
-                <lightning-empty-state title="Hmm…" illustration-name="success:new">
-                  <p slot="description">Looks like were unable to retrieve any associated LMA licenses for this package...</p>
+                <lightning-empty-state
+                  title="Hmm…"
+                  illustration-name="success:new"
+                >
+                  <p slot="description">
+                    Looks like were unable to retrieve any associated LMA
+                    licenses for this package...
+                  </p>
                 </lightning-empty-state>
               </template>
             </template>
             <template if:true={displayLmaLicensesView}>
               <template if:true={displayEmptyView}>
                 <template if:true={displayFilterMeta}>
-                  <lightning-empty-state title="Hmm..." illustration-name="success:new">
-                    <p slot="description">We could not find any results based on your filters...</p>
-                    <lightning-button variant="brand" label="Edit Filters" slot="cta" onclick={handleFilterEdit}>
+                  <lightning-empty-state
+                    title="Hmm..."
+                    illustration-name="success:new"
+                  >
+                    <p slot="description">
+                      We could not find any results based on your filters...
+                    </p>
+                    <lightning-button
+                      variant="brand"
+                      label="Edit Filters"
+                      slot="cta"
+                      onclick={handleFilterEdit}
+                    >
                     </lightning-button>
                   </lightning-empty-state>
                 </template>
                 <template if:false={displayFilterMeta}>
                   <template if:false={displaySpinner}>
-                    <lightning-empty-state title="Hmm…" illustration-name="success:new">
-                      <p slot="description">Looks like we could not find any LMA licenses for this package version...</p>
+                    <lightning-empty-state
+                      title="Hmm…"
+                      illustration-name="success:new"
+                    >
+                      <p slot="description">
+                        Looks like we could not find any LMA licenses for this
+                        package version...
+                      </p>
                     </lightning-empty-state>
                   </template>
                 </template>
@@ -200,7 +215,7 @@
                 <div class="slds-grid slds-var-p-top_small">
                   <lightning-breadcrumbs
                     class="slds-var-p-top_x-small"
-                    style="font-weight: 700;"
+                    style="font-weight: 700"
                   >
                     <lightning-breadcrumb
                       label="All Licenses"
@@ -215,22 +230,18 @@
                 </div>
                 <template if:false={displayLicenseTimelineState}>
                   <div class="slds-grid slds-var-p-vertical_x-small slds-wrap">
-                    <ul class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small">
+                    <ul
+                      class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small"
+                    >
                       <template if:true={lmaLicensesLength}>
-                        <li class="slds-item">
-                          {lmaLicensesLength} Licenses
-                        </li>
+                        <li class="slds-item">{lmaLicensesLength} Licenses</li>
                       </template>
-                      <li class="slds-item">
-                        Sorted by {sortedByLabel}
-                      </li>
+                      <li class="slds-item">Sorted by {sortedByLabel}</li>
                       <template if:true={displayFilterMeta}>
-                        <li class="slds-item">
-                          Filters Enabled
-                        </li>
+                        <li class="slds-item">Filters Enabled</li>
                       </template>
                       <li class="slds-item">
-                          Updated&nbsp;<lightning-relative-date-time
+                        Updated&nbsp;<lightning-relative-date-time
                           value={relativeDateTime}
                         ></lightning-relative-date-time>
                       </li>
@@ -283,7 +294,7 @@
                     <div if:true={chartInit}>
                       <div
                         class={displayChartDockPanel}
-                        style="direction:ltr;"
+                        style="direction: ltr"
                         aria-hidden="false"
                       >
                         <div class="slds-panel__header">
@@ -316,7 +327,7 @@
                     </div>
                     <div
                       class={displayFilterDockPanel}
-                      style="direction:ltr;"
+                      style="direction: ltr"
                       aria-hidden="false"
                     >
                       <div class="slds-panel__header">
@@ -421,18 +432,23 @@
   </template>
   <template if:true={displayEmptyLMA}>
     <template if:false={displaySpinner}>
-        <lightning-empty-state title="Hmm..." illustration-name="success:new">
-        <p slot="description">Looks like we could not find the associated license for this subscriber or the package is not connected to the LMA...</p>
-        <lightning-button variant="brand" label="Associate Package with LMA" slot="cta" onclick={navigateToHelpLma}>
+      <lightning-empty-state title="Hmm..." illustration-name="success:new">
+        <p slot="description">
+          Looks like we could not find the associated license for this
+          subscriber or the package is not connected to the LMA...
+        </p>
+        <lightning-button
+          variant="brand"
+          label="Associate Package with LMA"
+          slot="cta"
+          onclick={navigateToHelpLma}
+        >
         </lightning-button>
       </lightning-empty-state>
     </template>
   </template>
   <template if:true={displayLMAInAppPrompt}>
-    <c-in-app-prompt
-      prompt="LMA"
-      oncancel={handleLMAPromptCancel}
-    >
+    <c-in-app-prompt prompt="LMA" oncancel={handleLMAPromptCancel}>
     </c-in-app-prompt>
   </template>
 </template>
