@@ -13,6 +13,13 @@ const columns = [
   },
   {
     type: "text",
+    fieldName: "orgKey",
+    label: "Organization Id",
+    sortable: false,
+    iconName: "standard:record"
+  },
+  {
+    type: "text",
     fieldName: "metadataPackageVersionId",
     label: "Package Version Id",
     sortable: false,
