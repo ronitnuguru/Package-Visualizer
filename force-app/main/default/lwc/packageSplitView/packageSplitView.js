@@ -9,6 +9,7 @@ import {
   MessageContext
 } from "lightning/messageService";
 import PACAKGEEDITMESSAGECHANNEL from "@salesforce/messageChannel/PackageEditMessageChannel__c";
+import PACKAGEMESSAGECHANNEL from "@salesforce/messageChannel/PackageMessageChannel__c";
 import DOCKEDUTILITYBARMESSAGECHANNEL from "@salesforce/messageChannel/DockedUtilityBarMessageChannel__c";
 import get2GPPackageList from "@salesforce/apexContinuation/PackageVisualizerCtrl.get2GPPackageList";
 import get1GPPackageList from "@salesforce/apexContinuation/PackageVisualizerCtrl.get1GPPackageList";
@@ -113,7 +114,7 @@ export default class PackageSplitView extends NavigationMixin(
     this.refreshPackages("asc", false, 0);
   }
 
-  async getPackages(packageIndex, sortDirection) {
+  async getPackages(packageIndex, sortDirection, selectedId) {
     this.displaySpinner = true;
     this.packageLoadErrors = [];
 
@@ -146,8 +147,26 @@ export default class PackageSplitView extends NavigationMixin(
       } else {
         this.packageFilterList = this.packageList;
         this.packageListSize = this.packageFilterList.length;
-        this.currentPackage = this.packageFilterList[packageIndex];
+        // Restore the previously selected package by id — its index can shift
+        // when the list is re-fetched. Fall back to the passed index if the id
+        // is gone (e.g. the package was deleted) or none was supplied.
+        let restoredIndex = packageIndex;
+        if (selectedId) {
+          const matchIndex = this.packageFilterList.findIndex(
+            (pkg) => pkg.id === selectedId
+          );
+          if (matchIndex !== -1) {
+            restoredIndex = matchIndex;
+          }
+        }
+        this.currentPackageIndex = restoredIndex;
+        this.currentPackage = this.packageFilterList[restoredIndex];
         this.detailsStyle = `padding-left: 26.5rem;`;
+        // Re-announce the restored selection so the rebuilt list re-highlights
+        // it — the highlight is driven by PackageMessageChannel, not the index.
+        publish(this.messageContext, PACKAGEMESSAGECHANNEL, {
+          currentPackageName: this.currentPackage.name
+        });
       }
     } catch (error) {
       console.error("Package fetch failed:", error);
@@ -165,11 +184,17 @@ export default class PackageSplitView extends NavigationMixin(
   }
 
   handleRefreshList() {
-    this.refreshPackages("asc", false, 0);
+    const selectedId = this.currentPackage ? this.currentPackage.id : undefined;
+    this.refreshPackages("asc", false, this.currentPackageIndex, selectedId);
   }
 
-  refreshPackages(sortDirection, sortDirectionDisplay, packageIndex) {
-    this.getPackages(packageIndex, sortDirection);
+  refreshPackages(
+    sortDirection,
+    sortDirectionDisplay,
+    packageIndex,
+    selectedId
+  ) {
+    this.getPackages(packageIndex, sortDirection, selectedId);
     this.currentPackageIndex = packageIndex;
     this.relativeDateTime = Date.now();
     this.filterChecks("All Packages");

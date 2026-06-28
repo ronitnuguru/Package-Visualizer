@@ -10,7 +10,7 @@
         <field>Description__c</field>
         <value
       xsi:type="xsd:string"
-    >Your package has been upgraded to version 9.17</value>
+    >Your package has been upgraded to version 9.18</value>
     </values>
     <values>
         <field>Icon__c</field>
