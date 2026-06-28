@@ -3,6 +3,7 @@ import getLatestPackageVersions from "@salesforce/apex/PackageVisualizerCtrl.get
 
 export default class PackagePushRequests extends LightningElement {
   @api packageId;
+  @api subscriberPackageId;
 
   versionLimit = 50;
   displaySpinner;
@@ -21,16 +22,16 @@ export default class PackagePushRequests extends LightningElement {
         packageId: this.packageId,
         versionLimit: limit
       })
-        .then(result => {
+        .then((result) => {
           this.displaySpinner = false;
-          if(result.length > 0){
+          if (result.length > 0) {
             this.packageVersionList = result;
           } else {
             this.packageVersionList = undefined;
             this.displayEmpty = true;
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           this.displaySpinner = false;
           this.packageVersionList = undefined;
@@ -39,7 +40,7 @@ export default class PackagePushRequests extends LightningElement {
     })();
   }
 
-  handleVersionLimitChange(event){
+  handleVersionLimitChange(event) {
     this.versionLimit = event.detail;
     this.packageVersionList = undefined;
     this.retrievePackageVersions(event.detail);

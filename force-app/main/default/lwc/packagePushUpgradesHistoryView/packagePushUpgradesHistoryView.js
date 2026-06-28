@@ -83,6 +83,7 @@ export default class PackagePushUpgradesHistoryView extends LightningElement {
   @api packageSubscriberVersionId;
   @api packageVersionList;
   @api versionLimit;
+  @api subscriberPackageId;
 
   displaySpinner;
   displayDatatableSpinner;

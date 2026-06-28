@@ -13,6 +13,7 @@
       <c-package-push-upgrades-history-view
         package-version-list={packageVersionList}
         version-limit={versionLimit}
+        subscriber-package-id={subscriberPackageId}
         onversionchange={handleVersionLimitChange}
       >
       </c-package-push-upgrades-history-view>
@@ -21,12 +22,18 @@
   <template if:false={packageVersionList}>
     <template if:true={displayError}>
       <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
-        <p slot="description">Looks like we were unable retrieve any push upgrade requests for this package...</p>
+        <p slot="description">
+          Looks like we were unable retrieve any push upgrade requests for this
+          package...
+        </p>
       </lightning-empty-state>
     </template>
     <template if:true={displayEmpty}>
       <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
-        <p slot="description">Looks like you do not have any push upgrade requests for this package...</p>
+        <p slot="description">
+          Looks like you do not have any push upgrade requests for this
+          package...
+        </p>
       </lightning-empty-state>
     </template>
   </template>

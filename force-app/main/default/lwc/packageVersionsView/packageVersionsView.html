@@ -12,24 +12,46 @@
     <template if:true={data}>
       <template if:true={displayEmptyView}>
         <template if:true={displayFilterMeta}>
-          <lightning-empty-state title="No package versions to display..." illustration-name="success:new">
-            <p slot="description">We could not find results based on your filters...</p>
-            <lightning-button variant="brand" label="Edit Filters" slot="cta" onclick={handleFilterEdit}>
+          <lightning-empty-state
+            title="No package versions to display..."
+            illustration-name="success:new"
+          >
+            <p slot="description">
+              We could not find results based on your filters...
+            </p>
+            <lightning-button
+              variant="brand"
+              label="Edit Filters"
+              slot="cta"
+              onclick={handleFilterEdit}
+            >
             </lightning-button>
           </lightning-empty-state>
         </template>
         <template if:false={displayFilterMeta}>
           <template if:true={checkBoxFilterValues}>
-            <lightning-empty-state title="No package versions to display..." illustration-name="success:new">
-              <p slot="description">We could not find any results based on your search...</p>
-              <lightning-button variant="brand" label="Refresh" slot="cta" onclick={handleFilterReset}>
+            <lightning-empty-state
+              title="No package versions to display..."
+              illustration-name="success:new"
+            >
+              <p slot="description">
+                We could not find any results based on your search...
+              </p>
+              <lightning-button
+                variant="brand"
+                label="Refresh"
+                slot="cta"
+                onclick={handleFilterReset}
+              >
               </lightning-button>
             </lightning-empty-state>
           </template>
           <template if:false={checkBoxFilterValues}>
             <lightning-empty-state title="Hmm…" illustration-name="success:new">
-              <p slot="description">Looks like you do not have any versions for this package...</p>
-            </lightning-empty-state>  
+              <p slot="description">
+                Looks like you do not have any versions for this package...
+              </p>
+            </lightning-empty-state>
           </template>
         </template>
       </template>
@@ -38,7 +60,7 @@
           <div class="slds-var-p-bottom_small">
             <lightning-breadcrumbs
               class="slds-var-p-horizontal_medium slds-var-p-top_small"
-              style="font-weight: 700;"
+              style="font-weight: 700"
             >
               <template if:true={summaryState}>
                 <lightning-breadcrumb
@@ -75,21 +97,17 @@
             class="slds-grid slds-var-p-bottom_x-small slds-var-p-horizontal_medium slds-wrap"
           >
             <template if:true={summaryState}>
-              <ul class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small">
+              <ul
+                class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small"
+              >
                 <template if:true={versionsLength}>
-                  <li class="slds-item">
-                    {versionsLength} Versions
-                  </li>
-                  <li class="slds-item">
-                    Sorted by {sortedByLabel}
-                  </li>
+                  <li class="slds-item">{versionsLength} Versions</li>
+                  <li class="slds-item">Sorted by {sortedByLabel}</li>
                   <template if:true={displayFilterMeta}>
-                    <li class="slds-item">
-                      Filters Enabled
-                    </li>
+                    <li class="slds-item">Filters Enabled</li>
                   </template>
                   <li class="slds-item">
-                      Updated&nbsp;<lightning-relative-date-time
+                    Updated&nbsp;<lightning-relative-date-time
                       value={relativeDateTime}
                     ></lightning-relative-date-time>
                   </li>
@@ -103,7 +121,7 @@
                     <lightning-button-icon-stateful
                       icon-name="utility:summary"
                       alternative-text="List"
-                      style="cursor:pointer"
+                      style="cursor: pointer"
                       variant="border-filled"
                       onclick={handleSummaryView}
                       selected={summaryState}
@@ -112,7 +130,7 @@
                     <lightning-button-icon-stateful
                       icon-name="utility:org_chart"
                       alternative-text="Ancestry"
-                      style="cursor:pointer"
+                      style="cursor: pointer"
                       variant="border-filled"
                       onclick={handleTreeView}
                       selected={treeState}
@@ -127,20 +145,20 @@
                   class="slds-var-p-left_x-small"
                   onselect={handleInAppPrompt}
                 >
-                <lightning-menu-subheader
-                  label="In App Guidance"
-                ></lightning-menu-subheader>
-                <lightning-menu-item
-                  value="in-app-guidance-security-review"
-                  label="Package Versioning"
-                  prefix-icon-name="utility:prompt"
-                ></lightning-menu-item>
-                <lightning-menu-item
-                  value="in-app-guidance-package-versions"
-                  label="Security Review"
-                  prefix-icon-name="utility:prompt"
-                ></lightning-menu-item>
-              </lightning-button-menu>
+                  <lightning-menu-subheader
+                    label="In App Guidance"
+                  ></lightning-menu-subheader>
+                  <lightning-menu-item
+                    value="in-app-guidance-security-review"
+                    label="Package Versioning"
+                    prefix-icon-name="utility:prompt"
+                  ></lightning-menu-item>
+                  <lightning-menu-item
+                    value="in-app-guidance-package-versions"
+                    label="Security Review"
+                    prefix-icon-name="utility:prompt"
+                  ></lightning-menu-item>
+                </lightning-button-menu>
                 <template if:true={summaryState}>
                   <lightning-button-menu
                     icon-name="utility:table_settings"
@@ -202,7 +220,7 @@
           <div class={heightStyle}>
             <div
               class={displayFilterDockPanel}
-              style="direction:ltr;"
+              style="direction: ltr"
               aria-hidden="false"
             >
               <div class="slds-panel__header">
@@ -477,6 +495,7 @@
                         >
                           <c-package-push-upgrades-history-view
                             package-subscriber-version-id={packageSubscriberVersionId}
+                            subscriber-package-id={subscriberPackageId}
                           >
                           </c-package-push-upgrades-history-view>
                         </lightning-tab>
@@ -566,7 +585,7 @@
         </template>
         <template if:true={displayReviewAncestryBreadCrumb}>
           <div
-            class="table-style slds-var-m-top_small slds-var-p-horizontal_medium "
+            class="table-style slds-var-m-top_small slds-var-p-horizontal_medium"
           >
             <div style={responsivePanelStyle} class="d3-box">
               <c-d3-tree-chart
@@ -585,8 +604,13 @@
       </template>
     </template>
     <template if:false={data}>
-      <lightning-empty-state title="Data not available..." illustration-name="noresults:search">
-        <p slot="description">Looks like we were unable retrieve any versions for this package...</p>
+      <lightning-empty-state
+        title="Data not available..."
+        illustration-name="noresults:search"
+      >
+        <p slot="description">
+          Looks like we were unable retrieve any versions for this package...
+        </p>
       </lightning-empty-state>
     </template>
   </template>

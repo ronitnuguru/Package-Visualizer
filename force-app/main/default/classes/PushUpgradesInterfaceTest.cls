@@ -124,9 +124,39 @@ private class PushUpgradesInterfaceTest {
   public static void testGetPushJobPackageSubscribers() {
     Test.startTest();
     ObjectWrappers.PackageSubscriberWrapper data = PushUpgradesCtrl.getPushJobPackageSubscriber(
-      '0Ho000000000000AAA'
+      '00D000000000000AAA',
+      '033000000000000AAA'
     );
     Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  The PackageSubscriber lookup for a push job must be scoped by BOTH
+   *               OrgKey AND MetadataPackageId. PackageSubscriber has one row per
+   *               installed package per org, so an OrgKey-only query returns multiple
+   *               rows for a multi-package publisher and the deserialization loop keeps
+   *               an arbitrary (wrong) package. Asserting the query text keeps the fix
+   *               verifiable even though PackageSubscriber is a read-only system object
+   *               that cannot be inserted in a test.
+   **************************************************************************************/
+  @isTest
+  public static void testPushJobSubscriberQueryIsScopedToPackage() {
+    String query = PushUpgradesCtrl.buildPushJobSubscriberQuery(
+      '00D000000000000AAA',
+      '033000000000000AAA'
+    );
+    Assert.isTrue(
+      query.contains('OrgKey = :orgId'),
+      'Query must still filter by the subscriber OrgKey'
+    );
+    Assert.isTrue(
+      query.contains('MetadataPackageId = :metadataPackageId'),
+      'Query must also filter by MetadataPackageId so the correct package is resolved'
+    );
+    Assert.isTrue(
+      query.containsIgnoreCase('LIMIT 1'),
+      'Query must return a single row for the requested package'
+    );
   }
 
   /**************************************************************************************

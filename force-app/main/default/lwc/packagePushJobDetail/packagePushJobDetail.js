@@ -26,6 +26,7 @@ Return ONLY a single valid JSON object with this exact schema. Do not include ma
 
 export default class PackagePushJobDetail extends LightningElement {
   @api pushJobDetails;
+  @api subscriberPackageId;
 
   displaySubscriber = true;
   packageSubscriberAccordionClass = `slds-section slds-var-p-top_medium slds-is-open`;
@@ -69,7 +70,8 @@ export default class PackagePushJobDetail extends LightningElement {
   }
 
   @wire(getPushJobPackageSubscriber, {
-    orgId: "$pushJobDetails.SubscriberOrganizationKey"
+    orgId: "$pushJobDetails.SubscriberOrganizationKey",
+    metadataPackageId: "$subscriberPackageId"
   })
   packageSubscriber(result) {
     if (result.data) {

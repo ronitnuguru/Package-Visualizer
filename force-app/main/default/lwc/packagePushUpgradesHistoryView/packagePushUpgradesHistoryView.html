@@ -278,7 +278,10 @@
       ></c-package-push-job-view>
     </template>
     <template if:true={displayPackagePushJobRequests}>
-      <c-package-push-job-detail push-job-details={pushJobDetails}>
+      <c-package-push-job-detail
+        push-job-details={pushJobDetails}
+        subscriber-package-id={subscriberPackageId}
+      >
       </c-package-push-job-detail>
     </template>
   </template>
