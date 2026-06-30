@@ -7,6 +7,7 @@ import get2GPPackageVersionSubscriberList from "@salesforce/apex/PackageVisualiz
 import modifyLicense from "@salesforce/apexContinuation/PackageVisualizerCtrl.modifyLicense";
 import checkPackageSubscriberEnabled from "@salesforce/apex/PackageVisualizerCtrl.checkPackageSubscriberEnabled";
 import getAppAnalyticsRequests from "@salesforce/apexContinuation/PackageVisualizerCtrl.getAppAnalyticsRequests";
+import getLmaTimeline from "@salesforce/apexContinuation/PackageVisualizerCtrl.getLmaTimeline";
 
 export default class PackageLicenseSubscriberCard extends NavigationMixin(
   LightningElement
@@ -33,6 +34,11 @@ export default class PackageLicenseSubscriberCard extends NavigationMixin(
   displayAppAnalyticsViewModal;
   appAnalyticsViewData;
   appAnalyticsLoaded = false;
+
+  licenseTimelineData;
+  viewMoreLink;
+  displayActivityTimelineSpinner = false;
+  activityTimelineNotAvailableView = false;
 
   // AppAnalytics polling: silently re-fetch while requests are still in-flight
   // and the tab is open, so states like New/Pending flip to a terminal state
@@ -371,6 +377,35 @@ export default class PackageLicenseSubscriberCard extends NavigationMixin(
     return id ? id.trim().substring(0, 15) : "";
   }
 
+  getActivityTimeline() {
+    this.displayActivityTimelineSpinner = true;
+    (async () => {
+      await getLmaTimeline({
+        licenseId: this.recordId
+      })
+        .then((result) => {
+          this.displayActivityTimelineSpinner = false;
+          this.licenseTimelineData = result;
+          this.activityTimelineNotAvailableView =
+            !result || result.length === 0;
+          this.viewMoreLink = `/lightning/r/${this.recordId}/related/Histories/view`;
+        })
+        .catch((error) => {
+          console.error(error);
+          this.displayActivityTimelineSpinner = false;
+          this.licenseTimelineData = undefined;
+          this.activityTimelineNotAvailableView = true;
+          this.dispatchEvent(
+            new ShowToastEvent({
+              title: "We were unable to retrieve the Activity Timeline",
+              message: error,
+              variant: "error"
+            })
+          );
+        });
+    })();
+  }
+
   handleAppAnalyticsExpand(event) {
     this.displayAppAnalyticsViewModal = true;
     this.appAnalyticsViewData = event.detail;
@@ -392,6 +427,11 @@ export default class PackageLicenseSubscriberCard extends NavigationMixin(
       case "details":
         this.displayEditLicense = false;
         this.stopAppAnalyticsPolling();
+        break;
+      case "activity-timeline":
+        this.displayEditLicense = false;
+        this.stopAppAnalyticsPolling();
+        this.getActivityTimeline();
         break;
       case "modify-license":
         this.getOriginalValues();

@@ -332,6 +332,64 @@
               </template>
             </lightning-tab>
             <lightning-tab
+              label="Activity Timeline"
+              value="activity-timeline"
+              icon-name="standard:feed"
+              onactive={handleTabActive}
+            >
+              <div class="slds-var-p-around_small">
+                <template if:true={displayActivityTimelineSpinner}>
+                  <lightning-spinner
+                    alternative-text="Loading"
+                    size="medium"
+                    variant="brand"
+                  ></lightning-spinner>
+                </template>
+                <template if:true={activityTimelineNotAvailableView}>
+                  <lightning-empty-state
+                    title="Hmm…"
+                    illustration-name="noresults:search"
+                  >
+                    <p slot="description">
+                      We were unable to retrieve any Activity Timeline history
+                      for this license...
+                    </p>
+                  </lightning-empty-state>
+                </template>
+                <template if:false={activityTimelineNotAvailableView}>
+                  <div
+                    class="slds-border_left slds-border_bottom slds-border_right slds-border_top timeline-card-style"
+                  >
+                    <lightning-card class="slds-m-bottom_none">
+                      <div
+                        class="timeline-style slds-card__body slds-card__body_inner"
+                      >
+                        <ul class="slds-timeline">
+                          <template
+                            for:each={licenseTimelineData}
+                            for:item="step"
+                            for:index="index"
+                          >
+                            <c-package-lma-history
+                              key={step.Id}
+                              created-date={step.CreatedDate}
+                              field={step.Field}
+                              new-value={step.NewValue}
+                              old-value={step.OldValue}
+                            >
+                            </c-package-lma-history>
+                          </template>
+                        </ul>
+                      </div>
+                      <p slot="footer">
+                        <a href={viewMoreLink} target="_blank">View More</a>
+                      </p>
+                    </lightning-card>
+                  </div>
+                </template>
+              </div>
+            </lightning-tab>
+            <lightning-tab
               label="AppAnalytics Requests"
               value="app-analytics"
               icon-name="standard:story"

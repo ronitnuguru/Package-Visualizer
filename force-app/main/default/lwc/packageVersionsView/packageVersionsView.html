@@ -177,6 +177,14 @@
                       onclick={handleFieldsToDisplay}
                     ></lightning-menu-item>
                   </lightning-button-menu>
+                  <lightning-button-icon
+                    icon-name="utility:refresh"
+                    alternative-text="Refresh"
+                    title="Refresh"
+                    variant="border-filled"
+                    class="slds-var-p-left_x-small"
+                    onclick={handleAllVersionsClick}
+                  ></lightning-button-icon>
                   <lightning-button-icon-stateful
                     icon-name="utility:filterList"
                     selected={filterState}
