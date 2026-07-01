@@ -1,8 +1,13 @@
 <template>
   <div class="slds-p-around_medium">
-    <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small">
+    <div
+      class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small"
+    >
       <lightning-card>
-        <h3 slot="title" class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+        <h3
+          slot="title"
+          class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate"
+        >
           <template if:true={displayLoadingIcon}>
             <lightning-dynamic-icon
               type="eq"
@@ -13,22 +18,22 @@
             </lightning-dynamic-icon>
           </template>
           <template if:true={displaySuccessIcon}>
-            <lightning-icon
-              icon-name="utility:success"
-              alternative-text="Success!"
-              variant="success"
-              size="medium"
+            <lightning-dynamic-icon
+              type="trend"
+              option="up"
+              alternative-text="Trending up"
               class="slds-m-right_small slds-shrink-none"
-            ></lightning-icon>
+            >
+            </lightning-dynamic-icon>
           </template>
           <template if:true={displayErrorIcon}>
-            <lightning-icon
-              icon-name="utility:error"
-              alternative-text="Error!"
-              variant="error"
-              size="medium"
-              class="slds-m-right_small slds-shrink-none"
-            ></lightning-icon>
+            <lightning-dynamic-icon
+              type="trend"
+              option="down"
+              alternative-text="Trending down"
+              class="slds-m-right_xx-small slds-p-left_x-small slds-shrink-none"
+            >
+            </lightning-dynamic-icon>
           </template>
           <template if:true={displayWarningIcon}>
             <lightning-icon
@@ -44,34 +49,35 @@
         <lightning-button-group slot="actions">
           <template if:true={pushJobError}>
             <template if:false={showAgentforceCard}>
-              <lightning-button 
-                variant="brand" 
-                label="Generate" 
+              <lightning-button
+                variant="brand"
+                label="Generate"
                 icon-name="utility:sparkles"
                 icon-position="right"
                 onclick={handleAskAgentforce}
-              ></lightning-button>  
+              ></lightning-button>
             </template>
           </template>
         </lightning-button-group>
         <div class="slds-card__body slds-card__body_inner">
           <template if:true={pushJobError}>
-            <div class="slds-scoped-notification slds-media slds-media_center slds-theme_error slds-m-bottom_small" role="status">
+            <div
+              class="slds-scoped-notification slds-media slds-media_center slds-theme_error slds-m-bottom_small"
+              role="status"
+            >
               <div class="slds-media__figure">
-                  <lightning-icon
-                      size="small"
-                      icon-name="utility:error"
-                      variant="error"
-                  ></lightning-icon>
+                <lightning-icon
+                  size="small"
+                  icon-name="utility:error"
+                  variant="error"
+                ></lightning-icon>
               </div>
               <div class="slds-media__body">
-                  <div>
-                    <template if:true={pushJobError}>
-                      <div class="">
-                        {pushJobError}
-                      </div>
-                    </template>
-                  </div>
+                <div>
+                  <template if:true={pushJobError}>
+                    <div class="">{pushJobError}</div>
+                  </template>
+                </div>
               </div>
             </div>
           </template>
@@ -79,7 +85,9 @@
             <div class="slds-col">
               <dl class="slds-list_horizontal slds-wrap">
                 <template if:true={pushJobDetails.StartTime}>
-                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                  <dt
+                    class="slds-item_label slds-text-color_weak slds-truncate"
+                  >
                     Start Time:
                   </dt>
                   <dd class="slds-item_detail slds-truncate">
@@ -96,7 +104,9 @@
                   </dd>
                 </template>
                 <template if:true={pushJobDetails.EndTime}>
-                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                  <dt
+                    class="slds-item_label slds-text-color_weak slds-truncate"
+                  >
                     End Time:
                   </dt>
                   <dd class="slds-item_detail slds-truncate">
@@ -117,7 +127,9 @@
             <div class="slds-col">
               <template if:true={pushJobDetails.DurationSeconds}>
                 <dl class="slds-list_horizontal slds-wrap">
-                  <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                  <dt
+                    class="slds-item_label slds-text-color_weak slds-truncate"
+                  >
                     Completed:
                   </dt>
                   <dd class="slds-item_detail slds-truncate">
@@ -128,24 +140,26 @@
             </div>
           </div>
           <template if:true={showAgentforceCard}>
-            <div class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium card-style">
+            <div
+              class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium card-style"
+            >
               <lightning-card>
                 <template if:true={displayAgentforceSpinner}>
-                    <div class="slds-p-vertical_medium">
-                        <lightning-spinner
-                            alternative-text="Loading"
-                            size="medium"
-                            variant="brand"
-                        ></lightning-spinner>
-                    </div>
+                  <div class="slds-p-vertical_medium">
+                    <lightning-spinner
+                      alternative-text="Loading"
+                      size="medium"
+                      variant="brand"
+                    ></lightning-spinner>
+                  </div>
                 </template>
                 <h3 slot="title" class="slds-truncate">
-                    <lightning-icon
-                        icon-name="standard:agent_astro"
-                        size="medium"
-                        class="slds-m-right_small"
-                    ></lightning-icon>
-                    Agentforce Generated
+                  <lightning-icon
+                    icon-name="standard:agent_astro"
+                    size="medium"
+                    class="slds-m-right_small"
+                  ></lightning-icon>
+                  Agentforce Generated
                 </h3>
                 <lightning-button-group slot="actions">
                   <template lwc:if={aiResponse}>
@@ -179,7 +193,9 @@
                             <span class="slds-assistive-text">Close</span>
                           </button>
                           <header class="slds-popover__header">
-                            <div class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div
+                              class="slds-media slds-media_center slds-has-flexi-truncate"
+                            >
                               <div class="slds-media__figure">
                                 <lightning-icon
                                   size="small"
@@ -226,94 +242,141 @@
                     </template>
                   </template>
                 </lightning-button-group>
-              <div class="slds-card__body slds-card__body_inner">
-                <template if:false={displayAgentforceSpinner}>
-                  <template if:true={aiResponse}>
-                    <div class="slds-p-around_small">
-                      <div class="slds-grid slds-wrap slds-gutters slds-p-bottom_small">
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                          <template if:true={parsedResponse.severity}>
-                            <div class="slds-p-bottom_xx-small">
-                              <strong>Severity:</strong>
-                            </div>
-                            <div>
-                              <lightning-badge label={parsedResponse.severity} class={severityVariant}></lightning-badge>
-                            </div>
-                          </template>
-                        </div>
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
-                          <template if:true={parsedResponse.estimatedResolutionTime}>
-                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                <div class="slds-card__body slds-card__body_inner">
+                  <template if:false={displayAgentforceSpinner}>
+                    <template if:true={aiResponse}>
+                      <div class="slds-p-around_small">
+                        <div
+                          class="slds-grid slds-wrap slds-gutters slds-p-bottom_small"
+                        >
+                          <div
+                            class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"
+                          >
+                            <template if:true={parsedResponse.severity}>
                               <div class="slds-p-bottom_xx-small">
-                                <strong>Est. Resolution Time:</strong>
+                                <strong>Severity:</strong>
                               </div>
                               <div>
-                                {parsedResponse.estimatedResolutionTime}
+                                <lightning-badge
+                                  label={parsedResponse.severity}
+                                  class={severityVariant}
+                                ></lightning-badge>
                               </div>
-                            </div>
-                          </template>
+                            </template>
+                          </div>
+                          <div
+                            class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"
+                          >
+                            <template
+                              if:true={parsedResponse.estimatedResolutionTime}
+                            >
+                              <div
+                                class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"
+                              >
+                                <div class="slds-p-bottom_xx-small">
+                                  <strong>Est. Resolution Time:</strong>
+                                </div>
+                                <div>
+                                  {parsedResponse.estimatedResolutionTime}
+                                </div>
+                              </div>
+                            </template>
+                          </div>
                         </div>
+                        <dl class="slds-m-bottom_none">
+                          <dt class="slds-p-bottom_xx-small">
+                            <strong>Summary:</strong>
+                          </dt>
+                          <dd class="slds-var-m-left_none slds-p-bottom_small">
+                            {parsedResponse.summary}
+                          </dd>
+
+                          <template if:true={parsedResponse.rootCause}>
+                            <dt class="slds-p-bottom_xx-small">
+                              <strong>Root Cause:</strong>
+                            </dt>
+                            <dd
+                              class="slds-var-m-left_none slds-p-bottom_small"
+                            >
+                              {parsedResponse.rootCause}
+                            </dd>
+                          </template>
+
+                          <template if:true={parsedResponse.debuggingSteps}>
+                            <dt class="slds-p-bottom_xx-small">
+                              <strong>Debugging Steps:</strong>
+                            </dt>
+                            <dd
+                              class="slds-var-m-left_none slds-p-bottom_small"
+                            >
+                              <ol class="slds-list_ordered">
+                                <template
+                                  for:each={parsedResponse.debuggingSteps}
+                                  for:item="step"
+                                >
+                                  <li
+                                    key={step}
+                                    class="slds-p-vertical_xx-small"
+                                  >
+                                    {step}
+                                  </li>
+                                </template>
+                              </ol>
+                            </dd>
+                          </template>
+
+                          <template
+                            if:true={parsedResponse.preventativeMeasures}
+                          >
+                            <dt class="slds-p-bottom_xx-small">
+                              <strong>Prevention:</strong>
+                            </dt>
+                            <dd
+                              class="slds-var-m-left_none slds-p-bottom_small"
+                            >
+                              <ul class="slds-list_dotted">
+                                <template
+                                  for:each={parsedResponse.preventativeMeasures}
+                                  for:item="measure"
+                                >
+                                  <li
+                                    key={measure}
+                                    class="slds-p-vertical_xx-small"
+                                  >
+                                    {measure}
+                                  </li>
+                                </template>
+                              </ul>
+                            </dd>
+                          </template>
+                        </dl>
                       </div>
-                      <dl class="slds-m-bottom_none">
-                        <dt class="slds-p-bottom_xx-small">
-                          <strong>Summary:</strong>
-                        </dt>
-                        <dd class="slds-var-m-left_none slds-p-bottom_small">
-                          {parsedResponse.summary}
-                        </dd>
-
-                        <template if:true={parsedResponse.rootCause}>
-                          <dt class="slds-p-bottom_xx-small">
-                            <strong>Root Cause:</strong>
-                          </dt>
-                          <dd class="slds-var-m-left_none slds-p-bottom_small">
-                            {parsedResponse.rootCause}
-                          </dd>
-                        </template>
-
-                        <template if:true={parsedResponse.debuggingSteps}>
-                          <dt class="slds-p-bottom_xx-small">
-                            <strong>Debugging Steps:</strong>
-                          </dt>
-                          <dd class="slds-var-m-left_none slds-p-bottom_small">
-                            <ol class="slds-list_ordered">
-                              <template for:each={parsedResponse.debuggingSteps} for:item="step">
-                                <li key={step} class="slds-p-vertical_xx-small">{step}</li>
-                              </template>
-                            </ol>
-                          </dd>
-                        </template>
-
-                        <template if:true={parsedResponse.preventativeMeasures}>
-                          <dt class="slds-p-bottom_xx-small">
-                            <strong>Prevention:</strong>
-                          </dt>
-                          <dd class="slds-var-m-left_none slds-p-bottom_small">
-                            <ul class="slds-list_dotted">
-                              <template for:each={parsedResponse.preventativeMeasures} for:item="measure">
-                                <li key={measure} class="slds-p-vertical_xx-small">{measure}</li>
-                              </template>
-                            </ul>
-                          </dd>
-                        </template>
-                      </dl>
-                    </div>
+                    </template>
+                    <template if:false={aiResponse}>
+                      <div class="slds-p-around_medium">
+                        <lightning-empty-state
+                          title="Hmm..."
+                          illustration-name="noresults:search"
+                        >
+                          <p slot="description">
+                            Looks like you may have not installed the Agentforce
+                            dependent extension managed package. Or you don't
+                            have the necessary permissions or configuration to
+                            perform Agentforce related functionalities. Please
+                            contact your admin for further assistance...
+                          </p>
+                          <lightning-button
+                            variant="brand"
+                            label="Install Managed Package"
+                            slot="cta"
+                            onclick={handleExtensionInstall}
+                          >
+                          </lightning-button>
+                        </lightning-empty-state>
+                      </div>
+                    </template>
                   </template>
-                  <template if:false={aiResponse}>
-                    <div class="slds-p-around_medium">
-                      <lightning-empty-state
-                        title="Hmm..."
-                        illustration-name="noresults:search">
-                        <p slot="description">
-                          Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance...
-                        </p>
-                        <lightning-button variant="brand" label="Install Managed Package" slot="cta" onclick={handleExtensionInstall}>
-                        </lightning-button>
-                      </lightning-empty-state>
-                    </div>
-                  </template>
-                </template>
-              </div>
+                </div>
               </lightning-card>
             </div>
           </template>
@@ -378,12 +441,18 @@
         </template>
         <template if:false={displaySubscriberData}>
           <template if:false={displaySpinner}>
-            <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
-              <p slot="description">Looks like we were unable to retrieve any subscriber's details...</p>
+            <lightning-empty-state
+              title="Hmm…"
+              illustration-name="noresults:search"
+            >
+              <p slot="description">
+                Looks like we were unable to retrieve any subscriber's
+                details...
+              </p>
             </lightning-empty-state>
-            </template>
           </template>
-        </div>
+        </template>
       </div>
     </div>
+  </div>
 </template>
