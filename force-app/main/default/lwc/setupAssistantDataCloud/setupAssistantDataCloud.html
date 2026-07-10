@@ -10,7 +10,7 @@
               class="slds-icon_container slds-icon-utility-success slds-progress__marker"
             >
               <lightning-icon
-                icon-name="utility:info"
+                icon-name="utility:info_alt"
                 variant="info"
                 size="x-small"
                 class="success-icon-style"
@@ -37,7 +37,7 @@
               class="slds-icon_container slds-icon-utility-success slds-progress__marker"
             >
               <lightning-icon
-                icon-name="utility:info"
+                icon-name="utility:info_alt"
                 variant="info"
                 size="x-small"
                 class="success-icon-style"
@@ -73,81 +73,25 @@
               <lightning-icon
                 size="small"
                 icon-name="utility:info"
-                alternative-text="info"
-                title="info"
                 variant="inverse"
               ></lightning-icon>
             </div>
             <div class="slds-media__body">
-              <ul class="slds-list_dotted">
-                <li>
-                  Log a case via the&nbsp;
-                  <a target="_blank" href="https://partners.salesforce.com/"
-                    >Partner Community</a
-                  >&nbsp; to enable Data 360 in scratch orgs. This feature is
-                  available only through a Partner Business Org (PBO) Dev Hub.
-                </li>
-                <li>
-                  Construct scratch org features and settings to mimic the shape
-                  of an org towards your development lifecycle.&nbsp;
-                  <a onclick={navigateScratchOrgBuild}>Learn More</a>
-                </li>
-              </ul>
+              <p>
+                Log a case via the&nbsp;
+                <a target="_blank" href="https://partners.salesforce.com/"
+                  >Partner Community</a
+                >&nbsp; to enable Data 360 in scratch orgs. This feature is
+                available only through a Partner Business Org (PBO) Dev Hub.
+              </p>
             </div>
           </div>
-          <div class="slds-grid slds-gutters slds-wrap">
-            <div class="slds-col">
-              <span>
-                <lightning-icon
-                  icon-name="utility:settings"
-                  size="x-small"
-                  class="slds-m-right_xx-small"
-                ></lightning-icon>
-                Features:
-                <ul class="slds-list_dotted">
-                  <li>
-                    <a
-                      target="_blank"
-                      href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file_config_values.htm#so_customerdataplatform"
-                      >CustomerDataPlatform</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      target="_blank"
-                      href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file_config_values.htm#so_customerdataplatformlite"
-                      >CustomerDataPlatformLite</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      target="_blank"
-                      href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file_config_values.htm#so_marketinguser"
-                      >MarketingUser</a
-                    >
-                  </li>
-                </ul>
-              </span>
-            </div>
-            <div class="slds-col">
-              <span>
-                <lightning-icon
-                  icon-name="utility:settings"
-                  size="x-small"
-                  class="slds-m-right_xx-small"
-                ></lightning-icon>
-                Settings:
-                <ul class="slds-list_dotted">
-                  <li>
-                    <a
-                      target="_blank"
-                      href="https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_customerdataplatformsettings.htm"
-                      >customerDataPlatformSettings</a
-                    >
-                  </li>
-                </ul>
-              </span>
-            </div>
+          <div
+            class="slds-border_top slds-border_right slds-border_bottom slds-border_left"
+          >
+            <c-scratch-def-file-build-card
+              template-key="dataCloud"
+            ></c-scratch-def-file-build-card>
           </div>
         </lightning-tab>
         <lightning-tab

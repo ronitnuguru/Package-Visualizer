@@ -1,11 +1,5 @@
-import { LightningElement, api, wire } from "lwc";
+import { LightningElement, api } from "lwc";
 import { NavigationMixin } from "lightning/navigation";
-import {
-  subscribe,
-  unsubscribe,
-  MessageContext
-} from "lightning/messageService";
-import CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL from "@salesforce/messageChannel/CreateSampleScratchOrgTemplateMessageChannel__c";
 import { SETTING_OPTIONS } from "c/scratchOrgConfig";
 
 const SETTINGS_DOC_BASE =
@@ -24,14 +18,10 @@ export default class ScratchSettingsExpression extends NavigationMixin(
 
   settingOptions = SETTING_OPTIONS;
 
-  subscription = null;
   count = 0;
-
-  @wire(MessageContext) messageContext;
 
   connectedCallback() {
     this.metadataSettings = this.buildDefaultSettings();
-    this.subscribeToSampleMetadataMessageChannel();
   }
 
   /**
@@ -57,27 +47,18 @@ export default class ScratchSettingsExpression extends NavigationMixin(
     this.dispatchEvent(new CustomEvent("confirm", { detail: false }));
   }
 
-  disconnectedCallback() {
-    this.unsubscribeToSampleMetadataMessageChannel();
-  }
-
-  subscribeToSampleMetadataMessageChannel() {
-    if (this.subscription) return;
-    this.subscription = subscribe(
-      this.messageContext,
-      CREATESAMPLESCRATCHORGTEMPLATEMESSAGECHANNEL,
-      (message) => this.applyTemplateSettings(message)
-    );
-  }
-
-  unsubscribeToSampleMetadataMessageChannel() {
-    unsubscribe(this.subscription);
-    this.subscription = null;
+  /**
+   * Public hook the parent card calls to seed setting rows from a template preset.
+   * Accepts a `{ settingName: {...} }` object with one or more top-level keys.
+   */
+  @api
+  applySettings(settings) {
+    this.applyTemplateSettings(settings);
   }
 
   /**
-   * Apply one or more setting groups arriving via the LMS template channel.
-   * Accepts a single `{ settingName: {...} }` payload or any object with multiple top-level keys.
+   * Apply one or more setting groups from a template preset. Reads only the top-level
+   * keys; each row's field values are seeded from DEFAULT_FIELDS by the child rows.
    */
   applyTemplateSettings(message) {
     if (!message) return;
@@ -94,9 +75,9 @@ export default class ScratchSettingsExpression extends NavigationMixin(
 
   handleMetadataSettingsChange(event) {
     const index = Number(event.target.dataset.index);
-    this.metadataSettings = this.metadataSettings.map((s, i) =>
-      i === index ? { ...s, setting: event.detail.value } : s
-    );
+    this.metadataSettings = this.metadataSettings.map((s, i) => {
+      return i === index ? { ...s, setting: event.detail.value } : s;
+    });
     this.resetConfirmation();
   }
 

@@ -1,0 +1,97 @@
+<template>
+  <div class="slds-grid slds-gutters slds-var-p-around_small">
+    <div class="slds-col slds-grow-none slds-shrink-none">
+      <lightning-vertical-navigation
+        selected-item={selectedItem}
+        onselect={handleSelect}
+        shaded
+      >
+        <lightning-vertical-navigation-section
+          label="New Product Introductions (NPI)"
+        >
+          <template for:each={items} for:item="item">
+            <lightning-vertical-navigation-item-icon
+              key={item.name}
+              label={item.label}
+              name={item.name}
+              icon-name={item.navIcon}
+            ></lightning-vertical-navigation-item-icon>
+          </template>
+        </lightning-vertical-navigation-section>
+      </lightning-vertical-navigation>
+    </div>
+
+    <div class="slds-col">
+      <div class="slds-page-header slds-var-m-bottom_small">
+        <div class="slds-page-header__row">
+          <div class="slds-page-header__col-title">
+            <div class="slds-media">
+              <div class="slds-media__figure">
+                <lightning-icon
+                  icon-name={selectedNpi.headerIcon}
+                  alternative-text={selectedNpi.label}
+                  title={selectedNpi.label}
+                  size="large"
+                ></lightning-icon>
+              </div>
+              <div class="slds-media__body">
+                <p class="slds-page-header__name-meta">{selectedNpi.tagline}</p>
+                <div class="slds-page-header__name">
+                  <div class="slds-page-header__name-title">
+                    <h1>
+                      <span class="slds-page-header__title slds-truncate"
+                        >{selectedNpi.label}</span
+                      >
+                    </h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slds-page-header__col-actions slds-align_absolute-center">
+            <div class="slds-page-header__controls">
+              <div class="slds-page-header__control">
+                <lightning-button-group>
+                  <lightning-button label="Learn More"></lightning-button>
+                  <lightning-button
+                    label="Get Started"
+                    variant="brand"
+                  ></lightning-button>
+                </lightning-button-group>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <article class="slds-card">
+        <lightning-tabset variant="scoped">
+          <lightning-tab
+            label="Developer Environments"
+            icon-name="standard:apex"
+          >
+            <lightning-tabset variant="scoped">
+              <lightning-tab label="Scratch Orgs" icon-name="standard:default">
+                <template for:each={scratchOrgBuilders} for:item="npi">
+                  <div
+                    key={npi.name}
+                    class="slds-border_top slds-border_right slds-border_bottom slds-border_left"
+                  >
+                    <c-scratch-def-file-build-card
+                      template-key={npi.templateKey}
+                    ></c-scratch-def-file-build-card>
+                  </div>
+                </template>
+              </lightning-tab>
+              <lightning-tab
+                label="Developer & Demo Orgs"
+                icon-name="standard:default"
+              >
+              </lightning-tab>
+            </lightning-tabset>
+          </lightning-tab>
+        </lightning-tabset>
+      </article>
+    </div>
+  </div>
+</template>

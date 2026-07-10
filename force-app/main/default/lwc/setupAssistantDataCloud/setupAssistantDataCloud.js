@@ -1,24 +1,19 @@
-import { LightningElement, api } from 'lwc';
-import { NavigationMixin } from "lightning/navigation";
+import { LightningElement, api } from "lwc";
 
-export default class SetupAssistantDataCloud extends NavigationMixin(LightningElement) {
+export default class SetupAssistantDataCloud extends LightningElement {
+  @api orgId;
 
-    @api orgId;
+  navigateToDataCloudPackagingCheatSheet() {
+    window.open(
+      `https://developer.salesforce.com/docs/data/data-cloud-dev/guide/component-cheatsheet.html`,
+      "_blank"
+    );
+  }
 
-    navigateScratchOrgBuild(){
-        this[NavigationMixin.Navigate]({
-            type: "standard__component",
-            attributes: {
-                componentName: "pkgviz__scratchDefFileBuildCard",
-            }
-        });
-    }
-
-    navigateToDataCloudPackagingCheatSheet(){
-        window.open(`https://developer.salesforce.com/docs/data/data-cloud-dev/guide/component-cheatsheet.html`,'_blank');
-    }
-
-    navigateToDataCloudWorkflow(){
-        window.open(`https://developer.salesforce.com/docs/data/data-cloud-dev/guide/data-cloud-2gp-workflow.html`,'_blank');
-    }
+  navigateToDataCloudWorkflow() {
+    window.open(
+      `https://developer.salesforce.com/docs/data/data-cloud-dev/guide/data-cloud-2gp-workflow.html`,
+      "_blank"
+    );
+  }
 }

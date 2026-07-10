@@ -1,5 +1,4 @@
 import { LightningElement, api } from "lwc";
-import { NavigationMixin } from "lightning/navigation";
 
 const columns = [
   {
@@ -45,9 +44,7 @@ const columns = [
   }
 ];
 
-export default class SetupAssistantAgentforce extends NavigationMixin(
-  LightningElement
-) {
+export default class SetupAssistantAgentforce extends LightningElement {
   @api orgId;
 
   data = [
@@ -139,14 +136,5 @@ export default class SetupAssistantAgentforce extends NavigationMixin(
     } else {
       this.activeSectionsMessage = "Open sections: " + openSections.join(", ");
     }
-  }
-
-  navigateScratchOrgBuild() {
-    this[NavigationMixin.Navigate]({
-      type: "standard__component",
-      attributes: {
-        componentName: "pkgviz__scratchDefFileBuildCard"
-      }
-    });
   }
 }
