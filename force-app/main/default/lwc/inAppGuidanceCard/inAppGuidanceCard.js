@@ -3,6 +3,7 @@ import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { AGENT_SCRIPTS } from "./agentScriptsData.js";
 import getInstalledPackages from "@salesforce/apex/PackageVisualizerCtrl.getInstalledPackages";
+import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
 import AgentScriptCoachModal from "c/agentScriptCoachModal";
 
 function normalizeId15(id) {
@@ -36,7 +37,9 @@ export default class InAppGuidanceCard extends NavigationMixin(
       helpGuideLink: "https://salesforce.quip.com/f3SWA340YbFH",
       helpGuideIcon: "utility:quip",
       subscriberPackageId: "033Rh000002JY85IAG",
-      subscriberPackageVersionId: this.currentPkgVersionId
+      subscriberPackageVersionId: this.currentPkgVersionId,
+      permSetLabel: "Package_Visualizer_Agentforce_Extension_Permissions",
+      permSetNamespace: "pkgviz"
     } /*,
         {
             label: 'Data Kit Extension',
@@ -83,7 +86,8 @@ export default class InAppGuidanceCard extends NavigationMixin(
           return {
             ...r,
             isInstalled: versionsMatch,
-            isUpgradeAvailable
+            isUpgradeAvailable,
+            showPermSetButton: hasPackage && !!r.permSetLabel
           };
         });
       })
@@ -167,6 +171,60 @@ export default class InAppGuidanceCard extends NavigationMixin(
         target: "_blank"
       }
     });
+  }
+
+  navigateToPermSet(event) {
+    const resourceIndex = event.target.dataset.index;
+    const selectedResource = this.resourcesData[resourceIndex];
+    if (!selectedResource || !selectedResource.permSetLabel) {
+      return;
+    }
+    // Open the tab now, while the click gesture is live; the Apex lookup that
+    // follows is async and would otherwise leave window.open popup-blocked.
+    const tab = window.open("", "_blank");
+    (async () => {
+      await getNamespacePermSetId({
+        label: selectedResource.permSetLabel,
+        namespace: selectedResource.permSetNamespace
+      })
+        .then((result) => {
+          this.openOrgPage(
+            `/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`,
+            tab
+          );
+        })
+        .catch((error) => {
+          console.error(error);
+          this.openOrgPage("/lightning/setup/PermSets/home", tab);
+          this.dispatchEvent(
+            new ShowToastEvent({
+              title: "Couldn't open the permission set",
+              message:
+                (error && error.body && error.body.message) ||
+                `Confirm the ${selectedResource.permSetLabel} permission set is installed, then try again.`,
+              variant: "error"
+            })
+          );
+        });
+    })();
+  }
+
+  // Opens an in-org page in a new browser tab. The new tab must be opened
+  // synchronously inside the originating click handler so it inherits the
+  // browser's user-activation gesture. If we waited for an Apex call to resolve
+  // before calling window.open, the gesture would be gone and the popup blocker
+  // would force the page to load in the current window instead of a new tab.
+  // Callers that do async work before navigating open the blank tab themselves
+  // and pass it in (a Window exposes a boolean `closed`; a click Event does not).
+  openOrgPage(url, existingTab) {
+    const reuseTab = existingTab && typeof existingTab.closed === "boolean";
+    const newTab = reuseTab ? existingTab : window.open("", "_blank");
+    if (!newTab) {
+      return;
+    }
+    newTab.location.href = url.startsWith("http")
+      ? url
+      : window.location.origin + url;
   }
 
   handleAgentScriptCoach(event) {

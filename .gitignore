@@ -48,6 +48,7 @@ $RECYCLE.BIN/
 .claude/
 .cursor/
 .agents/
+agent/
 skills-lock.json
 
 # Local project configuration

@@ -109,6 +109,15 @@
                         onclick={navigateToHelpGuide}
                       ></lightning-button-icon>
                     </template>
+                    <template lwc:if={resource.showPermSetButton}>
+                      <lightning-button-icon
+                        tooltip="Provision Permission Set"
+                        variant="border-filled"
+                        icon-name="action:manage_perm_sets"
+                        data-index={index}
+                        onclick={navigateToPermSet}
+                      ></lightning-button-icon>
+                    </template>
                   </lightning-button-group>
                   <div class="slds-card__body_inner">
                     <p>{resource.description}</p>
