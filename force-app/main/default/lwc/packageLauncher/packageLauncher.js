@@ -12,6 +12,8 @@ export default class PackageLauncher extends NavigationMixin(LightningElement) {
   @api packageFilterList;
   @api packageTypes;
 
+  activeTypeFilter = null;
+
   displayAllPackages = true;
   displayAllItems = true;
   displayAllDockedItems = true;
@@ -29,6 +31,49 @@ export default class PackageLauncher extends NavigationMixin(LightningElement) {
 
   get is2GP() {
     return this.packageTypes === "2GP and Unlocked Packages" ? true : false;
+  }
+
+  // Carry the ORIGINAL index alongside each package so a tile click still
+  // dispatches the correct index into packageFilterList (the parent selects
+  // via packageFilterList[event.detail]) even while a type filter hides rows.
+  get displayedPackages() {
+    const list = this.packageFilterList || [];
+    const mapped = list.map((pkg, index) => ({ pkg, index }));
+    return this.activeTypeFilter
+      ? mapped.filter(
+          (row) => row.pkg.containerOptions === this.activeTypeFilter
+        )
+      : mapped;
+  }
+
+  get hasDisplayedPackages() {
+    return this.displayedPackages.length > 0;
+  }
+
+  get managedCount() {
+    return (this.packageFilterList || []).filter(
+      (pkg) => pkg.containerOptions === "Managed"
+    ).length;
+  }
+
+  get unlockedCount() {
+    return (this.packageFilterList || []).filter(
+      (pkg) => pkg.containerOptions === "Unlocked"
+    ).length;
+  }
+
+  get isManagedSelected() {
+    return this.activeTypeFilter === "Managed";
+  }
+
+  get isUnlockedSelected() {
+    return this.activeTypeFilter === "Unlocked";
+  }
+
+  handleTypeFilter(event) {
+    const type = event.currentTarget.dataset.type;
+    // Click the same picker again to toggle back to all packages.
+    this.activeTypeFilter = this.activeTypeFilter === type ? null : type;
   }
 
   handleCancel() {

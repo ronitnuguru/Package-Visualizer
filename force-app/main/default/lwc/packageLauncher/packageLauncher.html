@@ -87,15 +87,157 @@
             class="slds-section__content slds-var-p-around_medium"
             id="appsContent"
           >
+            <template if:true={is2GP}>
+              <fieldset
+                class="slds-form-element slds-var-p-bottom_small"
+                role="radiogroup"
+              >
+                <legend class="slds-assistive-text">
+                  Filter packages by type
+                </legend>
+                <div
+                  class="slds-form-element__control slds-grid slds-wrap slds-gutters"
+                >
+                  <div
+                    class="slds-col slds-align_absolute-center slds-p-around_x-small"
+                  >
+                    <div class="slds-visual-picker slds-visual-picker_vertical">
+                      <input
+                        type="radio"
+                        id="type-managed"
+                        name="package-type-filter"
+                        data-type="Managed"
+                        checked={isManagedSelected}
+                        onclick={handleTypeFilter}
+                      />
+                      <label for="type-managed">
+                        <span
+                          class="slds-visual-picker__figure slds-visual-picker__text slds-align_absolute-center"
+                        >
+                          <span>
+                            <lightning-layout
+                              vertical-align="center"
+                              class="slds-m-bottom_x-small"
+                            >
+                              <lightning-layout-item
+                                class="slds-m-right_x-small"
+                              >
+                                <lightning-icon
+                                  icon-name="standard:solution"
+                                  alternative-text="Managed packages"
+                                  size="medium"
+                                ></lightning-icon>
+                              </lightning-layout-item>
+                              <lightning-layout-item
+                                class="slds-m-right_x-small"
+                              >
+                                <span class="slds-text-heading_small">
+                                  Managed
+                                </span>
+                              </lightning-layout-item>
+                              <lightning-layout-item>
+                                <lightning-badge
+                                  label={managedCount}
+                                  class="slds-theme_inverse"
+                                ></lightning-badge>
+                              </lightning-layout-item>
+                            </lightning-layout>
+                            <span class="slds-text-title">
+                              Distribute namespaced solutions and deliver
+                              controlled upgrades to subscribers.
+                            </span>
+                          </span>
+                        </span>
+                        <span
+                          class="slds-icon_container slds-visual-picker__text-check"
+                        >
+                          <lightning-icon
+                            icon-name="utility:check"
+                            alternative-text="check"
+                            title="check"
+                            size="x-small"
+                            variant="bare"
+                          ></lightning-icon>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                  <div
+                    class="slds-col slds-align_absolute-center slds-p-around_x-small"
+                  >
+                    <div class="slds-visual-picker slds-visual-picker_vertical">
+                      <input
+                        type="radio"
+                        id="type-unlocked"
+                        name="package-type-filter"
+                        data-type="Unlocked"
+                        checked={isUnlockedSelected}
+                        onclick={handleTypeFilter}
+                      />
+                      <label for="type-unlocked">
+                        <span
+                          class="slds-visual-picker__figure slds-visual-picker__text slds-align_absolute-center"
+                        >
+                          <span>
+                            <lightning-layout
+                              vertical-align="center"
+                              class="slds-m-bottom_x-small"
+                            >
+                              <lightning-layout-item
+                                class="slds-m-right_x-small"
+                              >
+                                <lightning-icon
+                                  icon-name="custom:custom76"
+                                  alternative-text="Unlocked packages"
+                                  size="medium"
+                                ></lightning-icon>
+                              </lightning-layout-item>
+                              <lightning-layout-item
+                                class="slds-m-right_x-small"
+                              >
+                                <span class="slds-text-heading_small">
+                                  Unlocked
+                                </span>
+                              </lightning-layout-item>
+                              <lightning-layout-item>
+                                <lightning-badge
+                                  label={unlockedCount}
+                                  class="slds-theme_inverse"
+                                ></lightning-badge>
+                              </lightning-layout-item>
+                            </lightning-layout>
+                            <span class="slds-text-title">
+                              Organize internal metadata in flexible packages
+                              that can be modified after installation.
+                            </span>
+                          </span>
+                        </span>
+                        <span
+                          class="slds-icon_container slds-visual-picker__text-check"
+                        >
+                          <lightning-icon
+                            icon-name="utility:check"
+                            alternative-text="check"
+                            title="check"
+                            size="x-small"
+                            variant="bare"
+                          ></lightning-icon>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+            </template>
             <template if:true={packageFilterList}>
-              <ul class="slds-grid slds-grid_pull-padded slds-wrap">
-                <template iterator:item={packageFilterList}>
-                  <template if:true={packageFilterList}>
+              <template if:true={hasDisplayedPackages}>
+                <ul class="slds-grid slds-grid_pull-padded slds-wrap">
+                  <template for:each={displayedPackages} for:item="row">
                     <li
                       class="slds-var-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-3"
-                      key={item.value.id}
-                      data-id={item.index}
-                      data-name={item.value.name}
+                      key={row.pkg.id}
+                      data-id={row.index}
+                      data-name={row.pkg.name}
                       onclick={handlePackageClick}
                     >
                       <div class="slds-app-launcher__tile slds-text-link_reset">
@@ -104,31 +246,43 @@
                         >
                           <span class="slds-avatar slds-avatar_large">
                             <c-package-icon
-                              icon={item.value.containerOptions}
-                              namespace-prefix={item.value.namespacePrefix}
+                              icon={row.pkg.containerOptions}
+                              namespace-prefix={row.pkg.namespacePrefix}
                             >
                             </c-package-icon>
                           </span>
                         </div>
                         <div class="slds-app-launcher__tile-body slds-truncate">
-                          <template if:false={item.value.description}>
+                          <template if:false={row.pkg.description}>
                             <div class="slds-var-p-top_medium"></div>
                           </template>
                           <a href="#" class="slds-text-heading_small"
-                            >{item.value.name}</a
+                            >{row.pkg.name}</a
                           >
                           <p class="slds-line-clamp_x-small">
-                            {item.value.description}
+                            {row.pkg.description}
                           </p>
                         </div>
                       </div>
                     </li>
                   </template>
-                </template>
-              </ul>
+                </ul>
+              </template>
+              <template if:false={hasDisplayedPackages}>
+                <div class="slds-text-heading_small">
+                  <lightning-empty-state
+                    title="Hmm…"
+                    illustration-name="noresults:search"
+                  >
+                    <p slot="description">
+                      No packages match the current filter...
+                    </p>
+                  </lightning-empty-state>
+                </div>
+              </template>
             </template>
             <template if:false={packageFilterList}>
-              <div class="slds-align_absolute-center slds-text-heading_small">
+              <div class="slds-text-heading_small">
                 <lightning-empty-state
                   title="Hmm…"
                   illustration-name="noresults:search"
