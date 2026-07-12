@@ -5,6 +5,9 @@ export default class OemShowcase extends LightningElement {
   items = NPI_ITEMS;
   selectedItem = NPI_ITEMS[0].name;
 
+  // Launch the embedded scratch org builder already in the confirmed "Edit Settings" state.
+  autoConfirmSettings = true;
+
   get selectedNpi() {
     return this.items.find((item) => item.name === this.selectedItem);
   }
@@ -25,5 +28,13 @@ export default class OemShowcase extends LightningElement {
 
   handleSelect(event) {
     this.selectedItem = event.detail.name;
+  }
+
+  handleMarketingLinkClick() {
+    window.open(this.selectedNpi.marketingUrl, "_blank");
+  }
+
+  handleDeveloperCenterClick() {
+    window.open(this.selectedNpi.developerCenterUrl, "_blank");
   }
 }

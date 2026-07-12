@@ -618,21 +618,21 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
 
   navigateToPackageCreate() {
     window.open(
-      "https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_package_commands_unified.htm#cli_reference_package_create_unified",
+      "https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_package_create.html",
       "_blank"
     );
   }
 
   navigateToPackageVersionCreate() {
     window.open(
-      "https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_package_commands_unified.htm#cli_reference_package_version_create_unified",
+      "https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_package_version_create.html",
       "_blank"
     );
   }
 
   navigateToPackageVersionPromote() {
     window.open(
-      "https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_package_commands_unified.htm#cli_reference_package_version_promote_unified",
+      "https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_package_version_promote.html",
       "_blank"
     );
   }

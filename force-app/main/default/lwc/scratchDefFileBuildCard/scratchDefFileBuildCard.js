@@ -21,6 +21,8 @@ const HELP_URLS = {
     "https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_version_selection.htm",
   scratchDefFile:
     "https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file.htm",
+  createScratchOrgs:
+    "https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_create.htm",
   orgShape:
     "https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_shape_intro.htm",
   supportedEditions:
@@ -34,7 +36,10 @@ export default class ScratchDefFileBuildCard extends NavigationMixin(
 ) {
   // When set by a parent, the matching TEMPLATES preset is auto-applied once on first render.
   @api templateKey;
-  _templateApplied = false;
+  // When true, the settings section is auto-confirmed on launch (starts in "Edit Settings" state)
+  // so embedding consumers don't have to click "Confirm Settings" before building.
+  @api autoConfirmSettings = false;
+  _initialized = false;
 
   editionValue = "Developer";
   releaseValue = "current";
@@ -65,11 +70,21 @@ export default class ScratchDefFileBuildCard extends NavigationMixin(
   countryOptions = COUNTRY_OPTIONS;
 
   renderedCallback() {
-    if (this._templateApplied || !this.templateKey) {
+    if (this._initialized) {
       return;
     }
-    this._templateApplied = true;
-    this.applyTemplateByKey(this.templateKey, { showToast: false });
+    this._initialized = true;
+    if (this.templateKey) {
+      this.applyTemplateByKey(this.templateKey, { showToast: false });
+    }
+    if (this.autoConfirmSettings) {
+      const settingsCmp = this.template.querySelector(
+        "c-scratch-settings-expression"
+      );
+      if (settingsCmp) {
+        settingsCmp.confirm();
+      }
+    }
   }
 
   @wire(getOrgCountryCode)
@@ -261,6 +276,10 @@ export default class ScratchDefFileBuildCard extends NavigationMixin(
 
   navigateToScratchHelpDefFile() {
     this.openHelp(HELP_URLS.scratchDefFile);
+  }
+
+  navigateToCreateScratchOrgs() {
+    this.openHelp(HELP_URLS.createScratchOrgs);
   }
 
   navigateToOrgShape() {

@@ -53,11 +53,20 @@
             <div class="slds-page-header__controls">
               <div class="slds-page-header__control">
                 <lightning-button-group>
-                  <lightning-button label="Learn More"></lightning-button>
-                  <lightning-button
-                    label="Get Started"
-                    variant="brand"
-                  ></lightning-button>
+                  <template lwc:if={selectedNpi.developerCenterUrl}>
+                    <lightning-button
+                      variant="border-filled"
+                      label="Developer Center"
+                      onclick={handleDeveloperCenterClick}
+                    ></lightning-button>
+                  </template>
+                  <template lwc:if={selectedNpi.marketingUrl}>
+                    <lightning-button-icon
+                      variant="border-filled"
+                      icon-name="utility:salesforce1"
+                      onclick={handleMarketingLinkClick}
+                    ></lightning-button-icon>
+                  </template>
                 </lightning-button-group>
               </div>
             </div>
@@ -79,6 +88,7 @@
                   >
                     <c-scratch-def-file-build-card
                       template-key={npi.templateKey}
+                      auto-confirm-settings={autoConfirmSettings}
                     ></c-scratch-def-file-build-card>
                   </div>
                 </template>

@@ -57,6 +57,34 @@ export default class ScratchSettingsExpression extends NavigationMixin(
   }
 
   /**
+   * Public hook the parent card calls to auto-confirm the settings on launch, so consumers
+   * that embed a preset start in the "Edit Settings" state without a manual click. The confirm
+   * is retried across a few microtasks until every setting row is mounted, because a template
+   * row (added via applySettings) mounts a tick after this is invoked and getMetaRows() must
+   * read the complete set.
+   */
+  @api
+  confirm() {
+    if (this.confirmSelected) return;
+    this.tryAutoConfirm(0);
+  }
+
+  tryAutoConfirm(attempt) {
+    if (this.confirmSelected) return;
+    const mountedRows = this.template.querySelectorAll(
+      "c-scratch-row-meta-expression"
+    ).length;
+    if (mountedRows > 0 && mountedRows >= this.metadataSettings.length) {
+      this.confirmSettings();
+      return;
+    }
+    // Rows not fully mounted yet — retry on the next microtask, bounded so we never spin forever.
+    if (attempt < 10) {
+      Promise.resolve().then(() => this.tryAutoConfirm(attempt + 1));
+    }
+  }
+
+  /**
    * Apply one or more setting groups from a template preset. Reads only the top-level
    * keys; each row's field values are seeded from DEFAULT_FIELDS by the child rows.
    */

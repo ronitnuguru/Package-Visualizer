@@ -47,6 +47,9 @@ const columns = [
 export default class SetupAssistantAgentforce extends LightningElement {
   @api orgId;
 
+  // Launch the embedded scratch org builder already in the confirmed "Edit Settings" state.
+  autoConfirmSettings = true;
+
   data = [
     {
       componentName: "AgentScript",
