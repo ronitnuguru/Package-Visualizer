@@ -180,6 +180,64 @@ global with sharing class ObjectWrappers {
     public datetime SystemModstamp;
   }
 
+  /**************************************************************************************
+   * @Description  Wrapper Class for Package2VersionCreateRequest (the async build job
+   * that produces a Package2Version). ObjectWrappers.Package2VersionCreateRequestWrapper
+   **************************************************************************************/
+  public class Package2VersionCreateRequestWrapper {
+    @AuraEnabled
+    public String Id; //08c
+    @AuraEnabled
+    public String Status { get; set; }
+    @AuraEnabled
+    public String Package2Id { get; set; } //0Ho
+    @AuraEnabled
+    public String Package2VersionId { get; set; } //05i (produced version)
+    @AuraEnabled
+    public String Branch { get; set; }
+    @AuraEnabled
+    public String Tag { get; set; }
+    @AuraEnabled
+    public String Language { get; set; }
+    @AuraEnabled
+    public String DependencyGraphJson { get; set; }
+    @AuraEnabled
+    public Boolean AsyncValidation { get; set; }
+    @AuraEnabled
+    public Boolean CalculateCodeCoverage { get; set; }
+    @AuraEnabled
+    public Boolean CalcTransitiveDependencies { get; set; }
+    @AuraEnabled
+    public Boolean SkipValidation { get; set; }
+    @AuraEnabled
+    public Boolean IsDevUsePkgZipRequested { get; set; }
+    @AuraEnabled
+    public Boolean IsPasswordProtected { get; set; }
+    @AuraEnabled
+    public Boolean IsConversionRequest { get; set; }
+    @AuraEnabled
+    public PackageCreator CreatedBy { get; set; }
+    @AuraEnabled
+    public String CreatedByName { get; set; } //flattened CreatedBy.Name for datatable
+    @AuraEnabled
+    public Datetime CreatedDate { get; set; }
+    @AuraEnabled
+    public Datetime SystemModstamp;
+  }
+
+  /**************************************************************************************
+   * @Description  Wrapper Class for Package2VersionCreateRequestError (error rows tied
+   * to a failed create request). ObjectWrappers.Package2VersionCreateRequestErrorWrapper
+   **************************************************************************************/
+  public class Package2VersionCreateRequestErrorWrapper {
+    @AuraEnabled
+    public String Id;
+    @AuraEnabled
+    public String Message { get; set; }
+    @AuraEnabled
+    public String ParentRequestId { get; set; }
+  }
+
   public class PackagePushJobWrapper {
     @AuraEnabled
     public String PackagePushRequestId { get; set; }

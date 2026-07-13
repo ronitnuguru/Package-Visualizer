@@ -47,6 +47,7 @@ export default class PackageSplitView extends NavigationMixin(
   displayVersionsTab;
   displaySubscribersTab;
   displayPushRequestsTab;
+  displayCreateRequestsTab;
 
   allPackageCheck = true;
   unlockedPackageCheck = false;
@@ -88,6 +89,8 @@ export default class PackageSplitView extends NavigationMixin(
         this.displayPackageTab = true;
         this.displayVersionsTab = false;
         this.displaySubscribersTab = false;
+        this.displayPushRequestsTab = false;
+        this.displayCreateRequestsTab = false;
       }
     );
   }
@@ -204,6 +207,7 @@ export default class PackageSplitView extends NavigationMixin(
     this.displayVersionsTab = false;
     this.displaySubscribersTab = false;
     this.displayPushRequestsTab = false;
+    this.displayCreateRequestsTab = false;
     this.displayEditView = false;
 
     this.sortDirection = sortDirection;
@@ -236,12 +240,14 @@ export default class PackageSplitView extends NavigationMixin(
         this.displayVersionsTab = false;
         this.displaySubscribersTab = false;
         this.displayPushRequestsTab = false;
+        this.displayCreateRequestsTab = false;
         break;
       case "versions":
         this.displayPackageTab = false;
         this.displayVersionsTab = true;
         this.displaySubscribersTab = false;
         this.displayPushRequestsTab = false;
+        this.displayCreateRequestsTab = false;
         this.displayEditView = false;
         break;
       case "subscribers":
@@ -249,6 +255,7 @@ export default class PackageSplitView extends NavigationMixin(
         this.displayVersionsTab = false;
         this.displaySubscribersTab = true;
         this.displayPushRequestsTab = false;
+        this.displayCreateRequestsTab = false;
         this.displayEditView = false;
         break;
       case "push-requests":
@@ -256,6 +263,15 @@ export default class PackageSplitView extends NavigationMixin(
         this.displayVersionsTab = false;
         this.displaySubscribersTab = false;
         this.displayPushRequestsTab = true;
+        this.displayCreateRequestsTab = false;
+        this.displayEditView = false;
+        break;
+      case "create-requests":
+        this.displayPackageTab = false;
+        this.displayVersionsTab = false;
+        this.displaySubscribersTab = false;
+        this.displayPushRequestsTab = false;
+        this.displayCreateRequestsTab = true;
         this.displayEditView = false;
         break;
       default:
@@ -263,6 +279,7 @@ export default class PackageSplitView extends NavigationMixin(
         this.displayVersionsTab = false;
         this.displaySubscribersTab = false;
         this.displayPushRequestsTab = false;
+        this.displayCreateRequestsTab = false;
         break;
     }
   }
@@ -277,6 +294,8 @@ export default class PackageSplitView extends NavigationMixin(
     this.displayPackageTab = true;
     this.displayVersionsTab = false;
     this.displaySubscribersTab = false;
+    this.displayPushRequestsTab = false;
+    this.displayCreateRequestsTab = false;
     this.displayEditView = false;
   }
 

@@ -446,7 +446,7 @@
               <template if:true={isPushUpgradeEnabled}>
                 <template if:true={is2GP}>
                   <lightning-tab
-                    icon-name="standard:business_hours"
+                    icon-name="standard:high_velocity_sales"
                     label="Push Upgrade Requests"
                     value="push-requests"
                     onactive={handleActive}
@@ -462,6 +462,23 @@
                     </div>
                   </lightning-tab>
                 </template>
+              </template>
+              <template if:true={is2GP}>
+                <lightning-tab
+                  icon-name="standard:funding_requirement"
+                  label="Version Create Requests"
+                  value="create-requests"
+                  onactive={handleActive}
+                  class="slds-p-around_none"
+                >
+                  <div class="slds-var-p-around_small">
+                    <template if:true={displayCreateRequestsTab}>
+                      <c-package-version-create-requests-view
+                        package-id={currentPackage.id}
+                      ></c-package-version-create-requests-view>
+                    </template>
+                  </div>
+                </lightning-tab>
               </template>
             </lightning-tabset>
           </article>

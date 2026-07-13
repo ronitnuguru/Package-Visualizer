@@ -76,6 +76,42 @@ public with sharing class PackageVisualizerCtrl {
     return packageVersionList;
   }
 
+  /**************************************************************************************
+   * @Description  Get the list of Package2VersionCreateRequest records (async build
+   * jobs) for a package. Scoped/filtered via the FilterWrapper list (Package2Id, Status).
+   **************************************************************************************/
+  @AuraEnabled(continuation=true)
+  public static List<ObjectWrappers.Package2VersionCreateRequestWrapper> getPackage2VersionCreateRequestList(
+    list<ObjectWrappers.FilterWrapper> filterWrapper,
+    String sortedBy,
+    String sortDirection,
+    String requestLimit,
+    String requestOffset
+  ) {
+    List<ObjectWrappers.Package2VersionCreateRequestWrapper> createRequestList = Package2Interface.getPackage2VersionCreateRequests(
+      filterWrapper,
+      sortedBy,
+      sortDirection,
+      requestLimit,
+      requestOffset
+    );
+    return createRequestList;
+  }
+
+  /**************************************************************************************
+   * @Description  Get the Package2VersionCreateRequestError rows for a failed create
+   * request. Invoked from the detail view when a request's Status is 'Error'.
+   **************************************************************************************/
+  @AuraEnabled(continuation=true)
+  public static List<ObjectWrappers.Package2VersionCreateRequestErrorWrapper> getPackage2VersionCreateRequestErrorList(
+    String requestId
+  ) {
+    List<ObjectWrappers.Package2VersionCreateRequestErrorWrapper> errorList = Package2Interface.getPackage2VersionCreateRequestErrors(
+      requestId
+    );
+    return errorList;
+  }
+
   @AuraEnabled(cacheable=true)
   public static List<String> getLatestPackageVersions(
     String packageId,

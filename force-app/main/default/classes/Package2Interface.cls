@@ -630,6 +630,80 @@ global with sharing class Package2Interface { // NOPMD
     return packageVersions;
   }
 
+  /**************************************************************************************
+   * @Description	Get the list of Package2VersionCreateRequest records (the async build
+   * jobs that produce a Package2Version). Scoped/filtered via the FilterWrapper list
+   * (e.g. Package2Id, Status). Mirrors getPackage2Versions but has no baseline WHERE.
+   **************************************************************************************/
+  public static List<ObjectWrappers.Package2VersionCreateRequestWrapper> getPackage2VersionCreateRequests(
+    list<ObjectWrappers.FilterWrapper> filterWrapperList,
+    String sortedBy,
+    String sortDirection,
+    String requestLimit,
+    String requestOffset
+  ) {
+    List<ObjectWrappers.Package2VersionCreateRequestWrapper> createRequests = new List<ObjectWrappers.Package2VersionCreateRequestWrapper>();
+    String queryString = 'SELECT Id, Status, Package2Id, Package2VersionId, Branch, Tag, AsyncValidation, CalculateCodeCoverage, CalcTransitiveDependencies, SkipValidation, IsDevUsePkgZipRequested, IsPasswordProtected, IsConversionRequest, Language, DependencyGraphJson, CreatedBy.Name, CreatedDate, SystemModstamp FROM Package2VersionCreateRequest ';
+    if (filterWrapperList != null && !filterWrapperList.isEmpty()) {
+      String whereClause = getWhereClause(filterWrapperList);
+      if (!String.isBlank(whereClause)) {
+        queryString = queryString + ' WHERE ' + whereClause;
+      }
+    }
+    if (sortedBy != null) {
+      queryString =
+        queryString +
+        ' ORDER BY ' +
+        String.escapeSingleQuotes(sortedBy) +
+        ' ' +
+        sortDirection;
+    }
+    queryString =
+      queryString +
+      ' LIMIT ' +
+      String.escapeSingleQuotes(requestLimit) +
+      ' OFFSET ' +
+      String.escapeSingleQuotes(requestOffset);
+    List<Object> records = submitQuery(queryString);
+    for (Object record : records) {
+      ObjectWrappers.Package2VersionCreateRequestWrapper createRequest = (ObjectWrappers.Package2VersionCreateRequestWrapper) JSON.deserialize(
+        JSON.serialize(record),
+        ObjectWrappers.Package2VersionCreateRequestWrapper.class
+      );
+      if (createRequest.CreatedBy != null) {
+        createRequest.CreatedByName = createRequest.CreatedBy.name;
+      }
+      createRequests.add(createRequest);
+    }
+    return createRequests;
+  }
+
+  /**************************************************************************************
+   * @Description	Get the Package2VersionCreateRequestError rows for a create request
+   * that failed (Status = 'Error'). Filters on the ParentRequestId reference.
+   **************************************************************************************/
+  public static List<ObjectWrappers.Package2VersionCreateRequestErrorWrapper> getPackage2VersionCreateRequestErrors(
+    String requestId
+  ) {
+    List<ObjectWrappers.Package2VersionCreateRequestErrorWrapper> errors = new List<ObjectWrappers.Package2VersionCreateRequestErrorWrapper>();
+    if (String.isBlank(requestId)) {
+      return errors;
+    }
+    String queryString =
+      'SELECT Id, Message, ParentRequestId FROM Package2VersionCreateRequestError WHERE ParentRequestId = \'' +
+      String.escapeSingleQuotes(requestId) +
+      '\'';
+    List<Object> records = submitQuery(queryString);
+    for (Object record : records) {
+      ObjectWrappers.Package2VersionCreateRequestErrorWrapper createError = (ObjectWrappers.Package2VersionCreateRequestErrorWrapper) JSON.deserialize(
+        JSON.serialize(record),
+        ObjectWrappers.Package2VersionCreateRequestErrorWrapper.class
+      );
+      errors.add(createError);
+    }
+    return errors;
+  }
+
   global static List<String> getLatestPackageVersionsList(
     String packageId,
     String versionLimit
@@ -860,7 +934,7 @@ global with sharing class Package2Interface { // NOPMD
    **************************************************************************************/
   global static string getBaseURL(String apiType) {
     return getApiHost() +
-      '/services/data/v61.0/' +
+      '/services/data/v67.0/' +
       String.escapeSingleQuotes(apiType) +
       '/';
   }

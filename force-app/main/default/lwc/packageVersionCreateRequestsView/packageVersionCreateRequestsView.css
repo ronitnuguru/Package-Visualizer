@@ -1,0 +1,7 @@
+.table-style {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  direction: rtl;
+  max-height: 600px;
+}

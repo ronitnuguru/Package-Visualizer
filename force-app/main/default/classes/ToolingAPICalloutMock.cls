@@ -9,7 +9,27 @@ public with sharing class ToolingAPICalloutMock implements HttpCalloutMock {
   public HttpResponse respond(HttpRequest req) {
     HttpResponse res = new HttpResponse();
     res.setHeader('Content-Type', 'application/json');
-    if (req.getEndpoint().contains('from+Package2Version')) {
+    // NOTE: these two branches MUST precede the 'FROM+Package2' branch below —
+    // 'FROM+Package2VersionCreateRequest' contains 'FROM+Package2' as a prefix, and
+    // 'FROM+Package2VersionCreateRequestError' contains 'FROM+Package2VersionCreateRequest',
+    // so the more specific (Error) endpoint must be matched first.
+    if (req.getEndpoint().contains('FROM+Package2VersionCreateRequestError')) {
+      //Package2VersionCreateRequestError Success — one error row tied to the
+      //failed create request 08c000000000000AAA below.
+      res.setBody(
+        '{"size":1,"totalSize":1,"done":true,"queryLocator":null,"entityTypeName":"Package2VersionCreateRequestError","records":[{"attributes":{"type":"Package2VersionCreateRequestError","url":"/services/data/v67.0/tooling/sobjects/Package2VersionCreateRequestError/08d000000000000AAA"},"Id":"08d000000000000AAA","Message":"Verification failed: Apex code coverage is below 75%.","ParentRequestId":"08c000000000000AAA"}]}'
+      );
+      res.setStatusCode(200);
+    } else if (
+      req.getEndpoint().contains('FROM+Package2VersionCreateRequest')
+    ) {
+      //Package2VersionCreateRequest Success — exercises the
+      //getPackage2VersionCreateRequests record-processing loop.
+      res.setBody(
+        '{"size":1,"totalSize":1,"done":true,"queryLocator":null,"entityTypeName":"Package2VersionCreateRequest","records":[{"attributes":{"type":"Package2VersionCreateRequest","url":"/services/data/v67.0/tooling/sobjects/Package2VersionCreateRequest/08c000000000000AAA"},"Id":"08c000000000000AAA","Status":"Success","Package2Id":"0Ho000000000000AAA","Package2VersionId":"05i000000000000AAA","Branch":"main","Tag":"v1.0","AsyncValidation":false,"CalculateCodeCoverage":true,"CalcTransitiveDependencies":false,"SkipValidation":false,"IsDevUsePkgZipRequested":false,"IsPasswordProtected":false,"IsConversionRequest":false,"Language":"en_US","DependencyGraphJson":null,"CreatedBy":{"Name":"Test User"},"CreatedDate":"2024-01-01T00:00:00.000+0000","SystemModstamp":"2024-01-01T00:00:00.000+0000"}]}'
+      );
+      res.setStatusCode(200);
+    } else if (req.getEndpoint().contains('from+Package2Version')) {
       //Package2Version Success
       res.setBody(
         '{"size":1,"totalSize":1,"done":true,"queryLocator":null,"entityTypeName":"Package2Version","records":[{"attributes":{"type":"Package2Version","url":"/services/data/v57.0/tooling/sobjects/Package2Version/05i000000000000AAA"},"Id":"05i000000000000AAA","Branch":null,"Description":null,"IsDeprecated":false,"IsPasswordProtected":false,"IsReleased":false,"MajorVersion":0,"MinorVersion":1,"PatchVersion":0,"BuildNumber":2,"Tag":null,"Name":"ver 0.1","Package2Id":"0Ho000000000000AAA","SubscriberPackageVersionId":"04t000000000000AAA","AncestorId":null,"ValidationSkipped":false}]}'

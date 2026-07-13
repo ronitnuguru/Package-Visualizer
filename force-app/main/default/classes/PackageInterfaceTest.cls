@@ -69,6 +69,80 @@ private class PackageInterfaceTest {
   }
 
   /**************************************************************************************
+   * @Description  Test for Package2VersionCreateRequest retrieve logic (async build
+   * jobs), scoped by Package2Id and exercising the record-processing loop.
+   **************************************************************************************/
+  @isTest
+  public static void testPackage2VersionCreateRequestList() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    List<ObjectWrappers.FilterWrapper> fltList = createFilterList(
+      'Package2Id',
+      '0Ho000000000000AAA',
+      'STRING'
+    );
+    List<ObjectWrappers.Package2VersionCreateRequestWrapper> createRequests = PackageVisualizerCtrl.getPackage2VersionCreateRequestList(
+      fltList,
+      'CreatedDate',
+      'desc',
+      '50',
+      '0'
+    );
+    Assert.areEqual(
+      1,
+      createRequests.size(),
+      'One create request should be returned by the mock'
+    );
+    Assert.areEqual(
+      'Success',
+      createRequests[0].Status,
+      'Status should deserialize from the Tooling response'
+    );
+    Assert.areEqual(
+      'Test User',
+      createRequests[0].CreatedByName,
+      'CreatedByName should be flattened from CreatedBy.Name'
+    );
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Test for Package2VersionCreateRequestError retrieve logic (error
+   * rows tied to a failed create request).
+   **************************************************************************************/
+  @isTest
+  public static void testPackage2VersionCreateRequestErrorList() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    List<ObjectWrappers.Package2VersionCreateRequestErrorWrapper> errors = PackageVisualizerCtrl.getPackage2VersionCreateRequestErrorList(
+      '08c000000000000AAA'
+    );
+    Assert.areEqual(1, errors.size(), 'One error row should be returned');
+    Assert.isTrue(
+      String.isNotBlank(errors[0].Message),
+      'Error Message should be populated'
+    );
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
+   * @Description  Blank requestId short-circuits to an empty list without a callout.
+   **************************************************************************************/
+  @isTest
+  public static void testPackage2VersionCreateRequestErrorList_BlankId() {
+    Test.startTest();
+    List<ObjectWrappers.Package2VersionCreateRequestErrorWrapper> errors = PackageVisualizerCtrl.getPackage2VersionCreateRequestErrorList(
+      ''
+    );
+    Assert.areEqual(
+      0,
+      errors.size(),
+      'Blank requestId should return an empty list'
+    );
+    Test.stopTest();
+  }
+
+  /**************************************************************************************
    * @Description  Test class for 1GP Package version Retrice Logic.
    **************************************************************************************/
   @isTest
@@ -2039,7 +2113,7 @@ private class PackageInterfaceTest {
     String url = Package2Interface.getBaseURL('tooling');
     Test.stopTest();
     Assert.isTrue(
-      url.contains('/services/data/v61.0/tooling/'),
+      url.contains('/services/data/v67.0/tooling/'),
       'Base URL should contain versioned tooling path'
     );
   }
@@ -2526,7 +2600,7 @@ private class PackageInterfaceTest {
       'callout host should target the subscriber-owned Tooling Named Credential created at runtime'
     );
     Assert.isTrue(
-      baseUrl.endsWith('/services/data/v61.0/tooling/'),
+      baseUrl.endsWith('/services/data/v67.0/tooling/'),
       'getBaseURL should append the versioned tooling path'
     );
   }

@@ -1,0 +1,240 @@
+<template>
+  <template if:true={displaySpinner}>
+    <div class="slds-p-bottom_xx-large slds-p-around_x-large">
+      <lightning-spinner
+        alternative-text="Loading"
+        size="medium"
+        variant="brand"
+      ></lightning-spinner>
+    </div>
+  </template>
+  <template if:false={displayRequestsView}>
+    <template if:false={displaySpinner}>
+      <lightning-empty-state title="Hmm…" illustration-name="noresults:search">
+        <p slot="description">
+          Looks like we were unable to retrieve any version create requests for
+          this package...
+        </p>
+      </lightning-empty-state>
+    </template>
+  </template>
+  <template if:true={displayRequestsView}>
+    <template if:true={displayEmptyView}>
+      <template if:true={displayFilterMeta}>
+        <lightning-empty-state title="Hmm..." illustration-name="success:new">
+          <p slot="description">
+            We could not find any results based on your filters...
+          </p>
+          <lightning-button
+            variant="brand"
+            label="Edit Filters"
+            slot="cta"
+            onclick={handleFilterEdit}
+          >
+          </lightning-button>
+        </lightning-empty-state>
+      </template>
+      <template if:false={displayFilterMeta}>
+        <lightning-empty-state
+          title="Hmm…"
+          illustration-name="noresults:search"
+        >
+          <p slot="description">
+            Looks like there are no version create requests for this package
+            yet...
+          </p>
+        </lightning-empty-state>
+      </template>
+    </template>
+    <template if:false={displayEmptyView}>
+      <div class="slds-var-p-bottom_x-small">
+        <lightning-breadcrumbs
+          class="slds-var-p-horizontal_medium slds-var-p-top_small"
+          style="font-weight: 700"
+        >
+          <lightning-breadcrumb
+            label="All Create Requests"
+            onclick={handleAllRequests}
+          >
+          </lightning-breadcrumb>
+          <template if:true={displayRequestDetailBreadCrumb}>
+            <lightning-breadcrumb label="Request Details">
+            </lightning-breadcrumb>
+          </template>
+        </lightning-breadcrumbs>
+      </div>
+      <template if:true={displayAllRequests}>
+        <div
+          class="slds-grid slds-var-p-bottom_x-small slds-var-p-horizontal_medium slds-wrap"
+        >
+          <div class="slds-col">
+            <ul
+              class="slds-list_horizontal slds-has-dividers_left slds-text-body_small slds-text-color_weak slds-var-p-top_x-small"
+            >
+              <template if:true={requestsLength}>
+                <li class="slds-item">{requestsLength} Requests</li>
+              </template>
+              <li class="slds-item">Sorted by {sortedByLabel}</li>
+              <template if:true={displayFilterMeta}>
+                <li class="slds-item">Filters Enabled</li>
+              </template>
+              <li class="slds-item">
+                Updated&nbsp;<lightning-relative-date-time
+                  value={relativeDateTime}
+                ></lightning-relative-date-time>
+              </li>
+            </ul>
+          </div>
+          <div class="slds-col_bump-left">
+            <div class="slds-grid slds-grid_align-end">
+              <lightning-button-menu
+                icon-name="utility:table_settings"
+                menu-alignment="auto"
+                variant="border-filled"
+                alternative-text="Table Settings"
+                class="slds-var-p-left_x-small"
+              >
+                <lightning-menu-subheader
+                  label="Table Controls"
+                ></lightning-menu-subheader>
+                <lightning-menu-item
+                  value="tableFields"
+                  label="Select Fields to Display"
+                  id="table-fields"
+                  onclick={handleFieldsToDisplay}
+                ></lightning-menu-item>
+              </lightning-button-menu>
+              <lightning-button-icon
+                icon-name="utility:refresh"
+                class="slds-var-p-left_x-small"
+                variant="border-filled"
+                alternative-text="Refresh"
+                title="Refresh"
+                onclick={handleRefresh}
+              ></lightning-button-icon>
+              <lightning-button-group class="slds-var-p-left_x-small">
+                <lightning-button-icon-stateful
+                  icon-name="utility:filterList"
+                  selected={filterState}
+                  onclick={handleFilterPanel}
+                  alternative-text="Filter"
+                  variant="border-filled"
+                ></lightning-button-icon-stateful>
+              </lightning-button-group>
+            </div>
+          </div>
+        </div>
+        <div class="table-style slds-p-horizontal_medium slds-p-bottom_medium">
+          <div
+            class={displayFilterDockPanel}
+            style="direction: ltr"
+            aria-hidden="false"
+          >
+            <div class="slds-panel__header">
+              <h2
+                class="slds-panel__header-title slds-text-heading_small slds-truncate"
+              >
+                Filters
+              </h2>
+              <button
+                class="slds-button slds-button_icon slds-button_icon-small slds-panel__close"
+                onclick={handleFilterPanel}
+              >
+                <lightning-icon
+                  size="x-small"
+                  icon-name="utility:close"
+                  alternative-text="Close"
+                  title="Close"
+                ></lightning-icon>
+              </button>
+            </div>
+            <div class="slds-panel__body">
+              <div class="">
+                <lightning-dual-listbox
+                  label="Status"
+                  source-label="Available"
+                  selected-label="Selected"
+                  options={statusOptions}
+                  value={selectedStatusOptions}
+                  onchange={statusFilterChange}
+                  size="6"
+                  disable-reordering
+                ></lightning-dual-listbox>
+              </div>
+            </div>
+            <div class="slds-align_absolute-center slds-modal__footer">
+              <lightning-button
+                label="Reset"
+                title="Reset"
+                onclick={handleFilterReset}
+                class="slds-var-m-left_x-small"
+              ></lightning-button>
+              <lightning-button
+                variant="brand"
+                label="Submit"
+                title="Submit"
+                onclick={handleFilterSubmit}
+                class="slds-var-m-left_x-small"
+              ></lightning-button>
+            </div>
+          </div>
+          <div style={responsivePanelStyle}>
+            <lightning-datatable
+              data={requestsData}
+              columns={columns}
+              key-field="Id"
+              sorted-by={sortedBy}
+              sorted-direction={sortDirection}
+              default-sort-direction="desc"
+              onsort={handleSort}
+              onrowaction={handleRowAction}
+              enable-infinite-loading={disableInfiniteLoad}
+              onloadmore={loadMoreData}
+              load-more-offset="5"
+              hide-checkbox-column
+              show-row-number-column
+            >
+            </lightning-datatable>
+            <template if:true={displayDatatableSpinner}>
+              <lightning-spinner
+                alternative-text="Loading"
+                size="medium"
+                variant="brand"
+              ></lightning-spinner>
+            </template>
+          </div>
+        </div>
+      </template>
+    </template>
+    <template if:true={displayRequestDetail}>
+      <c-package-version-create-request-detail
+        request-id={detailId}
+        status={detailStatus}
+        package2-version-id={detailPackage2VersionId}
+        branch={detailBranch}
+        tag={detailTag}
+        language={detailLanguage}
+        dependency-graph-json={detailDependencyGraphJson}
+        async-validation={detailAsyncValidation}
+        calculate-code-coverage={detailCalculateCodeCoverage}
+        calc-transitive-dependencies={detailCalcTransitiveDependencies}
+        skip-validation={detailSkipValidation}
+        is-dev-use-pkg-zip-requested={detailIsDevUsePkgZipRequested}
+        is-password-protected={detailIsPasswordProtected}
+        is-conversion-request={detailIsConversionRequest}
+        created-by-name={detailCreatedByName}
+        created-date={detailCreatedDate}
+      >
+      </c-package-version-create-request-detail>
+    </template>
+  </template>
+  <template if:true={fieldsToDisplayModal}>
+    <c-table-fields-to-display
+      label="Version Create Request Columns"
+      table-options={tableOptions}
+      table-selected-options={tableSelectedOptions}
+      oncancel={handleFieldsToDisplayModalCancel}
+      onsave={handleFieldsToDisplayModalSave}
+    ></c-table-fields-to-display>
+  </template>
+</template>

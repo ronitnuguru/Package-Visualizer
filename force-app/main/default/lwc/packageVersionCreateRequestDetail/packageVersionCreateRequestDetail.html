@@ -1,0 +1,375 @@
+<template>
+  <template if:true={displaySpinner}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="medium"
+      variant="brand"
+    ></lightning-spinner>
+  </template>
+
+  <!-- Build progress: six sequential phases + a terminal outcome step.
+       Hidden when the request errored — the error notification stands in. -->
+  <template if:false={hasProgressError}>
+    <div class="slds-var-p-around_x-small">
+      <lightning-progress-indicator type="path" current-step={currentStep}>
+        <template for:each={progressSteps} for:item="step">
+          <lightning-progress-step
+            key={step.value}
+            label={step.label}
+            value={step.value}
+          ></lightning-progress-step>
+        </template>
+      </lightning-progress-indicator>
+    </div>
+  </template>
+
+  <!-- Error messages (only when the request failed): a single scoped
+       notification listing every error as a dotted bullet. -->
+  <template if:true={hasErrorMessages}>
+    <div class="slds-var-p-horizontal_small slds-var-p-bottom_small">
+      <div
+        class="slds-scoped-notification slds-media slds-media_center slds-theme_error"
+        role="alert"
+      >
+        <div class="slds-media__figure">
+          <lightning-icon
+            icon-name="utility:error"
+            variant="inverse"
+            size="small"
+            alternative-text="Error"
+            title="Error"
+          ></lightning-icon>
+        </div>
+        <div class="slds-media__body">
+          <ul class="slds-list_dotted">
+            <template for:each={errorMessages} for:item="err">
+              <li key={err.key}>{err.message}</li>
+            </template>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <div class="slds-grid slds-wrap">
+    <!-- Left column -->
+    <div class="slds-col slds-col_padded slds-size_6-of-12">
+      <lightning-input
+        type="text"
+        label="Create Request Id"
+        value={requestId}
+        class="slds-border_bottom"
+        readonly
+      ></lightning-input>
+      <template if:true={package2VersionId}>
+        <lightning-input
+          type="text"
+          label="Package Version Id (05i)"
+          value={package2VersionId}
+          class="slds-border_bottom"
+          readonly
+          field-level-help="The Package2Version this request produces"
+        ></lightning-input>
+      </template>
+      <template if:true={branch}>
+        <lightning-input
+          type="text"
+          label="Branch"
+          value={branch}
+          class="slds-border_bottom"
+          readonly
+        ></lightning-input>
+      </template>
+      <template if:true={tag}>
+        <lightning-input
+          type="text"
+          label="Tag"
+          value={tag}
+          class="slds-border_bottom"
+          readonly
+        ></lightning-input>
+      </template>
+      <template if:true={language}>
+        <lightning-input
+          type="text"
+          label="Language"
+          value={language}
+          class="slds-border_bottom"
+          readonly
+        ></lightning-input>
+      </template>
+    </div>
+
+    <!-- Right column: build options -->
+    <div class="slds-col slds-col_padded">
+      <lightning-input
+        type="checkbox"
+        label="Calculate Code Coverage"
+        checked={calculateCodeCoverage}
+        field-level-help="Code coverage is calculated during package version creation"
+        disabled
+      ></lightning-input>
+      <lightning-input
+        type="checkbox"
+        label="Skip Validation"
+        checked={skipValidation}
+        field-level-help="Validation is skipped during creation; versions created this way can't be promoted"
+        disabled
+      ></lightning-input>
+      <lightning-input
+        type="checkbox"
+        label="Calc Transitive Dependencies"
+        checked={calcTransitiveDependencies}
+        field-level-help="Indirect (transitive) dependencies are calculated for you"
+        disabled
+      ></lightning-input>
+      <lightning-input
+        type="checkbox"
+        label="Async Validation"
+        checked={asyncValidation}
+        field-level-help="The version is created before package validations complete"
+        disabled
+      ></lightning-input>
+      <lightning-input
+        type="checkbox"
+        label="Is Password Protected"
+        checked={isPasswordProtected}
+        field-level-help="Installation requires the user to provide an installation key"
+        disabled
+      ></lightning-input>
+      <lightning-input
+        type="checkbox"
+        label="Is Dev Use Pkg Zip Requested"
+        checked={isDevUsePkgZipRequested}
+        field-level-help="A downloadable package zip of the metadata is generated"
+        disabled
+      ></lightning-input>
+      <lightning-input
+        type="checkbox"
+        label="Is Conversion Request"
+        checked={isConversionRequest}
+        field-level-help="This version is being converted from a 1GP to a 2GP managed package"
+        disabled
+      ></lightning-input>
+      <div class="slds-var-p-top_small">
+        <lightning-input
+          type="text"
+          label="Created By"
+          value={createdByName}
+          class="slds-border_bottom"
+          readonly
+        ></lightning-input>
+        <div class="slds-form-element slds-border_bottom">
+          <label class="slds-form-element__label slds-var-p-bottom_xx-small">
+            Created Date
+          </label>
+          <div class="slds-form-element__control slds-var-p-bottom_x-small">
+            <lightning-formatted-date-time
+              value={createdDate}
+              year="numeric"
+              month="numeric"
+              day="numeric"
+              hour="2-digit"
+              minute="2-digit"
+              time-zone-name="short"
+              hour12="true"
+            ></lightning-formatted-date-time>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dependency graph (only when populated) -->
+  <template if:true={hasDependencyGraph}>
+    <div class="slds-var-p-around_small">
+      <div class="slds-section slds-is-open">
+        <h3 class="slds-section__title slds-theme_shade">
+          <span class="slds-truncate slds-var-p-horizontal_small"
+            >Dependency Graph</span
+          >
+        </h3>
+        <div class="slds-section__content slds-var-p-top_x-small">
+          <lightning-textarea
+            label="Dependency Graph JSON"
+            value={dependencyGraphJson}
+            variant="label-hidden"
+            read-only
+          ></lightning-textarea>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Agentforce analysis card: appears above the footer once Generate is
+       clicked on a failed request. -->
+  <template if:true={showAgentforceCard}>
+    <div class="slds-var-p-horizontal_small slds-var-p-bottom_small">
+      <div
+        class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium card-style"
+      >
+        <lightning-card>
+          <template if:true={displayAgentforceSpinner}>
+            <div class="slds-p-vertical_medium">
+              <lightning-spinner
+                alternative-text="Loading"
+                size="medium"
+                variant="brand"
+              ></lightning-spinner>
+            </div>
+          </template>
+          <h3 slot="title" class="slds-truncate">
+            <lightning-icon
+              icon-name="standard:agent_astro"
+              size="medium"
+              class="slds-m-right_small"
+            ></lightning-icon>
+            Agentforce Generated
+          </h3>
+          <div class="slds-card__body slds-card__body_inner">
+            <template if:false={displayAgentforceSpinner}>
+              <template if:true={aiResponse}>
+                <div class="slds-p-around_small">
+                  <div
+                    class="slds-grid slds-wrap slds-gutters slds-p-bottom_small"
+                  >
+                    <div
+                      class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"
+                    >
+                      <template if:true={parsedResponse.severity}>
+                        <div class="slds-p-bottom_xx-small">
+                          <strong>Severity:</strong>
+                        </div>
+                        <div>
+                          <lightning-badge
+                            label={parsedResponse.severity}
+                            class={severityVariant}
+                          ></lightning-badge>
+                        </div>
+                      </template>
+                    </div>
+                    <div
+                      class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"
+                    >
+                      <template
+                        if:true={parsedResponse.estimatedResolutionTime}
+                      >
+                        <div class="slds-p-bottom_xx-small">
+                          <strong>Est. Resolution Time:</strong>
+                        </div>
+                        <div>{parsedResponse.estimatedResolutionTime}</div>
+                      </template>
+                    </div>
+                  </div>
+                  <dl class="slds-m-bottom_none">
+                    <dt class="slds-p-bottom_xx-small">
+                      <strong>Summary:</strong>
+                    </dt>
+                    <dd class="slds-var-m-left_none slds-p-bottom_small">
+                      {parsedResponse.summary}
+                    </dd>
+
+                    <template if:true={parsedResponse.rootCause}>
+                      <dt class="slds-p-bottom_xx-small">
+                        <strong>Root Cause:</strong>
+                      </dt>
+                      <dd class="slds-var-m-left_none slds-p-bottom_small">
+                        {parsedResponse.rootCause}
+                      </dd>
+                    </template>
+
+                    <template if:true={parsedResponse.debuggingSteps}>
+                      <dt class="slds-p-bottom_xx-small">
+                        <strong>Debugging Steps:</strong>
+                      </dt>
+                      <dd class="slds-var-m-left_none slds-p-bottom_small">
+                        <ol class="slds-list_ordered">
+                          <template
+                            for:each={parsedResponse.debuggingSteps}
+                            for:item="step"
+                          >
+                            <li key={step} class="slds-p-vertical_xx-small">
+                              {step}
+                            </li>
+                          </template>
+                        </ol>
+                      </dd>
+                    </template>
+
+                    <template if:true={parsedResponse.preventativeMeasures}>
+                      <dt class="slds-p-bottom_xx-small">
+                        <strong>Prevention:</strong>
+                      </dt>
+                      <dd class="slds-var-m-left_none slds-p-bottom_small">
+                        <ul class="slds-list_dotted">
+                          <template
+                            for:each={parsedResponse.preventativeMeasures}
+                            for:item="measure"
+                          >
+                            <li key={measure} class="slds-p-vertical_xx-small">
+                              {measure}
+                            </li>
+                          </template>
+                        </ul>
+                      </dd>
+                    </template>
+                  </dl>
+                </div>
+              </template>
+              <template if:false={aiResponse}>
+                <div class="slds-p-around_medium">
+                  <lightning-empty-state
+                    title="Hmm..."
+                    illustration-name="noresults:search"
+                  >
+                    <p slot="description">
+                      Looks like you may have not installed the Agentforce
+                      dependent extension managed package. Or you don't have the
+                      necessary permissions or configuration to perform
+                      Agentforce related functionalities. Please contact your
+                      admin for further assistance...
+                    </p>
+                    <lightning-button
+                      variant="brand"
+                      label="Install Managed Package"
+                      slot="cta"
+                      onclick={handleExtensionInstall}
+                    >
+                    </lightning-button>
+                  </lightning-empty-state>
+                </div>
+              </template>
+            </template>
+          </div>
+        </lightning-card>
+      </div>
+    </div>
+  </template>
+
+  <div class="slds-card__footer slds-align_absolute-center slds-m-top_small">
+    <div class="slds-grid slds-grid_align-end">
+      <template if:true={canGenerate}>
+        <lightning-button
+          variant="brand"
+          label="Generate"
+          title="Generate"
+          onclick={handleAskAgentforce}
+          icon-name="utility:sparkles"
+          icon-position="right"
+          class="slds-var-m-right_x-small"
+        >
+        </lightning-button>
+      </template>
+      <lightning-button
+        variant="brand"
+        label="Refresh"
+        title="Refresh"
+        onclick={handleRefresh}
+        icon-name="utility:refresh"
+        icon-position="right"
+        class="slds-var-m-right_x-small"
+      >
+      </lightning-button>
+    </div>
+  </div>
+</template>
