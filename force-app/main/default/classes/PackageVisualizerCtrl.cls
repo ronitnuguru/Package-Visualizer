@@ -1139,6 +1139,44 @@ public with sharing class PackageVisualizerCtrl {
     return null;
   }
 
+  /**************************************************************************************
+   * @Description  Get a single package version by its Package2Version Id (05i),
+   *               enriched with the parent package type (Managed/Unlocked). Used by the
+   *               create-request detail view to display the version a request produced.
+   **************************************************************************************/
+  @AuraEnabled(cacheable=true)
+  public static ObjectWrappers.PackageVersionWrapper getPackageVersionById(
+    String package2VersionId
+  ) {
+    list<ObjectWrappers.FilterWrapper> filterWrapper = new List<ObjectWrappers.FilterWrapper>();
+    ObjectWrappers.FilterWrapper fw = new ObjectWrappers.FilterWrapper();
+    fw.fieldName = 'Id';
+    fw.value = package2VersionId;
+    fw.dataType = 'STRING';
+    filterWrapper.add(fw);
+    List<ObjectWrappers.PackageVersionWrapper> versions = Package2Interface.getPackage2Versions(
+      filterWrapper,
+      null,
+      null,
+      null,
+      null,
+      'createdDate',
+      'desc',
+      '1',
+      '0'
+    );
+    if (versions != null && versions.size() > 0) {
+      ObjectWrappers.PackageVersionWrapper version = versions[0];
+      if (version.package2Id != null) {
+        version.packageType = Package2Interface.getPackage2TypeById(
+          version.package2Id
+        );
+      }
+      return version;
+    }
+    return null;
+  }
+
   @AuraEnabled(cacheable=true)
   public static String getTargetRecordId(
     String targetType,

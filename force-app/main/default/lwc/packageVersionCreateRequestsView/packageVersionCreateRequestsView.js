@@ -112,7 +112,6 @@ export default class PackageVersionCreateRequestsView extends LightningElement {
   detailBranch;
   detailTag;
   detailLanguage;
-  detailDependencyGraphJson;
   detailAsyncValidation;
   detailCalculateCodeCoverage;
   detailCalcTransitiveDependencies;
@@ -341,7 +340,6 @@ export default class PackageVersionCreateRequestsView extends LightningElement {
     this.detailBranch = row.Branch;
     this.detailTag = row.Tag;
     this.detailLanguage = row.Language;
-    this.detailDependencyGraphJson = row.DependencyGraphJson;
     this.detailAsyncValidation = row.AsyncValidation;
     this.detailCalculateCodeCoverage = row.CalculateCodeCoverage;
     this.detailCalcTransitiveDependencies = row.CalcTransitiveDependencies;

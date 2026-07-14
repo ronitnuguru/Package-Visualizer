@@ -180,27 +180,6 @@
     </div>
   </div>
 
-  <!-- Dependency graph (only when populated) -->
-  <template if:true={hasDependencyGraph}>
-    <div class="slds-var-p-around_small">
-      <div class="slds-section slds-is-open">
-        <h3 class="slds-section__title slds-theme_shade">
-          <span class="slds-truncate slds-var-p-horizontal_small"
-            >Dependency Graph</span
-          >
-        </h3>
-        <div class="slds-section__content slds-var-p-top_x-small">
-          <lightning-textarea
-            label="Dependency Graph JSON"
-            value={dependencyGraphJson}
-            variant="label-hidden"
-            read-only
-          ></lightning-textarea>
-        </div>
-      </div>
-    </div>
-  </template>
-
   <!-- Agentforce analysis card: appears above the footer once Generate is
        clicked on a failed request. -->
   <template if:true={showAgentforceCard}>
@@ -346,30 +325,99 @@
     </div>
   </template>
 
-  <div class="slds-card__footer slds-align_absolute-center slds-m-top_small">
-    <div class="slds-grid slds-grid_align-end">
-      <template if:true={canGenerate}>
-        <lightning-button
-          variant="brand"
-          label="Generate"
-          title="Generate"
-          onclick={handleAskAgentforce}
-          icon-name="utility:sparkles"
-          icon-position="right"
-          class="slds-var-m-right_x-small"
-        >
-        </lightning-button>
-      </template>
-      <lightning-button
-        variant="brand"
-        label="Refresh"
-        title="Refresh"
-        onclick={handleRefresh}
-        icon-name="utility:refresh"
-        icon-position="right"
-        class="slds-var-m-right_x-small"
+  <!-- Package version details card: appears above the footer once View Package
+       Version is clicked on a successful request. -->
+  <template if:true={showVersionDetailsCard}>
+    <div class="slds-var-p-horizontal_small slds-var-p-bottom_small">
+      <div
+        class="slds-border_top slds-border_bottom slds-border_right slds-border_left slds-m-top_medium card-style"
       >
-      </lightning-button>
+        <lightning-card title="Version Details" icon-name="standard:form">
+          <template if:true={displayVersionDetailsSpinner}>
+            <div class="slds-p-vertical_medium">
+              <lightning-spinner
+                alternative-text="Loading"
+                size="medium"
+                variant="brand"
+              ></lightning-spinner>
+            </div>
+          </template>
+          <template if:false={displayVersionDetailsSpinner}>
+            <template if:true={versionDetails}>
+              <c-package-version-details
+                version-id={versionDetails.id}
+                package-id={versionDetails.package2Id}
+                package-build-number={versionDetails.buildNumber}
+                package-has-passed-code-coverage-check={versionDetails.hasPassedCodeCoverageCheck}
+                package-install-url={versionDetails.installUrl}
+                package-is-deprecated={versionDetails.isDeprecated}
+                package-is-password-protected={versionDetails.isPasswordProtected}
+                package-is-released={versionDetails.isReleased}
+                package-name={versionDetails.name}
+                package-version-number={versionDetails.versionNumber}
+                package-subscriber-version-id={versionDetails.subscriberPackageVersionId}
+                package-validation-skipped={versionDetails.validationSkipped}
+                package-metadata-removed={versionDetails.hasMetadataRemoved}
+                package-ancestor-id={versionDetails.ancestorId}
+                package-branch={versionDetails.branch}
+                package-tag={versionDetails.tag}
+                package-type={versionDetails.packageType}
+                package-description={versionDetails.description}
+                package-build-duration-in-seconds={versionDetails.buildDurationInSeconds}
+                package-release-version={versionDetails.releaseVersion}
+                package-language={versionDetails.language}
+                package-created-date={versionDetails.createdDate}
+                package-created-by={versionDetails.owner}
+                package-validated-async={versionDetails.validatedAsync}
+              >
+              </c-package-version-details>
+            </template>
+          </template>
+        </lightning-card>
+      </div>
     </div>
-  </div>
+  </template>
+
+  <template if:true={showFooter}>
+    <div class="slds-card__footer slds-align_absolute-center slds-m-top_small">
+      <div class="slds-grid slds-grid_align-end">
+        <template if:true={canGenerate}>
+          <lightning-button
+            variant="brand"
+            label="Generate"
+            title="Generate"
+            onclick={handleAskAgentforce}
+            icon-name="utility:sparkles"
+            icon-position="right"
+            class="slds-var-m-right_x-small"
+          >
+          </lightning-button>
+        </template>
+        <template if:true={canViewPackageVersion}>
+          <lightning-button
+            variant="brand"
+            label="View Package Version"
+            title="View Package Version"
+            onclick={handleViewPackageVersion}
+            icon-name="utility:package"
+            icon-position="right"
+            class="slds-var-m-right_x-small"
+          >
+          </lightning-button>
+        </template>
+        <template if:true={canRefresh}>
+          <lightning-button
+            variant="brand"
+            label="Refresh"
+            title="Refresh"
+            onclick={handleRefresh}
+            icon-name="utility:refresh"
+            icon-position="right"
+            class="slds-var-m-right_x-small"
+          >
+          </lightning-button>
+        </template>
+      </div>
+    </div>
+  </template>
 </template>

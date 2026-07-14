@@ -105,6 +105,8 @@ global with sharing class ObjectWrappers {
     global Boolean hasMetadataRemoved { get; set; }
     @AuraEnabled
     global Boolean validatedAsync { get; set; }
+    @AuraEnabled
+    global string packageType { get; set; } //Package2.ContainerOptions (Managed/Unlocked)
   }
 
   global class PackageCreator {
@@ -199,8 +201,6 @@ global with sharing class ObjectWrappers {
     public String Tag { get; set; }
     @AuraEnabled
     public String Language { get; set; }
-    @AuraEnabled
-    public String DependencyGraphJson { get; set; }
     @AuraEnabled
     public Boolean AsyncValidation { get; set; }
     @AuraEnabled

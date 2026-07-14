@@ -3,6 +3,7 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getPackage2VersionCreateRequestList from "@salesforce/apexContinuation/PackageVisualizerCtrl.getPackage2VersionCreateRequestList";
 import getPackage2VersionCreateRequestErrorList from "@salesforce/apexContinuation/PackageVisualizerCtrl.getPackage2VersionCreateRequestErrorList";
 import invokePromptAndUserModelsGenAi from "@salesforce/apex/PackageVisualizerCtrl.invokePromptAndUserModelsGenAi";
+import getPackageVersionById from "@salesforce/apex/PackageVisualizerCtrl.getPackageVersionById";
 
 const PACKAGE_VERSION_CREATE_ERROR_SYSTEM_PROMPT = `You are a Salesforce 2GP Package Version Build Debugger for ISV partners. Analyze structured Package2VersionCreateRequest data from a failed managed-package version creation and produce a concise troubleshooting brief for a release engineer.
 
@@ -68,7 +69,6 @@ export default class PackageVersionCreateRequestDetail extends LightningElement 
   // them so live status changes are reflected without leaving the detail view.
   _status;
   _package2VersionId;
-  _dependencyGraphJson;
 
   @api
   get status() {
@@ -86,14 +86,6 @@ export default class PackageVersionCreateRequestDetail extends LightningElement 
     this._package2VersionId = value;
   }
 
-  @api
-  get dependencyGraphJson() {
-    return this._dependencyGraphJson;
-  }
-  set dependencyGraphJson(value) {
-    this._dependencyGraphJson = value;
-  }
-
   displaySpinner;
   errorMessages = [];
 
@@ -104,6 +96,12 @@ export default class PackageVersionCreateRequestDetail extends LightningElement 
   displayAgentforceSpinner = false;
   // The Agentforce dependent extension package (offered when analysis fails).
   agentforceExtensionPackageVersionId = "04tRh000001bOxFIAU";
+
+  // Package version details state (revealed inline once "View Package Version"
+  // is clicked on a successful request; the wrapper is fetched once and cached).
+  showVersionDetailsCard = false;
+  displayVersionDetailsSpinner = false;
+  versionDetails;
 
   connectedCallback() {
     if (this._status === "Error") {
@@ -141,8 +139,22 @@ export default class PackageVersionCreateRequestDetail extends LightningElement 
     return this.errorMessages && this.errorMessages.length > 0;
   }
 
-  get hasDependencyGraph() {
-    return !!this._dependencyGraphJson;
+  // The View Package Version button is offered only once the build has
+  // succeeded and produced a Package2Version to inspect.
+  get canViewPackageVersion() {
+    return this._status === "Success" && !!this._package2VersionId;
+  }
+
+  // Refresh only helps while a build is still running or has errored; a
+  // successful request is terminal, so it's hidden in the success state.
+  get canRefresh() {
+    return this._status !== "Success";
+  }
+
+  // The footer is hidden entirely once the version details card is revealed —
+  // with the produced version on screen there's nothing left to refresh or reopen.
+  get showFooter() {
+    return !this.showVersionDetailsCard;
   }
 
   // The Generate button is offered only when the request failed and there are
@@ -237,6 +249,48 @@ export default class PackageVersionCreateRequestDetail extends LightningElement 
     );
   }
 
+  // Reveal the produced Package2Version inline. This also hides the footer, so
+  // the card is shown once and the button isn't offered again.
+  handleViewPackageVersion() {
+    this.showVersionDetailsCard = true;
+    this.displayVersionDetailsSpinner = true;
+    this.loadPackageVersionDetails();
+  }
+
+  loadPackageVersionDetails() {
+    (async () => {
+      await getPackageVersionById({
+        package2VersionId: this._package2VersionId
+      })
+        .then((result) => {
+          this.displayVersionDetailsSpinner = false;
+          if (result) {
+            this.versionDetails = result;
+          } else {
+            this.dispatchEvent(
+              new ShowToastEvent({
+                title: "Package Version Not Found",
+                message:
+                  "The package version isn't available yet. Try Refresh.",
+                variant: "warning"
+              })
+            );
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          this.displayVersionDetailsSpinner = false;
+          this.dispatchEvent(
+            new ShowToastEvent({
+              title: "Something went wrong",
+              message: error,
+              variant: "error"
+            })
+          );
+        });
+    })();
+  }
+
   loadErrors() {
     this.displaySpinner = true;
     (async () => {
@@ -286,7 +340,6 @@ export default class PackageVersionCreateRequestDetail extends LightningElement 
           }
           this._status = row.Status;
           this._package2VersionId = row.Package2VersionId;
-          this._dependencyGraphJson = row.DependencyGraphJson;
           if (this._status === "Error") {
             this.loadErrors();
           } else {

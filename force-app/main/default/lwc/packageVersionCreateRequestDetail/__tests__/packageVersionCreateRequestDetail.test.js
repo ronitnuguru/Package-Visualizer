@@ -3,6 +3,7 @@ import PackageVersionCreateRequestDetail from "c/packageVersionCreateRequestDeta
 import getPackage2VersionCreateRequestList from "@salesforce/apexContinuation/PackageVisualizerCtrl.getPackage2VersionCreateRequestList";
 import getPackage2VersionCreateRequestErrorList from "@salesforce/apexContinuation/PackageVisualizerCtrl.getPackage2VersionCreateRequestErrorList";
 import invokePromptAndUserModelsGenAi from "@salesforce/apex/PackageVisualizerCtrl.invokePromptAndUserModelsGenAi";
+import getPackageVersionById from "@salesforce/apex/PackageVisualizerCtrl.getPackageVersionById";
 
 jest.mock(
   "@salesforce/apexContinuation/PackageVisualizerCtrl.getPackage2VersionCreateRequestList",
@@ -18,6 +19,12 @@ jest.mock(
 
 jest.mock(
   "@salesforce/apex/PackageVisualizerCtrl.invokePromptAndUserModelsGenAi",
+  () => ({ default: jest.fn() }),
+  { virtual: true }
+);
+
+jest.mock(
+  "@salesforce/apex/PackageVisualizerCtrl.getPackageVersionById",
   () => ({ default: jest.fn() }),
   { virtual: true }
 );
@@ -173,8 +180,7 @@ describe("c-package-version-create-request-detail", () => {
       {
         Id: "08c000000000006AAA",
         Status: "Success",
-        Package2VersionId: "05i000000000006AAA",
-        DependencyGraphJson: null
+        Package2VersionId: "05i000000000006AAA"
       }
     ]);
     const element = createElement("c-package-version-create-request-detail", {
@@ -314,5 +320,169 @@ describe("c-package-version-create-request-detail", () => {
       "lightning-empty-state"
     );
     expect(emptyState).not.toBeNull();
+  });
+
+  // A well-formed PackageVersionWrapper the details child can render without its
+  // connectedCallback throwing on the version-number split.
+  const versionWrapper = {
+    id: "05i000000000020AAA",
+    package2Id: "0Ho000000000020AAA",
+    name: "My Package",
+    versionNumber: "1.2.3-4",
+    subscriberPackageVersionId: "04t000000000020AAA",
+    packageType: "Managed"
+  };
+
+  it("offers View Package Version only when Success and a 05i is present", async () => {
+    const element = createElement("c-package-version-create-request-detail", {
+      is: PackageVersionCreateRequestDetail
+    });
+    element.requestId = "08c000000000020AAA";
+    element.status = "Success";
+    element.package2VersionId = "05i000000000020AAA";
+    document.body.appendChild(element);
+    await flush();
+
+    const labels = Array.from(
+      element.shadowRoot.querySelectorAll("lightning-button")
+    ).map((b) => b.label);
+    expect(labels).toContain("View Package Version");
+  });
+
+  it("hides View Package Version when Success but no 05i is present", async () => {
+    const element = createElement("c-package-version-create-request-detail", {
+      is: PackageVersionCreateRequestDetail
+    });
+    element.requestId = "08c000000000021AAA";
+    element.status = "Success";
+    document.body.appendChild(element);
+    await flush();
+
+    const labels = Array.from(
+      element.shadowRoot.querySelectorAll("lightning-button")
+    ).map((b) => b.label);
+    expect(labels).not.toContain("View Package Version");
+  });
+
+  it("hides View Package Version while the build is in flight", async () => {
+    const element = createElement("c-package-version-create-request-detail", {
+      is: PackageVersionCreateRequestDetail
+    });
+    element.requestId = "08c000000000022AAA";
+    element.status = "VerifyingMetadata";
+    element.package2VersionId = "05i000000000022AAA";
+    document.body.appendChild(element);
+    await flush();
+
+    const labels = Array.from(
+      element.shadowRoot.querySelectorAll("lightning-button")
+    ).map((b) => b.label);
+    expect(labels).not.toContain("View Package Version");
+  });
+
+  it("fetches by 05i and renders the version details card on click", async () => {
+    getPackageVersionById.mockResolvedValue(versionWrapper);
+    const element = createElement("c-package-version-create-request-detail", {
+      is: PackageVersionCreateRequestDetail
+    });
+    element.requestId = "08c000000000023AAA";
+    element.status = "Success";
+    element.package2VersionId = "05i000000000020AAA";
+    document.body.appendChild(element);
+    await flush();
+
+    Array.from(element.shadowRoot.querySelectorAll("lightning-button"))
+      .find((b) => b.label === "View Package Version")
+      .click();
+    await flush();
+
+    expect(getPackageVersionById).toHaveBeenCalledWith({
+      package2VersionId: "05i000000000020AAA"
+    });
+    const child = element.shadowRoot.querySelector("c-package-version-details");
+    expect(child).not.toBeNull();
+    expect(child.packageName).toBe("My Package");
+    expect(child.packageVersionNumber).toBe("1.2.3-4");
+    expect(child.packageType).toBe("Managed");
+  });
+
+  it("does not render the child and does not crash when no version is returned", async () => {
+    getPackageVersionById.mockResolvedValue(null);
+    const element = createElement("c-package-version-create-request-detail", {
+      is: PackageVersionCreateRequestDetail
+    });
+    element.requestId = "08c000000000024AAA";
+    element.status = "Success";
+    element.package2VersionId = "05i000000000024AAA";
+    document.body.appendChild(element);
+    await flush();
+
+    Array.from(element.shadowRoot.querySelectorAll("lightning-button"))
+      .find((b) => b.label === "View Package Version")
+      .click();
+    await flush();
+
+    expect(getPackageVersionById).toHaveBeenCalledTimes(1);
+    const child = element.shadowRoot.querySelector("c-package-version-details");
+    expect(child).toBeNull();
+  });
+
+  it("hides Refresh on a successful request but keeps it while in flight", async () => {
+    const success = createElement("c-package-version-create-request-detail", {
+      is: PackageVersionCreateRequestDetail
+    });
+    success.requestId = "08c000000000027AAA";
+    success.status = "Success";
+    success.package2VersionId = "05i000000000027AAA";
+    document.body.appendChild(success);
+    await flush();
+    const successLabels = Array.from(
+      success.shadowRoot.querySelectorAll("lightning-button")
+    ).map((b) => b.label);
+    expect(successLabels).not.toContain("Refresh");
+
+    const inFlight = createElement("c-package-version-create-request-detail", {
+      is: PackageVersionCreateRequestDetail
+    });
+    inFlight.requestId = "08c000000000028AAA";
+    inFlight.status = "VerifyingMetadata";
+    document.body.appendChild(inFlight);
+    await flush();
+    const inFlightLabels = Array.from(
+      inFlight.shadowRoot.querySelectorAll("lightning-button")
+    ).map((b) => b.label);
+    expect(inFlightLabels).toContain("Refresh");
+  });
+
+  it("hides the entire footer once the version details card is shown", async () => {
+    getPackageVersionById.mockResolvedValue(versionWrapper);
+    const element = createElement("c-package-version-create-request-detail", {
+      is: PackageVersionCreateRequestDetail
+    });
+    element.requestId = "08c000000000029AAA";
+    element.status = "Success";
+    element.package2VersionId = "05i000000000020AAA";
+    document.body.appendChild(element);
+    await flush();
+
+    expect(
+      element.shadowRoot.querySelector(".slds-card__footer")
+    ).not.toBeNull();
+
+    Array.from(element.shadowRoot.querySelectorAll("lightning-button"))
+      .find((b) => b.label === "View Package Version")
+      .click();
+    await flush();
+
+    expect(
+      element.shadowRoot.querySelector("c-package-version-details")
+    ).not.toBeNull();
+    // Footer (and every footer button) is gone once the card is delivered.
+    expect(element.shadowRoot.querySelector(".slds-card__footer")).toBeNull();
+    const labels = Array.from(
+      element.shadowRoot.querySelectorAll("lightning-button")
+    ).map((b) => b.label);
+    expect(labels).not.toContain("View Package Version");
+    expect(labels).not.toContain("Refresh");
   });
 });

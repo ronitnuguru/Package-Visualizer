@@ -159,6 +159,22 @@ global with sharing class Package2Interface { // NOPMD
     return packages;
   }
 
+  public static String getPackage2TypeById(String package2Id) {
+    if (String.isBlank(package2Id)) {
+      return null;
+    }
+    String s =
+      'SELECT Id, ContainerOptions FROM Package2 WHERE Id = \'' +
+      String.escapeSingleQuotes(package2Id) +
+      '\'';
+    List<Object> records = submitQuery(s);
+    for (Object record : records) {
+      Map<String, Object> m = (Map<String, Object>) record;
+      return (String) m.get('ContainerOptions');
+    }
+    return null;
+  }
+
   public static Boolean verifyUnlockedPackageInstalled() {
     string s = 'SELECT Id, SubscriberPackageId, SubscriberPackage.NamespacePrefix, SubscriberPackage.Name FROM InstalledSubscriberPackage WHERE SubscriberPackageId = \'033Rh000000AYI9IAO\'';
     List<Object> record = submitQuery(s);
@@ -643,7 +659,7 @@ global with sharing class Package2Interface { // NOPMD
     String requestOffset
   ) {
     List<ObjectWrappers.Package2VersionCreateRequestWrapper> createRequests = new List<ObjectWrappers.Package2VersionCreateRequestWrapper>();
-    String queryString = 'SELECT Id, Status, Package2Id, Package2VersionId, Branch, Tag, AsyncValidation, CalculateCodeCoverage, CalcTransitiveDependencies, SkipValidation, IsDevUsePkgZipRequested, IsPasswordProtected, IsConversionRequest, Language, DependencyGraphJson, CreatedBy.Name, CreatedDate, SystemModstamp FROM Package2VersionCreateRequest ';
+    String queryString = 'SELECT Id, Status, Package2Id, Package2VersionId, Branch, Tag, AsyncValidation, CalculateCodeCoverage, CalcTransitiveDependencies, SkipValidation, IsDevUsePkgZipRequested, IsPasswordProtected, IsConversionRequest, Language, CreatedBy.Name, CreatedDate, SystemModstamp FROM Package2VersionCreateRequest ';
     if (filterWrapperList != null && !filterWrapperList.isEmpty()) {
       String whereClause = getWhereClause(filterWrapperList);
       if (!String.isBlank(whereClause)) {

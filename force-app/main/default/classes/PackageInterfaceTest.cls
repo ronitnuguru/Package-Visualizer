@@ -69,6 +69,24 @@ private class PackageInterfaceTest {
   }
 
   /**************************************************************************************
+   * @Description  Test for fetching a single package version by its 05i Id, used by
+   * the create-request detail view's View Package Version button.
+   **************************************************************************************/
+  @isTest
+  public static void testGetPackageVersionById() {
+    Test.startTest();
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    ObjectWrappers.PackageVersionWrapper version = PackageVisualizerCtrl.getPackageVersionById(
+      '05i000000000000AAA'
+    );
+    Test.stopTest();
+    Assert.isNotNull(
+      version,
+      'A package version should be returned for a valid 05i'
+    );
+  }
+
+  /**************************************************************************************
    * @Description  Test for Package2VersionCreateRequest retrieve logic (async build
    * jobs), scoped by Package2Id and exercising the record-processing loop.
    **************************************************************************************/
