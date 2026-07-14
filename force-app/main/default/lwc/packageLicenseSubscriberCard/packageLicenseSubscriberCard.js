@@ -206,7 +206,7 @@ export default class PackageLicenseSubscriberCard extends NavigationMixin(
     this[NavigationMixin.Navigate]({
       type: "standard__webPage",
       attributes: {
-        url: `https://pkgvisualizerlwc2020--sflma.vf.force.com/partnerbt/lmo/subOrgLogin.apexp?directLoginOrgId=${this.subscriber.orgKey}`
+        url: `/partnerbt/lmo/subOrgLogin.apexp?directLoginOrgId=${this.subscriber.orgKey}`
       }
     });
   }
