@@ -400,7 +400,7 @@ export default class PackageSubscriberDetail extends NavigationMixin(
     this[NavigationMixin.Navigate]({
       type: "standard__webPage",
       attributes: {
-        url: `https://pkgvisualizerlwc2020--sflma.vf.force.com/partnerbt/lmo/subOrgLogin.apexp?directLoginOrgId=${this.orgKey}`
+        url: `/partnerbt/lmo/subOrgLogin.apexp?directLoginOrgId=${this.orgKey}`
       }
     });
   }
