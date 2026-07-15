@@ -12,6 +12,33 @@ global with sharing class PushUpgradesInterface {
   private static final Integer CALLOUT_TIMEOUT_MS = 120000;
   @TestVisible
   private static final Integer SUBSCRIBER_CHUNK_SIZE = 200;
+  private static final Integer QUERY_LIMIT_MINIMUM = 1;
+  private static final Integer QUERY_LIMIT_MAXIMUM = 2000;
+  private static final Integer QUERY_OFFSET_MINIMUM = 0;
+  private static final Integer QUERY_OFFSET_MAXIMUM = 2000;
+  private static final Map<String, String> PACKAGE_PUSH_REQUEST_SORT_FIELDS = new Map<String, String>{
+    'id' => 'Id',
+    'packageversionid' => 'PackageVersionId',
+    'scheduledstarttime' => 'ScheduledStartTime',
+    'status' => 'Status',
+    'starttime' => 'StartTime',
+    'endtime' => 'EndTime',
+    'durationseconds' => 'DurationSeconds',
+    'systemmodstamp' => 'SystemModstamp'
+  };
+  private static final Map<String, String> PACKAGE_PUSH_JOB_SORT_FIELDS = new Map<String, String>{
+    'id' => 'Id',
+    'packagepushrequestid' => 'PackagePushRequestId',
+    'status' => 'Status',
+    'subscriberorganizationkey' => 'SubscriberOrganizationKey',
+    'systemmodstamp' => 'SystemModstamp',
+    'durationseconds' => 'DurationSeconds',
+    'endtime' => 'EndTime',
+    'starttime' => 'StartTime'
+  };
+  private static final Map<String, String> PACKAGE_PUSH_JOB_GROUP_FIELDS = new Map<String, String>{
+    'status' => 'Status'
+  };
 
   private static String getBaseURL() {
     return Package2Interface.getApiHost() + '/services/data/v57.0/';
@@ -72,29 +99,51 @@ global with sharing class PushUpgradesInterface {
     String pushRequestLimit,
     String pushRequestOffset
   ) {
+    String canonicalSortField = SoqlInputValidator.normalizeAllowlistedIdentifier(
+      sortedBy,
+      PACKAGE_PUSH_REQUEST_SORT_FIELDS,
+      'An invalid PackagePushRequest sort field was provided.'
+    );
+    String canonicalSortDirection = SoqlInputValidator.normalizeSortDirection(
+      sortDirection,
+      'An invalid PackagePushRequest sort direction was provided.'
+    );
+    Integer parsedLimit = SoqlInputValidator.parseIntegerInRange(
+      pushRequestLimit,
+      QUERY_LIMIT_MINIMUM,
+      QUERY_LIMIT_MAXIMUM,
+      'An invalid PackagePushRequest limit was provided.'
+    );
+    Integer parsedOffset = SoqlInputValidator.parseIntegerInRange(
+      pushRequestOffset,
+      QUERY_OFFSET_MINIMUM,
+      QUERY_OFFSET_MAXIMUM,
+      'An invalid PackagePushRequest offset was provided.'
+    );
+
     String queryString = 'SELECT Id, PackageVersionId, ScheduledStartTime, Status, StartTime, EndTime, DurationSeconds, SystemModstamp FROM PackagePushRequest ';
-    if (!filterWrapperList.isEmpty()) {
+    if (filterWrapperList != null && !filterWrapperList.isEmpty()) {
       String whereClause = Package2Interface.getWhereClause(filterWrapperList);
       if (!String.isBlank(whereClause)) {
         queryString += ' WHERE ' + whereClause;
       }
     }
     queryString +=
-      'ORDER BY ' +
-      String.escapeSingleQuotes(sortedBy) +
+      ' ORDER BY ' +
+      canonicalSortField +
       ' ' +
-      String.escapeSingleQuotes(sortDirection);
+      canonicalSortDirection;
     queryString +=
       ' LIMIT ' +
-      String.escapeSingleQuotes(pushRequestLimit) +
+      String.valueOf(parsedLimit) +
       ' OFFSET ' +
-      String.escapeSingleQuotes(pushRequestOffset);
+      String.valueOf(parsedOffset);
 
     List<ObjectWrappers.PackagePushRequestWrapper> packageRequestList = new List<ObjectWrappers.PackagePushRequestWrapper>();
     if (Type.forName('PackagePushRequest') != null) {
       SObjectAccessDecision decision = Security.stripInaccessible(
         AccessType.READABLE,
-        Database.query(queryString)
+        Database.query(queryString) // NOPMD - Sort tokens are allowlisted, pagination is bounded, and filter literals are validated or escaped.
       );
       for (SObject o : decision.getRecords()) {
         packageRequestList.add(
@@ -115,8 +164,30 @@ global with sharing class PushUpgradesInterface {
     String pushJobsLimit,
     String pushJobsOffset
   ) {
+    String canonicalSortField = SoqlInputValidator.normalizeAllowlistedIdentifier(
+      sortedBy,
+      PACKAGE_PUSH_JOB_SORT_FIELDS,
+      'An invalid PackagePushJob sort field was provided.'
+    );
+    String canonicalSortDirection = SoqlInputValidator.normalizeSortDirection(
+      sortDirection,
+      'An invalid PackagePushJob sort direction was provided.'
+    );
+    Integer parsedLimit = SoqlInputValidator.parseIntegerInRange(
+      pushJobsLimit,
+      QUERY_LIMIT_MINIMUM,
+      QUERY_LIMIT_MAXIMUM,
+      'An invalid PackagePushJob limit was provided.'
+    );
+    Integer parsedOffset = SoqlInputValidator.parseIntegerInRange(
+      pushJobsOffset,
+      QUERY_OFFSET_MINIMUM,
+      QUERY_OFFSET_MAXIMUM,
+      'An invalid PackagePushJob offset was provided.'
+    );
+
     String queryString = 'SELECT (SELECT ErrorMessage, ErrorTitle, ErrorType, ErrorDetails, ErrorSeverity, Id FROM PackagePushErrors), Id, PackagePushRequestId, Status, SubscriberOrganizationKey, SystemModstamp, DurationSeconds, EndTime, StartTime FROM PackagePushJob ';
-    if (!filterWrapperList.isEmpty()) {
+    if (filterWrapperList != null && !filterWrapperList.isEmpty()) {
       String whereClause = Package2Interface.getWhereClause(filterWrapperList);
       if (!String.isBlank(whereClause)) {
         queryString += ' WHERE ' + whereClause;
@@ -124,14 +195,14 @@ global with sharing class PushUpgradesInterface {
     }
     queryString +=
       ' ORDER BY ' +
-      String.escapeSingleQuotes(sortedBy) +
+      canonicalSortField +
       ' ' +
-      String.escapeSingleQuotes(sortDirection);
+      canonicalSortDirection;
     queryString +=
       ' LIMIT ' +
-      String.escapeSingleQuotes(pushJobsLimit) +
+      String.valueOf(parsedLimit) +
       ' OFFSET ' +
-      String.escapeSingleQuotes(pushJobsOffset);
+      String.valueOf(parsedOffset);
 
     List<ObjectWrappers.PackagePushJobWrapper> pushJobsList = new List<ObjectWrappers.PackagePushJobWrapper>();
     if (
@@ -140,7 +211,7 @@ global with sharing class PushUpgradesInterface {
     ) {
       SObjectAccessDecision decision = Security.stripInaccessible(
         AccessType.READABLE,
-        Database.query(queryString)
+        Database.query(queryString) // NOPMD - Sort tokens are allowlisted, pagination is bounded, and filter literals are validated or escaped.
       );
       for (SObject o : decision.getRecords()) {
         pushJobsList.add(
@@ -442,22 +513,27 @@ global with sharing class PushUpgradesInterface {
     List<ObjectWrappers.FilterWrapper> filterWrapperList,
     String groupByField
   ) {
+    String canonicalGroupField = SoqlInputValidator.normalizeAllowlistedIdentifier(
+      groupByField,
+      PACKAGE_PUSH_JOB_GROUP_FIELDS,
+      'An invalid PackagePushJob group field was provided.'
+    );
     String queryString =
       'SELECT Count(Id), ' +
-      String.escapeSingleQuotes(groupByField) +
+      canonicalGroupField +
       ' FROM PackagePushJob ';
-    if (!filterWrapperList.isEmpty()) {
+    if (filterWrapperList != null && !filterWrapperList.isEmpty()) {
       String whereClause = Package2Interface.getWhereClause(filterWrapperList);
       if (!String.isBlank(whereClause)) {
         queryString += ' WHERE ' + whereClause;
       }
     }
-    queryString += ' GROUP BY ' + String.escapeSingleQuotes(groupByField);
+    queryString += ' GROUP BY ' + canonicalGroupField;
     queryString += ' ORDER BY Count(Id) DESC LIMIT 6';
 
     List<AggregateResult> jobsChartData = new List<AggregateResult>();
     if (Type.forName('PackagePushJob') != null) {
-      jobsChartData = Database.query(queryString);
+      jobsChartData = Database.query(queryString); // NOPMD - Group fields are allowlisted and filter literals are validated or escaped.
     }
     return jobsChartData;
   }

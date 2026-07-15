@@ -472,9 +472,10 @@ public with sharing class PackageVisualizerCtrl {
       }
       return null;
     } catch (Exception e) {
-      throw new AuraHandledException(
-        'Could not find a LMA record associated with this version'
-      );
+      String message = 'Could not find a LMA record associated with this version';
+      AuraHandledException error = new AuraHandledException(message);
+      error.setMessage(message);
+      throw error;
     }
   }
 
@@ -492,9 +493,10 @@ public with sharing class PackageVisualizerCtrl {
       }
       return null;
     } catch (Exception e) {
-      throw new AuraHandledException(
-        'Could not find a LMA record associated with this version'
-      );
+      String message = 'Could not find a LMA record associated with this version';
+      AuraHandledException error = new AuraHandledException(message);
+      error.setMessage(message);
+      throw error;
     }
   }
 
@@ -534,27 +536,57 @@ public with sharing class PackageVisualizerCtrl {
     String lmaLicensesLimit,
     String lmaLicensesOffset
   ) {
+    Map<String, String> allowedSortFields = new Map<String, String>{
+      'id' => 'Id',
+      'name' => 'Name',
+      'lastmodifieddate' => 'LastModifiedDate'
+    };
+    String canonicalSortField = SoqlInputValidator.normalizeAllowlistedIdentifier(
+      sortedBy,
+      allowedSortFields,
+      'Invalid sort field.'
+    );
+    String canonicalSortDirection = SoqlInputValidator.normalizeSortDirection(
+      sortDirection,
+      'Invalid sort direction.'
+    );
+    Integer parsedLimit = SoqlInputValidator.parseIntegerInRange(
+      lmaLicensesLimit,
+      1,
+      2000,
+      'Invalid limit.'
+    );
+    Integer parsedOffset = SoqlInputValidator.parseIntegerInRange(
+      lmaLicensesOffset,
+      0,
+      2000,
+      'Invalid offset.'
+    );
+    List<ObjectWrappers.FilterWrapper> safeFilterWrapper = (filterWrapper ==
+      null)
+      ? new List<ObjectWrappers.FilterWrapper>()
+      : filterWrapper;
     try {
       String queryString = ' SELECT Id, LastModifiedDate, Name, sfLma__Account__c, sfLma__Account__r.Name, sfLma__Contact__c ,sfLma__Contact__r.Name, sfLma__Install_Date__c, sfLma__Lead__c ,sfLma__Lead__r.Name, sfLma__Lead__r.LeadSource, sfLma__Lead__r.Email, sfLma__Licensed_Seats__c, sfLma__Seats__c ,sfLma__License_Status__c, sfLma__License_Type__c, sfLma__Expiration__c, sfLma__Used_Licenses__c FROM sfLma__License__c ';
       String whereClause = '';
-      if (!filterWrapper.isEmpty()) {
-        whereClause = Package2Interface.getWhereClause(filterWrapper);
+      if (!safeFilterWrapper.isEmpty()) {
+        whereClause = Package2Interface.getWhereClause(safeFilterWrapper);
         if (!String.isBlank(whereClause)) {
           queryString = queryString + ' WHERE ' + whereClause;
         }
       }
       queryString =
         queryString +
-        'ORDER BY ' +
-        String.escapeSingleQuotes(sortedBy) +
+        ' ORDER BY ' +
+        canonicalSortField +
         ' ' +
-        String.escapeSingleQuotes(sortDirection);
+        canonicalSortDirection;
       queryString =
         queryString +
         ' LIMIT ' +
-        String.escapeSingleQuotes(lmaLicensesLimit) +
+        String.valueOf(parsedLimit) +
         ' OFFSET ' +
-        String.escapeSingleQuotes(lmaLicensesOffset);
+        String.valueOf(parsedOffset);
       if (Type.forName('sfLma__Package_Version__c') != null) {
         SObjectAccessDecision decision = Security.stripInaccessible(
           AccessType.READABLE,
@@ -613,6 +645,8 @@ public with sharing class PackageVisualizerCtrl {
         return licensesList;
       }
       return null;
+    } catch (AuraHandledException e) {
+      throw e;
     } catch (Exception e) {
       throw new AuraHandledException(
         'We could not retrieve package version\'s licenses'
@@ -869,14 +903,20 @@ public with sharing class PackageVisualizerCtrl {
 
   @AuraEnabled(cacheable=true)
   public static List<AggregateResult> getSignupCount(String days) {
+    Integer parsedDays = SoqlInputValidator.parseIntegerInRange(
+      days,
+      1,
+      9999,
+      'Invalid days value.'
+    );
     try {
       String queryString = '';
-      if (days == '1') {
+      if (parsedDays == 1) {
         queryString = 'SELECT count(ID) FROM SignupRequest WHERE CreatedDate = TODAY WITH USER_MODE';
       } else {
         queryString =
           'SELECT count(ID) FROM SignupRequest WHERE CreatedDate = LAST_N_DAYS:' +
-          String.escapeSingleQuotes(days) +
+          String.valueOf(parsedDays) +
           ' WITH USER_MODE';
       }
       List<AggregateResult> signupCount = new List<AggregateResult>();

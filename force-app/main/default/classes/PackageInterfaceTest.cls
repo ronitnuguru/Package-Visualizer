@@ -308,7 +308,7 @@ private class PackageInterfaceTest {
     fltList.add(createFilterObject('Id', 'Value', 'STRING'));
     fltList.add(createFilterObject('Id', 'Production~Demo~Trial', 'LIST'));
     fltList.add(createFilterObject('Id', 'Value', 'SEARCH'));
-    fltList.add(createFilterObject('Id', 'Value', 'BOOLEAN'));
+    fltList.add(createFilterObject('Id', 'true', 'BOOLEAN'));
     fltList.add(createFilterObject('Id', 'Value', 'ID'));
     fltList.add(createFilterObject('Id', '10', 'LESSOREQUAL'));
     fltList.add(createFilterObject('Id', '100', 'GREATEROREQUAL'));

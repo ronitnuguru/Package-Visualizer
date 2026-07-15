@@ -12,6 +12,136 @@ global with sharing class Package2Interface { // NOPMD
   global class ToolingCalloutException extends Exception {
   }
 
+  private static final String INVALID_FILTER_FIELD_MESSAGE = 'Invalid filter field name.';
+  private static final String INVALID_FILTER_TYPE_MESSAGE = 'Invalid filter data type.';
+  private static final String INVALID_FILTER_BOOLEAN_MESSAGE = 'Invalid filter boolean value.';
+  private static final String INVALID_FILTER_DECIMAL_MESSAGE = 'Invalid filter decimal value.';
+  private static final String INVALID_SORT_PAIR_MESSAGE = 'Invalid sort input pair.';
+
+  private static final Map<String, String> PACKAGE2_VERSION_SORT_FIELD_MAP = new Map<String, String>{
+    'id' => 'Id',
+    'branch' => 'Branch',
+    'description' => 'Description',
+    'ispasswordprotected' => 'IsPasswordProtected',
+    'isreleased' => 'IsReleased',
+    'majorversion' => 'MajorVersion',
+    'minorversion' => 'MinorVersion',
+    'patchversion' => 'PatchVersion',
+    'buildnumber' => 'BuildNumber',
+    'tag' => 'Tag',
+    'name' => 'Name',
+    'package2id' => 'Package2Id',
+    'subscriberpackageversionid' => 'SubscriberPackageVersionId',
+    'ancestorid' => 'AncestorId',
+    'validationskipped' => 'ValidationSkipped',
+    'builddurationinseconds' => 'BuildDurationInSeconds',
+    'haspassedcodecoveragecheck' => 'HasPassedCodeCoverageCheck',
+    'hasmetadataremoved' => 'HasMetadataRemoved',
+    'releaseversion' => 'ReleaseVersion',
+    'language' => 'Language',
+    'createddate' => 'CreatedDate',
+    'createdby' => 'CreatedBy.Name',
+    'createdbyname' => 'CreatedBy.Name',
+    'owner' => 'CreatedBy.Name',
+    'validatedasync' => 'ValidatedAsync',
+    'systemmodstamp' => 'SystemModstamp',
+    'versionnumber' => 'versionNumber'
+  };
+  private static final Map<String, String> PACKAGE1_VERSION_SORT_FIELD_MAP = new Map<String, String>{
+    'id' => 'Id',
+    'buildnumber' => 'BuildNumber',
+    'isdeprecated' => 'IsDeprecated',
+    'majorversion' => 'MajorVersion',
+    'metadatapackageid' => 'MetadataPackageId',
+    'minorversion' => 'MinorVersion',
+    'name' => 'Name',
+    'patchversion' => 'PatchVersion',
+    'releasestate' => 'ReleaseState',
+    'systemmodstamp' => 'SystemModstamp',
+    'versionnumber' => 'versionNumber'
+  };
+  private static final Map<String, String> SIGNUP_REQUEST_SORT_FIELD_MAP = new Map<String, String>{
+    'company' => 'Company',
+    'country' => 'Country',
+    'createdby' => 'CreatedBy.Name',
+    'createdbyname' => 'CreatedBy.Name',
+    'owner' => 'CreatedBy.Name',
+    'createddate' => 'CreatedDate',
+    'createdorgid' => 'CreatedOrgId',
+    'createdorginstance' => 'CreatedOrgInstance',
+    'edition' => 'Edition',
+    'errorcode' => 'ErrorCode',
+    'firstname' => 'FirstName',
+    'id' => 'Id',
+    'issignupemailsuppressed' => 'IsSignupEmailSuppressed',
+    'lastmodifiedbyid' => 'LastModifiedById',
+    'lastmodifieddate' => 'LastModifiedDate',
+    'lastname' => 'LastName',
+    'ownerid' => 'OwnerId',
+    'preferredlanguage' => 'PreferredLanguage',
+    'resolvedtemplateid' => 'ResolvedTemplateId',
+    'shouldconnecttoenvhub' => 'ShouldConnectToEnvHub',
+    'signupemail' => 'SignupEmail',
+    'signupsource' => 'SignupSource',
+    'status' => 'Status',
+    'subdomain' => 'Subdomain',
+    'systemmodstamp' => 'SystemModstamp',
+    'templateid' => 'TemplateId',
+    'trialdays' => 'TrialDays',
+    'trialsourceorgid' => 'TrialSourceOrgId',
+    'username' => 'Username'
+  };
+  private static final Map<String, String> PACKAGE_SUBSCRIBER_SORT_FIELD_MAP = new Map<String, String>{
+    'id' => 'Id',
+    'metadatapackageid' => 'MetadataPackageId',
+    'metadatapackageversionid' => 'MetadataPackageVersionId',
+    'orgkey' => 'OrgKey',
+    'orgname' => 'OrgName',
+    'orgtype' => 'OrgType',
+    'orgstatus' => 'OrgStatus',
+    'instancename' => 'InstanceName',
+    'parentorg' => 'ParentOrg',
+    'customupgradetype' => 'CustomUpgradeType',
+    'hasrestrictionenabled' => 'HasRestrictionEnabled',
+    'iscustomupgradeallowed' => 'IsCustomUpgradeAllowed',
+    'systemmodstamp' => 'SystemModstamp'
+  };
+  private static final Map<String, String> PACKAGE2_VERSION_CREATE_REQUEST_SORT_FIELD_MAP = new Map<String, String>{
+    'id' => 'Id',
+    'status' => 'Status',
+    'package2id' => 'Package2Id',
+    'package2versionid' => 'Package2VersionId',
+    'branch' => 'Branch',
+    'tag' => 'Tag',
+    'asyncvalidation' => 'AsyncValidation',
+    'calculatecodecoverage' => 'CalculateCodeCoverage',
+    'calctransitivedependencies' => 'CalcTransitiveDependencies',
+    'skipvalidation' => 'SkipValidation',
+    'isdevusepkgziprequested' => 'IsDevUsePkgZipRequested',
+    'ispasswordprotected' => 'IsPasswordProtected',
+    'isconversionrequest' => 'IsConversionRequest',
+    'language' => 'Language',
+    'createdby' => 'CreatedBy.Name',
+    'createdbyname' => 'CreatedBy.Name',
+    'owner' => 'CreatedBy.Name',
+    'createddate' => 'CreatedDate',
+    'systemmodstamp' => 'SystemModstamp'
+  };
+  private static final Map<String, String> PACKAGE_SUBSCRIBER_CHART_GROUP_MAP = new Map<String, String>{
+    'orgtype' => 'OrgType',
+    'orgstatus' => 'OrgStatus',
+    'instancename' => 'InstanceName',
+    'metadatapackageversionid' => 'MetadataPackageVersionId'
+  };
+  private static final Map<String, String> LMA_CHART_GROUP_MAP = new Map<String, String>{
+    'sflma__lead__r.leadsource' => 'sfLma__Lead__r.LeadSource',
+    'sflma__status__c' => 'sfLma__Status__c',
+    'sflma__is_sandbox__c' => 'sfLma__Is_Sandbox__c'
+  };
+  private static final Map<String, String> PACKAGE_PUSH_JOB_CHART_GROUP_MAP = new Map<String, String>{
+    'status' => 'Status'
+  };
+
   /**************************************************************************************
    * @Description  AgentScript Coach platform-cache constants and helpers. The Coach
    * sends a static rubric + a static AgentScript body to the Models API and gets back
@@ -140,9 +270,13 @@ global with sharing class Package2Interface { // NOPMD
     String sortDirection
   ) {
     List<ObjectWrappers.PackageWrapper> packages = new List<ObjectWrappers.PackageWrapper>();
+    String normalizedSortDirection = SoqlInputValidator.normalizeSortDirection(
+      sortDirection,
+      'Invalid package sort direction.'
+    );
     string s =
       'Select Id, ContainerOptions, Description, Name, NamespacePrefix, SubscriberPackageID, isOrgDependent, PackageErrorUsername, WasTransferred, CreatedBy.Name, CreatedDate, AppAnalyticsEnabled, DataCloudPackage FROM Package2 WHERE IsDeprecated = false ORDER BY Name ' +
-      String.escapeSingleQuotes(sortDirection) +
+      normalizedSortDirection +
       ' LIMIT 500';
     List<Object> records = submitQuery(s);
     for (Object record : records) {
@@ -218,9 +352,13 @@ global with sharing class Package2Interface { // NOPMD
     String sortDirection
   ) {
     List<ObjectWrappers.PackageWrapper1> packages = new List<ObjectWrappers.PackageWrapper1>();
+    String normalizedSortDirection = SoqlInputValidator.normalizeSortDirection(
+      sortDirection,
+      'Invalid package sort direction.'
+    );
     string s =
       'SELECT Id, Name, NamespacePrefix, PackageCategory, SystemModstamp FROM MetadataPackage WHERE PackageCategory = \'Package\' ORDER BY Name ' +
-      String.escapeSingleQuotes(sortDirection) +
+      normalizedSortDirection +
       ' LIMIT 500';
     List<Object> records = submitQuery(s);
     for (Object record : records) {
@@ -248,9 +386,21 @@ global with sharing class Package2Interface { // NOPMD
     String versionOffset
   ) {
     List<ObjectWrappers.Package1VersionWrapper> packageVersions = new List<ObjectWrappers.Package1VersionWrapper>();
+    Integer parsedVersionLimit = SoqlInputValidator.parseIntegerInRange(
+      versionLimit,
+      1,
+      2000,
+      'Invalid version limit.'
+    );
+    Integer parsedVersionOffset = SoqlInputValidator.parseIntegerInRange(
+      versionOffset,
+      0,
+      2000,
+      'Invalid version offset.'
+    );
     String queryString = 'SELECT BuildNumber, Id, IsDeprecated, MajorVersion, MetadataPackageId, MinorVersion,Name, PatchVersion, ReleaseState, SystemModstamp FROM MetadataPackageVersion WHERE IsDeprecated = false ';
     String whereClause = '';
-    if (!filterWrapperList.isEmpty()) {
+    if (filterWrapperList != null && !filterWrapperList.isEmpty()) {
       whereClause = getWhereClause(filterWrapperList);
       if (!String.isBlank(whereClause)) {
         queryString = queryString + ' AND ' + whereClause;
@@ -262,34 +412,53 @@ global with sharing class Package2Interface { // NOPMD
       minMinorVersion != null &&
       maxMinorVersion != null
     ) {
-      String versionClause = getVersionRangeWhereClause(
+      Integer parsedMinMajorVersion = SoqlInputValidator.parseNonNegativeInteger(
         minMajorVersion,
+        'Invalid version range.'
+      );
+      Integer parsedMaxMajorVersion = SoqlInputValidator.parseNonNegativeInteger(
         maxMajorVersion,
+        'Invalid version range.'
+      );
+      Integer parsedMinMinorVersion = SoqlInputValidator.parseNonNegativeInteger(
         minMinorVersion,
-        maxMinorVersion
+        'Invalid version range.'
+      );
+      Integer parsedMaxMinorVersion = SoqlInputValidator.parseNonNegativeInteger(
+        maxMinorVersion,
+        'Invalid version range.'
+      );
+      String versionClause = getVersionRangeWhereClause(
+        parsedMinMajorVersion,
+        parsedMaxMajorVersion,
+        parsedMinMinorVersion,
+        parsedMaxMinorVersion
       );
       queryString = queryString + versionClause;
     }
-    if (sortedBy != null) {
-      if (sortedBy == 'versionNumber') {
-        queryString =
-          queryString +
-          ' ORDER BY MajorVersion ' +
-          sortDirection +
-          ', MinorVersion ' +
-          sortDirection +
-          ', PatchVersion ' +
-          sortDirection +
-          ', BuildNumber ' +
-          sortDirection;
-      }
+    if (hasSortInputs(sortedBy, sortDirection)) {
+      String normalizedSortDirection = SoqlInputValidator.normalizeSortDirection(
+        sortDirection,
+        'Invalid version sort direction.'
+      );
+      String normalizedSortField = SoqlInputValidator.normalizeAllowlistedIdentifier(
+        sortedBy,
+        PACKAGE1_VERSION_SORT_FIELD_MAP,
+        'Invalid version sort field.'
+      );
+      queryString =
+        queryString +
+        buildOrderByClauseForVersions(
+          normalizedSortField,
+          normalizedSortDirection
+        );
     }
     queryString =
       queryString +
       ' LIMIT ' +
-      String.escapeSingleQuotes(versionLimit) +
+      String.valueOf(parsedVersionLimit) +
       ' OFFSET ' +
-      String.escapeSingleQuotes(versionOffset);
+      String.valueOf(parsedVersionOffset);
     List<Object> records = submitQuery(queryString);
     for (Object record : records) {
       ObjectWrappers.Package1VersionWrapper p = (ObjectWrappers.Package1VersionWrapper) JSON.deserialize(
@@ -318,25 +487,51 @@ global with sharing class Package2Interface { // NOPMD
     String signUpOffset
   ) {
     List<ObjectWrappers.SignupRequestWrapper> signUpList = new List<ObjectWrappers.SignupRequestWrapper>();
+    String normalizedSortDirection = SoqlInputValidator.normalizeSortDirection(
+      sortDirection,
+      'Invalid sign-up sort direction.'
+    );
+    String normalizedSortField = SoqlInputValidator.normalizeAllowlistedIdentifier(
+      sortedBy,
+      SIGNUP_REQUEST_SORT_FIELD_MAP,
+      'Invalid sign-up sort field.'
+    );
+    Integer parsedSignUpLimit = SoqlInputValidator.parseIntegerInRange(
+      signUpLimit,
+      1,
+      2000,
+      'Invalid sign-up limit.'
+    );
+    Integer parsedSignUpOffset = SoqlInputValidator.parseIntegerInRange(
+      signUpOffset,
+      0,
+      2000,
+      'Invalid sign-up offset.'
+    );
     String queryString = 'SELECT Company, Country, CreatedBy.Name, CreatedDate, CreatedOrgId, CreatedOrgInstance, Edition, ErrorCode, FirstName, Id, IsSignupEmailSuppressed, LastModifiedById, LastModifiedDate, LastName, OwnerId, PreferredLanguage, ResolvedTemplateId, ShouldConnectToEnvHub, SignupEmail, SignupSource, Status,Subdomain, SystemModstamp, TemplateId, TrialDays, TrialSourceOrgId, Username FROM SignupRequest  ';
     String whereClause = '';
-    if (!filterWrapper.isEmpty()) {
+    if (filterWrapper != null && !filterWrapper.isEmpty()) {
       whereClause = getWhereClause(filterWrapper);
       if (!String.isBlank(whereClause)) {
         queryString = queryString + ' WHERE ' + whereClause;
       }
     }
-    queryString = queryString + 'ORDER BY ' + sortedBy + ' ' + sortDirection;
+    queryString =
+      queryString +
+      'ORDER BY ' +
+      normalizedSortField +
+      ' ' +
+      normalizedSortDirection;
     queryString =
       queryString +
       ' LIMIT ' +
-      String.escapeSingleQuotes(signUplimit) +
+      String.valueOf(parsedSignUpLimit) +
       ' OFFSET ' +
-      String.escapeSingleQuotes(signUpOffset);
+      String.valueOf(parsedSignUpOffset);
     if (Type.forName('SignupRequest') != null) {
       SObjectAccessDecision decision = Security.stripInaccessible(
         AccessType.READABLE,
-        Database.query(queryString)
+        Database.query(queryString) // NOPMD - Sort tokens are allowlisted, pagination is bounded, and filter literals are validated or escaped.
       );
       for (sObject o : decision.getRecords()) {
         ObjectWrappers.SignupRequestWrapper sw = (ObjectWrappers.SignupRequestWrapper) JSON.deserialize(
@@ -363,26 +558,52 @@ global with sharing class Package2Interface { // NOPMD
     String subscriberOffset
   ) {
     List<ObjectWrappers.PackageSubscriberWrapper> packageSubList = new List<ObjectWrappers.PackageSubscriberWrapper>();
+    String normalizedSortDirection = SoqlInputValidator.normalizeSortDirection(
+      sortDirection,
+      'Invalid subscriber sort direction.'
+    );
+    String normalizedSortField = SoqlInputValidator.normalizeAllowlistedIdentifier(
+      sortedBy,
+      PACKAGE_SUBSCRIBER_SORT_FIELD_MAP,
+      'Invalid subscriber sort field.'
+    );
+    Integer parsedSubscriberLimit = SoqlInputValidator.parseIntegerInRange(
+      subscriberLimit,
+      1,
+      2000,
+      'Invalid subscriber limit.'
+    );
+    Integer parsedSubscriberOffset = SoqlInputValidator.parseIntegerInRange(
+      subscriberOffset,
+      0,
+      2000,
+      'Invalid subscriber offset.'
+    );
 
     String queryString = 'SELECT Id, MetadataPackageId, MetadataPackageVersionId, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, ParentOrg, CustomUpgradeType, HasRestrictionEnabled, IsCustomUpgradeAllowed, SystemModstamp FROM PackageSubscriber ';
     String whereClause = '';
-    if (!filterWrapperList.isEmpty()) {
+    if (filterWrapperList != null && !filterWrapperList.isEmpty()) {
       whereClause = getWhereClause(filterWrapperList);
       if (!String.isBlank(whereClause)) {
         queryString = queryString + ' WHERE ' + whereClause;
       }
     }
-    queryString = queryString + 'ORDER BY ' + sortedBy + ' ' + sortDirection;
+    queryString =
+      queryString +
+      'ORDER BY ' +
+      normalizedSortField +
+      ' ' +
+      normalizedSortDirection;
     queryString =
       queryString +
       ' LIMIT ' +
-      String.escapeSingleQuotes(subscriberLimit) +
+      String.valueOf(parsedSubscriberLimit) +
       ' OFFSET ' +
-      String.escapeSingleQuotes(subscriberOffset);
+      String.valueOf(parsedSubscriberOffset);
     if (Type.forName('PackageSubscriber') != null) {
       SObjectAccessDecision decision = Security.stripInaccessible(
         AccessType.READABLE,
-        Database.query(queryString)
+        Database.query(queryString) // NOPMD - Sort tokens are allowlisted, pagination is bounded, and filter literals are validated or escaped.
       );
       for (sObject o : decision.getRecords()) {
         ObjectWrappers.PackageSubscriberWrapper ps = (ObjectWrappers.PackageSubscriberWrapper) JSON.deserialize(
@@ -409,18 +630,32 @@ global with sharing class Package2Interface { // NOPMD
     ) {
       return packageSubList;
     }
-    String lim = String.isNotBlank(subscriberLimit) ? subscriberLimit : '50';
-    String off = String.isNotBlank(subscriberOffset) ? subscriberOffset : '0';
+    String lim = String.valueOf(
+      SoqlInputValidator.parseIntegerInRange(
+        String.isNotBlank(subscriberLimit) ? subscriberLimit : '50',
+        1,
+        2000,
+        'Invalid subscriber limit.'
+      )
+    );
+    String off = String.valueOf(
+      SoqlInputValidator.parseIntegerInRange(
+        String.isNotBlank(subscriberOffset) ? subscriberOffset : '0',
+        0,
+        2000,
+        'Invalid subscriber offset.'
+      )
+    );
     String queryString =
       'SELECT Id, MetadataPackageId, MetadataPackageVersionId, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, ParentOrg, CustomUpgradeType, HasRestrictionEnabled, IsCustomUpgradeAllowed, SystemModstamp FROM PackageSubscriber WHERE ParentOrg = \'' +
       String.escapeSingleQuotes(parentOrgKey) +
       '\' ORDER BY SystemModstamp DESC LIMIT ' +
-      String.escapeSingleQuotes(lim) +
+      lim +
       ' OFFSET ' +
-      String.escapeSingleQuotes(off);
+      off;
     SObjectAccessDecision decision = Security.stripInaccessible(
       AccessType.READABLE,
-      Database.query(queryString)
+      Database.query(queryString) // NOPMD - ParentOrg is escaped and pagination values are bounded integers.
     );
     for (sObject o : decision.getRecords()) {
       ObjectWrappers.PackageSubscriberWrapper ps = (ObjectWrappers.PackageSubscriberWrapper) JSON.deserialize(
@@ -446,7 +681,7 @@ global with sharing class Package2Interface { // NOPMD
     String queryString = 'SELECT Id, MetadataPackageId, MetadataPackageVersionId, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, ParentOrg, CustomUpgradeType, HasRestrictionEnabled, IsCustomUpgradeAllowed FROM PackageSubscriber WHERE OrgKey = :orgKey LIMIT 1';
     SObjectAccessDecision decision = Security.stripInaccessible(
       AccessType.READABLE,
-      Database.query(queryString)
+      Database.query(queryString) // NOPMD - Fixed SOQL uses the orgKey bind; no query token is concatenated.
     );
     for (sObject o : decision.getRecords()) {
       subscriber = (ObjectWrappers.PackageSubscriberWrapper) JSON.deserialize(
@@ -465,25 +700,27 @@ global with sharing class Package2Interface { // NOPMD
     list<ObjectWrappers.FilterWrapper> filterWrapperList,
     string groupByField
   ) {
+    String normalizedGroupByField = SoqlInputValidator.normalizeAllowlistedIdentifier(
+      groupByField,
+      PACKAGE_SUBSCRIBER_CHART_GROUP_MAP,
+      'Invalid subscriber chart group field.'
+    );
     String queryString =
       'SELECT Count(Id), ' +
-      String.escapeSingleQuotes(groupByField) +
+      normalizedGroupByField +
       ' FROM PackageSubscriber ';
     String whereClause = '';
-    if (!filterWrapperList.isEmpty()) {
+    if (filterWrapperList != null && !filterWrapperList.isEmpty()) {
       whereClause = getWhereClause(filterWrapperList);
       if (!String.isBlank(whereClause)) {
         queryString = queryString + ' WHERE ' + whereClause;
       }
     }
-    queryString =
-      queryString +
-      ' GROUP BY ' +
-      String.escapeSingleQuotes(groupByField);
+    queryString = queryString + ' GROUP BY ' + normalizedGroupByField;
     queryString = queryString + ' ORDER BY Count(Id) DESC LIMIT 6';
     List<AggregateResult> subChartData = new List<AggregateResult>();
     if (Type.forName('PackageSubscriber') != null) {
-      subChartData = Database.query(queryString);
+      subChartData = Database.query(queryString); // NOPMD - Group fields are allowlisted and filter literals are validated or escaped.
     }
     return subChartData;
   }
@@ -496,25 +733,27 @@ global with sharing class Package2Interface { // NOPMD
     List<ObjectWrappers.FilterWrapper> filterWrapperList,
     string groupByField
   ) {
+    String normalizedGroupByField = SoqlInputValidator.normalizeAllowlistedIdentifier(
+      groupByField,
+      LMA_CHART_GROUP_MAP,
+      'Invalid LMA chart group field.'
+    );
     String queryString =
       'SELECT Count(Id), ' +
-      String.escapeSingleQuotes(groupByField) +
+      normalizedGroupByField +
       ' FROM sfLma__License__c ';
     String whereClause = '';
-    if (!filterWrapperList.isEmpty()) {
+    if (filterWrapperList != null && !filterWrapperList.isEmpty()) {
       whereClause = getWhereClause(filterWrapperList);
       if (!String.isBlank(whereClause)) {
         queryString = queryString + ' WHERE ' + whereClause;
       }
     }
-    queryString =
-      queryString +
-      ' GROUP BY ' +
-      String.escapeSingleQuotes(groupByField);
+    queryString = queryString + ' GROUP BY ' + normalizedGroupByField;
     queryString = queryString + ' ORDER BY Count(Id) DESC LIMIT 6';
     List<AggregateResult> lmaChartData = new List<AggregateResult>();
     if (Type.forName('sfLma__License__c') != null) {
-      lmaChartData = Database.query(queryString);
+      lmaChartData = Database.query(queryString); // NOPMD - Group fields are allowlisted and filter literals are validated or escaped.
     }
     return lmaChartData;
   }
@@ -523,25 +762,27 @@ global with sharing class Package2Interface { // NOPMD
     List<ObjectWrappers.FilterWrapper> filterWrapperList,
     string groupByField
   ) {
+    String normalizedGroupByField = SoqlInputValidator.normalizeAllowlistedIdentifier(
+      groupByField,
+      PACKAGE_PUSH_JOB_CHART_GROUP_MAP,
+      'Invalid package push job chart group field.'
+    );
     String queryString =
       'SELECT Count(Id), ' +
-      String.escapeSingleQuotes(groupByField) +
+      normalizedGroupByField +
       ' FROM PackagePushJob ';
     String whereClause = '';
-    if (!filterWrapperList.isEmpty()) {
+    if (filterWrapperList != null && !filterWrapperList.isEmpty()) {
       whereClause = getWhereClause(filterWrapperList);
       if (!String.isBlank(whereClause)) {
         queryString = queryString + ' WHERE ' + whereClause;
       }
     }
-    queryString =
-      queryString +
-      ' GROUP BY ' +
-      String.escapeSingleQuotes(groupByField);
+    queryString = queryString + ' GROUP BY ' + normalizedGroupByField;
     queryString = queryString + ' ORDER BY Count(Id) DESC LIMIT 6';
     List<AggregateResult> chartData = new List<AggregateResult>();
     if (Type.forName('PackagePushJob') != null) {
-      chartData = Database.query(queryString);
+      chartData = Database.query(queryString); // NOPMD - Group fields are allowlisted and filter literals are validated or escaped.
     }
     return chartData;
   }
@@ -561,9 +802,21 @@ global with sharing class Package2Interface { // NOPMD
     String versionOffset
   ) {
     List<ObjectWrappers.PackageVersionWrapper> packageVersions = new List<ObjectWrappers.PackageVersionWrapper>();
+    Integer parsedVersionLimit = SoqlInputValidator.parseIntegerInRange(
+      versionLimit,
+      1,
+      2000,
+      'Invalid version limit.'
+    );
+    Integer parsedVersionOffset = SoqlInputValidator.parseIntegerInRange(
+      versionOffset,
+      0,
+      2000,
+      'Invalid version offset.'
+    );
     String queryString = 'SELECT Id, Branch, Description, IsPasswordProtected, IsReleased, MajorVersion, MinorVersion, PatchVersion, BuildNumber, Tag, Name, Package2Id, SubscriberPackageVersionId, AncestorId, ValidationSkipped, BuildDurationInSeconds, HasPassedCodeCoverageCheck, HasMetadataRemoved, ReleaseVersion, Language, CreatedBy.Name, CreatedDate, ValidatedAsync FROM Package2Version WHERE IsDeprecated = false ';
     String whereClause = '';
-    if (!filterWrapperList.isEmpty()) {
+    if (filterWrapperList != null && !filterWrapperList.isEmpty()) {
       whereClause = getWhereClause(filterWrapperList);
       if (!String.isBlank(whereClause)) {
         queryString = queryString + ' AND ' + whereClause;
@@ -575,41 +828,53 @@ global with sharing class Package2Interface { // NOPMD
       minMinorVersion != null &&
       maxMinorVersion != null
     ) {
-      String versionClause = getVersionRangeWhereClause(
+      Integer parsedMinMajorVersion = SoqlInputValidator.parseNonNegativeInteger(
         minMajorVersion,
+        'Invalid version range.'
+      );
+      Integer parsedMaxMajorVersion = SoqlInputValidator.parseNonNegativeInteger(
         maxMajorVersion,
+        'Invalid version range.'
+      );
+      Integer parsedMinMinorVersion = SoqlInputValidator.parseNonNegativeInteger(
         minMinorVersion,
-        maxMinorVersion
+        'Invalid version range.'
+      );
+      Integer parsedMaxMinorVersion = SoqlInputValidator.parseNonNegativeInteger(
+        maxMinorVersion,
+        'Invalid version range.'
+      );
+      String versionClause = getVersionRangeWhereClause(
+        parsedMinMajorVersion,
+        parsedMaxMajorVersion,
+        parsedMinMinorVersion,
+        parsedMaxMinorVersion
       );
       queryString = queryString + versionClause;
     }
-    if (sortedBy != null) {
-      if (sortedBy == 'versionNumber') {
-        queryString =
-          queryString +
-          ' ORDER BY MajorVersion ' +
-          sortDirection +
-          ', MinorVersion ' +
-          sortDirection +
-          ', PatchVersion ' +
-          sortDirection +
-          ', BuildNumber ' +
-          sortDirection;
-      } else {
-        queryString =
-          queryString +
-          ' ORDER BY ' +
-          sortedBy +
-          ' ' +
-          sortDirection;
-      }
+    if (hasSortInputs(sortedBy, sortDirection)) {
+      String normalizedSortDirection = SoqlInputValidator.normalizeSortDirection(
+        sortDirection,
+        'Invalid version sort direction.'
+      );
+      String normalizedSortField = SoqlInputValidator.normalizeAllowlistedIdentifier(
+        sortedBy,
+        PACKAGE2_VERSION_SORT_FIELD_MAP,
+        'Invalid version sort field.'
+      );
+      queryString =
+        queryString +
+        buildOrderByClauseForVersions(
+          normalizedSortField,
+          normalizedSortDirection
+        );
     }
     queryString =
       queryString +
       ' LIMIT ' +
-      String.escapeSingleQuotes(versionLimit) +
+      String.valueOf(parsedVersionLimit) +
       ' OFFSET ' +
-      String.escapeSingleQuotes(versionOffset);
+      String.valueOf(parsedVersionOffset);
     List<Object> records = submitQuery(queryString);
     for (Object record : records) {
       ObjectWrappers.PackageVersionWrapper p = (ObjectWrappers.PackageVersionWrapper) JSON.deserialize(
@@ -659,6 +924,18 @@ global with sharing class Package2Interface { // NOPMD
     String requestOffset
   ) {
     List<ObjectWrappers.Package2VersionCreateRequestWrapper> createRequests = new List<ObjectWrappers.Package2VersionCreateRequestWrapper>();
+    Integer parsedRequestLimit = SoqlInputValidator.parseIntegerInRange(
+      requestLimit,
+      1,
+      2000,
+      'Invalid create-request limit.'
+    );
+    Integer parsedRequestOffset = SoqlInputValidator.parseIntegerInRange(
+      requestOffset,
+      0,
+      2000,
+      'Invalid create-request offset.'
+    );
     String queryString = 'SELECT Id, Status, Package2Id, Package2VersionId, Branch, Tag, AsyncValidation, CalculateCodeCoverage, CalcTransitiveDependencies, SkipValidation, IsDevUsePkgZipRequested, IsPasswordProtected, IsConversionRequest, Language, CreatedBy.Name, CreatedDate, SystemModstamp FROM Package2VersionCreateRequest ';
     if (filterWrapperList != null && !filterWrapperList.isEmpty()) {
       String whereClause = getWhereClause(filterWrapperList);
@@ -666,20 +943,29 @@ global with sharing class Package2Interface { // NOPMD
         queryString = queryString + ' WHERE ' + whereClause;
       }
     }
-    if (sortedBy != null) {
+    if (hasSortInputs(sortedBy, sortDirection)) {
+      String normalizedSortField = SoqlInputValidator.normalizeAllowlistedIdentifier(
+        sortedBy,
+        PACKAGE2_VERSION_CREATE_REQUEST_SORT_FIELD_MAP,
+        'Invalid create-request sort field.'
+      );
+      String normalizedSortDirection = SoqlInputValidator.normalizeSortDirection(
+        sortDirection,
+        'Invalid create-request sort direction.'
+      );
       queryString =
         queryString +
         ' ORDER BY ' +
-        String.escapeSingleQuotes(sortedBy) +
+        normalizedSortField +
         ' ' +
-        sortDirection;
+        normalizedSortDirection;
     }
     queryString =
       queryString +
       ' LIMIT ' +
-      String.escapeSingleQuotes(requestLimit) +
+      String.valueOf(parsedRequestLimit) +
       ' OFFSET ' +
-      String.escapeSingleQuotes(requestOffset);
+      String.valueOf(parsedRequestOffset);
     List<Object> records = submitQuery(queryString);
     for (Object record : records) {
       ObjectWrappers.Package2VersionCreateRequestWrapper createRequest = (ObjectWrappers.Package2VersionCreateRequestWrapper) JSON.deserialize(
@@ -724,6 +1010,12 @@ global with sharing class Package2Interface { // NOPMD
     String packageId,
     String versionLimit
   ) {
+    Integer parsedVersionLimit = SoqlInputValidator.parseIntegerInRange(
+      versionLimit,
+      1,
+      2000,
+      'Invalid latest-version limit.'
+    );
     String queryString = 'SELECT SubscriberPackageVersionId FROM Package2Version WHERE IsDeprecated = false AND IsReleased = true AND Package2Id = ';
     queryString =
       queryString +
@@ -731,7 +1023,7 @@ global with sharing class Package2Interface { // NOPMD
       String.escapeSingleQuotes(packageId) +
       '\'' +
       ' ORDER BY CreatedDate DESC LIMIT ' +
-      String.escapeSingleQuotes(versionLimit);
+      String.valueOf(parsedVersionLimit);
     List<Object> records = submitQuery(queryString);
     List<String> versions = new List<String>();
     for (Object record : records) {
@@ -974,14 +1266,20 @@ global with sharing class Package2Interface { // NOPMD
     list<ObjectWrappers.FilterWrapper> FilterWrapperList
   ) {
     string whereClause = '';
+    if (FilterWrapperList == null || FilterWrapperList.isEmpty()) {
+      return whereClause;
+    }
     for (ObjectWrappers.FilterWrapper fw : FilterWrapperList) {
       string fName = getSafeFilterFieldName(fw.fieldName);
       string value = fw.value;
+      String dataType = fw.dataType == null
+        ? null
+        : fw.dataType.trim().toUpperCase();
       if (!String.isBlank(fName) && !String.isBlank(value)) {
         if (!String.isBlank(whereClause)) {
           whereClause = whereClause + ' AND ';
         }
-        if ('STRING'.equals(fw.dataType)) {
+        if ('STRING'.equals(dataType)) {
           whereClause =
             whereClause +
             ' ' +
@@ -990,16 +1288,25 @@ global with sharing class Package2Interface { // NOPMD
             '\'' +
             String.escapeSingleQuotes(value) +
             '\'';
-        } else if ('LIST'.equals(fw.dataType)) {
+        } else if ('ID'.equals(dataType)) {
+          whereClause =
+            whereClause +
+            ' ' +
+            fName +
+            ' = ' +
+            '\'' +
+            String.escapeSingleQuotes(value) +
+            '\'';
+        } else if ('LIST'.equals(dataType)) {
           whereClause =
             whereClause +
             ' ' +
             fName +
             ' IN ' +
             '(' +
-            parseListValues(String.escapeSingleQuotes(value)) +
+            parseListValues(value) +
             ') ';
-        } else if ('SEARCH'.equals(fw.dataType)) {
+        } else if ('SEARCH'.equals(dataType)) {
           whereClause =
             whereClause +
             ' ' +
@@ -1008,34 +1315,26 @@ global with sharing class Package2Interface { // NOPMD
             '\'%' +
             escapeSoqlLikeValue(value) +
             '%\'';
-        } else if ('BOOLEAN'.equals(fw.dataType)) {
-          whereClause =
-            whereClause +
-            ' ' +
-            fName +
-            '=' +
-            String.escapeSingleQuotes(value);
-        } else if ('LESSOREQUAL'.equals(fw.dataType)) {
-          whereClause =
-            whereClause +
-            ' ' +
-            fName +
-            ' <= ' +
-            String.escapeSingleQuotes(value);
-        } else if ('GREATEROREQUAL'.equals(fw.dataType)) {
-          whereClause =
-            whereClause +
-            ' ' +
-            fName +
-            ' >= ' +
-            String.escapeSingleQuotes(value);
+        } else if ('BOOLEAN'.equals(dataType)) {
+          String normalizedBoolean = SoqlInputValidator.normalizeBooleanLiteral(
+            value,
+            INVALID_FILTER_BOOLEAN_MESSAGE
+          );
+          whereClause = whereClause + ' ' + fName + ' = ' + normalizedBoolean;
+        } else if ('LESSOREQUAL'.equals(dataType)) {
+          String normalizedDecimal = SoqlInputValidator.normalizeStrictDecimalLiteral(
+            value,
+            INVALID_FILTER_DECIMAL_MESSAGE
+          );
+          whereClause = whereClause + ' ' + fName + ' <= ' + normalizedDecimal;
+        } else if ('GREATEROREQUAL'.equals(dataType)) {
+          String normalizedDecimal = SoqlInputValidator.normalizeStrictDecimalLiteral(
+            value,
+            INVALID_FILTER_DECIMAL_MESSAGE
+          );
+          whereClause = whereClause + ' ' + fName + ' >= ' + normalizedDecimal;
         } else {
-          whereClause =
-            whereClause +
-            ' ' +
-            fName +
-            '=' +
-            String.escapeSingleQuotes(value);
+          throw validationException(INVALID_FILTER_TYPE_MESSAGE);
         }
       }
     }
@@ -1054,38 +1353,35 @@ global with sharing class Package2Interface { // NOPMD
         trimmedFieldName
       )
     ) {
-      throw new AuraHandledException('Invalid filter field name.');
+      throw validationException(INVALID_FILTER_FIELD_MESSAGE);
     }
     return trimmedFieldName;
   }
 
   @TestVisible
   private static String escapeSoqlLikeValue(String value) {
-    return String.escapeSingleQuotes(value)
-      .replace('\\', '\\\\')
-      .replace('%', '\\%')
-      .replace('_', '\\_');
+    return SoqlInputValidator.escapeLikeSearchValue(value);
   }
 
   private static string getVersionRangeWhereClause(
-    String minMajorVersion,
-    String maxMajorVersion,
-    String minMinorVersion,
-    String maxMinorVersion
+    Integer minMajorVersion,
+    Integer maxMajorVersion,
+    Integer minMinorVersion,
+    Integer maxMinorVersion
   ) {
     string versionClause =
       ' AND ((MajorVersion = ' +
-      String.escapeSingleQuotes(minMajorVersion) +
+      String.valueOf(minMajorVersion) +
       ' AND MinorVersion >= ' +
-      String.escapeSingleQuotes(minMinorVersion) +
+      String.valueOf(minMinorVersion) +
       ') OR (MajorVersion > ' +
-      String.escapeSingleQuotes(minMajorVersion) +
+      String.valueOf(minMajorVersion) +
       ' )) AND ((MajorVersion = ' +
-      String.escapeSingleQuotes(maxMajorVersion) +
+      String.valueOf(maxMajorVersion) +
       ' AND MinorVersion <= ' +
-      String.escapeSingleQuotes(maxMinorVersion) +
+      String.valueOf(maxMinorVersion) +
       ') OR (MajorVersion < ' +
-      String.escapeSingleQuotes(maxMajorVersion) +
+      String.valueOf(maxMajorVersion) +
       ' ))';
     return versionClause;
   }
@@ -1145,7 +1441,11 @@ global with sharing class Package2Interface { // NOPMD
     if (!String.isBlank(value)) {
       for (String str : value.split('~')) {
         if (!String.isBlank(str)) {
-          retString = retString + '\'' + str + '\',';
+          retString =
+            retString +
+            '\'' +
+            String.escapeSingleQuotes(str.trim()) +
+            '\',';
         }
       }
     }
@@ -1153,6 +1453,39 @@ global with sharing class Package2Interface { // NOPMD
       retString = retString.substring(0, retString.length() - 1);
     }
     return retString;
+  }
+
+  private static Boolean hasSortInputs(String sortedBy, String sortDirection) {
+    if (String.isBlank(sortedBy) && String.isBlank(sortDirection)) {
+      return false;
+    }
+    if (String.isBlank(sortedBy) || String.isBlank(sortDirection)) {
+      throw validationException(INVALID_SORT_PAIR_MESSAGE);
+    }
+    return true;
+  }
+
+  private static AuraHandledException validationException(String message) {
+    AuraHandledException error = new AuraHandledException(message);
+    error.setMessage(message);
+    return error;
+  }
+
+  private static String buildOrderByClauseForVersions(
+    String normalizedSortField,
+    String normalizedSortDirection
+  ) {
+    if ('versionNumber'.equals(normalizedSortField)) {
+      return ' ORDER BY MajorVersion ' +
+        normalizedSortDirection +
+        ', MinorVersion ' +
+        normalizedSortDirection +
+        ', PatchVersion ' +
+        normalizedSortDirection +
+        ', BuildNumber ' +
+        normalizedSortDirection;
+    }
+    return ' ORDER BY ' + normalizedSortField + ' ' + normalizedSortDirection;
   }
 
   public static String updateLicense(
@@ -1244,7 +1577,7 @@ global with sharing class Package2Interface { // NOPMD
 
   public static String getEnvHubMemberId(String orgId) {
     String queryString = 'SELECT Id, MemberEntity FROM EnvironmentHubMember WHERE MemberEntity = :orgId WITH SECURITY_ENFORCED LIMIT 1 ';
-    sObject s = Database.query(queryString);
+    sObject s = Database.query(queryString); // NOPMD - Fixed SOQL uses the orgId bind; no query token is concatenated.
     return s.Id;
   }
 

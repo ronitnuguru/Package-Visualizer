@@ -1,4 +1,14 @@
 public with sharing class PushUpgradesCtrl {
+  private static final Map<String, String> ELIGIBLE_HIGHER_SORT_FIELDS = new Map<String, String>{
+    'id' => 'Id',
+    'name' => 'Name',
+    'buildnumber' => 'BuildNumber',
+    'majorversion' => 'MajorVersion',
+    'minorversion' => 'MinorVersion',
+    'patchversion' => 'PatchVersion',
+    'systemmodstamp' => 'SystemModstamp'
+  };
+
   @AuraEnabled(cacheable=true)
   public static String createPackagePushRequest(
     String packageSubscriberVersionId,
@@ -29,7 +39,7 @@ public with sharing class PushUpgradesCtrl {
     if (Type.forName('MetadataPackageVersion') != null) {
       SObjectAccessDecision decision = Security.stripInaccessible(
         AccessType.READABLE,
-        Database.query(packageVersionQuery)
+        Database.query(packageVersionQuery) // NOPMD - Fixed SOQL uses binds and version segments are parsed as integers.
       );
       for (sObject o : decision.getRecords()) {
         ObjectWrappers.MetadataPackageVersionWrapper pvw = (ObjectWrappers.MetadataPackageVersionWrapper) JSON.deserialize(
@@ -56,20 +66,29 @@ public with sharing class PushUpgradesCtrl {
     Integer minorVersion = Integer.valueOf(versionSplit[1]);
     Integer patchVersion = Integer.valueOf(patchBuildSplit[0]);
     String releasedState = 'Released';
+    String canonicalSortField = SoqlInputValidator.normalizeAllowlistedIdentifier(
+      sortedBy,
+      ELIGIBLE_HIGHER_SORT_FIELDS,
+      'An invalid eligible-version sort field was provided.'
+    );
+    String canonicalSortDirection = SoqlInputValidator.normalizeSortDirection(
+      sortDirection,
+      'An invalid eligible-version sort direction was provided.'
+    );
 
     String packageVersionQuery = 'SELECT Id, Name, BuildNumber, MajorVersion, MinorVersion, PatchVersion, SystemModstamp FROM MetadataPackageVersion WHERE MetadataPackageId = :subscriberPackageId AND IsDeprecated = false AND ReleaseState = :releasedState AND (MajorVersion > :majorVersion OR (MajorVersion = :majorVersion AND MinorVersion > :minorVersion) OR (MajorVersion = :majorVersion AND MinorVersion = :minorVersion AND PatchVersion > :patchVersion)) ';
     packageVersionQuery =
       packageVersionQuery +
       ' ORDER BY ' +
-      String.escapeSingleQuotes(sortedBy) +
+      canonicalSortField +
       ' ' +
-      String.escapeSingleQuotes(sortDirection) +
+      canonicalSortDirection +
       ' LIMIT 50';
     List<ObjectWrappers.MetadataPackageVersionWrapper> packageVersionsList = new List<ObjectWrappers.MetadataPackageVersionWrapper>();
     if (Type.forName('MetadataPackageVersion') != null) {
       SObjectAccessDecision decision = Security.stripInaccessible(
         AccessType.READABLE,
-        Database.query(packageVersionQuery)
+        Database.query(packageVersionQuery) // NOPMD - Sort tokens are allowlisted and all filter values use binds.
       );
       for (sObject o : decision.getRecords()) {
         ObjectWrappers.MetadataPackageVersionWrapper pvw = (ObjectWrappers.MetadataPackageVersionWrapper) JSON.deserialize(
