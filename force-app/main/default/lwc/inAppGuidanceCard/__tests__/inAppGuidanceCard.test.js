@@ -35,12 +35,15 @@ const EXTENSION_STATUS = {
   namespacePrefix: "pkgviz"
 };
 
-function createCard(status) {
+function createCard(status, hideInAppGuidance) {
   const element = createElement("c-in-app-guidance-card", {
     is: InAppGuidanceCard
   });
   if (status) {
     element.extensionStatus = status;
+  }
+  if (hideInAppGuidance !== undefined) {
+    element.hideInAppGuidance = hideInAppGuidance;
   }
   document.body.appendChild(element);
   return element;
@@ -183,5 +186,46 @@ describe("c-in-app-guidance-card package installation", () => {
         target.startsWith("apex://pkgviz__")
       )
     ).toBe(true);
+  });
+
+  it("shows In-App Guidance by default", async () => {
+    const element = createCard(EXTENSION_STATUS);
+    await flushPromises();
+
+    const actionIcons = Array.from(
+      element.shadowRoot.querySelectorAll("lightning-button-icon")
+    );
+    expect(
+      actionIcons.find((button) => button.iconName === "utility:prompt")
+    ).not.toBeUndefined();
+    expect(
+      element.shadowRoot.querySelector('[data-id="navigate-agentforce-studio"]')
+    ).toBeNull();
+  });
+
+  it("shows Agentforce Studio navigation when In-App Guidance is hidden", async () => {
+    const element = createCard(EXTENSION_STATUS, true);
+    await flushPromises();
+
+    const studioButton = element.shadowRoot.querySelector(
+      '[data-id="navigate-agentforce-studio"]'
+    );
+    expect(studioButton).not.toBeNull();
+    expect(studioButton.iconName).toBe("utility:agent_astro");
+    expect(studioButton.tooltip).toBe("Navigate to Agentforce Studio");
+    expect(
+      Array.from(
+        element.shadowRoot.querySelectorAll("lightning-button-icon")
+      ).find((button) => button.iconName === "utility:prompt")
+    ).toBeUndefined();
+
+    studioButton.click();
+
+    expect(mockNavigate).toHaveBeenCalledWith({
+      type: "standard__webPage",
+      attributes: {
+        url: "/lightning/n/standard-AgentforceStudio?c__nav=agents"
+      }
+    });
   });
 });

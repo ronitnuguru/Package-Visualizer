@@ -159,6 +159,7 @@ describe("c-agentforce-conversation-setup", () => {
     const showcase = element.shadowRoot.querySelector("c-in-app-guidance-card");
     expect(showcase).not.toBeNull();
     expect(showcase.extensionStatus).toEqual(EXTENSION_STATUS);
+    expect(showcase.hideInAppGuidance).toBe(true);
     expect(
       element.shadowRoot.querySelector('[data-id="toggle-agentforce"]').iconName
     ).toBe("utility:chevrondown");

@@ -237,14 +237,25 @@
                           data-script-id={script.id}
                           onclick={handleCopyAgentScript}
                         ></lightning-button-icon>
-                        <lightning-button-icon
-                          icon-name="utility:prompt"
-                          variant="border-filled"
-                          alternative-text="Open In-App Guidance"
-                          title="Open In-App Guidance"
-                          tooltip="In App Guidance"
-                          onclick={handleInAppPrompt}
-                        ></lightning-button-icon>
+                        <template lwc:if={hideInAppGuidance}>
+                          <lightning-button-icon
+                            data-id="navigate-agentforce-studio"
+                            icon-name="utility:agent_astro"
+                            variant="border-filled"
+                            tooltip="Navigate to Agentforce Studio"
+                            onclick={handleNavigateToAgentforceStudio}
+                          ></lightning-button-icon>
+                        </template>
+                        <template lwc:else>
+                          <lightning-button-icon
+                            icon-name="utility:prompt"
+                            variant="border-filled"
+                            alternative-text="Open In-App Guidance"
+                            title="Open In-App Guidance"
+                            tooltip="In App Guidance"
+                            onclick={handleInAppPrompt}
+                          ></lightning-button-icon>
+                        </template>
                       </lightning-button-group>
                       <div
                         class="slds-card__body slds-card__body_inner slds-p-around_none"

@@ -99,16 +99,20 @@ describe("c-agentforce-conversation-actions", () => {
     ).toBe("brand");
   });
 
-  it("renders Generate and Agentforce as direct button-group children", async () => {
+  it("renders Generate and Agentforce as sibling actions with spacing", async () => {
     const element = createContextAction({ showModelsGenerate: true });
     await flushPromises();
 
-    const group = element.shadowRoot.querySelector("lightning-button-group");
-    const generate = group.querySelector('[data-id="generate"]');
-    const agent = group.querySelector('[data-id="context-action"]');
+    const generate = element.shadowRoot.querySelector('[data-id="generate"]');
+    const agent = element.shadowRoot.querySelector(
+      '[data-id="context-action"]'
+    );
 
-    expect(generate.parentElement).toBe(group);
-    expect(agent.parentElement).toBe(group);
+    expect(
+      element.shadowRoot.querySelector("lightning-button-group")
+    ).toBeNull();
+    expect(generate.parentElement).toBe(agent.parentElement);
+    expect(agent.classList).toContain("slds-var-p-right_x-small");
   });
 
   it("dispatches the Models API action independently", async () => {

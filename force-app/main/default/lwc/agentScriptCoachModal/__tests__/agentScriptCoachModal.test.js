@@ -355,11 +355,36 @@ describe("c-agent-script-coach-modal progressive coaching", () => {
     const element = createModal({ hash: "source-hash" });
     await flushPromises();
 
-    element.shadowRoot.querySelector("lightning-button-icon").click();
+    element.shadowRoot
+      .querySelector('lightning-button-icon[data-name="router"]')
+      .click();
     await flushPromises();
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
       "subagent router:\n    reasoning: ->"
+    );
+  });
+
+  it("copies the Start Agent source block from the overview card", async () => {
+    analyzeAgentScriptCoach.mockResolvedValue({
+      status: "GENERATED",
+      analysisJson: JSON.stringify({ ...enrichment, scriptHash: "start-hash" })
+    });
+    const element = createModal({ hash: "start-hash" });
+    await flushPromises();
+
+    const startAgentCopyButton = element.shadowRoot.querySelector(
+      '[data-id="copy-start-agent"]'
+    );
+    expect(startAgentCopyButton).not.toBeNull();
+    expect(startAgentCopyButton.iconName).toBe("utility:copy");
+    expect(startAgentCopyButton.tooltip).toBe("Copy to Clipboard");
+
+    startAgentCopyButton.click();
+    await flushPromises();
+
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      "start_agent agent_router:"
     );
   });
 

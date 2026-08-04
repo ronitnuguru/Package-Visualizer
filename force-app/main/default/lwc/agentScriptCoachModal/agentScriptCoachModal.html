@@ -79,6 +79,20 @@
                 icon-name="standard:agent_astro"
               >
                 <div
+                  slot="actions"
+                  class="slds-grid slds-grid_vertical-align-center"
+                >
+                  <template lwc:if={parsedResponse.overview.startAgentSource}>
+                    <lightning-button-icon
+                      data-id="copy-start-agent"
+                      tooltip="Copy to Clipboard"
+                      icon-name="utility:copy"
+                      variant="border-filled"
+                      onclick={handleCopyStartAgentSource}
+                    ></lightning-button-icon>
+                  </template>
+                </div>
+                <div
                   class="slds-card__body slds-card__body_inner slds-p-bottom_medium"
                 >
                   {parsedResponse.overview.summary}

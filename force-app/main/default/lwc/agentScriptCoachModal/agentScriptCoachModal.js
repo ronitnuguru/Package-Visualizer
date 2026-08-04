@@ -498,6 +498,38 @@ export default class AgentScriptCoachModal extends LightningModal {
     }
   }
 
+  async handleCopyStartAgentSource() {
+    const sourceBlock = this.parsedResponse?.overview?.startAgentSource;
+    if (!sourceBlock) {
+      this.dispatchEvent(
+        new ShowToastEvent({
+          title: "Source Not Found",
+          message: "Could not find the Start Agent source block",
+          variant: "warning"
+        })
+      );
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(sourceBlock);
+      this.dispatchEvent(
+        new ShowToastEvent({
+          title: "Source Copied",
+          message: "AgentScript Start Agent block copied to clipboard",
+          variant: "success"
+        })
+      );
+    } catch (error) {
+      this.dispatchEvent(
+        new ShowToastEvent({
+          title: "Copy Failed",
+          message: error.message || "Unable to copy to clipboard",
+          variant: "error"
+        })
+      );
+    }
+  }
+
   buildMarkdown() {
     const p = this.parsedResponse;
     const lines = [];

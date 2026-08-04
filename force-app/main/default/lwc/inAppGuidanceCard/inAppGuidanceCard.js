@@ -28,6 +28,8 @@ export default class InAppGuidanceCard extends NavigationMixin(
   agentScripts = AGENT_SCRIPTS;
   resourcesData = [];
 
+  @api hideInAppGuidance;
+
   @api
   get extensionStatus() {
     return this._extensionStatus;
@@ -112,6 +114,15 @@ export default class InAppGuidanceCard extends NavigationMixin(
       },
       state: {
         target: "_blank"
+      }
+    });
+  }
+
+  handleNavigateToAgentforceStudio() {
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: "/lightning/n/standard-AgentforceStudio?c__nav=agents"
       }
     });
   }

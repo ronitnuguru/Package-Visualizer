@@ -19,26 +19,25 @@
     ></lightning-button-icon>
   </template>
   <template lwc:elseif={showContextAction}>
-    <lightning-button-group>
-      <template lwc:if={showModelsGenerate}>
-        <lightning-button
-          data-id="generate"
-          variant="brand"
-          label="Generate"
-          icon-name="utility:sparkles"
-          icon-position="right"
-          onclick={handleModelsGenerate}
-        ></lightning-button>
-      </template>
-      <lightning-button-icon
-        data-id="context-action"
-        icon-name="utility:agent_astro"
-        variant={variant}
-        alternative-text={alternativeText}
-        tooltip={contextActionTooltip}
-        disabled={contextActionDisabled}
-        onclick={handleContextAction}
-      ></lightning-button-icon>
-    </lightning-button-group>
+    <template lwc:if={showModelsGenerate}>
+      <lightning-button
+        data-id="generate"
+        variant="brand"
+        label="Generate"
+        icon-name="utility:sparkles"
+        icon-position="right"
+        onclick={handleModelsGenerate}
+      ></lightning-button>
+    </template>
+    <lightning-button-icon
+      data-id="context-action"
+      class="slds-var-p-left_x-small"
+      icon-name="utility:agent_astro"
+      variant="brand"
+      alternative-text={alternativeText}
+      tooltip={contextActionTooltip}
+      disabled={contextActionDisabled}
+      onclick={handleContextAction}
+    ></lightning-button-icon>
   </template>
 </template>
