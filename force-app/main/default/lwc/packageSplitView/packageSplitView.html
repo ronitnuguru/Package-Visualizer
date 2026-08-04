@@ -62,6 +62,16 @@
                     </div>
                     <template if:true={packageList}>
                       <div class="slds-no-flex slds-grid">
+                        <template if:true={is2GP}>
+                          <c-agentforce-conversation-actions
+                            class="slds-var-m-right_x-small"
+                            display-mode="contextAction"
+                            utterance={packagePortfolioUtterance}
+                            disabled={packagePortfolioDisabled}
+                            variant="brand"
+                            alternative-text="Chat with Agentforce"
+                          ></c-agentforce-conversation-actions>
+                        </template>
                         <lightning-button-icon
                           icon-name="utility:setup_assistant_guide"
                           variant="brand"
@@ -69,16 +79,6 @@
                           class="slds-var-m-right_x-small"
                           onclick={handleSetupAssistantClick}
                         ></lightning-button-icon>
-                        <!--
-                        <lightning-button-icon
-                          icon-name="utility:agent_astro"
-                          variant="border-filled"
-                          tooltip="Ask Agentforce"
-                          class="slds-var-m-right_x-small"
-                          value="packagesOverview"
-                          onclick={openAskAgentforce}
-                        ></lightning-button-icon>
-                        -->
                         <lightning-button-icon
                           icon-name="utility:connected_apps"
                           variant="brand"

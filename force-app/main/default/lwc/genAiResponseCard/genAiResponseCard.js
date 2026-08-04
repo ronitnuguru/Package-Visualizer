@@ -1,10 +1,7 @@
 import { LightningElement, api } from "lwc";
 import invokeGenAiPromptTemplate from "@salesforce/apexContinuation/PackageVisualizerCtrl.invokeGenAiPromptTemplate";
-import { NavigationMixin } from "lightning/navigation";
 
-export default class GenAiResponseCard extends NavigationMixin(
-  LightningElement
-) {
+export default class GenAiResponseCard extends LightningElement {
   @api titleHeader;
   @api titleIcon;
   @api objectName;
@@ -17,19 +14,8 @@ export default class GenAiResponseCard extends NavigationMixin(
   aiResponse;
   error;
 
-  currentPkgVersionId = "04tRh000001bOxFIAU";
-
   connectedCallback() {
     this.generateAiResponse();
-  }
-
-  handleExtensionInstall() {
-    this[NavigationMixin.Navigate]({
-      type: "standard__webPage",
-      attributes: {
-        url: `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`
-      }
-    });
   }
 
   async generateAiResponse() {

@@ -48,6 +48,7 @@ $RECYCLE.BIN/
 .claude/
 .cursor/
 .agents/
+.superpowers/
 agent/
 skills-lock.json
 
@@ -62,3 +63,9 @@ salesforce-docs/
 unpackaged-directory/
 docs/
 CODE_REVIEW_PLAN.md
+
+# Local-only scripts, agent specs, and test scaffolding (not part of the package build)
+scripts/
+specs/
+tests/
+reports/

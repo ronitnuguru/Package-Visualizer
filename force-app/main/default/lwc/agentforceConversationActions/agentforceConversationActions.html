@@ -1,0 +1,44 @@
+<template>
+  <template lwc:if={showSetupTest}>
+    <lightning-button
+      data-id="test-panel"
+      class="slds-show_large"
+      label="Test in Panel"
+      icon-name="utility:messaging_conversation"
+      disabled={testPanelDisabled}
+      onclick={handleTestPanel}
+    ></lightning-button>
+    <lightning-button-icon
+      data-id="test-panel-compact"
+      class="slds-hide_large"
+      icon-name="utility:messaging_conversation"
+      alternative-text="Test in Panel"
+      title="Test in Panel"
+      disabled={testPanelDisabled}
+      onclick={handleTestPanel}
+    ></lightning-button-icon>
+  </template>
+  <template lwc:elseif={showContextAction}>
+    <lightning-button-group>
+      <template lwc:if={showModelsGenerate}>
+        <lightning-button
+          data-id="generate"
+          variant="brand"
+          label="Generate"
+          icon-name="utility:sparkles"
+          icon-position="right"
+          onclick={handleModelsGenerate}
+        ></lightning-button>
+      </template>
+      <lightning-button-icon
+        data-id="context-action"
+        icon-name="utility:agent_astro"
+        variant={variant}
+        alternative-text={alternativeText}
+        tooltip={contextActionTooltip}
+        disabled={contextActionDisabled}
+        onclick={handleContextAction}
+      ></lightning-button-icon>
+    </lightning-button-group>
+  </template>
+</template>

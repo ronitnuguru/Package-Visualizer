@@ -15,11 +15,16 @@ export default {
       iconName: "standard:record"
     },
     SubscriberOrganizationKey: {
-      type: "text",
+      type: "button",
       fieldName: "SubscriberOrganizationKey",
       label: "Subscriber Org",
       sortable: true,
-      iconName: "standard:customer"
+      iconName: "standard:customer",
+      typeAttributes: {
+        label: { fieldName: "SubscriberOrganizationKey" },
+        name: "show_details",
+        variant: "base"
+      }
     },
     StartTime: {
       type: "date",

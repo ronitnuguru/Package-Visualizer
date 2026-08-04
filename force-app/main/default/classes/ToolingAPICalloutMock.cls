@@ -5,8 +5,11 @@
  *******************************************************************************************/
 
 @isTest
-public with sharing class ToolingAPICalloutMock implements HttpCalloutMock {
-  public HttpResponse respond(HttpRequest req) {
+global with sharing class ToolingAPICalloutMock implements HttpCalloutMock {
+  global ToolingAPICalloutMock() {
+  }
+
+  global HttpResponse respond(HttpRequest req) {
     HttpResponse res = new HttpResponse();
     res.setHeader('Content-Type', 'application/json');
     // NOTE: these two branches MUST precede the 'FROM+Package2' branch below —

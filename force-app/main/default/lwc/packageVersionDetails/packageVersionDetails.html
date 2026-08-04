@@ -509,9 +509,25 @@
                 ></lightning-menu-item>
               </lightning-button-menu>
             </lightning-button-group>
+            <c-agentforce-conversation-actions
+              class="slds-var-m-right_x-small"
+              display-mode="contextAction"
+              utterance={versionReadinessUtterance}
+              disabled={versionConversationDisabled}
+              variant="border-filled"
+              alternative-text="Chat with Agentforce"
+            ></c-agentforce-conversation-actions>
           </template>
         </div>
         <div class="slds-hide_large">
+          <c-agentforce-conversation-actions
+            class="slds-var-m-right_x-small"
+            display-mode="contextAction"
+            utterance={versionReadinessUtterance}
+            disabled={versionConversationDisabled}
+            variant="border-filled"
+            alternative-text="Chat with Agentforce"
+          ></c-agentforce-conversation-actions>
           <lightning-button
             variant="brand"
             label="Edit"

@@ -4,6 +4,7 @@ import getPackage2VersionCreateRequestList from "@salesforce/apexContinuation/Pa
 import getPackage2VersionCreateRequestErrorList from "@salesforce/apexContinuation/PackageVisualizerCtrl.getPackage2VersionCreateRequestErrorList";
 import invokePromptAndUserModelsGenAi from "@salesforce/apex/PackageVisualizerCtrl.invokePromptAndUserModelsGenAi";
 import getPackageVersionById from "@salesforce/apex/PackageVisualizerCtrl.getPackageVersionById";
+import getExtensionStatus from "@salesforce/apex/AgentforceExtensionStatusController.getStatus";
 
 jest.mock(
   "@salesforce/apexContinuation/PackageVisualizerCtrl.getPackage2VersionCreateRequestList",
@@ -28,6 +29,11 @@ jest.mock(
   () => ({ default: jest.fn() }),
   { virtual: true }
 );
+jest.mock(
+  "@salesforce/apex/AgentforceExtensionStatusController.getStatus",
+  () => ({ default: jest.fn() }),
+  { virtual: true }
+);
 
 async function flush() {
   await Promise.resolve();
@@ -35,7 +41,20 @@ async function flush() {
   await Promise.resolve();
 }
 
+function getGenerateButton(element) {
+  return element.shadowRoot
+    .querySelector("c-agentforce-conversation-actions")
+    ?.shadowRoot.querySelector('[data-id="generate"]');
+}
+
 describe("c-package-version-create-request-detail", () => {
+  beforeEach(() => {
+    getExtensionStatus.mockResolvedValue({
+      state: "READY",
+      message: "The extension is ready."
+    });
+  });
+
   afterEach(() => {
     while (document.body.firstChild) {
       document.body.removeChild(document.body.firstChild);
@@ -224,9 +243,52 @@ describe("c-package-version-create-request-detail", () => {
     document.body.appendChild(element);
     await flush();
 
-    const buttons = element.shadowRoot.querySelectorAll("lightning-button");
-    const labels = Array.from(buttons).map((b) => b.label);
-    expect(labels).toContain("Generate");
+    expect(getGenerateButton(element)).not.toBeNull();
+  });
+
+  it("offers the build-diagnosis conversation beside Generate for a failed 08c", async () => {
+    getPackage2VersionCreateRequestErrorList.mockResolvedValue([
+      { Id: "08p000000000001AAA", Message: "Apex compile failure" }
+    ]);
+    const element = createElement("c-package-version-create-request-detail", {
+      is: PackageVersionCreateRequestDetail
+    });
+    element.requestId = "08c000000000010AAA";
+    element.status = "Error";
+    document.body.appendChild(element);
+    await flush();
+
+    const action = element.shadowRoot.querySelector(
+      "c-agentforce-conversation-actions"
+    );
+    expect(action).not.toBeNull();
+    expect(action.showModelsGenerate).toBe(true);
+    expect(action.utterance).toContain(
+      "Package2VersionCreateRequest ID 08c000000000010AAA"
+    );
+    expect(action.utterance).toContain(
+      "invoke Get Package Build Diagnostic Context"
+    );
+    expect(action.disabled).toBe(false);
+  });
+
+  it("disables the build conversation when the request ID is not a valid 08c", async () => {
+    getPackage2VersionCreateRequestErrorList.mockResolvedValue([
+      { Id: "08p000000000001AAA", Message: "Apex compile failure" }
+    ]);
+    const element = createElement("c-package-version-create-request-detail", {
+      is: PackageVersionCreateRequestDetail
+    });
+    element.requestId = "not-a-create-request";
+    element.status = "Error";
+    document.body.appendChild(element);
+    await flush();
+
+    const action = element.shadowRoot.querySelector(
+      "c-agentforce-conversation-actions"
+    );
+    expect(action).not.toBeNull();
+    expect(action.disabled).toBe(true);
   });
 
   it("does not offer Generate on a successful request", async () => {
@@ -266,9 +328,7 @@ describe("c-package-version-create-request-detail", () => {
     document.body.appendChild(element);
     await flush();
 
-    const generateButton = Array.from(
-      element.shadowRoot.querySelectorAll("lightning-button")
-    ).find((b) => b.label === "Generate");
+    const generateButton = getGenerateButton(element);
     generateButton.click();
     await flush();
 
@@ -292,13 +352,10 @@ describe("c-package-version-create-request-detail", () => {
     );
 
     // Generate is hidden once the card is shown.
-    const labelsAfter = Array.from(
-      element.shadowRoot.querySelectorAll("lightning-button")
-    ).map((b) => b.label);
-    expect(labelsAfter).not.toContain("Generate");
+    expect(getGenerateButton(element)).toBeNull();
   });
 
-  it("shows the install empty state when the Models API returns nothing", async () => {
+  it("delegates extension resolution when the Models API returns nothing", async () => {
     getPackage2VersionCreateRequestErrorList.mockResolvedValue([
       { Id: "08d000000000013AAA", Message: "Metadata failed to compile" }
     ]);
@@ -311,15 +368,18 @@ describe("c-package-version-create-request-detail", () => {
     document.body.appendChild(element);
     await flush();
 
-    Array.from(element.shadowRoot.querySelectorAll("lightning-button"))
-      .find((b) => b.label === "Generate")
-      .click();
+    getGenerateButton(element).click();
     await flush();
 
-    const emptyState = element.shadowRoot.querySelector(
-      "lightning-empty-state"
+    const extensionPrompt = element.shadowRoot.querySelector(
+      "c-agentforce-extension-install-prompt"
     );
-    expect(emptyState).not.toBeNull();
+    expect(extensionPrompt).not.toBeNull();
+    expect(
+      element.shadowRoot.querySelector(
+        'lightning-button[label="Install Managed Package"]'
+      )
+    ).toBeNull();
   });
 
   // A well-formed PackageVersionWrapper the details child can render without its

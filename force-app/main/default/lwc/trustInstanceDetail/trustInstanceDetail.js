@@ -82,7 +82,6 @@ export default class TrustInstanceDetail extends NavigationMixin(
   response;
 
   modelsValue = "sfdc_ai__DefaultBedrockAnthropicClaude45Haiku";
-  currentPkgVersionId = "04tRh000001bOxFIAU";
 
   connectedCallback() {
     this.trustUrl = `https://status.salesforce.com/instances/${this.instanceKey}`;
@@ -259,7 +258,7 @@ export default class TrustInstanceDetail extends NavigationMixin(
             title: error.statusText || "AI Summary Failed",
             message:
               error.body?.message ||
-              "Unable to generate Trust analysis. Install the Agentforce extension package to enable AI summaries.",
+              "Unable to generate the Trust analysis. Review your Agentforce and Models API configuration, then try again.",
             variant: "error"
           })
         );
@@ -267,15 +266,6 @@ export default class TrustInstanceDetail extends NavigationMixin(
       .finally(() => {
         this.displaySpinner = false;
       });
-  }
-
-  handleExtensionInstall() {
-    this[NavigationMixin.Navigate]({
-      type: "standard__webPage",
-      attributes: {
-        url: `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`
-      }
-    });
   }
 
   handleAdvisoryLink(event) {

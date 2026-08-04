@@ -240,6 +240,8 @@ global with sharing class ObjectWrappers {
 
   public class PackagePushJobWrapper {
     @AuraEnabled
+    public String Id { get; set; }
+    @AuraEnabled
     public String PackagePushRequestId { get; set; }
     @AuraEnabled
     public String SubscriberOrganizationKey { get; set; }
@@ -265,6 +267,8 @@ global with sharing class ObjectWrappers {
   }
 
   public class JobErrorsWrapper {
+    @AuraEnabled
+    public String Id { get; set; }
     @AuraEnabled
     public String ErrorTitle { get; set; }
     @AuraEnabled

@@ -1,102 +1,95 @@
-import { LightningElement } from "lwc";
+import { api, LightningElement } from "lwc";
 import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { AGENT_SCRIPTS } from "./agentScriptsData.js";
-import getInstalledPackages from "@salesforce/apex/PackageVisualizerCtrl.getInstalledPackages";
+import getExtensionStatus from "@salesforce/apex/AgentforceExtensionStatusController.getStatus";
 import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
 import AgentScriptCoachModal from "c/agentScriptCoachModal";
 
-function normalizeId15(id) {
-  if (!id) {
-    return id;
-  }
-  return id.length >= 15 ? id.substring(0, 15) : id;
-}
+const UNAVAILABLE_EXTENSION_STATUS = {
+  state: "UNAVAILABLE",
+  message:
+    "Package Visualizer could not verify the Agentforce extension status. Try again later."
+};
+
+const AGENTEXCHANGE_LISTING_URL =
+  "https://appexchange.salesforce.com/appxListingDetail?listingId=632af825-58e1-4e61-a2b6-8b008449ca03";
+const SETUP_GUIDE_URL = "https://salesforce.quip.com/f3SWA340YbFH";
 
 export default class InAppGuidanceCard extends NavigationMixin(
   LightningElement
 ) {
   displaySpinner;
   displayInAppPrompt;
-
-  // Agentforce Extension package version ID
-  currentPkgVersionId = "04tRh000001bOxFIAU";
+  _extensionStatus;
 
   title = "AgentExchange Showcase";
   iconName = "utility:salesforce1";
   agentScripts = AGENT_SCRIPTS;
-  resourcesData = [
-    {
-      label: "Agentforce Extension",
-      description:
-        "Extend agentic and AI capabilities to help ease your packaging and ISV development cycle.",
-      icon: "standard:agent_astro",
-      listingLink:
-        "https://appexchange.salesforce.com/appxListingDetail?listingId=632af825-58e1-4e61-a2b6-8b008449ca03",
-      installLink: `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`,
-      helpGuideLink: "https://salesforce.quip.com/f3SWA340YbFH",
-      helpGuideIcon: "utility:quip",
-      subscriberPackageId: "033Rh000002JY85IAG",
-      subscriberPackageVersionId: this.currentPkgVersionId,
-      permSetLabel: "Package_Visualizer_Agentforce_Extension_Permissions",
-      permSetNamespace: "pkgviz"
-    } /*,
-        {
-            label: 'Data Kit Extension',
-            description: 'Understand package adoption and feature usage via Data360 and AppAnalytics.',
-            icon: 'standard:data_cloud',
-            installLink: '/packaging/installPackage.apexp?p0=04tRh000001NopxIAC',
-            subscriberPackageId: '0335w000000XqPxAAK',
-            subscriberPackageVersionId: '04t5w000000aveXAAQ'
-        },
-        {
-            label: 'Tableau Next Extension',
-            description: 'Leverage Tableau Next, Agentforce, and Data360 to experience Agentic visualizations.',
-            icon: 'standard:tableau',
-            installLink: '/packaging/installPackage.apexp?p0=04tRh000001NopxIAC',
-            subscriberPackageId: '033Rh000003U3oLIAS',
-            subscriberPackageVersionId: '04tRh000001bIOnIAM',
-            //tooltip: 'Requires Agentforce, Data360 and Tableau Next'
-        }
-        */
-  ];
+  resourcesData = [];
+
+  @api
+  get extensionStatus() {
+    return this._extensionStatus;
+  }
+
+  set extensionStatus(value) {
+    this._extensionStatus = value;
+    if (value) {
+      this.applyExtensionStatus(value);
+    }
+  }
 
   connectedCallback() {
     this.displaySpinner = true;
-    const packageIds = this.resourcesData.map((r) => r.subscriberPackageId);
-    getInstalledPackages({ subscriberPackageIds: packageIds })
-      .then((result) => {
-        const installedMap = new Map();
-        for (const row of result) {
-          installedMap.set(
-            normalizeId15(row.subscriberPackageId),
-            row.subscriberPackageVersionId
-          );
-        }
-        this.resourcesData = this.resourcesData.map((r) => {
-          const installedVersionId = installedMap.get(
-            normalizeId15(r.subscriberPackageId)
-          );
-          const hasPackage = installedVersionId !== undefined;
-          const normalizedInstalled = normalizeId15(installedVersionId);
-          const normalizedTarget = normalizeId15(r.subscriberPackageVersionId);
-          const versionsMatch =
-            hasPackage && normalizedInstalled === normalizedTarget;
-          const isUpgradeAvailable = hasPackage && !versionsMatch;
-          return {
-            ...r,
-            isInstalled: versionsMatch,
-            isUpgradeAvailable,
-            showPermSetButton: hasPackage && !!r.permSetLabel
-          };
-        });
+    Promise.resolve().then(() => this.initializeExtensionStatus());
+  }
+
+  initializeExtensionStatus() {
+    if (this._extensionStatus) {
+      this.applyExtensionStatus(this._extensionStatus);
+      return;
+    }
+    getExtensionStatus()
+      .then((status) => {
+        this._extensionStatus = status || UNAVAILABLE_EXTENSION_STATUS;
+        this.applyExtensionStatus(this._extensionStatus);
       })
-      .catch((error) => {
-        console.error("Error checking installed packages:", error);
-      })
-      .finally(() => {
-        this.displaySpinner = false;
+      .catch(() => {
+        this._extensionStatus = UNAVAILABLE_EXTENSION_STATUS;
+        this.applyExtensionStatus(this._extensionStatus);
       });
+  }
+
+  applyExtensionStatus(status) {
+    const state = status?.state || "UNAVAILABLE";
+    this.resourcesData = [
+      {
+        label: status?.extensionLabel || "Agentforce Extension",
+        description:
+          status?.description ||
+          "Extend Package Visualizer with Agentforce package intelligence.",
+        icon: status?.iconName || "standard:agent_astro",
+        listingLink: AGENTEXCHANGE_LISTING_URL,
+        installLink: status?.directInstallUrl,
+        helpGuideLink: SETUP_GUIDE_URL,
+        helpGuideIcon: "utility:quip",
+        subscriberPackageId: status?.configuredSubscriberPackageId,
+        subscriberPackageVersionId:
+          status?.configuredSubscriberPackageVersionId,
+        permSetLabel: status?.permissionSetLabel,
+        permSetNamespace: status?.namespacePrefix,
+        isInstalled: state === "READY",
+        isUpgradeAvailable: state === "UPDATE_REQUIRED",
+        isInstallAvailable: state === "NOT_INSTALLED",
+        showPermSetButton:
+          ["READY", "UPDATE_REQUIRED"].includes(state) &&
+          Boolean(status?.permissionSetLabel),
+        showStatusMessage: ["MISCONFIGURED", "UNAVAILABLE"].includes(state),
+        statusMessage: status?.message || UNAVAILABLE_EXTENSION_STATUS.message
+      }
+    ];
+    this.displaySpinner = false;
   }
 
   handleSlackCommunity() {
@@ -238,7 +231,11 @@ export default class InAppGuidanceCard extends NavigationMixin(
       scriptBody: script.body,
       scriptLabel: `${script.label}`,
       scriptHeader: `Agentforce Analysis - ${script.label}`,
-      currentPkgVersionId: this.currentPkgVersionId
+      scriptId: script.id,
+      scriptHash: script.scriptHash,
+      scriptManifest: script.manifest,
+      coachingEvidence: script.coachingEvidence,
+      publicChatSummary: script.publicChatSummary
     });
   }
 

@@ -3,6 +3,7 @@
     <h3 slot="title" class="slds-truncate">
       <lightning-icon
         icon-name={iconName}
+        alternative-text=""
         size="medium"
         class="slds-m-right_small card_header_icon"
       ></lightning-icon>
@@ -12,12 +13,16 @@
       <lightning-button-icon
         icon-name="utility:slack_conversations"
         variant="border-filled"
+        alternative-text="Open Partnerblazer Slack Community"
+        title="Open Partnerblazer Slack Community"
         tooltip="Partnerblazer Slack Community"
         onclick={handleSlackCommunity}
       ></lightning-button-icon>
       <lightning-button-icon
         icon-name="utility:path_experiment"
         variant="border-filled"
+        alternative-text="Open Agentforce Labs"
+        title="Open Agentforce Labs"
         tooltip="Agentforce Labs"
         onclick={handleAgentforceLabs}
       ></lightning-button-icon>
@@ -84,7 +89,9 @@
                 <lightning-card>
                   <h3 slot="title" class="slds-truncate" title={resource.label}>
                     <lightning-icon
+                      data-id="extension-icon"
                       icon-name={resource.icon}
+                      alternative-text=""
                       size="medium"
                       class="slds-m-right_small"
                     ></lightning-icon>
@@ -94,6 +101,8 @@
                     <template lwc:if={resource.listingLink}>
                       <lightning-button-icon
                         tooltip="AgentExchange Listing"
+                        alternative-text="Open AgentExchange Listing"
+                        title="Open AgentExchange Listing"
                         variant="border-filled"
                         icon-name="utility:cart"
                         data-index={index}
@@ -103,6 +112,8 @@
                     <template lwc:if={resource.helpGuideLink}>
                       <lightning-button-icon
                         tooltip="Setup Guide"
+                        alternative-text="Open Setup Guide"
+                        title="Open Setup Guide"
                         variant="border-filled"
                         icon-name={resource.helpGuideIcon}
                         data-index={index}
@@ -111,7 +122,10 @@
                     </template>
                     <template lwc:if={resource.showPermSetButton}>
                       <lightning-button-icon
+                        data-id="permission-action"
                         tooltip="Provision Permission Set"
+                        alternative-text="Provision Permission Set"
+                        title="Provision Permission Set"
                         variant="border-filled"
                         icon-name="action:manage_perm_sets"
                         data-index={index}
@@ -120,7 +134,9 @@
                     </template>
                   </lightning-button-group>
                   <div class="slds-card__body_inner">
-                    <p>{resource.description}</p>
+                    <p data-id="extension-description">
+                      {resource.description}
+                    </p>
                   </div>
                   <div
                     slot="footer"
@@ -145,7 +161,7 @@
                         icon-position="right"
                       ></lightning-button>
                     </template>
-                    <template lwc:else>
+                    <template lwc:elseif={resource.isInstallAvailable}>
                       <lightning-button
                         label="Install"
                         variant="brand"
@@ -154,6 +170,11 @@
                         data-index={index}
                         onclick={handleInstall}
                       ></lightning-button>
+                    </template>
+                    <template lwc:elseif={resource.showStatusMessage}>
+                      <p data-id="extension-status-message" role="status">
+                        {resource.statusMessage}
+                      </p>
                     </template>
                     <template lwc:if={resource.tooltip}>
                       <lightning-helptext
@@ -192,6 +213,7 @@
                       >
                         <lightning-icon
                           icon-name="standard:code_set"
+                          alternative-text=""
                           size="small"
                           class="slds-m-right_small"
                         ></lightning-icon>
@@ -209,6 +231,8 @@
                         <lightning-button-icon
                           icon-name="utility:copy"
                           variant="border-filled"
+                          alternative-text="Copy AgentScript"
+                          title="Copy AgentScript"
                           tooltip="Copy to Clipboard"
                           data-script-id={script.id}
                           onclick={handleCopyAgentScript}
@@ -216,6 +240,8 @@
                         <lightning-button-icon
                           icon-name="utility:prompt"
                           variant="border-filled"
+                          alternative-text="Open In-App Guidance"
+                          title="Open In-App Guidance"
                           tooltip="In App Guidance"
                           onclick={handleInAppPrompt}
                         ></lightning-button-icon>

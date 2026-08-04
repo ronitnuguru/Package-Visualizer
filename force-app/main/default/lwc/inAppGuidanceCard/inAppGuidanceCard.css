@@ -1,25 +1,22 @@
-.card_header_icon{
-    --slds-c-icon-color-foreground-default: #0D9DDA;
+.card_header_icon {
+  --slds-c-icon-color-foreground-default: #0d9dda;
 }
 
 .agentscript-pre {
-    max-height: 24rem;
-    margin: 0;
-    padding: 0.75rem;
-    background-color: var(--slds-g-color-neutral-base-95, #f3f3f3);
-    border-radius: 0.25rem;
+  max-height: var(--slds-g-sizing-16, 30rem);
+  margin: 0;
+  padding: var(--slds-g-spacing-3, 0.75rem);
+  background-color: var(--slds-g-color-neutral-base-95, #f3f3f3);
+  border-radius: var(--slds-g-radius-border-1, 0.25rem);
 }
 
 .agentscript-code {
-    line-height: 1.5;
-    white-space: pre-wrap;
-    word-break: break-word;
+  line-height: var(--slds-g-font-line-height-base, 1.5);
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .card-style {
-    border-radius: 0.25rem;
-    box-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.1),
-        0 2px 4px rgba(0, 0, 0, 0.06);
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  border-radius: var(--slds-g-radius-border-1, 0.25rem);
+  box-shadow: var(--slds-g-shadow-2, 0 0 5px rgb(0 0 0 / 16%));
 }

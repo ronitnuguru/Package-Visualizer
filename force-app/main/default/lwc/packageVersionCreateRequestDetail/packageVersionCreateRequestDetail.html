@@ -118,7 +118,7 @@
       ></lightning-input>
       <lightning-input
         type="checkbox"
-        label="Calc Transitive Dependencies"
+        label="Calculate Transitive Dependencies"
         checked={calcTransitiveDependencies}
         field-level-help="Indirect (transitive) dependencies are calculated for you"
         disabled
@@ -297,25 +297,17 @@
               </template>
               <template if:false={aiResponse}>
                 <div class="slds-p-around_medium">
-                  <lightning-empty-state
-                    title="Hmm..."
-                    illustration-name="noresults:search"
-                  >
-                    <p slot="description">
-                      Looks like you may have not installed the Agentforce
-                      dependent extension managed package. Or you don't have the
-                      necessary permissions or configuration to perform
-                      Agentforce related functionalities. Please contact your
-                      admin for further assistance...
-                    </p>
-                    <lightning-button
-                      variant="brand"
-                      label="Install Managed Package"
-                      slot="cta"
-                      onclick={handleExtensionInstall}
+                  <c-agentforce-extension-install-prompt auto-load>
+                    <lightning-empty-state
+                      title="Analysis unavailable"
+                      illustration-name="noresults:search"
                     >
-                    </lightning-button>
-                  </lightning-empty-state>
+                      <p slot="description">
+                        No package-build analysis was returned. Review the error
+                        notification and try again.
+                      </p>
+                    </lightning-empty-state>
+                  </c-agentforce-extension-install-prompt>
                 </div>
               </template>
             </template>
@@ -381,17 +373,17 @@
   <template if:true={showFooter}>
     <div class="slds-card__footer slds-align_absolute-center slds-m-top_small">
       <div class="slds-grid slds-grid_align-end">
-        <template if:true={canGenerate}>
-          <lightning-button
-            variant="brand"
-            label="Generate"
-            title="Generate"
-            onclick={handleAskAgentforce}
-            icon-name="utility:sparkles"
-            icon-position="right"
+        <template if:true={showBuildConversation}>
+          <c-agentforce-conversation-actions
             class="slds-var-m-right_x-small"
-          >
-          </lightning-button>
+            display-mode="contextAction"
+            utterance={buildConversationUtterance}
+            disabled={buildConversationDisabled}
+            variant="border-filled"
+            alternative-text="Chat with Agentforce"
+            show-models-generate={canGenerate}
+            onmodelsgenerate={handleAskAgentforce}
+          ></c-agentforce-conversation-actions>
         </template>
         <template if:true={canViewPackageVersion}>
           <lightning-button

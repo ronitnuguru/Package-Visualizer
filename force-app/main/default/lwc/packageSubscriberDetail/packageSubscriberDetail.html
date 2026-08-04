@@ -13,40 +13,46 @@
             ></lightning-icon>
             {orgName}
           </h3>
-          <lightning-button-group slot="actions">
-            <template if:false={showAgentforceCard}>
-              <lightning-button
-                variant="brand"
-                label="Generate"
-                icon-name="utility:sparkles"
-                icon-position="right"
-                onclick={handleAskAgentforce}
-              ></lightning-button>
-            </template>
-            <lightning-button
-              variant="destructive"
-              label="Block Push Upgrade"
-              icon-name="utility:block_visitor"
-              icon-position="right"
-              onclick={handleBlockPushUpgrade}
-            ></lightning-button>
-            <lightning-button-icon
+          <span
+            slot="actions"
+            class="slds-grid slds-grid_vertical-align-center"
+          >
+            <c-agentforce-conversation-actions
+              display-mode="contextAction"
+              utterance={subscriberConversationUtterance}
+              disabled={subscriberConversationDisabled}
               variant="border-filled"
-              icon-name="utility:einstein"
-              tooltip="Request AppAnalytics"
-              onclick={handleAppAnalyticsSubscribers}
-            ></lightning-button-icon>
-            <template if:true={displayLMA}>
-              <template if:true={orgKey}>
-                <lightning-button-icon
-                  variant="border-filled"
-                  icon-name="utility:questions_and_answers"
-                  tooltip="Log Into Subscriber Console"
-                  onclick={handleLogIntoSubscriberConsole}
-                ></lightning-button-icon>
+              alternative-text="Chat with Agentforce"
+              show-models-generate={showModelsGenerate}
+              onmodelsgenerate={handleAskAgentforce}
+              class="slds-var-p-right_x-small"
+            ></c-agentforce-conversation-actions>
+            <lightning-button-group>
+              <lightning-button
+                variant="destructive"
+                label="Block Push Upgrade"
+                icon-name="utility:block_visitor"
+                icon-position="right"
+                onclick={handleBlockPushUpgrade}
+              ></lightning-button>
+              <lightning-button-icon
+                variant="border-filled"
+                icon-name="utility:einstein"
+                tooltip="Request AppAnalytics"
+                onclick={handleAppAnalyticsSubscribers}
+              ></lightning-button-icon>
+              <template if:true={displayLMA}>
+                <template if:true={orgKey}>
+                  <lightning-button-icon
+                    variant="border-filled"
+                    icon-name="utility:questions_and_answers"
+                    tooltip="Log Into Subscriber Console"
+                    onclick={handleLogIntoSubscriberConsole}
+                  ></lightning-button-icon>
+                </template>
               </template>
-            </template>
-          </lightning-button-group>
+            </lightning-button-group>
+          </span>
           <div class="slds-card__body slds-card__body_inner">
             <div class="slds-grid slds-gutters slds-wrap">
               <div class="slds-col slds-size_5-of-12">
@@ -132,26 +138,17 @@
                     <template if:false={displayAgentforceSpinner}>
                       <template if:true={displayExtensionIllustration}>
                         <div class="slds-p-around_medium">
-                          <lightning-empty-state
-                            title="Hmm..."
-                            illustration-name="noresults:search"
-                          >
-                            <p slot="description">
-                              Looks like you may have not installed the
-                              Agentforce dependent extension managed package. Or
-                              you don't have the necessary permissions or
-                              configuration to perform Agentforce related
-                              functionalities. Please contact your admin for
-                              further assistance...
-                            </p>
-                            <lightning-button
-                              variant="brand"
-                              label="Install Managed Package"
-                              slot="cta"
-                              onclick={handleExtensionInstall}
+                          <c-agentforce-extension-install-prompt auto-load>
+                            <lightning-empty-state
+                              title="Insight unavailable"
+                              illustration-name="noresults:search"
                             >
-                            </lightning-button>
-                          </lightning-empty-state>
+                              <p slot="description">
+                                The subscriber insight could not be generated.
+                                Review the error notification and try again.
+                              </p>
+                            </lightning-empty-state>
+                          </c-agentforce-extension-install-prompt>
                         </div>
                       </template>
                       <template if:false={displayExtensionIllustration}>

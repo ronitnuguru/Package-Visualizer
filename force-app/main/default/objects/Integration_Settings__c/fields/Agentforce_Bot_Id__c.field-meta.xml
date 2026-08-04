@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Agentforce_Bot_Id__c</fullName>
+    <description
+  >BotDefinition ID of the active Agentforce Employee Agent used by Package Visualizer conversation actions. A blank value disables the integration.</description>
+    <externalId>false</externalId>
+    <label>Agentforce Bot ID</label>
+    <length>18</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

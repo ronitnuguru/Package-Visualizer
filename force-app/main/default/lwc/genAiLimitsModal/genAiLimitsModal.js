@@ -11,16 +11,8 @@ export default class GenAiLimitsModal extends LightningModal {
   aiResponse;
   error;
 
-  currentPkgVersionId = "04tRh000001bOxFIAU";
-
   connectedCallback() {
     this.generateAiResponse();
-  }
-  handleExtensionInstall() {
-    window.open(
-      `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`,
-      "_blank"
-    );
   }
 
   handleClose() {

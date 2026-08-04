@@ -10,8 +10,12 @@ module.exports = {
       "<rootDir>/force-app/test/jest-mocks/lightning/modal.js",
     "^lightning/modalHeader$":
       "<rootDir>/force-app/test/jest-mocks/lightning/modalHeader.js",
+    "^lightning/navigation$":
+      "<rootDir>/force-app/test/jest-mocks/lightning/navigation.js",
     "^lightning/refresh$":
       "<rootDir>/force-app/test/jest-mocks/lightning/refresh.js",
+    "^lightning/accApi$":
+      "<rootDir>/force-app/test/jest-mocks/lightning/accApi.js",
     "^@salesforce/community/basePath$":
       "<rootDir>/force-app/test/jest-mocks/@salesforce/community/basePath.js"
   },

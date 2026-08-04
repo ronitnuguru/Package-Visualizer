@@ -35,7 +35,6 @@ export default class AgentforcePromptGenerator extends NavigationMixin(
 
   modelsValue = "sfdc_ai__DefaultGPT5";
   providerValue = "OpenAI";
-  currentPkgVersionId = "04tRh000001bOxFIAU";
 
   get modelProviderOptions() {
     return [
@@ -232,15 +231,6 @@ export default class AgentforcePromptGenerator extends NavigationMixin(
   handleIllustrationClear() {
     this.displayExtensionIllustration = false;
     this.prompt = "";
-  }
-
-  handleExtensionInstall() {
-    this[NavigationMixin.Navigate]({
-      type: "standard__webPage",
-      attributes: {
-        url: `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`
-      }
-    });
   }
 
   handlePromptChange(event) {

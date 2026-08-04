@@ -472,9 +472,13 @@ public with sharing class PackageVisualizerCtrl {
       }
       return null;
     } catch (Exception e) {
-      throw new AuraHandledException(
+      AuraHandledException error = new AuraHandledException(
         'Could not find a LMA record associated with this version'
       );
+      error.setMessage(
+        'Could not find a LMA record associated with this version'
+      );
+      throw error;
     }
   }
 
@@ -492,9 +496,13 @@ public with sharing class PackageVisualizerCtrl {
       }
       return null;
     } catch (Exception e) {
-      throw new AuraHandledException(
+      AuraHandledException error = new AuraHandledException(
         'Could not find a LMA record associated with this version'
       );
+      error.setMessage(
+        'Could not find a LMA record associated with this version'
+      );
+      throw error;
     }
   }
 
@@ -1002,6 +1010,962 @@ public with sharing class PackageVisualizerCtrl {
     }
   }
 
+  private static final String COACH_SCHEMA_VERSION = '1';
+  private static final String COACH_PROMPT_VERSION = 'coach-prompt-v1';
+  private static final String COACH_SYSTEM_PROMPT =
+    'Return one CoachEnrichment JSON object only, no prose or fences. Exact schema: ' +
+    '{"schemaVersion":1,"scriptHash":"echo input","overviewSummary":"text",' +
+    '"subagentSuggestions":{"subagent":["text"]},' +
+    '"actionAssessments":{"owner.action":{"inputQuality":"Good|Needs Improvement|Missing",' +
+    '"outputQuality":"Good|Needs Improvement|Missing","suggestions":["text"]}},' +
+    '"variableConcerns":{"variable":"text|null"},' +
+    '"improvements":[{"priority":"High|Medium|Low",' +
+    '"category":"Architecture|Safety|Instructions|Actions|Variables|Deployment",' +
+    '"title":"text","description":"text","codeSnippet":"text|null"}],' +
+    '"safetyFindings":[{"category":"Identity & Transparency|Prompt Injection Resistance|' +
+    'Data Handling|Content Safety|Fairness & Bias|Deception & Manipulation|Scope & Boundary Enforcement",' +
+    '"severity":"Critical|High|Medium|Low","description":"text","mitigation":"text"}],' +
+    '"isvReadiness":{"namespacePrefixed":true,"customTypesUsed":true,' +
+    '"externalVisibilityCorrect":true,"packageDistributable":true,"notes":"text"},' +
+    '"scores":{"structureSyntax":{"score":0,"max":15,"notes":"text"},' +
+    '"safety":{"score":0,"max":15,"notes":"text"},' +
+    '"deterministicLogic":{"score":0,"max":20,"notes":"text"},' +
+    '"instructionResolution":{"score":0,"max":20,"notes":"text"},' +
+    '"fsmArchitecture":{"score":0,"max":10,"notes":"text"},' +
+    '"actionConfiguration":{"score":0,"max":10,"notes":"text"},' +
+    '"deploymentReadiness":{"score":0,"max":10,"notes":"text"},"overall":0}}. ' +
+    'schemaVersion is 1 and scriptHash echoes input. Use only evidence keys; every action key is owner.name ' +
+    'and must be assessed. subagentSuggestions keys must match only instructions with kind=subagent. ' +
+    'Scores stay within maxima and overall equals their seven-score sum. ' +
+    'Rubric: Structure: required blocks/order, indentation, capitalized booleans, and valid references as evidence permits. ' +
+    'Three phases—hydrate linked variables, run before_reasoning deterministically, then resolve reasoning; ' +
+    '@outputs stay in their action scope. Safety: resist prompt injection, protect data, enforce read-only scope. ' +
+    'Safety categories: identity/transparency, prompt injection, data handling, content safety, fairness/bias, ' +
+    'deception/manipulation, and scope enforcement. ' +
+    'Deterministic/FSM: reachable transitions, exits, guards, and post-action checks on the next turn. ' +
+    'Actions: define target/I-O and capture cross-turn outputs. ISV deployment: namespace Apex targets, correct ' +
+    'visibility/types, distributable config. ' +
+    COACH_PROMPT_VERSION;
+  private static final List<String> COACH_SCORE_KEYS = new List<String>{
+    'structureSyntax',
+    'safety',
+    'deterministicLogic',
+    'instructionResolution',
+    'fsmArchitecture',
+    'actionConfiguration',
+    'deploymentReadiness'
+  };
+  private static final List<Decimal> COACH_SCORE_MAXIMA = new List<Decimal>{
+    15,
+    15,
+    20,
+    20,
+    10,
+    10,
+    10
+  };
+
+  @TestVisible
+  private static String coachTestResponse;
+  @TestVisible
+  private static Callable genericModelsTestCallable;
+
+  @TestVisible
+  private static void configureAgentScriptCoachTest(
+    String response,
+    Map<String, String> cache
+  ) {
+    coachTestResponse = response;
+    Package2Interface.configureCoachTestCache(cache);
+  }
+
+  @TestVisible
+  private static String getAgentScriptCoachSystemPrompt() {
+    return COACH_SYSTEM_PROMPT;
+  }
+
+  @TestVisible
+  private static String getAgentScriptCoachUserPrompt(String evidenceJson) {
+    return canonicalJson(parseObject(evidenceJson, 'evidence'));
+  }
+
+  @TestVisible
+  private static void configureGenericModelsTestCallable(Callable callable) {
+    genericModelsTestCallable = callable;
+  }
+
+  /** Dedicated, validated Models API path for progressive AgentScript coaching. */
+  @AuraEnabled
+  public static AgentScriptCoachResult analyzeAgentScriptCoach(
+    String scriptId,
+    String scriptHash,
+    String modelName,
+    String evidenceJson
+  ) {
+    try {
+      if (
+        String.isBlank(scriptId) ||
+        String.isBlank(scriptHash) ||
+        String.isBlank(modelName)
+      ) {
+        throw coachError('scriptId, scriptHash, and modelName are required');
+      }
+      Map<String, Object> evidence = parseObject(evidenceJson, 'evidence');
+      validateEvidence(evidence, scriptId, scriptHash);
+      String compactEvidence = canonicalJson(evidence);
+      String cached = Package2Interface.getCachedCoachResponse(
+        modelName,
+        COACH_SYSTEM_PROMPT,
+        compactEvidence,
+        scriptHash,
+        COACH_SCHEMA_VERSION
+      );
+      if (!String.isBlank(cached)) {
+        try {
+          String canonicalCached = validateAndCanonicalizeCoachResponse(
+            cached,
+            evidence,
+            scriptHash
+          );
+          return coachResult('CACHE_HIT', canonicalCached);
+        } catch (Exception ignored) {
+          // Treat stale or corrupt cache content as a miss. Only a fresh, valid
+          // response may replace it below.
+        }
+      }
+      String generated = invokeAgentScriptCoachModel(
+        modelName,
+        compactEvidence,
+        COACH_SYSTEM_PROMPT
+      );
+      String canonical = validateAndCanonicalizeCoachResponse(
+        generated,
+        evidence,
+        scriptHash
+      );
+      Package2Interface.putCachedCoachResponse(
+        modelName,
+        COACH_SYSTEM_PROMPT,
+        compactEvidence,
+        scriptHash,
+        COACH_SCHEMA_VERSION,
+        canonical
+      );
+      return coachResult('GENERATED', canonical);
+    } catch (AuraHandledException e) {
+      throw e;
+    } catch (Exception e) {
+      throw coachError('Coach enrichment rejected: ' + e.getMessage());
+    }
+  }
+
+  private static AgentScriptCoachResult coachResult(
+    String status,
+    String analysisJson
+  ) {
+    AgentScriptCoachResult result = new AgentScriptCoachResult();
+    result.status = status;
+    result.analysisJson = analysisJson;
+    result.generatedAt = System.now();
+    return result;
+  }
+
+  private static String invokeAgentScriptCoachModel(
+    String modelName,
+    String userPrompt,
+    String systemPrompt
+  ) {
+    if (Test.isRunningTest()) {
+      if (coachTestResponse == null)
+        throw coachError('No Coach test response configured');
+      return coachTestResponse;
+    }
+    Type coachType = Type.forName('AgentGenAiController');
+    if (coachType == null)
+      throw coachError('AgentScript Coach Models API Callable is unavailable');
+    Object instance = coachType.newInstance();
+    if (!(instance instanceof Callable))
+      throw coachError('AgentScript Coach Models API Callable is inaccessible');
+    Callable callableInstance = (Callable) instance;
+    return (String) callableInstance.call(
+      'createChatGeneration',
+      new Map<String, Object>{
+        'modelName' => modelName,
+        'userPrompt' => userPrompt,
+        'systemPrompt' => systemPrompt
+      }
+    );
+  }
+
+  private static String validateAndCanonicalizeCoachResponse(
+    String response,
+    Map<String, Object> evidence,
+    String scriptHash
+  ) {
+    Map<String, Object> output = parseObject(
+      normalizeCoachJson(response),
+      'Coach response'
+    );
+    requireExactKeys(
+      output,
+      new Set<String>{
+        'schemaVersion',
+        'scriptHash',
+        'overviewSummary',
+        'subagentSuggestions',
+        'actionAssessments',
+        'variableConcerns',
+        'improvements',
+        'safetyFindings',
+        'isvReadiness',
+        'scores'
+      },
+      'Coach response'
+    );
+    if (!isSchemaVersionOne(output.get('schemaVersion'))) {
+      throw coachError('schemaVersion does not match the Coach contract');
+    }
+    if (
+      !(output.get('scriptHash') instanceof String) ||
+      output.get('scriptHash') != scriptHash
+    ) {
+      throw coachError('scriptHash does not match the requested script');
+    }
+    requireText(output.get('overviewSummary'), 'overviewSummary');
+    Set<String> subagentNames = evidenceInstructionOwners(
+      (List<Object>) evidence.get('instructions'),
+      'subagent'
+    );
+    Set<String> actionNames = evidenceActionKeys(
+      (List<Object>) evidence.get('actionFlags')
+    );
+    Set<String> variableNames = evidenceNames(
+      (List<Object>) evidence.get('variableFlags'),
+      'name'
+    );
+    validateSubagentSuggestions(
+      requireMap(output.get('subagentSuggestions'), 'subagentSuggestions'),
+      subagentNames
+    );
+    validateActionAssessments(
+      requireMap(output.get('actionAssessments'), 'actionAssessments'),
+      actionNames
+    );
+    validateVariableConcerns(
+      requireMap(output.get('variableConcerns'), 'variableConcerns'),
+      variableNames
+    );
+    validateImprovements((List<Object>) output.get('improvements'));
+    validateSafetyFindings((List<Object>) output.get('safetyFindings'));
+    validateIsvReadiness((Map<String, Object>) output.get('isvReadiness'));
+    validateScores((Map<String, Object>) output.get('scores'));
+    return canonicalJson(normalizeCoachOutput(output));
+  }
+
+  private static String normalizeCoachJson(String response) {
+    if (String.isBlank(response))
+      throw coachError('Coach response is blank');
+    String normalized = response.trim();
+    if (normalized.startsWith('```')) {
+      if (!normalized.startsWith('```json') || !normalized.endsWith('```')) {
+        throw coachError('Coach response has an invalid markdown fence');
+      }
+      normalized = normalized.substring(7, normalized.length() - 3).trim();
+    }
+    if (normalized.contains('```'))
+      throw coachError('Coach response has multiple markdown fences');
+    return normalized;
+  }
+
+  private static void validateEvidence(
+    Map<String, Object> evidence,
+    String scriptId,
+    String scriptHash
+  ) {
+    requireExactKeys(
+      evidence,
+      new Set<String>{
+        'schemaVersion',
+        'scriptId',
+        'scriptHash',
+        'identity',
+        'instructions',
+        'routingEdges',
+        'actionFlags',
+        'variableFlags'
+      },
+      'evidence'
+    );
+    if (!isSchemaVersionOne(evidence.get('schemaVersion'))) {
+      throw coachError('evidence schemaVersion is unsupported');
+    }
+    if (
+      !(evidence.get('scriptId') instanceof String) ||
+      !(evidence.get('scriptHash') instanceof String) ||
+      evidence.get('scriptId') != scriptId ||
+      evidence.get('scriptHash') != scriptHash
+    ) {
+      throw coachError('evidence identity does not match the request');
+    }
+    if (
+      !(evidence.get('identity') instanceof Map<String, Object>) ||
+      !(evidence.get('instructions') instanceof List<Object>) ||
+      !(evidence.get('routingEdges') instanceof List<Object>) ||
+      !(evidence.get('actionFlags') instanceof List<Object>) ||
+      !(evidence.get('variableFlags') instanceof List<Object>)
+    ) {
+      throw coachError('evidence keys are malformed');
+    }
+    validateEvidenceIdentity((Map<String, Object>) evidence.get('identity'));
+    validateEvidenceInstructions((List<Object>) evidence.get('instructions'));
+    validateEvidenceRoutingEdges((List<Object>) evidence.get('routingEdges'));
+    validateEvidenceActions((List<Object>) evidence.get('actionFlags'));
+    validateEvidenceVariables((List<Object>) evidence.get('variableFlags'));
+  }
+
+  private static void validateSubagentSuggestions(
+    Map<String, Object> items,
+    Set<String> knownNames
+  ) {
+    validateKnownKeys(items, knownNames, 'subagentSuggestions', false);
+    for (String name : items.keySet()) {
+      requireStringList(items.get(name), 'subagent suggestions');
+    }
+  }
+
+  private static void validateActionAssessments(
+    Map<String, Object> items,
+    Set<String> knownNames
+  ) {
+    validateKnownKeys(items, knownNames, 'actionAssessments', true);
+    for (String actionKey : items.keySet()) {
+      Map<String, Object> value = requireMap(
+        items.get(actionKey),
+        'action assessment'
+      );
+      requireExactKeys(
+        value,
+        new Set<String>{ 'inputQuality', 'outputQuality', 'suggestions' },
+        'action assessment'
+      );
+      requireEnum(
+        value.get('inputQuality'),
+        new Set<String>{ 'Good', 'Needs Improvement', 'Missing' },
+        'inputQuality'
+      );
+      requireEnum(
+        value.get('outputQuality'),
+        new Set<String>{ 'Good', 'Needs Improvement', 'Missing' },
+        'outputQuality'
+      );
+      requireStringList(value.get('suggestions'), 'action suggestions');
+    }
+  }
+
+  private static void validateVariableConcerns(
+    Map<String, Object> items,
+    Set<String> knownNames
+  ) {
+    validateKnownKeys(items, knownNames, 'variableConcerns', false);
+    for (String name : items.keySet()) {
+      if (items.get(name) != null)
+        requireText(items.get(name), 'variable concern');
+    }
+  }
+
+  private static void validateKnownKeys(
+    Map<String, Object> items,
+    Set<String> knownNames,
+    String label,
+    Boolean requireEveryKnownName
+  ) {
+    if (items == null)
+      throw coachError(label + ' is required');
+    for (String name : items.keySet()) {
+      if (!knownNames.contains(name))
+        throw coachError(label + ' contains an unknown evidence key');
+    }
+    if (requireEveryKnownName && items.keySet().size() != knownNames.size()) {
+      throw coachError('Every evidence action requires one action assessment');
+    }
+  }
+
+  private static void validateImprovements(List<Object> items) {
+    if (items == null)
+      throw coachError('improvements is required');
+    for (Object item : items) {
+      Map<String, Object> value = requireMap(item, 'improvement');
+      requireExactKeys(
+        value,
+        new Set<String>{
+          'priority',
+          'category',
+          'title',
+          'description',
+          'codeSnippet'
+        },
+        'improvement'
+      );
+      requireEnum(
+        value.get('priority'),
+        new Set<String>{ 'High', 'Medium', 'Low' },
+        'improvement priority'
+      );
+      requireEnum(
+        value.get('category'),
+        new Set<String>{
+          'Architecture',
+          'Safety',
+          'Instructions',
+          'Actions',
+          'Variables',
+          'Deployment'
+        },
+        'improvement category'
+      );
+      requireText(value.get('title'), 'improvement title');
+      requireText(value.get('description'), 'improvement description');
+      if (value.get('codeSnippet') != null)
+        requireText(value.get('codeSnippet'), 'improvement codeSnippet');
+    }
+  }
+
+  private static void validateSafetyFindings(List<Object> items) {
+    if (items == null)
+      throw coachError('safetyFindings is required');
+    for (Object item : items) {
+      Map<String, Object> value = requireMap(item, 'safety finding');
+      requireExactKeys(
+        value,
+        new Set<String>{ 'category', 'severity', 'description', 'mitigation' },
+        'safety finding'
+      );
+      requireEnum(
+        value.get('category'),
+        new Set<String>{
+          'Identity & Transparency',
+          'Prompt Injection Resistance',
+          'Data Handling',
+          'Content Safety',
+          'Fairness & Bias',
+          'Deception & Manipulation',
+          'Scope & Boundary Enforcement'
+        },
+        'safety category'
+      );
+      requireEnum(
+        value.get('severity'),
+        new Set<String>{ 'Critical', 'High', 'Medium', 'Low' },
+        'safety severity'
+      );
+      requireText(value.get('description'), 'safety description');
+      requireText(value.get('mitigation'), 'safety mitigation');
+    }
+  }
+
+  private static void validateIsvReadiness(Map<String, Object> readiness) {
+    requireExactKeys(
+      readiness,
+      new Set<String>{
+        'namespacePrefixed',
+        'customTypesUsed',
+        'externalVisibilityCorrect',
+        'packageDistributable',
+        'notes'
+      },
+      'isvReadiness'
+    );
+    for (
+      String key : new List<String>{
+        'namespacePrefixed',
+        'customTypesUsed',
+        'externalVisibilityCorrect',
+        'packageDistributable'
+      }
+    ) {
+      if (!(readiness.get(key) instanceof Boolean))
+        throw coachError('isvReadiness.' + key + ' must be boolean');
+    }
+    requireText(readiness.get('notes'), 'isvReadiness notes');
+  }
+
+  private static void validateScores(Map<String, Object> scores) {
+    Set<String> required = new Set<String>(COACH_SCORE_KEYS);
+    required.add('overall');
+    requireExactKeys(scores, required, 'scores');
+    Decimal total = 0;
+    for (Integer index = 0; index < COACH_SCORE_KEYS.size(); index++) {
+      Map<String, Object> score = requireMap(
+        scores.get(COACH_SCORE_KEYS[index]),
+        COACH_SCORE_KEYS[index]
+      );
+      requireExactKeys(
+        score,
+        new Set<String>{ 'score', 'max', 'notes' },
+        COACH_SCORE_KEYS[index]
+      );
+      Decimal maximum = asDecimal(
+        score.get('max'),
+        COACH_SCORE_KEYS[index] + '.max'
+      );
+      Decimal value = asDecimal(
+        score.get('score'),
+        COACH_SCORE_KEYS[index] + '.score'
+      );
+      if (
+        maximum != COACH_SCORE_MAXIMA[index] ||
+        value < 0 ||
+        value > maximum
+      ) {
+        throw coachError(COACH_SCORE_KEYS[index] + ' score is out of bounds');
+      }
+      requireText(score.get('notes'), COACH_SCORE_KEYS[index] + '.notes');
+      total += value;
+    }
+    if (asDecimal(scores.get('overall'), 'overall') != total) {
+      throw coachError('overall must equal the sum of all seven categories');
+    }
+  }
+
+  private static Map<String, Object> parseObject(
+    String jsonText,
+    String label
+  ) {
+    if (String.isBlank(jsonText))
+      throw coachError(label + ' is blank');
+    try {
+      Object parsed = JSON.deserializeUntyped(jsonText);
+      return requireMap(parsed, label);
+    } catch (AuraHandledException e) {
+      throw e;
+    } catch (Exception e) {
+      throw coachError(label + ' is not valid JSON');
+    }
+  }
+
+  private static Map<String, Object> requireMap(Object value, String label) {
+    if (!(value instanceof Map<String, Object>))
+      throw coachError(label + ' must be an object');
+    return (Map<String, Object>) value;
+  }
+
+  private static void validateEvidenceIdentity(Map<String, Object> identity) {
+    requireExactKeys(
+      identity,
+      new Set<String>{ 'developerName', 'agentType' },
+      'evidence identity'
+    );
+    requireNullableText(
+      identity.get('developerName'),
+      'evidence identity developerName'
+    );
+    requireNullableText(
+      identity.get('agentType'),
+      'evidence identity agentType'
+    );
+  }
+
+  private static void validateEvidenceInstructions(List<Object> instructions) {
+    Integer systemCount = 0;
+    Integer startAgentCount = 0;
+    Set<String> instructionKeys = new Set<String>();
+    for (Object value : instructions) {
+      Map<String, Object> item = requireMap(value, 'evidence instruction');
+      requireExactKeys(
+        item,
+        new Set<String>{ 'kind', 'owner', 'text' },
+        'evidence instruction'
+      );
+      requireEnum(
+        item.get('kind'),
+        new Set<String>{ 'system', 'startAgent', 'subagent' },
+        'evidence instruction kind'
+      );
+      requireText(item.get('owner'), 'evidence instruction owner');
+      requireText(item.get('text'), 'evidence instruction text');
+      String kind = (String) item.get('kind');
+      String owner = (String) item.get('owner');
+      String instructionKey = kind + '.' + owner;
+      if (instructionKeys.contains(instructionKey)) {
+        throw coachError('evidence has a duplicate instruction owner');
+      }
+      instructionKeys.add(instructionKey);
+      if (kind == 'system') {
+        systemCount++;
+        if (owner != 'system')
+          throw coachError('system instruction owner must be system');
+      } else if (kind == 'startAgent') {
+        startAgentCount++;
+      }
+    }
+    if (systemCount != 1 || startAgentCount != 1) {
+      throw coachError(
+        'evidence requires one system and one startAgent instruction'
+      );
+    }
+  }
+
+  private static Set<String> evidenceInstructionOwners(
+    List<Object> instructions,
+    String kind
+  ) {
+    Set<String> owners = new Set<String>();
+    for (Object value : instructions) {
+      Map<String, Object> item = (Map<String, Object>) value;
+      if (item.get('kind') == kind)
+        owners.add((String) item.get('owner'));
+    }
+    return owners;
+  }
+
+  private static void validateEvidenceRoutingEdges(List<Object> routingEdges) {
+    for (Object value : routingEdges) {
+      Map<String, Object> item = requireMap(value, 'evidence routing edge');
+      requireExactKeys(
+        item,
+        new Set<String>{ 'name', 'source', 'target', 'availableWhen' },
+        'evidence routing edge'
+      );
+      requireText(item.get('name'), 'evidence routing edge name');
+      requireText(item.get('source'), 'evidence routing edge source');
+      requireText(item.get('target'), 'evidence routing edge target');
+      if (item.get('availableWhen') != null)
+        requireText(
+          item.get('availableWhen'),
+          'evidence routing edge availableWhen'
+        );
+    }
+  }
+
+  private static void validateEvidenceActions(List<Object> actions) {
+    for (Object value : actions) {
+      Map<String, Object> item = requireMap(value, 'evidence action');
+      requireExactKeys(
+        item,
+        new Set<String>{
+          'name',
+          'owner',
+          'target',
+          'hasInputs',
+          'hasOutputs',
+          'hasAvailabilityRule'
+        },
+        'evidence action'
+      );
+      requireText(item.get('name'), 'evidence action name');
+      requireText(item.get('owner'), 'evidence action owner');
+      requireText(item.get('target'), 'evidence action target');
+      requireBoolean(item.get('hasInputs'), 'evidence action hasInputs');
+      requireBoolean(item.get('hasOutputs'), 'evidence action hasOutputs');
+      requireBoolean(
+        item.get('hasAvailabilityRule'),
+        'evidence action hasAvailabilityRule'
+      );
+    }
+    evidenceActionKeys(actions);
+  }
+
+  private static void validateEvidenceVariables(List<Object> variables) {
+    for (Object value : variables) {
+      Map<String, Object> item = requireMap(value, 'evidence variable');
+      requireExactKeys(
+        item,
+        new Set<String>{ 'name', 'type', 'kind', 'visibility' },
+        'evidence variable'
+      );
+      requireText(item.get('name'), 'evidence variable name');
+      requireText(item.get('type'), 'evidence variable type');
+      requireText(item.get('kind'), 'evidence variable kind');
+      requireText(item.get('visibility'), 'evidence variable visibility');
+    }
+    evidenceNames(variables, 'name');
+  }
+
+  private static Set<String> evidenceNames(List<Object> values, String key) {
+    Set<String> names = new Set<String>();
+    for (Object value : values) {
+      Map<String, Object> item = requireMap(value, 'evidence ' + key);
+      String name = String.valueOf(item.get(key));
+      if (String.isBlank(name) || names.contains(name))
+        throw coachError('evidence has an invalid ' + key);
+      names.add(name);
+    }
+    return names;
+  }
+
+  private static Set<String> evidenceActionKeys(List<Object> values) {
+    Set<String> keys = new Set<String>();
+    for (Object value : values) {
+      Map<String, Object> item = requireMap(value, 'evidence action');
+      String owner = String.valueOf(item.get('owner'));
+      String name = String.valueOf(item.get('name'));
+      String actionKey = owner + '.' + name;
+      if (
+        String.isBlank(owner) ||
+        String.isBlank(name) ||
+        keys.contains(actionKey)
+      ) {
+        throw coachError('evidence has an invalid action key');
+      }
+      keys.add(actionKey);
+    }
+    return keys;
+  }
+
+  /** Rebuilds the accepted payload so cache bytes never depend on model key order. */
+  private static Map<String, Object> normalizeCoachOutput(
+    Map<String, Object> output
+  ) {
+    Map<String, Object> normalized = new Map<String, Object>();
+    normalized.put('schemaVersion', 1);
+    normalized.put('scriptHash', (String) output.get('scriptHash'));
+    normalized.put('overviewSummary', (String) output.get('overviewSummary'));
+    normalized.put(
+      'subagentSuggestions',
+      normalizeStringMap(
+        (Map<String, Object>) output.get('subagentSuggestions')
+      )
+    );
+    normalized.put(
+      'actionAssessments',
+      normalizeActionAssessments(
+        (Map<String, Object>) output.get('actionAssessments')
+      )
+    );
+    normalized.put(
+      'variableConcerns',
+      normalizeStringOrNullMap(
+        (Map<String, Object>) output.get('variableConcerns')
+      )
+    );
+    normalized.put(
+      'improvements',
+      normalizeObjectList(
+        (List<Object>) output.get('improvements'),
+        new List<String>{
+          'priority',
+          'category',
+          'title',
+          'description',
+          'codeSnippet'
+        }
+      )
+    );
+    normalized.put(
+      'safetyFindings',
+      normalizeObjectList(
+        (List<Object>) output.get('safetyFindings'),
+        new List<String>{ 'category', 'severity', 'description', 'mitigation' }
+      )
+    );
+    normalized.put(
+      'isvReadiness',
+      normalizeObject(
+        (Map<String, Object>) output.get('isvReadiness'),
+        new List<String>{
+          'namespacePrefixed',
+          'customTypesUsed',
+          'externalVisibilityCorrect',
+          'packageDistributable',
+          'notes'
+        }
+      )
+    );
+    Map<String, Object> rawScores = (Map<String, Object>) output.get('scores');
+    Map<String, Object> scores = new Map<String, Object>();
+    for (String key : COACH_SCORE_KEYS) {
+      scores.put(
+        key,
+        normalizeObject(
+          (Map<String, Object>) rawScores.get(key),
+          new List<String>{ 'score', 'max', 'notes' }
+        )
+      );
+    }
+    scores.put('overall', rawScores.get('overall'));
+    normalized.put('scores', scores);
+    return normalized;
+  }
+
+  private static Map<String, Object> normalizeStringMap(
+    Map<String, Object> input
+  ) {
+    Map<String, Object> normalized = new Map<String, Object>();
+    for (String key : sortedKeys(input))
+      normalized.put(key, input.get(key));
+    return normalized;
+  }
+
+  private static Map<String, Object> normalizeStringOrNullMap(
+    Map<String, Object> input
+  ) {
+    Map<String, Object> normalized = new Map<String, Object>();
+    for (String key : sortedKeys(input))
+      normalized.put(key, input.get(key));
+    return normalized;
+  }
+
+  private static Map<String, Object> normalizeActionAssessments(
+    Map<String, Object> input
+  ) {
+    Map<String, Object> normalized = new Map<String, Object>();
+    for (String key : sortedKeys(input)) {
+      normalized.put(
+        key,
+        normalizeObject(
+          (Map<String, Object>) input.get(key),
+          new List<String>{ 'inputQuality', 'outputQuality', 'suggestions' }
+        )
+      );
+    }
+    return normalized;
+  }
+
+  private static List<Object> normalizeObjectList(
+    List<Object> values,
+    List<String> keys
+  ) {
+    List<Object> normalized = new List<Object>();
+    for (Object value : values)
+      normalized.add(normalizeObject((Map<String, Object>) value, keys));
+    return normalized;
+  }
+
+  private static Map<String, Object> normalizeObject(
+    Map<String, Object> input,
+    List<String> keys
+  ) {
+    Map<String, Object> normalized = new Map<String, Object>();
+    for (String key : keys)
+      normalized.put(key, input.get(key));
+    return normalized;
+  }
+
+  private static String canonicalJson(Object value) {
+    JSONGenerator generator = JSON.createGenerator(false);
+    writeCanonicalJson(generator, value);
+    return generator.getAsString();
+  }
+
+  private static void writeCanonicalJson(
+    JSONGenerator generator,
+    Object value
+  ) {
+    if (value == null) {
+      generator.writeNull();
+    } else if (value instanceof Map<String, Object>) {
+      generator.writeStartObject();
+      Map<String, Object> mapValue = (Map<String, Object>) value;
+      for (String key : sortedKeys(mapValue)) {
+        generator.writeFieldName(key);
+        writeCanonicalJson(generator, mapValue.get(key));
+      }
+      generator.writeEndObject();
+    } else if (value instanceof List<Object>) {
+      generator.writeStartArray();
+      for (Object item : (List<Object>) value)
+        writeCanonicalJson(generator, item);
+      generator.writeEndArray();
+    } else if (value instanceof String) {
+      generator.writeString((String) value);
+    } else if (value instanceof Boolean) {
+      generator.writeBoolean((Boolean) value);
+    } else if (
+      value instanceof Decimal ||
+      value instanceof Integer ||
+      value instanceof Long ||
+      value instanceof Double
+    ) {
+      generator.writeNumber(Decimal.valueOf(String.valueOf(value)));
+    } else {
+      throw coachError('Unsupported canonical JSON value');
+    }
+  }
+
+  private static List<String> sortedKeys(Map<String, Object> value) {
+    List<String> keys = new List<String>();
+    keys.addAll(value.keySet());
+    keys.sort();
+    return keys;
+  }
+
+  private static void requireExactKeys(
+    Map<String, Object> value,
+    Set<String> keys,
+    String label
+  ) {
+    if (value == null || value.keySet().size() != keys.size())
+      throw coachError(label + ' has an invalid schema');
+    for (String key : keys)
+      if (!value.containsKey(key))
+        throw coachError(label + ' has an invalid schema');
+  }
+
+  private static void requireText(Object value, String label) {
+    if (!(value instanceof String) || String.isBlank((String) value))
+      throw coachError(label + ' must be nonblank text');
+  }
+
+  private static void requireNullableText(Object value, String label) {
+    if (value != null && !(value instanceof String))
+      throw coachError(label + ' must be text or null');
+  }
+
+  private static void requireBoolean(Object value, String label) {
+    if (!(value instanceof Boolean))
+      throw coachError(label + ' must be boolean');
+  }
+
+  private static void requireStringList(Object value, String label) {
+    if (!(value instanceof List<Object>))
+      throw coachError(label + ' must be a list');
+    for (Object item : (List<Object>) value)
+      requireText(item, label);
+  }
+
+  private static void requireEnum(
+    Object value,
+    Set<String> allowed,
+    String label
+  ) {
+    if (!(value instanceof String) || !allowed.contains((String) value))
+      throw coachError(label + ' has an unsupported value');
+  }
+
+  private static Decimal asDecimal(Object value, String label) {
+    if (
+      !(value instanceof Decimal) &&
+      !(value instanceof Integer) &&
+      !(value instanceof Long) &&
+      !(value instanceof Double)
+    ) {
+      throw coachError(label + ' must be numeric');
+    }
+    return Decimal.valueOf(String.valueOf(value));
+  }
+
+  private static Boolean isSchemaVersionOne(Object value) {
+    if (
+      !(value instanceof Decimal) &&
+      !(value instanceof Integer) &&
+      !(value instanceof Long) &&
+      !(value instanceof Double)
+    )
+      return false;
+    return Decimal.valueOf(String.valueOf(value)) ==
+      Decimal.valueOf(COACH_SCHEMA_VERSION);
+  }
+
+  private static AuraHandledException coachError(String message) {
+    return auraError(message);
+  }
+
+  private static AuraHandledException auraError(String message) {
+    AuraHandledException error = new AuraHandledException(message);
+    error.setMessage(message);
+    return error;
+  }
+
   @AuraEnabled
   public static Object invokePromptAndUserModelsGenAi(
     String className,
@@ -1011,42 +1975,30 @@ public with sharing class PackageVisualizerCtrl {
     String systemPrompt
   ) {
     try {
-      // AgentScript Coach inputs are deterministic (static rubric + static
-      // script bodies) so the LLM response is safe to memoize per prompt hash.
-      // Other Models API callers retain pass-through behavior.
-      Boolean isCoachPath =
-        className == 'AgentGenAiController' &&
-        methodName == 'createChatGeneration';
-      if (isCoachPath) {
-        String cached = Package2Interface.getCachedCoachResponse(
-          modelName,
-          systemPrompt,
-          userPrompt
-        );
-        if (cached != null) {
-          return cached;
+      Callable callableInstance = genericModelsTestCallable;
+      if (callableInstance == null) {
+        Type targetType = Type.forName(className);
+        if (targetType == null) {
+          throw auraError(
+            'Models API Callable class is unavailable: ' + className
+          );
         }
+        Object instance = targetType.newInstance();
+        if (!(instance instanceof Callable)) {
+          throw auraError(
+            'Models API Callable class is not accessible: ' + className
+          );
+        }
+        callableInstance = (Callable) instance;
       }
-      String namespacedClass = 'pkgviz.' + className;
-      Callable callableInstance = (Callable) Type.forName(className)
-        .newInstance();
       Map<String, Object> payload = new Map<String, Object>{
         'modelName' => modelName,
         'userPrompt' => userPrompt,
         'systemPrompt' => systemPrompt
       };
-      String result = (String) callableInstance.call(methodName, payload);
-      if (isCoachPath) {
-        Package2Interface.putCachedCoachResponse(
-          modelName,
-          systemPrompt,
-          userPrompt,
-          result
-        );
-      }
-      return result;
+      return callableInstance.call(methodName, payload);
     } catch (Exception e) {
-      throw new AuraHandledException(e.getMessage());
+      throw auraError(e.getMessage());
     }
   }
 

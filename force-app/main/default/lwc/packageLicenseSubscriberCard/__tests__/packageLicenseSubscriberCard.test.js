@@ -1,26 +1,9 @@
 import { createElement } from "lwc";
+import { mockNavigate } from "lightning/navigation";
 import { getRecord } from "lightning/uiRecordApi";
 import PackageLicenseSubscriberCard from "c/packageLicenseSubscriberCard";
 import checkPackageSubscriberEnabled from "@salesforce/apex/PackageVisualizerCtrl.checkPackageSubscriberEnabled";
 import get2GPPackageVersionSubscriberList from "@salesforce/apex/PackageVisualizerCtrl.get2GPPackageVersionSubscriberList";
-
-const mockNavigate = jest.fn();
-
-jest.mock(
-  "lightning/navigation",
-  () => {
-    const Navigate = Symbol("Navigate");
-    const NavigationMixin = (Base) =>
-      class extends Base {
-        [Navigate](pageReference) {
-          mockNavigate(pageReference);
-        }
-      };
-    NavigationMixin.Navigate = Navigate;
-    return { NavigationMixin };
-  },
-  { virtual: true }
-);
 
 jest.mock(
   "@salesforce/apex/PackageVisualizerCtrl.checkPackageSubscriberEnabled",

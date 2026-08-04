@@ -21,6 +21,10 @@
   min-height: 8rem;
 }
 
+.tab-loading {
+  min-height: 6rem;
+}
+
 :host {
   --slds-c-modal-content-padding-block-start: 0;
   --slds-c-modal-content-padding-block-end: 0;

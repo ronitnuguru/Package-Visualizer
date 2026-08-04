@@ -66,9 +66,16 @@ global with sharing class Package2Interface { // NOPMD
     return packageNamespace;
   }
   @TestVisible
-  private static final String COACH_CACHE_KEY_VERSION = 'v1';
+  private static final String COACH_CACHE_KEY_VERSION = 'v2';
   @TestVisible
   private static final Integer COACH_CACHE_TTL_SECONDS = 172800;
+  @TestVisible
+  private static Map<String, String> coachTestCache;
+
+  @TestVisible
+  public static void configureCoachTestCache(Map<String, String> cache) {
+    coachTestCache = cache;
+  }
 
   /**
    * @Description  Build a deterministic Platform Cache key from the LLM prompt
@@ -81,7 +88,34 @@ global with sharing class Package2Interface { // NOPMD
     String systemPrompt,
     String userPrompt
   ) {
-    String composite = modelName + '|' + systemPrompt + '|' + userPrompt;
+    return buildCoachCacheKey(modelName, systemPrompt, userPrompt, '', '');
+  }
+
+  /**
+   * Builds the dedicated Coach key. The explicit script hash and schema version
+   * make a cache entry unusable when either contract changes, even if a caller
+   * accidentally reuses a prompt body.
+   */
+  @TestVisible
+  private static String buildCoachCacheKey(
+    String modelName,
+    String systemPrompt,
+    String userPrompt,
+    String scriptHash,
+    String schemaVersion
+  ) {
+    String composite =
+      COACH_CACHE_KEY_VERSION +
+      '|' +
+      modelName +
+      '|' +
+      systemPrompt +
+      '|' +
+      userPrompt +
+      '|' +
+      scriptHash +
+      '|' +
+      schemaVersion;
     Blob digest = Crypto.generateDigest('SHA-256', Blob.valueOf(composite));
     String hex = EncodingUtil.convertToHex(digest);
     // Platform Cache keys must be strictly alphanumeric — no separators at all.
@@ -97,7 +131,26 @@ global with sharing class Package2Interface { // NOPMD
     String systemPrompt,
     String userPrompt
   ) {
-    String key = buildCoachCacheKey(modelName, systemPrompt, userPrompt);
+    return getCachedCoachResponse(modelName, systemPrompt, userPrompt, '', '');
+  }
+
+  public static String getCachedCoachResponse(
+    String modelName,
+    String systemPrompt,
+    String userPrompt,
+    String scriptHash,
+    String schemaVersion
+  ) {
+    String key = buildCoachCacheKey(
+      modelName,
+      systemPrompt,
+      userPrompt,
+      scriptHash,
+      schemaVersion
+    );
+    if (Test.isRunningTest() && coachTestCache != null) {
+      return coachTestCache.get(key);
+    }
     Cache.OrgPartition partition = Cache.Org.getPartition(coachCachePartition);
     if (partition == null) {
       return null;
@@ -116,14 +169,41 @@ global with sharing class Package2Interface { // NOPMD
     String userPrompt,
     String response
   ) {
-    if (String.isBlank(response)) {
+    putCachedCoachResponse(
+      modelName,
+      systemPrompt,
+      userPrompt,
+      '',
+      '',
+      response
+    );
+  }
+
+  public static void putCachedCoachResponse(
+    String modelName,
+    String systemPrompt,
+    String userPrompt,
+    String scriptHash,
+    String schemaVersion,
+    String response
+  ) {
+    if (String.isBlank(response))
+      return;
+    String key = buildCoachCacheKey(
+      modelName,
+      systemPrompt,
+      userPrompt,
+      scriptHash,
+      schemaVersion
+    );
+    if (Test.isRunningTest() && coachTestCache != null) {
+      coachTestCache.put(key, response);
       return;
     }
     Cache.OrgPartition partition = Cache.Org.getPartition(coachCachePartition);
     if (partition == null) {
       return;
     }
-    String key = buildCoachCacheKey(modelName, systemPrompt, userPrompt);
     partition.put(
       key,
       response,
@@ -200,7 +280,7 @@ global with sharing class Package2Interface { // NOPMD
       'SELECT Id, SubscriberPackageId, SubscriberPackageVersionId FROM InstalledSubscriberPackage WHERE SubscriberPackageId IN (' +
       inClause +
       ')';
-    List<Object> records = submitQuery(s);
+    List<Object> records = submitQuery(s, null);
     for (Object record : records) {
       ObjectWrappers.InstalledPackageWrapper p = (ObjectWrappers.InstalledPackageWrapper) JSON.deserialize(
         JSON.serialize(record),
@@ -748,6 +828,29 @@ global with sharing class Package2Interface { // NOPMD
    * @Description	Invoke the tooling API query passed from parent menthods like Package details, package version etc..
    **************************************************************************************/
   public static List<Object> submitQuery(String queryString) {
+    return submitQueryInternal(queryString, null, false);
+  }
+
+  /**
+   * Executes a Tooling API query with an optional caller-specific timeout.
+   *
+   * @param queryString Tooling SOQL to execute.
+   * @param timeoutMilliseconds Optional timeout between 1 and 120,000 milliseconds.
+   * @return Tooling API query records.
+   */
+  @NamespaceAccessible
+  public static List<Object> submitQuery(
+    String queryString,
+    Integer timeoutMilliseconds
+  ) {
+    return submitQueryInternal(queryString, timeoutMilliseconds, true);
+  }
+
+  private static List<Object> submitQueryInternal(
+    String queryString,
+    Integer timeoutMilliseconds,
+    Boolean failOnNonSuccess
+  ) {
     List<Object> records = new List<Map<String, Object>>();
     HTTPRequest req = new HTTPRequest();
     req.setEndpoint(
@@ -758,6 +861,9 @@ global with sharing class Package2Interface { // NOPMD
     req.setMethod('GET');
     applyAuth(req);
     req.setHeader('Content-Type', 'application/json');
+    if (timeoutMilliseconds != null) {
+      req.setTimeout(Math.max(1, Math.min(120000, timeoutMilliseconds)));
+    }
     Http h = new Http();
     HttpResponse res = h.send(req);
     if (res.getStatusCode() == 200) {
@@ -770,9 +876,9 @@ global with sharing class Package2Interface { // NOPMD
       }
       return records;
     }
-    // On the Named Credential path, surface failures so the UI shows a real cause
-    // rather than an empty list. The legacy session path keeps its prior behavior.
-    if (useNamedCredential()) {
+    // The timeout overload is the strict extension boundary. The legacy one-arg
+    // overload retains its historical empty-list behavior for existing callers.
+    if (failOnNonSuccess || useNamedCredential()) {
       throw new ToolingCalloutException(
         'Tooling API callout failed (HTTP ' +
           res.getStatusCode() +

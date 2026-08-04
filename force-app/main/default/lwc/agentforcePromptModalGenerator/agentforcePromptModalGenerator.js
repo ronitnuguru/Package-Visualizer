@@ -25,7 +25,6 @@ export default class AgentforcePromptModalGenerator extends LightningModal {
 
   modelsValue = "sfdc_ai__DefaultGPT5";
   providerValue = "OpenAI";
-  currentPkgVersionId = "04tRh000001bOxFIAU";
 
   /** Aligns with plan §3.6 "Package GenAI Prompt Template Library" (ISV packaging / Agentforce). */
   promptTemplateCardTitle = "Package GenAI Prompt Template Library";
@@ -338,21 +337,6 @@ export default class AgentforcePromptModalGenerator extends LightningModal {
 
   handleCancel() {
     this.close();
-  }
-
-  handleExtensionInstall() {
-    /*
-        this[NavigationMixin.Navigate]({
-            type: 'standard__webPage',
-            attributes: {
-                url: `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`
-            }
-        });
-        */
-    window.open(
-      `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`,
-      "_blank"
-    );
   }
 
   handleUserPromptChange(event) {

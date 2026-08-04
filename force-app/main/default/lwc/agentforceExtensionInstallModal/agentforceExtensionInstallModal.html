@@ -1,0 +1,15 @@
+<template>
+  <lightning-modal-header label={modalLabel}></lightning-modal-header>
+  <lightning-modal-body>
+    <c-agentforce-extension-install-prompt
+      status={status}
+    ></c-agentforce-extension-install-prompt>
+  </lightning-modal-body>
+  <lightning-modal-footer>
+    <lightning-button
+      data-id="close-action"
+      label="Close"
+      onclick={handleClose}
+    ></lightning-button>
+  </lightning-modal-footer>
+</template>

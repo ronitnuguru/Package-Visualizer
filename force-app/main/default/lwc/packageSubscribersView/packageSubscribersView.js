@@ -88,6 +88,7 @@ export default class PackageSubscribersView extends LightningElement {
   installedStatus;
   instanceName;
   metadataPackageId;
+  packageSubscriberId;
   metadataPackageVersionId;
   orgKey;
   orgName;
@@ -347,6 +348,7 @@ export default class PackageSubscribersView extends LightningElement {
   }
 
   getPackageSubscriberDetails(row) {
+    this.packageSubscriberId = row.id;
     this.installedStatus = row.installedStatus;
     this.instanceName = row.instanceName;
     this.metadataPackageId = row.metadataPackageId;

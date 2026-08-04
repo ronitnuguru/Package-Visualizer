@@ -32,7 +32,6 @@ export default class ScratchBuildModal extends LightningModal {
   displayAiSuggest;
   aiSuggestion;
 
-  currentPkgVersionId = "04tRh000001bOxFIAU";
   modelsValue = "sfdc_ai__DefaultGPT54";
 
   get isAiSuggestionEmpty() {
@@ -193,13 +192,6 @@ export default class ScratchBuildModal extends LightningModal {
   handleIllustrationClear() {
     this.displayExtensionIllustration = false;
     this.prompt = "";
-  }
-
-  handleExtensionInstall() {
-    window.open(
-      `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`,
-      "_blank"
-    );
   }
 
   handleCloseModal() {

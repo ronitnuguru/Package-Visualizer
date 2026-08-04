@@ -1,132 +1,149 @@
 <template>
-    <lightning-card class="card-style">
-        <template if:true={displayExtensionIllustration}>
-            <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-around_medium" role="status">
-                <div class="slds-media__figure">
-                    <lightning-icon
-                        size="small"
-                        icon-name="utility:info"
-                        alternative-text="info"
-                        title="info"
-                        variant="inverse"
-                    ></lightning-icon>
-                </div>
-                <div class="slds-media__body">
-                    <div>
-                        Component Requirements
-                        <ol class="slds-list_ordered">
-                            <li>
-                                Enable Agentforce in <a href="/lightning/setup/EinsteinGPTSetup/home" target="_blank">Einstein Setup</a> and <a href="/lightning/setup/EinsteinCopilot/home" target="_blank">Agent Studio</a> 
-                            </li>
-                            <li>
-                                Install Agentforce Package Visualizer + ISV Tooling Extension. <a href="https://salesforce.quip.com/f3SWA340YbFH" target="_blank">Learn More</a>
-                            </li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-            <lightning-empty-state title="Component not available..." illustration-name="noresults:unknown">
-                <p slot="description">Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance...</p>
-                <lightning-button-group slot="cta">
-                    <lightning-button variant="neutral" label="Back" onclick={handleIllustrationClear}>
-                    </lightning-button>
-                    <lightning-button variant="brand" label="Install Managed Package" onclick={handleExtensionInstall}>
-                    </lightning-button>
-                </lightning-button-group>
-            </lightning-empty-state>
+  <lightning-card class="card-style">
+    <template if:true={displayExtensionIllustration}>
+      <c-agentforce-extension-install-prompt auto-load>
+        <lightning-empty-state
+          title="Response unavailable"
+          illustration-name="noresults:unknown"
+        >
+          <p slot="description">
+            The AI response could not be generated. Review the error
+            notification and try again.
+          </p>
+          <lightning-button
+            variant="neutral"
+            label="Back"
+            slot="cta"
+            onclick={handleIllustrationClear}
+          >
+          </lightning-button>
+        </lightning-empty-state>
+      </c-agentforce-extension-install-prompt>
+    </template>
+    <template if:false={displayExtensionIllustration}>
+      <h3 slot="title" class="slds-truncate">
+        <lightning-icon
+          icon-name={titleIcon}
+          alternative-text={titleIcon}
+          size="medium"
+          class="slds-m-right_small"
+        ></lightning-icon>
+        {titleHeader}
+      </h3>
+      <lightning-button-group slot="actions">
+        <lightning-button-icon
+          icon-name="utility:help_doc_ext"
+          onclick={navigateToHelpSupportedModels}
+          tooltip="Help - Supported Models"
+        ></lightning-button-icon>
+      </lightning-button-group>
+      <div class="slds-card__body slds-card__body_inner">
+        <template if:true={displaySpinner}>
+          <lightning-spinner
+            alternative-text="Loading"
+            size="medium"
+            variant="brand"
+          ></lightning-spinner>
         </template>
-        <template if:false={displayExtensionIllustration}>
-            <h3 slot="title" class="slds-truncate">
-                <lightning-icon 
-                    icon-name={titleIcon}
-                    alternative-text={titleIcon}
-                    size="medium"
-                    class="slds-m-right_small"
-                ></lightning-icon>
-                {titleHeader}
-            </h3>
-            <lightning-button-group slot="actions">
-                <lightning-button-icon
-                    icon-name="utility:help_doc_ext"
-                    onclick={navigateToHelpSupportedModels}
-                    tooltip="Help - Supported Models"
-                ></lightning-button-icon>
+
+        <lightning-combobox
+          name="modelProviders"
+          label="Model Providers"
+          value={providerValue}
+          placeholder="Select Model Provider"
+          dropdown-alignment="auto"
+          options={modelProviderOptions}
+          onchange={handleProviderTypeChange}
+        ></lightning-combobox>
+
+        <lightning-combobox
+          name="models"
+          label="Models"
+          value={modelsValue}
+          placeholder="Select Supported Models"
+          dropdown-alignment="auto"
+          options={modelsTypeOptions}
+          onchange={handleModelsTypeChange}
+          field-level-help="A geo-aware model automatically routes your LLM request to a nearby data center based on where your org is provisioned. It offers greater control over data residency, and using nearby data centers minimizes latency"
+        ></lightning-combobox>
+
+        <lightning-textarea
+          name="prompt"
+          label="Prompt"
+          placeholder="Ask Agentforce..."
+          oninput={handlePromptChange}
+          onchange={handlePromptChange}
+          value={prompt}
+          required
+        ></lightning-textarea>
+
+        <template lwc:if={normalizedTemplatePrompts}>
+          <template if:true={enableGenerate}>
+            <div class="slds-grid slds-wrap">
+              <template for:each={normalizedTemplatePrompts} for:item="prompt">
+                <lightning-button
+                  label={prompt.label}
+                  value={prompt.label}
+                  key={prompt.label}
+                  icon-name={prompt.icon}
+                  icon-position="left"
+                  class="slds-m-right_x-small slds-m-top_x-small"
+                  onclick={handlePromptTemplateInput}
+                ></lightning-button>
+              </template>
+            </div>
+          </template>
+        </template>
+
+        <template lwc:if={displayResult}>
+          <lightning-textarea
+            label="Gen AI Response"
+            value={response}
+            class="text-area-style"
+            readonly
+          ></lightning-textarea>
+        </template>
+      </div>
+      <div slot="footer" class="slds-clearfix">
+        <div class="slds-float_right">
+          <lightning-button
+            label="Clear"
+            onclick={handleClear}
+            class="slds-m-left_x-small"
+          ></lightning-button>
+          <template lwc:if={displayResult}>
+            <lightning-button-group class="slds-m-left_x-small">
+              <lightning-button-icon
+                icon-name="utility:like"
+                tooltip="Like"
+                variant="border-filled"
+                onclick={handleFeedback}
+              ></lightning-button-icon>
+              <lightning-button-icon
+                icon-name="utility:dislike"
+                tooltip="Dislike"
+                variant="border-filled"
+                onclick={handleFeedback}
+              ></lightning-button-icon>
+              <lightning-button-icon
+                icon-name="utility:copy_to_clipboard"
+                tooltip="Copy to Clipboard"
+                variant="border-filled"
+                onclick={handleCopyPaste}
+              ></lightning-button-icon>
             </lightning-button-group>
-            <div class="slds-card__body slds-card__body_inner">
-                <template if:true={displaySpinner}>
-                    <lightning-spinner
-                        alternative-text="Loading"
-                        size="medium"
-                        variant="brand"
-                    ></lightning-spinner>
-                </template>
-    
-                <lightning-combobox
-                    name="modelProviders"
-                    label="Model Providers"
-                    value={providerValue}
-                    placeholder="Select Model Provider"
-                    dropdown-alignment="auto"
-                    options={modelProviderOptions}
-                    onchange={handleProviderTypeChange}
-                ></lightning-combobox>
-
-                <lightning-combobox
-                    name="models"
-                    label="Models"
-                    value={modelsValue}
-                    placeholder="Select Supported Models"
-                    dropdown-alignment="auto"
-                    options={modelsTypeOptions}
-                    onchange={handleModelsTypeChange}
-                    field-level-help="A geo-aware model automatically routes your LLM request to a nearby data center based on where your org is provisioned. It offers greater control over data residency, and using nearby data centers minimizes latency"
-                ></lightning-combobox>    
-                
-                <lightning-textarea 
-                    name="prompt" 
-                    label="Prompt"
-                    placeholder="Ask Agentforce..."
-                    oninput={handlePromptChange}
-                    onchange={handlePromptChange} 
-                    value={prompt}
-                    required
-                ></lightning-textarea>
-
-                <template lwc:if={normalizedTemplatePrompts}>
-                    <template if:true={enableGenerate}>
-                        <div class="slds-grid slds-wrap">
-                            <template for:each={normalizedTemplatePrompts} for:item="prompt">
-                                <lightning-button 
-                                    label={prompt.label}
-                                    value={prompt.label}
-                                    key={prompt.label} 
-                                    icon-name={prompt.icon} 
-                                    icon-position="left" 
-                                    class="slds-m-right_x-small slds-m-top_x-small"
-                                    onclick={handlePromptTemplateInput}
-                                ></lightning-button>
-                            </template>
-                        </div>
-                    </template>
-                </template>
-                
-                <template lwc:if={displayResult}>
-                    <lightning-textarea label="Gen AI Response" value={response} class="text-area-style" readonly></lightning-textarea>
-                </template>
-            </div>
-            <div slot="footer" class="slds-clearfix" >
-                <div class="slds-float_right">
-                    <lightning-button label="Clear" onclick={handleClear} class="slds-m-left_x-small"></lightning-button>
-                    <template lwc:if={displayResult}>
-                        <lightning-button-group class="slds-m-left_x-small">
-                            <lightning-button-icon icon-name="utility:like" tooltip="Like"  variant="border-filled" onclick={handleFeedback}></lightning-button-icon>
-                            <lightning-button-icon icon-name="utility:dislike" tooltip="Dislike"  variant="border-filled" onclick={handleFeedback}></lightning-button-icon>
-                            <lightning-button-icon icon-name="utility:copy_to_clipboard" tooltip="Copy to Clipboard"  variant="border-filled" onclick={handleCopyPaste} ></lightning-button-icon>
-                        </lightning-button-group>
-                    </template>
-                    <lightning-button variant="brand" icon-position="right" icon-name="utility:sparkles" label="Generate" onclick={handleGenerate} class="slds-m-left_x-small" disabled={enableGenerate}></lightning-button>
-                </div>
-            </div>
-        </template>
-    </lightning-card>
+          </template>
+          <lightning-button
+            variant="brand"
+            icon-position="right"
+            icon-name="utility:sparkles"
+            label="Generate"
+            onclick={handleGenerate}
+            class="slds-m-left_x-small"
+            disabled={enableGenerate}
+          ></lightning-button>
+        </div>
+      </div>
+    </template>
+  </lightning-card>
 </template>

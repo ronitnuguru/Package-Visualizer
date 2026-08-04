@@ -7,5 +7,5 @@ export default class LightningModal extends LightningElement {
   @api size;
   @api description;
 
-  close() {}
+  @api close = jest.fn();
 }

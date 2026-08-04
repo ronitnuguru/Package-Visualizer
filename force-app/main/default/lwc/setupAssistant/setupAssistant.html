@@ -317,6 +317,47 @@
                             </div>
                           </li>
                         </template>
+                        <li class="slds-progress__item">
+                          <template
+                            if:false={isAgentforceConversationConfigured}
+                          >
+                            <div
+                              data-id="agentforce-conversation-marker-default"
+                              class="slds-progress__marker"
+                            >
+                              <span class="slds-assistive-text">Active</span>
+                            </div>
+                          </template>
+                          <template
+                            if:true={isAgentforceConversationConfigured}
+                          >
+                            <span
+                              data-id="agentforce-conversation-marker-success"
+                              class="slds-progress__marker"
+                            >
+                              <lightning-icon
+                                icon-name="utility:success"
+                                alternative-text="Agentforce Conversation Client Configured"
+                                variant="success"
+                                size="x-small"
+                                class="icon-style"
+                              ></lightning-icon>
+                            </span>
+                          </template>
+                          <div class="slds-progress__item_content">
+                            <strong class="slds-text-title_caps">
+                              Agentforce Conversation Client
+                            </strong>
+                            <p class="slds-var-m-top_xx-small">
+                              Setup the active Employee Agent Package Visualizer
+                              uses for contextual release-intelligence requests.
+                            </p>
+                            <c-agentforce-conversation-setup
+                              onconfigurationchange={handleAgentforceConfigurationChange}
+                            >
+                            </c-agentforce-conversation-setup>
+                          </div>
+                        </li>
                         <!-- Step 1: Provision -->
                         <li class="slds-progress__item">
                           <template if:false={isProvisioned}>
@@ -1116,6 +1157,11 @@
                               >
                                 <lightning-button-group>
                                   <lightning-button-icon
+                                    data-id="new-users-setup"
+                                    icon-name="utility:setup"
+                                    onclick={navigateToNewUsers}
+                                  ></lightning-button-icon>
+                                  <lightning-button-icon
                                     icon-name="utility:help_doc_ext"
                                     variant="brand"
                                     onclick={navigateProvUsers1}
@@ -1145,11 +1191,18 @@
                               <div
                                 class="slds-shrink-none slds-var-m-left_small"
                               >
-                                <lightning-button-icon
-                                  icon-name="utility:help_doc_ext"
-                                  variant="brand"
-                                  onclick={navigateProvUsers2}
-                                ></lightning-button-icon>
+                                <lightning-button-group>
+                                  <lightning-button-icon
+                                    data-id="new-permission-sets-setup"
+                                    icon-name="utility:setup"
+                                    onclick={navigateToNewPermissionSets}
+                                  ></lightning-button-icon>
+                                  <lightning-button-icon
+                                    icon-name="utility:help_doc_ext"
+                                    variant="brand"
+                                    onclick={navigateProvUsers2}
+                                  ></lightning-button-icon>
+                                </lightning-button-group>
                               </div>
                             </div>
                           </li>
@@ -1357,7 +1410,7 @@
                                 class="slds-shrink-none slds-var-m-left_small"
                               >
                                 <lightning-button-icon
-                                  icon-name="utility:agent_astro"
+                                  icon-name="utility:alt_agent_astro"
                                   variant="brand"
                                   onclick={navigateToAgentforceSkillsDocs}
                                 ></lightning-button-icon>
@@ -2072,6 +2125,12 @@
                             <c-setup-assistant-slack
                               org-id={orgId}
                             ></c-setup-assistant-slack>
+                          </lightning-tab>
+                          <lightning-tab
+                            label="Tableau Next"
+                            icon-name="standard:tableau"
+                          >
+                            <c-setup-assistant-tableau-next></c-setup-assistant-tableau-next>
                           </lightning-tab>
                         </lightning-tabset>
                       </div>

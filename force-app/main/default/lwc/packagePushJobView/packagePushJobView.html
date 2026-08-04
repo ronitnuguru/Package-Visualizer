@@ -80,15 +80,24 @@
           </template>
           <span class="slds-truncate">{status}</span>
         </h3>
-        <lightning-button-group slot="actions">
-          <template if:true={displayAbort}>
-            <lightning-button
-              variant="destructive"
-              label="Abort"
-              onclick={handleAbort}
-            ></lightning-button>
-          </template>
-        </lightning-button-group>
+        <span slot="actions" class="slds-grid slds-grid_vertical-align-center">
+          <c-agentforce-conversation-actions
+            display-mode="contextAction"
+            utterance={pushRequestConversationUtterance}
+            disabled={pushRequestConversationDisabled}
+            variant="border-filled"
+            alternative-text="Chat with Agentforce"
+          ></c-agentforce-conversation-actions>
+          <lightning-button-group>
+            <template if:true={displayAbort}>
+              <lightning-button
+                variant="destructive"
+                label="Abort"
+                onclick={handleAbort}
+              ></lightning-button>
+            </template>
+          </lightning-button-group>
+        </span>
         <div class="slds-card__body slds-card__body_inner slds-p-bottom_medium">
           <div class="">
             <article class="slds-tile slds-media">
@@ -97,6 +106,16 @@
                   <div class="">
                     <div class="">
                       <dl class="slds-list_horizontal slds-wrap">
+                        <template if:true={pushId}>
+                          <dt
+                            class="slds-item_label slds-text-color_weak slds-truncate"
+                          >
+                            Push Request Id:
+                          </dt>
+                          <dd class="slds-item_detail slds-truncate">
+                            {pushId}
+                          </dd>
+                        </template>
                         <template if:true={pushScheduledStartTime}>
                           <dt
                             class="slds-item_label slds-text-color_weak slds-truncate"

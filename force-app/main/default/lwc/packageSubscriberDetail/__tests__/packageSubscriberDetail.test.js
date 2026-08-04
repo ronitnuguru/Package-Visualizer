@@ -1,24 +1,8 @@
 import { createElement } from "lwc";
+import { mockNavigate } from "lightning/navigation";
 import PackageSubscriberDetail from "c/packageSubscriberDetail";
 import isLMA from "@salesforce/apex/PackageVisualizerCtrl.isLMA";
-
-const mockNavigate = jest.fn();
-
-jest.mock(
-  "lightning/navigation",
-  () => {
-    const Navigate = Symbol("Navigate");
-    const NavigationMixin = (Base) =>
-      class extends Base {
-        [Navigate](pageReference) {
-          mockNavigate(pageReference);
-        }
-      };
-    NavigationMixin.Navigate = Navigate;
-    return { NavigationMixin };
-  },
-  { virtual: true }
-);
+import getExtensionStatus from "@salesforce/apex/AgentforceExtensionStatusController.getStatus";
 
 jest.mock(
   "@salesforce/apex/PackageVisualizerCtrl.isLMA",
@@ -36,6 +20,11 @@ jest.mock(
   () => ({ default: false }),
   { virtual: true }
 );
+jest.mock(
+  "@salesforce/apex/AgentforceExtensionStatusController.getStatus",
+  () => ({ default: jest.fn() }),
+  { virtual: true }
+);
 
 async function flush() {
   await Promise.resolve();
@@ -43,6 +32,13 @@ async function flush() {
 }
 
 describe("c-package-subscriber-detail subscriber console navigation", () => {
+  beforeEach(() => {
+    getExtensionStatus.mockResolvedValue({
+      state: "READY",
+      message: "The extension is ready."
+    });
+  });
+
   afterEach(() => {
     while (document.body.firstChild) {
       document.body.removeChild(document.body.firstChild);
@@ -71,6 +67,7 @@ describe("c-package-subscriber-detail subscriber console navigation", () => {
     expect(loginButton).not.toBeUndefined();
 
     loginButton.click();
+    await flush();
 
     expect(mockNavigate).toHaveBeenCalledWith({
       type: "standard__webPage",
@@ -78,5 +75,29 @@ describe("c-package-subscriber-detail subscriber console navigation", () => {
         url: `/partnerbt/lmo/subOrgLogin.apexp?directLoginOrgId=${orgKey}`
       }
     });
+  });
+
+  it("renders a subscriber-support conversation beside Generate", async () => {
+    const element = createElement("c-package-subscriber-detail-test", {
+      is: PackageSubscriberDetail
+    });
+    element.packageSubscriberId = "0Ci000000000001AAA";
+    element.metadataPackageId = "033000000000001AAA";
+    element.metadataPackageVersionId = "04t000000000001AAA";
+    element.orgKey = "00D000000000001AAA";
+    element.orgName = "Acme";
+    element.packageType = "Managed";
+    document.body.appendChild(element);
+    await flush();
+
+    const action = element.shadowRoot.querySelector(
+      "c-agentforce-conversation-actions"
+    );
+    expect(action).not.toBeNull();
+    expect(action.showModelsGenerate).toBe(true);
+    expect(action.alternativeText).toBe("Chat with Agentforce");
+    expect(action.utterance).toContain(
+      "PackageSubscriber ID 0Ci000000000001AAA"
+    );
   });
 });

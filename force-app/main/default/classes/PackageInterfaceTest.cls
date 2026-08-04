@@ -2504,65 +2504,723 @@ private class PackageInterfaceTest {
     );
   }
 
-  @IsTest
-  static void testInvokePromptAndUserModels_CoachPath_CacheHitShortCircuits() {
-    // Pre-populate cache so the controller's get returns non-null and the
-    // Callable invocation is skipped. If the cache partition is unallocated
-    // in the test org, the put no-ops and the test falls through to the
-    // exception path — both are valid (assertion below tolerates both).
-    Package2Interface.putCachedCoachResponse(
-      COACH_MODEL,
-      COACH_SYSTEM_PROMPT,
-      COACH_USER_PROMPT,
-      COACH_RESPONSE_JSON
+  private static String coachEvidence(String scriptHash) {
+    return JSON.serialize(
+      new Map<String, Object>{
+        'schemaVersion' => 1,
+        'scriptId' => 'test-agent',
+        'scriptHash' => scriptHash,
+        'identity' => new Map<String, Object>{
+          'developerName' => 'Test_Agent',
+          'agentType' => 'AgentforceEmployeeAgent'
+        },
+        'instructions' => new List<Object>{
+          new Map<String, Object>{
+            'kind' => 'system',
+            'owner' => 'system',
+            'text' => 'Stay safe.'
+          },
+          new Map<String, Object>{
+            'kind' => 'startAgent',
+            'owner' => 'router',
+            'text' => 'Route safely.'
+          },
+          new Map<String, Object>{
+            'kind' => 'subagent',
+            'owner' => 'auditor',
+            'text' => 'Review safely.'
+          }
+        },
+        'routingEdges' => new List<Object>(),
+        'actionFlags' => new List<Object>{
+          new Map<String, Object>{
+            'owner' => 'router',
+            'name' => 'read_context',
+            'target' => 'apex://ReadContext',
+            'hasInputs' => true,
+            'hasOutputs' => true,
+            'hasAvailabilityRule' => false
+          },
+          new Map<String, Object>{
+            'owner' => 'auditor',
+            'name' => 'read_context',
+            'target' => 'apex://AuditContext',
+            'hasInputs' => true,
+            'hasOutputs' => false,
+            'hasAvailabilityRule' => true
+          }
+        },
+        'variableFlags' => new List<Object>{
+          new Map<String, Object>{
+            'name' => 'active_context',
+            'type' => 'string',
+            'kind' => 'mutable',
+            'visibility' => 'agent'
+          }
+        }
+      }
     );
+  }
+
+  private static String validCoachResponse(String scriptHash) {
+    return JSON.serialize(
+      new Map<String, Object>{
+        'schemaVersion' => 1,
+        'scriptHash' => scriptHash,
+        'overviewSummary' => 'A focused AgentScript with deterministic routing.',
+        'subagentSuggestions' => new Map<String, Object>{
+          'auditor' => new List<Object>{ 'Keep review boundaries explicit.' }
+        },
+        'actionAssessments' => new Map<String, Object>{
+          'router.read_context' => new Map<String, Object>{
+            'inputQuality' => 'Good',
+            'outputQuality' => 'Good',
+            'suggestions' => new List<Object>()
+          },
+          'auditor.read_context' => new Map<String, Object>{
+            'inputQuality' => 'Needs Improvement',
+            'outputQuality' => 'Missing',
+            'suggestions' => new List<Object>{ 'Document its output.' }
+          }
+        },
+        'variableConcerns' => new Map<String, Object>{
+          'active_context' => null
+        },
+        'improvements' => new List<Object>{
+          new Map<String, Object>{
+            'priority' => 'Medium',
+            'category' => 'Instructions',
+            'title' => 'Clarify routing',
+            'description' => 'Name the routing condition.',
+            'codeSnippet' => null
+          }
+        },
+        'safetyFindings' => new List<Object>(),
+        'isvReadiness' => new Map<String, Object>{
+          'namespacePrefixed' => true,
+          'customTypesUsed' => true,
+          'externalVisibilityCorrect' => true,
+          'packageDistributable' => true,
+          'notes' => 'Ready for a package review.'
+        },
+        'scores' => new Map<String, Object>{
+          'structureSyntax' => new Map<String, Object>{
+            'score' => 15,
+            'max' => 15,
+            'notes' => 'Valid.'
+          },
+          'safety' => new Map<String, Object>{
+            'score' => 15,
+            'max' => 15,
+            'notes' => 'Safe.'
+          },
+          'deterministicLogic' => new Map<String, Object>{
+            'score' => 20,
+            'max' => 20,
+            'notes' => 'Explicit.'
+          },
+          'instructionResolution' => new Map<String, Object>{
+            'score' => 20,
+            'max' => 20,
+            'notes' => 'Clear.'
+          },
+          'fsmArchitecture' => new Map<String, Object>{
+            'score' => 10,
+            'max' => 10,
+            'notes' => 'Reachable.'
+          },
+          'actionConfiguration' => new Map<String, Object>{
+            'score' => 10,
+            'max' => 10,
+            'notes' => 'Complete.'
+          },
+          'deploymentReadiness' => new Map<String, Object>{
+            'score' => 10,
+            'max' => 10,
+            'notes' => 'Ready.'
+          },
+          'overall' => 100
+        }
+      }
+    );
+  }
+
+  private static String reorderedCoachResponse(String scriptHash) {
+    Map<String, Object> output = (Map<String, Object>) JSON.deserializeUntyped(
+      validCoachResponse(scriptHash)
+    );
+    List<String> keys = new List<String>{
+      'scores',
+      'isvReadiness',
+      'safetyFindings',
+      'improvements',
+      'variableConcerns',
+      'actionAssessments',
+      'subagentSuggestions',
+      'overviewSummary',
+      'scriptHash',
+      'schemaVersion'
+    };
+    List<String> fields = new List<String>();
+    for (String key : keys)
+      fields.add(JSON.serialize(key) + ':' + JSON.serialize(output.get(key)));
+    return '{' + String.join(fields, ',') + '}';
+  }
+
+  private static void configureCoachTest(
+    String response,
+    Map<String, String> cache
+  ) {
+    PackageVisualizerCtrl.configureAgentScriptCoachTest(response, cache);
+  }
+
+  private class GenericModelsCallable implements Callable {
+    public Object call(String methodName, Map<String, Object> payload) {
+      genericModelsCallCount++;
+      return 'callable-result';
+    }
+  }
+
+  private static Integer genericModelsCallCount = 0;
+
+  private static Boolean coachResponseRejected(String hash, String response) {
+    configureCoachTest(response, new Map<String, String>());
+    try {
+      PackageVisualizerCtrl.analyzeAgentScriptCoach(
+        'test-agent',
+        hash,
+        COACH_MODEL,
+        coachEvidence(hash)
+      );
+      return false;
+    } catch (AuraHandledException e) {
+      return true;
+    }
+  }
+
+  private static Boolean evidenceRejected(
+    String hash,
+    Map<String, Object> evidence
+  ) {
+    configureCoachTest(validCoachResponse(hash), new Map<String, String>());
+    try {
+      PackageVisualizerCtrl.analyzeAgentScriptCoach(
+        'test-agent',
+        hash,
+        COACH_MODEL,
+        JSON.serialize(evidence)
+      );
+      return false;
+    } catch (AuraHandledException e) {
+      return true;
+    }
+  }
+
+  @IsTest
+  static void testAgentScriptCoachPrompt_ContainsCompactContractAndQualitativeRubric() {
+    String prompt = PackageVisualizerCtrl.getAgentScriptCoachSystemPrompt();
+    Assert.isTrue(prompt.contains('"actionAssessments":{"owner.action"'));
+    Assert.isTrue(
+      prompt.contains('"inputQuality":"Good|Needs Improvement|Missing"')
+    );
+    Assert.isTrue(prompt.contains('"structureSyntax":{"score":0,"max":15'));
+    Assert.isTrue(prompt.contains('scriptHash echoes input'));
+    Assert.isTrue(prompt.contains('kind=subagent'));
+    Assert.isTrue(prompt.contains('Structure: required blocks/order'));
+    Assert.isTrue(prompt.contains('Three phases'));
+    Assert.isTrue(prompt.contains('identity/transparency'));
+    Assert.isTrue(prompt.contains('prompt injection'));
+    Assert.isTrue(prompt.contains('data handling'));
+    Assert.isTrue(prompt.contains('content safety'));
+    Assert.isTrue(prompt.contains('fairness/bias'));
+    Assert.isTrue(prompt.contains('deception/manipulation'));
+    Assert.isTrue(prompt.contains('scope enforcement'));
+    Assert.isTrue(prompt.contains('Deterministic/FSM:'));
+    Assert.isTrue(prompt.contains('Actions:'));
+    Assert.isTrue(prompt.contains('ISV deployment:'));
+    Assert.isFalse(prompt.contains('SAFETY FEW-SHOTS'));
+  }
+
+  @IsTest
+  static void testAnalyzeAgentScriptCoach_MissGeneratesAndCanonicalizes() {
+    String hash = 'coach-hash-miss';
+    String raw = '```json\n' + validCoachResponse(hash) + '\n```';
+    configureCoachTest(raw, new Map<String, String>());
 
     Test.startTest();
-    Object result;
+    AgentScriptCoachResult result = PackageVisualizerCtrl.analyzeAgentScriptCoach(
+      'test-agent',
+      hash,
+      COACH_MODEL,
+      coachEvidence(hash)
+    );
+    Test.stopTest();
+
+    Assert.areEqual('GENERATED', result.status);
+    Assert.isNotNull(result.generatedAt);
+    Assert.isFalse(result.analysisJson.contains('```'));
+    Assert.isTrue(
+      result.analysisJson.contains('"auditor.read_context"'),
+      'The same action name under a second owner must retain its stable owner.name key.'
+    );
+  }
+
+  @IsTest
+  static void testAnalyzeAgentScriptCoach_CanonicalizesDifferentMemberOrders() {
+    String hash = 'coach-hash-canonical';
+    String evidence = coachEvidence(hash);
+    configureCoachTest(validCoachResponse(hash), new Map<String, String>());
+    String first = PackageVisualizerCtrl.analyzeAgentScriptCoach(
+        'test-agent',
+        hash,
+        COACH_MODEL,
+        evidence
+      )
+      .analysisJson;
+    configureCoachTest(reorderedCoachResponse(hash), new Map<String, String>());
+    String second = PackageVisualizerCtrl.analyzeAgentScriptCoach(
+        'test-agent',
+        hash,
+        COACH_MODEL,
+        evidence
+      )
+      .analysisJson;
+    Assert.areEqual(
+      first,
+      second,
+      'Canonical JSON must not depend on model member order.'
+    );
+  }
+
+  @IsTest
+  static void testAnalyzeAgentScriptCoach_HitReturnsOnlyValidatedCache() {
+    String hash = 'coach-hash-hit';
+    String valid = validCoachResponse(hash);
+    String systemPrompt = PackageVisualizerCtrl.getAgentScriptCoachSystemPrompt();
+    String evidence = coachEvidence(hash);
+    String userPrompt = PackageVisualizerCtrl.getAgentScriptCoachUserPrompt(
+      evidence
+    );
+    configureCoachTest(valid, new Map<String, String>());
+    String expectedCanonical = PackageVisualizerCtrl.analyzeAgentScriptCoach(
+        'test-agent',
+        hash,
+        COACH_MODEL,
+        evidence
+      )
+      .analysisJson;
+    String cacheKey = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      systemPrompt,
+      userPrompt,
+      hash,
+      '1'
+    );
+    Map<String, String> cache = new Map<String, String>{ cacheKey => valid };
+    configureCoachTest('{', cache);
+
+    Test.startTest();
+    AgentScriptCoachResult result = PackageVisualizerCtrl.analyzeAgentScriptCoach(
+      'test-agent',
+      hash,
+      COACH_MODEL,
+      evidence
+    );
+    Test.stopTest();
+
+    Assert.areEqual('CACHE_HIT', result.status);
+    Assert.areEqual(expectedCanonical, result.analysisJson);
+  }
+
+  @IsTest
+  static void testAnalyzeAgentScriptCoach_InvalidCacheIsRegenerated() {
+    String hash = 'coach-hash-stale-cache';
+    String evidence = coachEvidence(hash);
+    String userPrompt = PackageVisualizerCtrl.getAgentScriptCoachUserPrompt(
+      evidence
+    );
+    String cacheKey = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      PackageVisualizerCtrl.getAgentScriptCoachSystemPrompt(),
+      userPrompt,
+      hash,
+      '1'
+    );
+    Map<String, String> cache = new Map<String, String>{
+      cacheKey => '{"truncated":'
+    };
+    configureCoachTest(validCoachResponse(hash), cache);
+
+    AgentScriptCoachResult result = PackageVisualizerCtrl.analyzeAgentScriptCoach(
+      'test-agent',
+      hash,
+      COACH_MODEL,
+      evidence
+    );
+
+    Assert.areEqual(
+      'GENERATED',
+      result.status,
+      'Corrupt cache must be treated as a miss.'
+    );
+    Assert.areEqual(
+      result.analysisJson,
+      cache.get(cacheKey),
+      'Only canonical valid content may replace cache.'
+    );
+  }
+
+  @IsTest
+  static void testAnalyzeAgentScriptCoach_RejectsMalformedAndDoesNotCache() {
+    String hash = 'coach-hash-malformed';
+    String evidence = coachEvidence(hash);
+    Map<String, String> cache = new Map<String, String>();
+    configureCoachTest('{"schemaVersion":1', cache);
+
+    Test.startTest();
     Boolean threw = false;
     try {
-      result = PackageVisualizerCtrl.invokePromptAndUserModelsGenAi(
-        'AgentGenAiController',
-        'createChatGeneration',
+      PackageVisualizerCtrl.analyzeAgentScriptCoach(
+        'test-agent',
+        hash,
         COACH_MODEL,
-        COACH_USER_PROMPT,
-        COACH_SYSTEM_PROMPT
+        evidence
       );
     } catch (AuraHandledException e) {
       threw = true;
     }
     Test.stopTest();
 
-    if (!threw) {
-      Assert.areEqual(
-        COACH_RESPONSE_JSON,
-        result,
-        'Cache hit must short-circuit and return the cached value verbatim'
-      );
-    } else {
-      // Cache unallocated → fell through to Type.forName which fails for
-      // a class not present in this package. Acceptable: the coach guard
-      // and try/catch path are exercised either way.
-      Assert.isTrue(
-        true,
-        'Coach path executed; cache was unallocated so fell through to exception'
-      );
-    }
+    Assert.isTrue(threw, 'Malformed model output must be rejected.');
+    Assert.isTrue(
+      cache.isEmpty(),
+      'Malformed model output must never enter cache.'
+    );
   }
 
   @IsTest
-  static void testInvokePromptAndUserModels_CoachPath_CacheMissCallsCallable() {
-    // Use a unique prompt to guarantee a cache miss, then expect the Callable
-    // resolution to fail (AgentGenAiController is in a separate package and
-    // not present in this test context). This proves: (a) coach guard fires,
-    // (b) miss path falls through to Callable, (c) exception is wrapped.
+  static void testAnalyzeAgentScriptCoach_RejectsTruncatedAndInconsistentOutput() {
+    String hash = 'coach-hash-invalid';
+    String evidence = coachEvidence(hash);
+    String longResponse = validCoachResponse(hash)
+      .replace(
+        'A focused AgentScript with deterministic routing.',
+        'x'.repeat(22000)
+      );
+    configureCoachTest(
+      longResponse.substring(0, 21138),
+      new Map<String, String>()
+    );
+    Boolean truncatedThrew = false;
+    try {
+      PackageVisualizerCtrl.analyzeAgentScriptCoach(
+        'test-agent',
+        hash,
+        COACH_MODEL,
+        evidence
+      );
+    } catch (AuraHandledException e) {
+      truncatedThrew = true;
+    }
+
+    Map<String, Object> inconsistent = (Map<String, Object>) JSON.deserializeUntyped(
+      validCoachResponse(hash)
+    );
+    ((Map<String, Object>) inconsistent.get('scores')).put('overall', 99);
+    configureCoachTest(JSON.serialize(inconsistent), new Map<String, String>());
+    Boolean inconsistentThrew = false;
+    try {
+      PackageVisualizerCtrl.analyzeAgentScriptCoach(
+        'test-agent',
+        hash,
+        COACH_MODEL,
+        evidence
+      );
+    } catch (AuraHandledException e) {
+      inconsistentThrew = true;
+    }
+
+    Map<String, Object> unknownKey = (Map<String, Object>) JSON.deserializeUntyped(
+      validCoachResponse(hash)
+    );
+    ((Map<String, Object>) unknownKey.get('actionAssessments'))
+      .put(
+        'router.unknown_action',
+        new Map<String, Object>{
+          'inputQuality' => 'Good',
+          'outputQuality' => 'Good',
+          'suggestions' => new List<Object>()
+        }
+      );
+    configureCoachTest(JSON.serialize(unknownKey), new Map<String, String>());
+    Boolean unknownKeyThrew = false;
+    try {
+      PackageVisualizerCtrl.analyzeAgentScriptCoach(
+        'test-agent',
+        hash,
+        COACH_MODEL,
+        evidence
+      );
+    } catch (AuraHandledException e) {
+      unknownKeyThrew = true;
+    }
+
+    Assert.isTrue(
+      truncatedThrew,
+      'A 21,138-byte-like truncated response must be rejected.'
+    );
+    Assert.isTrue(
+      inconsistentThrew,
+      'An overall score that is not the category sum must be rejected.'
+    );
+    Assert.isTrue(
+      unknownKeyThrew,
+      'An unknown evidence-correlated action key must be rejected.'
+    );
+  }
+
+  @IsTest
+  static void testAnalyzeAgentScriptCoach_RejectsStringSchemaAndMalformedEvidenceMembers() {
+    String hash = 'coach-hash-types';
+    Map<String, Object> output = (Map<String, Object>) JSON.deserializeUntyped(
+      validCoachResponse(hash)
+    );
+    output.put('schemaVersion', '1');
+    configureCoachTest(JSON.serialize(output), new Map<String, String>());
+    Boolean responseThrew = false;
+    try {
+      PackageVisualizerCtrl.analyzeAgentScriptCoach(
+        'test-agent',
+        hash,
+        COACH_MODEL,
+        coachEvidence(hash)
+      );
+    } catch (AuraHandledException e) {
+      responseThrew = true;
+    }
+
+    Map<String, Object> malformedEvidence = (Map<String, Object>) JSON.deserializeUntyped(
+      coachEvidence(hash)
+    );
+    List<Object> instructions = (List<Object>) malformedEvidence.get(
+      'instructions'
+    );
+    ((Map<String, Object>) instructions[0]).put('owner', '');
+    Map<String, Object> badInstructionKind = (Map<String, Object>) JSON.deserializeUntyped(
+      coachEvidence(hash)
+    );
+    ((Map<String, Object>) ((List<Object>) badInstructionKind.get(
+        'instructions'
+      ))[2])
+      .put('kind', 'agent');
+    Map<String, Object> badRouting = (Map<String, Object>) JSON.deserializeUntyped(
+      coachEvidence(hash)
+    );
+    ((List<Object>) badRouting.get('routingEdges'))
+      .add(
+        new Map<String, Object>{
+          'name' => 'to_auditor',
+          'source' => 'router',
+          'target' => 'auditor',
+          'availableWhen' => true
+        }
+      );
+    Map<String, Object> badAction = (Map<String, Object>) JSON.deserializeUntyped(
+      coachEvidence(hash)
+    );
+    ((Map<String, Object>) ((List<Object>) badAction.get('actionFlags'))[0])
+      .put('hasInputs', 'true');
+    Map<String, Object> badVariable = (Map<String, Object>) JSON.deserializeUntyped(
+      coachEvidence(hash)
+    );
+    ((Map<String, Object>) ((List<Object>) badVariable.get('variableFlags'))[0])
+      .put('type', 1);
+
+    Assert.isTrue(
+      responseThrew,
+      'A string schemaVersion must not be accepted.'
+    );
+    Assert.isTrue(
+      evidenceRejected(hash, malformedEvidence),
+      'Instruction owner must be nonblank.'
+    );
+    Assert.isTrue(
+      evidenceRejected(hash, badInstructionKind),
+      'Instruction kind must use the exact enum.'
+    );
+    Assert.isTrue(
+      evidenceRejected(hash, badRouting),
+      'Routing edge members must be typed.'
+    );
+    Assert.isTrue(
+      evidenceRejected(hash, badAction),
+      'Action flags must use booleans.'
+    );
+    Assert.isTrue(
+      evidenceRejected(hash, badVariable),
+      'Variable members must be typed text.'
+    );
+  }
+
+  @IsTest
+  static void testAnalyzeAgentScriptCoach_RejectsContractViolations() {
+    String hash = 'coach-hash-contract';
+    Map<String, Object> hashMismatch = (Map<String, Object>) JSON.deserializeUntyped(
+      validCoachResponse(hash)
+    );
+    hashMismatch.put('scriptHash', 'wrong-hash');
+
+    Map<String, Object> missingAction = (Map<String, Object>) JSON.deserializeUntyped(
+      validCoachResponse(hash)
+    );
+    ((Map<String, Object>) missingAction.get('actionAssessments'))
+      .remove('auditor.read_context');
+
+    Map<String, Object> invalidEnum = (Map<String, Object>) JSON.deserializeUntyped(
+      validCoachResponse(hash)
+    );
+    ((Map<String, Object>) ((Map<String, Object>) invalidEnum.get(
+          'actionAssessments'
+        ))
+        .get('router.read_context'))
+      .put('inputQuality', 'Unknown');
+
+    Map<String, Object> wrongMaximum = (Map<String, Object>) JSON.deserializeUntyped(
+      validCoachResponse(hash)
+    );
+    ((Map<String, Object>) ((Map<String, Object>) wrongMaximum.get('scores'))
+        .get('safety'))
+      .put('max', 14);
+
+    Map<String, Object> outOfBounds = (Map<String, Object>) JSON.deserializeUntyped(
+      validCoachResponse(hash)
+    );
+    ((Map<String, Object>) ((Map<String, Object>) outOfBounds.get('scores'))
+        .get('safety'))
+      .put('score', 16);
+
+    Map<String, Object> unknownSubagent = (Map<String, Object>) JSON.deserializeUntyped(
+      validCoachResponse(hash)
+    );
+    ((Map<String, Object>) unknownSubagent.get('subagentSuggestions'))
+      .put('router', new List<Object>());
+
+    Map<String, Object> unknownVariable = (Map<String, Object>) JSON.deserializeUntyped(
+      validCoachResponse(hash)
+    );
+    ((Map<String, Object>) unknownVariable.get('variableConcerns'))
+      .put('unknown_variable', null);
+
+    Assert.isTrue(coachResponseRejected(hash, JSON.serialize(hashMismatch)));
+    Assert.isTrue(coachResponseRejected(hash, JSON.serialize(missingAction)));
+    Assert.isTrue(coachResponseRejected(hash, JSON.serialize(invalidEnum)));
+    Assert.isTrue(coachResponseRejected(hash, JSON.serialize(wrongMaximum)));
+    Assert.isTrue(coachResponseRejected(hash, JSON.serialize(outOfBounds)));
+    Assert.isTrue(coachResponseRejected(hash, JSON.serialize(unknownSubagent)));
+    Assert.isTrue(coachResponseRejected(hash, JSON.serialize(unknownVariable)));
+    Assert.isTrue(
+      coachResponseRejected(hash, '```\n' + validCoachResponse(hash) + '\n```')
+    );
+    Assert.isTrue(
+      coachResponseRejected(
+        hash,
+        '```json\n' + validCoachResponse(hash) + '\n```\n```'
+      )
+    );
+  }
+
+  @IsTest
+  static void testCoachCacheKey_V2InvalidatesVersionsAndInputs() {
+    String one = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      'prompt-v1',
+      coachEvidence('hash-a'),
+      'hash-a',
+      '1'
+    );
+    String changedHash = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      'prompt-v1',
+      coachEvidence('hash-b'),
+      'hash-b',
+      '1'
+    );
+    String changedPrompt = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      'prompt-v2',
+      coachEvidence('hash-a'),
+      'hash-a',
+      '1'
+    );
+    String changedSchema = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      'prompt-v1',
+      coachEvidence('hash-a'),
+      'hash-a',
+      '2'
+    );
+    Assert.isTrue(one.startsWith('v2'));
+    Assert.areNotEqual(one, changedHash);
+    Assert.areNotEqual(one, changedPrompt);
+    Assert.areNotEqual(one, changedSchema);
+  }
+
+  @IsTest
+  static void testInvokePromptAndUserModels_IsPassThroughForCoachNamedCallers() {
+    Map<String, String> cache = new Map<String, String>();
+    configureCoachTest(null, cache);
+    Package2Interface.putCachedCoachResponse(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      COACH_USER_PROMPT,
+      'cached-coach-response'
+    );
+    String cacheKey = Package2Interface.buildCoachCacheKey(
+      COACH_MODEL,
+      COACH_SYSTEM_PROMPT,
+      COACH_USER_PROMPT
+    );
+    genericModelsCallCount = 0;
+    PackageVisualizerCtrl.configureGenericModelsTestCallable(
+      new GenericModelsCallable()
+    );
+
+    Test.startTest();
+    Object result = PackageVisualizerCtrl.invokePromptAndUserModelsGenAi(
+      'AgentGenAiController',
+      'createChatGeneration',
+      COACH_MODEL,
+      COACH_USER_PROMPT,
+      COACH_SYSTEM_PROMPT
+    );
+    Test.stopTest();
+
+    Assert.areEqual('callable-result', result);
+    Assert.areEqual(
+      1,
+      genericModelsCallCount,
+      'The Callable seam must be invoked exactly once.'
+    );
+    Assert.areEqual(
+      'cached-coach-response',
+      cache.get(cacheKey),
+      'Generic bridge must not mutate Coach cache.'
+    );
+    PackageVisualizerCtrl.configureGenericModelsTestCallable(null);
+  }
+
+  @IsTest
+  static void testInvokePromptAndUserModels_CoachNamedMissCallsCallable() {
+    // Generic callers surface a clear failure when the extension Callable is
+    // unavailable in this package-only test context.
     String uniquePrompt = 'unique-' + System.currentTimeMillis();
 
     Test.startTest();
     Boolean threw = false;
+    String errorMessage;
     try {
       PackageVisualizerCtrl.invokePromptAndUserModelsGenAi(
-        'AgentGenAiController',
+        'PkgVizDefinitelyMissingModelsCallable',
         'createChatGeneration',
         COACH_MODEL,
         uniquePrompt,
@@ -2570,12 +3228,17 @@ private class PackageInterfaceTest {
       );
     } catch (AuraHandledException e) {
       threw = true;
+      errorMessage = e.getMessage();
     }
     Test.stopTest();
 
     Assert.isTrue(
       threw,
       'Cache miss with non-resolvable Callable must surface as AuraHandledException'
+    );
+    Assert.isTrue(
+      errorMessage.contains('unavailable'),
+      'A missing Models Callable must report a clear unavailable error.'
     );
   }
 
@@ -2743,6 +3406,33 @@ private class PackageInterfaceTest {
     );
     Test.stopTest();
     Assert.areEqual(0, result.size(), 'legacy path returns empty on non-200');
+    Package2Interface.useNamedCredentialOverride = null;
+  }
+
+  /**************************************************************************************
+   * @Description  The timeout overload is the strict Agentforce/package-extension
+   * transport boundary and must surface a non-200 response on every auth path.
+   **************************************************************************************/
+  @isTest
+  static void shouldThrow_WhenStrictTimeoutOverloadNon200() {
+    Package2Interface.useNamedCredentialOverride = false;
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    Test.startTest();
+    Boolean threw = false;
+    try {
+      Package2Interface.submitQuery('SELECT Id FROM Account LIMIT 1', 10000);
+    } catch (Package2Interface.ToolingCalloutException e) {
+      threw = true;
+      Assert.isTrue(
+        e.getMessage().contains('401'),
+        'The strict boundary should include the HTTP status'
+      );
+    }
+    Test.stopTest();
+    Assert.isTrue(
+      threw,
+      'The strict timeout overload must not turn Tooling failures into empty results'
+    );
     Package2Interface.useNamedCredentialOverride = null;
   }
 }

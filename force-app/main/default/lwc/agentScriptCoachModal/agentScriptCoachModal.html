@@ -2,55 +2,7 @@
   <lightning-modal-header label={scriptHeader}> </lightning-modal-header>
   <lightning-modal-body>
     <div class="slds-card">
-      <template lwc:if={displaySpinner}>
-        <div class="slds-grid slds-grid_vertical slds-grid_align-center">
-          <div class="slds-is-relative" style="height: 40px; width: 100%">
-            <lightning-spinner
-              alternative-text="Loading"
-              size="medium"
-              variant="brand"
-            ></lightning-spinner>
-          </div>
-          <p
-            class="slds-text-align_center slds-text-title_bold slds-m-top_medium"
-          >
-            {thinkingMessage}
-          </p>
-        </div>
-      </template>
-
-      <template lwc:if={displayExtensionIllustration}>
-        <div class="slds-p-around_medium">
-          <lightning-empty-state
-            title="Hmm..."
-            illustration-name="noresults:search"
-          >
-            <p slot="description">
-              Looks like you may have not installed the Agentforce dependent
-              extension managed package. Or you don't have the necessary
-              permissions or configuration to perform Agentforce related
-              functionalities. Please contact your admin for further
-              assistance...
-            </p>
-            <lightning-button
-              variant="brand"
-              label="Install Managed Package"
-              slot="cta"
-              onclick={handleExtensionInstall}
-            ></lightning-button>
-          </lightning-empty-state>
-        </div>
-      </template>
-
       <template lwc:if={displayResult}>
-        <template lwc:if={isRawFallback}>
-          <div class="slds-p-around_medium">
-            <lightning-formatted-rich-text
-              value={parsedResponse.rawResponse}
-            ></lightning-formatted-rich-text>
-          </div>
-        </template>
-
         <template lwc:if={parsedResponse.overview}>
           <div
             class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small slds-m-horizontal_medium"
@@ -64,56 +16,64 @@
               ></lightning-icon>
             </div>
             <div class="slds-media__body">
-              <p>
-                This AgentScript analysis is AI-generated and may contain
-                inaccuracies. Review all recommendations before applying changes
-              </p>
+              <ul class="slds-list_dotted slds-m-left_medium">
+                <li>
+                  This AgentScript analysis is AI-generated and may contain
+                  inaccuracies. Review all recommendations before applying
+                  changes.
+                </li>
+                <template lwc:if={isTakingLonger}>
+                  <li>Analysis is taking longer than expected.</li>
+                </template>
+              </ul>
             </div>
           </div>
           <div class="card-style slds-m-horizontal_medium">
             <section
               class="slds-card slds-border_top slds-border_right slds-border_bottom slds-border_left"
             >
-              <header class="slds-theme_shade slds-p-around_medium">
-                <div>
-                  <div
-                    class="slds-grid slds-grid_align-spread slds-p-bottom_x-small"
-                  >
-                    <span>
+              <template lwc:if={hasValidEnrichment}>
+                <header class="slds-theme_shade slds-p-around_medium">
+                  <div>
+                    <div
+                      class="slds-grid slds-grid_align-spread slds-p-bottom_x-small"
+                    >
+                      <span>
+                        <span
+                          class="slds-m-right_x-small slds-text-title_bold slds-text-title_caps"
+                          >{parsedResponse.overallScoreLabel}</span
+                        >
+                        <lightning-badge
+                          label={parsedResponse.overview.agentType}
+                          class="slds-theme_inverse"
+                        ></lightning-badge>
+                        <lightning-badge
+                          label={parsedResponse.overview.architecturePattern}
+                          class="slds-m-left_xx-small slds-theme_inverse"
+                        ></lightning-badge>
+                      </span>
+                      <span aria-hidden="true">
+                        <strong class={parsedResponse.overallScoreClass}
+                          >{parsedResponse.scores.overall}/100</strong
+                        >
+                      </span>
+                    </div>
+                    <!-- Score progress bar (SLDS standard pattern) -->
+                    <div
+                      class="slds-progress-bar slds-progress-bar_circular"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      aria-valuenow={parsedResponse.scores.overall}
+                      role="progressbar"
+                    >
                       <span
-                        class="slds-m-right_x-small slds-text-title_bold slds-text-title_caps"
-                        >{parsedResponse.overallScoreLabel}</span
-                      >
-                      <lightning-badge
-                        label={parsedResponse.overview.agentType}
-                        class="slds-theme_inverse"
-                      ></lightning-badge>
-                      <lightning-badge
-                        label={parsedResponse.overview.architecturePattern}
-                        class="slds-m-left_xx-small slds-theme_inverse"
-                      ></lightning-badge>
-                    </span>
-                    <span aria-hidden="true">
-                      <strong class={parsedResponse.overallScoreClass}
-                        >{parsedResponse.scores.overall}/100</strong
-                      >
-                    </span>
+                        class={parsedResponse.overallProgressBarClass}
+                        style={overallProgressStyle}
+                      ></span>
+                    </div>
                   </div>
-                  <!-- Score progress bar (SLDS standard pattern) -->
-                  <div
-                    class="slds-progress-bar slds-progress-bar_circular"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                    aria-valuenow={parsedResponse.scores.overall}
-                    role="progressbar"
-                  >
-                    <span
-                      class={parsedResponse.overallProgressBarClass}
-                      style={overallProgressStyle}
-                    ></span>
-                  </div>
-                </div>
-              </header>
+                </header>
+              </template>
               <lightning-card
                 title={scriptLabel}
                 icon-name="standard:agent_astro"
@@ -123,6 +83,18 @@
                 >
                   {parsedResponse.overview.summary}
                   {parsedResponse.overview.purpose}
+                  <template lwc:if={parsedResponse.overview.startAgentSource}>
+                    <lightning-accordion allow-multiple-sections-open>
+                      <lightning-accordion-section
+                        name="start-source"
+                        label="Start Agent Block"
+                      >
+                        <pre
+                          class="code-snippet slds-m-top_x-small"
+                        ><code>{parsedResponse.overview.startAgentSource}</code></pre>
+                      </lightning-accordion-section>
+                    </lightning-accordion>
+                  </template>
                 </div>
               </lightning-card>
             </section>
@@ -135,6 +107,29 @@
                 icon-name="standard:visualization"
                 value="scores"
               >
+                <template lwc:if={isAiLoading}>
+                  <div
+                    class="tab-loading slds-is-relative"
+                    data-loading-section="scores"
+                    role="status"
+                  >
+                    <lightning-spinner
+                      alternative-text="Generating score insights"
+                      variant="brand"
+                      size="medium"
+                    ></lightning-spinner>
+                  </div>
+                </template>
+                <template lwc:elseif={aiError}>
+                  <div class="slds-p-around_small">
+                    <lightning-empty-state
+                      title="AI insights unavailable"
+                      illustration-name="error:connectionissue"
+                    >
+                      <p slot="description">{aiError}</p>
+                    </lightning-empty-state>
+                  </div>
+                </template>
                 <template lwc:if={hasScores}>
                   <template for:each={scoreBreakdown} for:item="category">
                     <div key={category.key} class="slds-m-bottom_small">
@@ -168,16 +163,18 @@
                   </template>
                 </template>
                 <template lwc:else>
-                  <div class="slds-p-around_medium">
-                    <lightning-empty-state
-                      title="No Scores Available"
-                      illustration-name="success:new"
-                    >
-                      <p slot="description">
-                        No score data is available for this analysis yet.
-                      </p>
-                    </lightning-empty-state>
-                  </div>
+                  <template lwc:if={hasValidEnrichment}>
+                    <div class="slds-p-around_medium">
+                      <lightning-empty-state
+                        title="No Scores Available"
+                        illustration-name="success:new"
+                      >
+                        <p slot="description">
+                          No score data is available for this analysis yet.
+                        </p>
+                      </lightning-empty-state>
+                    </div>
+                  </template>
                 </template>
               </lightning-tab>
               <lightning-tab
@@ -185,6 +182,29 @@
                 icon-name="standard:topic2"
                 value="subagents"
               >
+                <template lwc:if={isAiLoading}>
+                  <div
+                    class="tab-loading slds-is-relative"
+                    data-loading-section="subagents"
+                    role="status"
+                  >
+                    <lightning-spinner
+                      alternative-text="Generating subagent insights"
+                      variant="brand"
+                      size="medium"
+                    ></lightning-spinner>
+                  </div>
+                </template>
+                <template lwc:elseif={aiError}>
+                  <div class="slds-p-around_small">
+                    <lightning-empty-state
+                      title="AI insights unavailable"
+                      illustration-name="error:connectionissue"
+                    >
+                      <p slot="description">{aiError}</p>
+                    </lightning-empty-state>
+                  </div>
+                </template>
                 <template lwc:if={hasSubagents}>
                   <template
                     for:each={parsedResponse.subagents}
@@ -275,6 +295,29 @@
                 icon-name="standard:apex_plugin"
                 value="actions"
               >
+                <template lwc:if={isAiLoading}>
+                  <div
+                    class="tab-loading slds-is-relative"
+                    data-loading-section="actions"
+                    role="status"
+                  >
+                    <lightning-spinner
+                      alternative-text="Generating action insights"
+                      variant="brand"
+                      size="medium"
+                    ></lightning-spinner>
+                  </div>
+                </template>
+                <template lwc:elseif={aiError}>
+                  <div class="slds-p-around_small">
+                    <lightning-empty-state
+                      title="AI insights unavailable"
+                      illustration-name="error:connectionissue"
+                    >
+                      <p slot="description">{aiError}</p>
+                    </lightning-empty-state>
+                  </div>
+                </template>
                 <template lwc:if={hasActions}>
                   <div
                     class="slds-border_bottom slds-border_left slds-border_right slds-border_top slds-box slds-box_xx-small slds-p-around_medium"
@@ -314,26 +357,34 @@
                                   class="slds-theme_success"
                                 ></lightning-badge>
                               </template>
-                              <span slot="actions" class="slds-m-left_x-small">
+                              <template lwc:if={hasValidEnrichment}>
                                 <span
-                                  class="slds-text-body_small slds-m-right_xx-small"
-                                  >Input:
+                                  slot="actions"
+                                  class="slds-m-left_x-small"
+                                >
+                                  <span
+                                    class="slds-text-body_small slds-m-right_xx-small"
+                                    >Input:
+                                  </span>
+                                  <lightning-badge
+                                    label={action.inputQuality}
+                                    class={action.inputQualityClass}
+                                  ></lightning-badge>
                                 </span>
-                                <lightning-badge
-                                  label={action.inputQuality}
-                                  class={action.inputQualityClass}
-                                ></lightning-badge>
-                              </span>
-                              <span slot="actions" class="slds-m-left_x-small">
                                 <span
-                                  class="slds-text-body_small slds-m-right_xx-small"
-                                  >Output:
+                                  slot="actions"
+                                  class="slds-m-left_x-small"
+                                >
+                                  <span
+                                    class="slds-text-body_small slds-m-right_xx-small"
+                                    >Output:
+                                  </span>
+                                  <lightning-badge
+                                    label={action.outputQuality}
+                                    class={action.outputQualityClass}
+                                  ></lightning-badge>
                                 </span>
-                                <lightning-badge
-                                  label={action.outputQuality}
-                                  class={action.outputQualityClass}
-                                ></lightning-badge>
-                              </span>
+                              </template>
                               <template lwc:if={action.hasVerification}>
                                 <span
                                   slot="actions"
@@ -415,6 +466,29 @@
                 icon-name="standard:sub_metric"
                 value="improvements"
               >
+                <template lwc:if={isAiLoading}>
+                  <div
+                    class="tab-loading slds-is-relative"
+                    data-loading-section="improvements"
+                    role="status"
+                  >
+                    <lightning-spinner
+                      alternative-text="Generating improvement insights"
+                      variant="brand"
+                      size="medium"
+                    ></lightning-spinner>
+                  </div>
+                </template>
+                <template lwc:elseif={aiError}>
+                  <div class="slds-p-around_small">
+                    <lightning-empty-state
+                      title="AI insights unavailable"
+                      illustration-name="error:connectionissue"
+                    >
+                      <p slot="description">{aiError}</p>
+                    </lightning-empty-state>
+                  </div>
+                </template>
                 <template lwc:if={hasImprovements}>
                   <template
                     for:each={parsedResponse.improvements}
@@ -453,17 +527,19 @@
                   </template>
                 </template>
                 <template lwc:else>
-                  <div class="slds-p-around_medium">
-                    <lightning-empty-state
-                      title="No Improvements Suggested"
-                      illustration-name="success:new"
-                    >
-                      <p slot="description">
-                        No improvement suggestions are available for this
-                        AgentScript.
-                      </p>
-                    </lightning-empty-state>
-                  </div>
+                  <template lwc:if={hasValidEnrichment}>
+                    <div class="slds-p-around_medium">
+                      <lightning-empty-state
+                        title="No Improvements Suggested"
+                        illustration-name="success:new"
+                      >
+                        <p slot="description">
+                          No improvement suggestions are available for this
+                          AgentScript.
+                        </p>
+                      </lightning-empty-state>
+                    </div>
+                  </template>
                 </template>
               </lightning-tab>
               <lightning-tab
@@ -471,6 +547,29 @@
                 icon-name="standard:variable"
                 value="variables"
               >
+                <template lwc:if={isAiLoading}>
+                  <div
+                    class="tab-loading slds-is-relative"
+                    data-loading-section="variables"
+                    role="status"
+                  >
+                    <lightning-spinner
+                      alternative-text="Generating variable insights"
+                      variant="brand"
+                      size="medium"
+                    ></lightning-spinner>
+                  </div>
+                </template>
+                <template lwc:elseif={aiError}>
+                  <div class="slds-p-around_small">
+                    <lightning-empty-state
+                      title="AI insights unavailable"
+                      illustration-name="error:connectionissue"
+                    >
+                      <p slot="description">{aiError}</p>
+                    </lightning-empty-state>
+                  </div>
+                </template>
                 <template lwc:if={hasVariables}>
                   <lightning-datatable
                     key-field="key"
@@ -499,6 +598,29 @@
                 icon-name="custom:custom91"
                 value="safety"
               >
+                <template lwc:if={isAiLoading}>
+                  <div
+                    class="tab-loading slds-is-relative"
+                    data-loading-section="safety"
+                    role="status"
+                  >
+                    <lightning-spinner
+                      alternative-text="Generating safety insights"
+                      variant="brand"
+                      size="medium"
+                    ></lightning-spinner>
+                  </div>
+                </template>
+                <template lwc:elseif={aiError}>
+                  <div class="slds-p-around_small">
+                    <lightning-empty-state
+                      title="AI insights unavailable"
+                      illustration-name="error:connectionissue"
+                    >
+                      <p slot="description">{aiError}</p>
+                    </lightning-empty-state>
+                  </div>
+                </template>
                 <template lwc:if={hasSafetyFindings}>
                   <template for:each={safetyFindings} for:item="finding">
                     <div
@@ -525,17 +647,19 @@
                   </template>
                 </template>
                 <template lwc:else>
-                  <div class="slds-p-around_medium">
-                    <lightning-empty-state
-                      title="No Safety Findings"
-                      illustration-name="success:new"
-                    >
-                      <p slot="description">
-                        No safety findings were detected. This agent passes all
-                        seven safety subcategories.
-                      </p>
-                    </lightning-empty-state>
-                  </div>
+                  <template lwc:if={hasValidEnrichment}>
+                    <div class="slds-p-around_medium">
+                      <lightning-empty-state
+                        title="No Safety Findings"
+                        illustration-name="success:new"
+                      >
+                        <p slot="description">
+                          No safety findings were detected. This agent passes
+                          all seven safety subcategories.
+                        </p>
+                      </lightning-empty-state>
+                    </div>
+                  </template>
                 </template>
               </lightning-tab>
             </lightning-tabset>
@@ -550,6 +674,15 @@
       onclick={handleCancel}
       class="slds-m-right_x-small"
     ></lightning-button>
+    <template lwc:if={aiError}>
+      <lightning-button
+        label="Retry"
+        variant="brand"
+        onclick={handleRetry}
+        disabled={isAiLoading}
+        class="slds-m-right_x-small"
+      ></lightning-button>
+    </template>
     <template lwc:if={canCopyMarkdown}>
       <lightning-button
         label="Copy as Markdown"
@@ -559,15 +692,12 @@
         class="slds-m-right_x-small"
       ></lightning-button>
     </template>
-    <lightning-button-group>
-      <lightning-button
-        variant="brand"
-        label="Re-Analyze"
-        icon-name="utility:regenerate"
-        icon-position="right"
-        onclick={handleReanalyze}
-        disabled={displaySpinner}
-      ></lightning-button>
-    </lightning-button-group>
+    <c-agentforce-conversation-actions
+      display-mode="contextAction"
+      utterance={publicChatUtterance}
+      variant="brand"
+      alternative-text="Chat with Agentforce"
+      onconversationopen={handleCancel}
+    ></c-agentforce-conversation-actions>
   </lightning-modal-footer>
 </template>

@@ -211,70 +211,18 @@
               </template>
               <template lwc:elseif={error}>
                 <template if:true={error}>
-                  <div
-                    class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-around_medium"
-                    role="status"
-                  >
-                    <div class="slds-media__figure">
-                      <lightning-icon
-                        size="small"
-                        icon-name="utility:info"
-                        alternative-text="info"
-                        title="info"
-                        variant="inverse"
-                      ></lightning-icon>
-                    </div>
-                    <div class="slds-media__body">
-                      <div>
-                        Component Requirements
-                        <ol class="slds-list_ordered">
-                          <li>
-                            Enable Agentforce in
-                            <a
-                              href="/lightning/setup/EinsteinGPTSetup/home"
-                              target="_blank"
-                              >Einstein Setup</a
-                            >
-                            and
-                            <a
-                              href="/lightning/setup/EinsteinCopilot/home"
-                              target="_blank"
-                              >Agent Studio</a
-                            >
-                          </li>
-                          <li>
-                            Install Agentforce Package Visualizer + ISV Tooling
-                            Extension.
-                            <a
-                              href="https://salesforce.quip.com/f3SWA340YbFH"
-                              target="_blank"
-                              >Learn More</a
-                            >
-                          </li>
-                        </ol>
-                      </div>
-                    </div>
-                  </div>
                   <div class="slds-p-horizontal_medium">
-                    <lightning-empty-state
-                      title="Component not available..."
-                      illustration-name="success:new"
-                    >
-                      <p slot="description">
-                        Looks like you may have not installed the Agentforce
-                        dependent extension managed package. Or you don't have
-                        the necessary permissions or configuration to perform
-                        Agentforce related functionalities. Please contact your
-                        admin for further assistance...
-                      </p>
-                      <lightning-button
-                        variant="brand"
-                        label="Install Managed Package"
-                        slot="cta"
-                        onclick={handleExtensionInstall}
+                    <c-agentforce-extension-install-prompt auto-load>
+                      <lightning-empty-state
+                        title="Suggestion unavailable"
+                        illustration-name="success:new"
                       >
-                      </lightning-button>
-                    </lightning-empty-state>
+                        <p slot="description">
+                          The scratch-definition suggestion could not be
+                          generated. Review the error and try again.
+                        </p>
+                      </lightning-empty-state>
+                    </c-agentforce-extension-install-prompt>
                   </div>
                 </template>
               </template>

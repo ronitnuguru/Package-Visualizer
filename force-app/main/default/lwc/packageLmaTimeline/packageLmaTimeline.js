@@ -61,7 +61,6 @@ export default class PackageLmaTimeline extends NavigationMixin(
   displayAgentforceSpinner = false;
   aiResponse;
   displayExtensionIllustration = false;
-  currentPkgVersionId = "04tRh000001bOxFIAU";
   modelsValue = "sfdc_ai__DefaultBedrockAnthropicClaude46Sonnet";
 
   expirationToggle;
@@ -434,13 +433,6 @@ export default class PackageLmaTimeline extends NavigationMixin(
       default:
         return "";
     }
-  }
-
-  handleExtensionInstall() {
-    window.open(
-      `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`,
-      "_blank"
-    );
   }
 
   extractIdFromUrl(url) {

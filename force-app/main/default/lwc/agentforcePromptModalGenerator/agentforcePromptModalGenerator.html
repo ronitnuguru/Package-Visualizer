@@ -1,39 +1,44 @@
 <template>
-    <lightning-modal-header class="modal-window" label={label}></lightning-modal-header>
-    <lightning-modal-body>
-      <div class="slds-var-m-around_small slds-var-p-bottom_small slds-card_boundary card-style">
-        <lightning-card>
-            <h3 slot="title" class="slds-truncate">
-                <lightning-icon
-                    icon-name="standard:agent_astro"
-                    size="medium"
-                    class="slds-m-right_small"
-                ></lightning-icon>
-                Agentforce Assist
-            </h3>
-            <div class="slds-card__body slds-card__body_inner">
-                <div
-                    class="template-prompt-chips"
-                    role="group"
-                    aria-label="Package GenAI prompt template starters"
-                >
-                    <template for:each={samplePromptTemplates} for:item="tpl">
-                        <lightning-button
-                            key={tpl.id}
-                            variant="neutral"
-                            label={tpl.label}
-                            icon-name={tpl.iconName}
-                            title={tpl.description}
-                            data-template-id={tpl.id}
-                            onclick={handleSampleTemplateClick}
-                        ></lightning-button>
-                    </template>
-                </div>
-            </div>
-        </lightning-card>
-      </div>
-    </lightning-modal-body>
-    <!--
+  <lightning-modal-header
+    class="modal-window"
+    label={label}
+  ></lightning-modal-header>
+  <lightning-modal-body>
+    <div
+      class="slds-var-m-around_small slds-var-p-bottom_small slds-card_boundary card-style"
+    >
+      <lightning-card>
+        <h3 slot="title" class="slds-truncate">
+          <lightning-icon
+            icon-name="standard:agent_astro"
+            size="medium"
+            class="slds-m-right_small"
+          ></lightning-icon>
+          Agentforce Assist
+        </h3>
+        <div class="slds-card__body slds-card__body_inner">
+          <div
+            class="template-prompt-chips"
+            role="group"
+            aria-label="Package GenAI prompt template starters"
+          >
+            <template for:each={samplePromptTemplates} for:item="tpl">
+              <lightning-button
+                key={tpl.id}
+                variant="neutral"
+                label={tpl.label}
+                icon-name={tpl.iconName}
+                title={tpl.description}
+                data-template-id={tpl.id}
+                onclick={handleSampleTemplateClick}
+              ></lightning-button>
+            </template>
+          </div>
+        </div>
+      </lightning-card>
+    </div>
+  </lightning-modal-body>
+  <!--
     <lightning-modal-body>
       <template if:true={displayExtensionIllustration}>
         <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-around_medium" role="status">
@@ -60,15 +65,13 @@
                 </div>
             </div>
         </div>
-        <lightning-empty-state title="Component not available..." illustration-name="noresults:unknown">
-            <p slot="description">Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance...</p>
-            <lightning-button-group slot="cta">
-              <lightning-button variant="neutral" label="Back" onclick={handleIllustrationClear}>
+        <c-agentforce-extension-install-prompt auto-load>
+          <lightning-empty-state title="Response unavailable" illustration-name="noresults:unknown">
+              <p slot="description">The AI response could not be generated. Review the error notification and try again.</p>
+              <lightning-button variant="neutral" label="Back" slot="cta" onclick={handleIllustrationClear}>
               </lightning-button>
-              <lightning-button variant="brand" label="Install Managed Package" onclick={handleExtensionInstall}>
-              </lightning-button>
-            </lightning-button-group>
-        </lightning-empty-state>
+          </lightning-empty-state>
+        </c-agentforce-extension-install-prompt>
       </template>
       <template if:false={displayExtensionIllustration}>
         <template if:true={displayModels}>
@@ -181,36 +184,61 @@
       </template>
     </lightning-modal-body>
     -->
-    <template if:false={displayEditPrompt}>
-      <lightning-modal-footer>
-          <lightning-button
-              label="Cancel"
-              onclick={handleCancel}
-              class="slds-m-right_x-small"
+  <template if:false={displayEditPrompt}>
+    <lightning-modal-footer>
+      <lightning-button
+        label="Cancel"
+        onclick={handleCancel}
+        class="slds-m-right_x-small"
+      >
+      </lightning-button>
+      <lightning-button-group>
+        <lightning-button
+          variant="brand"
+          label="Ask Again"
+          icon-name="utility:sparkles"
+          icon-position="right"
+          onclick={handleAskAgain}
+          disabled={enableAskAgain}
+        ></lightning-button>
+        <template lwc:if={displayResult}>
+          <lightning-button-menu
+            alternative-text="Show menu"
+            menu-alignment="auto"
+            variant="border-filled"
+            onselect={handleAgentPromptMenu}
           >
-          </lightning-button>
-          <lightning-button-group>
-            <lightning-button
-              variant="brand"
-              label="Ask Again"
-              icon-name="utility:sparkles"
-              icon-position="right"
-              onclick={handleAskAgain}
-              disabled={enableAskAgain}
-            ></lightning-button>
-            <template lwc:if={displayResult}>
-              <lightning-button-menu alternative-text="Show menu" menu-alignment="auto" variant="border-filled" onselect={handleAgentPromptMenu}>
-                <lightning-menu-item value="switchModel" label="Switch Model" icon-name="utility:replace"></lightning-menu-item>
-                <lightning-menu-item value="editPrompt" label="Edit Prompt" icon-name="utility:prompt_edit"></lightning-menu-item>
-              </lightning-button-menu>
-            </template>
-          </lightning-button-group>
-      </lightning-modal-footer>
-    </template>
-    <template if:true={displayEditPrompt}>
-      <lightning-modal-footer>
-        <lightning-button label="Back" onclick={handleBack} class="slds-m-left_x-small"></lightning-button>
-        <lightning-button variant="brand" icon-position="right" icon-name="utility:sparkles" label="Generate" onclick={handleAskAgain} class="slds-m-left_x-small" disabled={enableGenerate}></lightning-button>
-      </lightning-modal-footer>
-    </template>
+            <lightning-menu-item
+              value="switchModel"
+              label="Switch Model"
+              icon-name="utility:replace"
+            ></lightning-menu-item>
+            <lightning-menu-item
+              value="editPrompt"
+              label="Edit Prompt"
+              icon-name="utility:prompt_edit"
+            ></lightning-menu-item>
+          </lightning-button-menu>
+        </template>
+      </lightning-button-group>
+    </lightning-modal-footer>
+  </template>
+  <template if:true={displayEditPrompt}>
+    <lightning-modal-footer>
+      <lightning-button
+        label="Back"
+        onclick={handleBack}
+        class="slds-m-left_x-small"
+      ></lightning-button>
+      <lightning-button
+        variant="brand"
+        icon-position="right"
+        icon-name="utility:sparkles"
+        label="Generate"
+        onclick={handleAskAgain}
+        class="slds-m-left_x-small"
+        disabled={enableGenerate}
+      ></lightning-button>
+    </lightning-modal-footer>
+  </template>
 </template>

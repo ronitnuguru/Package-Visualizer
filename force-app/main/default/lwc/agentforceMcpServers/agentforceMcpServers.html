@@ -148,21 +148,28 @@
   </template>
   <template lwc:else>
     <div class="slds-p-around_medium">
-      <lightning-empty-state title="Hmm…" illustration-name="success:new">
-        <p slot="description">
-          Looks like we do not have any associated MCP servers yet...
-        </p>
-        <lightning-button-group slot="cta">
-          <lightning-button label="Learn More" onclick={handleLearnMore}>
-          </lightning-button>
+      <c-agentforce-extension-install-prompt auto-load>
+        <lightning-empty-state
+          title="No MCP servers"
+          illustration-name="success:new"
+        >
+          <p slot="description">
+            <template lwc:if={mcpError}>
+              Package Visualizer could not load MCP servers. Review the error
+              notification and verify Tooling API access.
+            </template>
+            <template lwc:else>
+              No MCP servers are configured for the installed Agentforce
+              extension.
+            </template>
+          </p>
           <lightning-button
-            variant="brand"
-            label="Install Managed Package"
-            onclick={handleExtensionInstall}
-          >
-          </lightning-button>
-        </lightning-button-group>
-      </lightning-empty-state>
+            slot="cta"
+            label="Learn More"
+            onclick={handleLearnMore}
+          ></lightning-button>
+        </lightning-empty-state>
+      </c-agentforce-extension-install-prompt>
     </div>
   </template>
 </template>

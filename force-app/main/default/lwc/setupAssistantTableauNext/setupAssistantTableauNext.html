@@ -1,0 +1,91 @@
+<template>
+  <lightning-tabset variant="scoped">
+    <lightning-tab label="Manageability Rules" icon-name="standard:table">
+      <div
+        class="slds-progress slds-progress_vertical slds-progress_success slds-p-around_x-small"
+      >
+        <ol class="slds-progress__list slds-progress__list-bordered">
+          <li class="slds-progress__item">
+            <span
+              class="slds-icon_container slds-icon-utility-info_alt slds-progress__marker"
+            >
+              <lightning-icon
+                icon-name="utility:info_alt"
+                variant="info"
+                size="x-small"
+                class="success-icon-style"
+              ></lightning-icon>
+            </span>
+            <div
+              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+            >
+              <div class="slds-size_3-of-4">
+                Review the workflow for developing and packaging with Tableau
+                Next scratch orgs
+              </div>
+              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                <lightning-button-icon
+                  data-id="scratch-org-workflow"
+                  icon-name="utility:help_doc_ext"
+                  variant="brand"
+                  alternative-text="Open Tableau Next scratch org workflow"
+                  title="Open Tableau Next scratch org workflow"
+                  onclick={navigateToScratchOrgWorkflow}
+                ></lightning-button-icon>
+              </div>
+            </div>
+          </li>
+          <li class="slds-progress__item">
+            <span
+              class="slds-icon_container slds-icon-utility-info_alt slds-progress__marker"
+            >
+              <lightning-icon
+                icon-name="utility:info_alt"
+                variant="info"
+                size="x-small"
+                class="success-icon-style"
+              ></lightning-icon>
+            </span>
+            <div
+              class="slds-progress__item_content slds-grid slds-grid_align-spread"
+            >
+              <div class="slds-size_3-of-4">
+                Review how to use Salesforce CLI to deploy Tableau Next assets
+                between orgs
+              </div>
+              <div class="slds-grid slds-grid_align-end slds-size_1-of-4">
+                <lightning-button-icon
+                  data-id="deploy-assets-guide"
+                  icon-name="utility:help_doc_ext"
+                  variant="brand"
+                  alternative-text="Open Tableau Next CLI deployment guide"
+                  title="Open Tableau Next CLI deployment guide"
+                  onclick={navigateToDeployAssetsGuide}
+                ></lightning-button-icon>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </lightning-tab>
+    <lightning-tab label="Developer Environments" icon-name="standard:apex">
+      <lightning-tabset variant="scoped">
+        <lightning-tab label="Scratch Orgs" icon-name="standard:default">
+          <div
+            class="slds-border_top slds-border_right slds-border_bottom slds-border_left"
+          >
+            <c-scratch-def-file-build-card
+              template-key="tableauNext"
+              auto-confirm-settings={autoConfirmSettings}
+            ></c-scratch-def-file-build-card>
+          </div>
+        </lightning-tab>
+        <lightning-tab
+          data-id="developer-demo-orgs"
+          label="Developer &amp; Demo Orgs"
+          icon-name="standard:default"
+        ></lightning-tab>
+      </lightning-tabset>
+    </lightning-tab>
+  </lightning-tabset>
+</template>

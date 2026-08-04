@@ -21,8 +21,6 @@ export default class SignUpRequestModal extends NavigationMixin(
   aiSuggestion;
   aiResponse;
 
-  currentPkgVersionId = "04tRh000001bOxFIAU";
-
   get isAiSuggestionEmpty() {
     return !this.aiSuggestion;
   }
@@ -244,12 +242,5 @@ export default class SignUpRequestModal extends NavigationMixin(
     this.displayAgentforceSpinner = true;
     this.generateAiResponse(true);
     this.handlePopoverClose();
-  }
-
-  handleExtensionInstall() {
-    window.open(
-      `/packaging/installPackage.apexp?p0=${this.currentPkgVersionId}`,
-      "_blank"
-    );
   }
 }

@@ -134,7 +134,7 @@ export default class PackageVersionCreateRequestsView extends LightningElement {
       { label: "Calculate Code Coverage", value: "CalculateCodeCoverage" },
       { label: "Skip Validation", value: "SkipValidation" },
       {
-        label: "Calc Transitive Dependencies",
+        label: "Calculate Transitive Dependencies",
         value: "CalcTransitiveDependencies"
       },
       { label: "Async Validation", value: "AsyncValidation" },

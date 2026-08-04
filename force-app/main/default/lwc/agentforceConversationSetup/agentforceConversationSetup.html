@@ -1,0 +1,153 @@
+<template>
+  <div
+    class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small slds-var-m-top_small"
+  >
+    <lightning-card>
+      <h3 slot="title" class="slds-truncate">
+        <lightning-icon
+          icon-name="standard:agent_astro"
+          alternative-text=""
+          size="medium"
+          class="slds-m-right_small"
+        ></lightning-icon>
+        Agentforce Setup
+      </h3>
+      <lightning-button-group slot="actions">
+        <template lwc:if={showEditAction}>
+          <lightning-button-icon
+            data-id="edit-agent"
+            icon-name="utility:edit"
+            disabled={editDisabled}
+            onclick={handleEdit}
+          ></lightning-button-icon>
+        </template>
+        <lightning-button-icon
+          data-id="toggle-agentforce"
+          icon-name={disclosureIcon}
+          tooltip={disclosureAlternativeText}
+          disabled={disclosureDisabled}
+          aria-expanded={disclosureAriaExpanded}
+          aria-controls="agentexchange-showcase"
+          onclick={handleDisclosureToggle}
+        ></lightning-button-icon>
+      </lightning-button-group>
+      <div
+        id="agentforce-setup-body"
+        data-id="agentforce-setup-body"
+        class="slds-card__body slds-card__body_inner slds-is-relative"
+      >
+        <template lwc:if={isLoading}>
+          <lightning-spinner
+            alternative-text="Loading Agentforce configuration"
+            size="medium"
+            variant="brand"
+          ></lightning-spinner>
+        </template>
+        <div
+          class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-var-m-bottom_x-small"
+          role="status"
+        >
+          <div class="slds-media__figure">
+            <lightning-icon
+              icon-name="utility:info"
+              alternative-text="Agentforce configuration status"
+              size="small"
+              variant="inverse"
+            ></lightning-icon>
+          </div>
+          <div class="slds-media__body">
+            <lightning-badge
+              data-id="configuration-state"
+              label={configuration.state}
+              class="slds-theme_inverse"
+            ></lightning-badge>
+            <lightning-formatted-text
+              data-id="configuration-message"
+              class="slds-var-m-left_x-small"
+              value={configuration.message}
+            ></lightning-formatted-text>
+          </div>
+        </div>
+        <div
+          data-id="agent-selection-row"
+          class="slds-grid slds-wrap slds-gutters slds-grid_vertical-align-end"
+        >
+          <div
+            data-id="agent-selection-column"
+            class="slds-col slds-size_10-of-12 slds-large-size_2-of-3"
+          >
+            <lightning-combobox
+              data-id="agent-select"
+              name="employeeAgent"
+              label="Active Employee Agent"
+              value={selectedBotId}
+              options={agentOptions}
+              disabled={agentSelectionDisabled}
+              onchange={handleAgentChange}
+            ></lightning-combobox>
+            <template lwc:if={hasNoAgents}>
+              <p class="slds-var-m-top_x-small" role="status">
+                No compatible active Employee Agents are available.
+              </p>
+            </template>
+          </div>
+          <template lwc:if={hasSelectedBot}>
+            <div
+              data-id="agent-action-column"
+              class="slds-col slds-size_2-of-12 slds-large-size_1-of-3"
+            >
+              <div class="slds-grid slds-grid_vertical-align-center">
+                <c-agentforce-conversation-actions
+                  display-mode="setupTest"
+                  bot-id={selectedBotId}
+                ></c-agentforce-conversation-actions>
+                <lightning-helptext
+                  class="slds-var-m-left_x-small"
+                  content="Intended users must also have Salesforce access to the selected Employee Agent. The test opens the native desktop Agentforce panel; confirm its response there."
+                ></lightning-helptext>
+              </div>
+            </div>
+          </template>
+        </div>
+        <template lwc:if={isContentExpanded}>
+          <div
+            class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-var-m-top_small"
+          >
+            <c-in-app-guidance-card
+              id="agentexchange-showcase"
+              data-id="agentexchange-showcase"
+              extension-status={extensionStatus}
+            ></c-in-app-guidance-card>
+          </div>
+        </template>
+      </div>
+      <template lwc:if={isEditing}>
+        <div
+          slot="footer"
+          class="slds-grid slds-grid_align-center slds-grid_vertical-align-center"
+        >
+          <lightning-button-group data-id="footer-actions">
+            <lightning-button
+              data-id="clear-agent"
+              label="Clear"
+              disabled={clearDisabled}
+              onclick={handleClear}
+            ></lightning-button>
+            <lightning-button
+              data-id="cancel-agent"
+              label="Cancel"
+              disabled={isSaving}
+              onclick={handleCancel}
+            ></lightning-button>
+            <lightning-button
+              data-id="save-agent"
+              label="Save"
+              disabled={saveDisabled}
+              onclick={handleSave}
+            ></lightning-button>
+          </lightning-button-group>
+        </div>
+      </template>
+    </lightning-card>
+  </div>
+</template>

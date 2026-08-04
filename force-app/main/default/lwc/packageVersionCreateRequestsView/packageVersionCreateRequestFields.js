@@ -66,7 +66,7 @@ export default {
     CalcTransitiveDependencies: {
       type: "boolean",
       fieldName: "CalcTransitiveDependencies",
-      label: "Calc Transitive Dependencies",
+      label: "Calculate Transitive Dependencies",
       sortable: true
     },
     AsyncValidation: {

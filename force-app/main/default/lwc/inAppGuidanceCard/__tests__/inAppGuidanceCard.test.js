@@ -1,0 +1,187 @@
+import { createElement } from "lwc";
+import { mockNavigate } from "lightning/navigation";
+import InAppGuidanceCard from "c/inAppGuidanceCard";
+import AgentScriptCoachModal from "c/agentScriptCoachModal";
+import getExtensionStatus from "@salesforce/apex/AgentforceExtensionStatusController.getStatus";
+
+jest.mock(
+  "@salesforce/apex/AgentforceExtensionStatusController.getStatus",
+  () => ({ default: jest.fn() }),
+  { virtual: true }
+);
+
+const mockOpenAgentScriptCoachModal = AgentScriptCoachModal.open;
+
+const flushPromises = async () => {
+  await Promise.resolve();
+  await Promise.resolve();
+  await Promise.resolve();
+  await Promise.resolve();
+};
+
+const EXTENSION_STATUS = {
+  state: "READY",
+  message: "The extension is installed at version 1.7.0-1.",
+  configuredSubscriberPackageId: "033000000000001AAA",
+  configuredSubscriberPackageVersionId: "04t000000000001AAA",
+  installedSubscriberPackageId: "033000000000001AAA",
+  installedSubscriberPackageVersionId: "04t000000000001AAA",
+  targetVersionLabel: "1.7.0-1",
+  directInstallUrl: "/packaging/installPackage.apexp?p0=04t000000000001AAA",
+  extensionLabel: "Package Visualizer Agentforce Extension",
+  description: "Adds optional Agentforce package intelligence.",
+  iconName: "standard:agent_astro",
+  permissionSetLabel: "Package_Visualizer_Agentforce_Extension_Permissions",
+  namespacePrefix: "pkgviz"
+};
+
+function createCard(status) {
+  const element = createElement("c-in-app-guidance-card", {
+    is: InAppGuidanceCard
+  });
+  if (status) {
+    element.extensionStatus = status;
+  }
+  document.body.appendChild(element);
+  return element;
+}
+
+function findButton(element, label) {
+  return Array.from(
+    element.shadowRoot.querySelectorAll("lightning-button")
+  ).find((button) => button.label === label);
+}
+
+describe("c-in-app-guidance-card package installation", () => {
+  beforeEach(() => {
+    getExtensionStatus.mockResolvedValue({ ...EXTENSION_STATUS });
+  });
+
+  afterEach(() => {
+    while (document.body.firstChild) {
+      document.body.removeChild(document.body.firstChild);
+    }
+    jest.clearAllMocks();
+  });
+
+  it("loads registry-managed status when used standalone", async () => {
+    const element = createCard();
+    await flushPromises();
+
+    expect(getExtensionStatus).toHaveBeenCalledTimes(1);
+    const installedButton = findButton(element, "Installed");
+    expect(installedButton).not.toBeNull();
+    expect(installedButton.disabled).toBe(true);
+    expect(
+      element.shadowRoot.querySelector('[data-id="extension-description"]')
+        .textContent
+    ).toBe(EXTENSION_STATUS.description);
+    expect(
+      element.shadowRoot.querySelector('[data-id="extension-icon"]').iconName
+    ).toBe(EXTENSION_STATUS.iconName);
+  });
+
+  it("uses injected status without loading it again and navigates to its install URL", async () => {
+    const status = {
+      ...EXTENSION_STATUS,
+      state: "NOT_INSTALLED",
+      message: "Install the extension.",
+      installedSubscriberPackageId: null,
+      installedSubscriberPackageVersionId: null
+    };
+    const element = createCard(status);
+    await flushPromises();
+
+    expect(getExtensionStatus).not.toHaveBeenCalled();
+    findButton(element, "Install").click();
+    expect(mockNavigate).toHaveBeenCalledWith({
+      type: "standard__webPage",
+      attributes: { url: status.directInstallUrl },
+      state: { target: "_blank" }
+    });
+  });
+
+  it("offers Upgrade when the registry target differs from the installed version", async () => {
+    const element = createCard({
+      ...EXTENSION_STATUS,
+      state: "UPDATE_REQUIRED",
+      message: "Update the extension to version 1.7.0-1.",
+      installedSubscriberPackageVersionId: "04t000000000002AAA"
+    });
+    await flushPromises();
+
+    expect(findButton(element, "Upgrade")).not.toBeNull();
+    expect(findButton(element, "Install")).toBeUndefined();
+  });
+
+  it.each(["MISCONFIGURED", "UNAVAILABLE"])(
+    "shows safe %s guidance without an install action",
+    async (state) => {
+      const message = "Package Visualizer could not verify the extension.";
+      const element = createCard({ ...EXTENSION_STATUS, state, message });
+      await flushPromises();
+
+      expect(findButton(element, "Install")).toBeUndefined();
+      expect(findButton(element, "Upgrade")).toBeUndefined();
+      expect(findButton(element, "Installed")).toBeUndefined();
+      expect(
+        element.shadowRoot.querySelector('[data-id="extension-status-message"]')
+          .textContent
+      ).toBe(message);
+    }
+  );
+
+  it.each(["READY", "UPDATE_REQUIRED"])(
+    "shows the registry-managed permission action when the extension state is %s",
+    async (state) => {
+      const element = createCard({ ...EXTENSION_STATUS, state });
+      await flushPromises();
+
+      const permissionAction = element.shadowRoot.querySelector(
+        '[data-id="permission-action"]'
+      );
+      expect(permissionAction).not.toBeNull();
+      expect(permissionAction.iconName).toBe("action:manage_perm_sets");
+    }
+  );
+
+  it("passes the generated deterministic Coach artifacts to the modal", async () => {
+    const element = createCard(EXTENSION_STATUS);
+    await flushPromises();
+
+    findButton(element, "Generate").click();
+
+    expect(mockOpenAgentScriptCoachModal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        scriptId: "package-visualizer-agent",
+        scriptBody: expect.stringContaining(
+          'target: "apex://pkgviz__AgentforcePackagePortfolioAction"'
+        ),
+        scriptHash: expect.any(String),
+        scriptManifest: expect.objectContaining({
+          scriptId: "package-visualizer-agent"
+        }),
+        coachingEvidence: expect.objectContaining({
+          scriptId: "package-visualizer-agent"
+        }),
+        publicChatSummary: expect.objectContaining({
+          name: "Package Visualizer Agent"
+        })
+      })
+    );
+    const [{ scriptBody, scriptManifest, coachingEvidence }] =
+      mockOpenAgentScriptCoachModal.mock.calls[0];
+    expect(scriptBody).not.toMatch(/apex:\/\/(?!pkgviz__)/);
+    expect(scriptManifest.actions).toHaveLength(9);
+    expect(
+      scriptManifest.actions.every(({ target }) =>
+        target.startsWith("apex://pkgviz__")
+      )
+    ).toBe(true);
+    expect(
+      coachingEvidence.actionFlags.every(({ target }) =>
+        target.startsWith("apex://pkgviz__")
+      )
+    ).toBe(true);
+  });
+});

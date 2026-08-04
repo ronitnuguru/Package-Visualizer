@@ -1,0 +1,36 @@
+<template>
+  <template lwc:if={isLoading}>
+    <div data-id="loading" class="slds-is-relative slds-var-p-around_large">
+      <lightning-spinner
+        alternative-text="Checking Agentforce extension status"
+        size="small"
+      ></lightning-spinner>
+    </div>
+  </template>
+
+  <template lwc:elseif={isReady}>
+    <div data-id="ready-content">
+      <slot></slot>
+    </div>
+  </template>
+
+  <template lwc:elseif={showStatusPanel}>
+    <lightning-empty-state
+      data-id="extension-illustration"
+      title={stateHeading}
+      illustration-name="noresults:search"
+    >
+      <p slot="description" data-id="state-message">{status.message}</p>
+      <div slot="cta">
+        <template lwc:if={isInstallable}>
+          <lightning-button
+            data-id="primary-action"
+            variant="brand"
+            label={primaryActionLabel}
+            onclick={handlePrimaryAction}
+          ></lightning-button>
+        </template>
+      </div>
+    </lightning-empty-state>
+  </template>
+</template>

@@ -10,8 +10,6 @@ import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNam
 const MCP_LEARN_MORE_URL =
   "https://help.salesforce.com/s/articleView?id=ai.agent_mcp_connect_register.htm&type=5";
 
-const MANAGED_PACKAGE_VERSION_ID = "04tRh000001bSUbIAM";
-
 export default class AgentforceMcpServers extends LightningElement {
   mcpServers = [];
   mcpLoading = false;
@@ -166,13 +164,6 @@ export default class AgentforceMcpServers extends LightningElement {
     newTab.location.href = url.startsWith("http")
       ? url
       : window.location.origin + url;
-  }
-
-  handleExtensionInstall() {
-    window.open(
-      `/packaging/installPackage.apexp?p0=${MANAGED_PACKAGE_VERSION_ID}`,
-      "_blank"
-    );
   }
 
   copyTextToClipboard(text) {

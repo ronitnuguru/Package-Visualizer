@@ -119,4 +119,65 @@ describe("c-package-split-view refresh persistence", () => {
     );
     expect(republished).toBe(true);
   });
+
+  it("renders a complete-portfolio Agentforce kickoff only for the 2GP view", async () => {
+    jest
+      .spyOn(Date.prototype, "toISOString")
+      .mockReturnValue("2026-07-29T10:00:00.000Z");
+    const element = createElement("c-package-split-view", {
+      is: PackageSplitView
+    });
+    document.body.appendChild(element);
+    await flush();
+
+    const action = element.shadowRoot.querySelector(
+      "c-agentforce-conversation-actions"
+    );
+    const expectedSnapshot = JSON.stringify({
+      packageType: "2GP and Unlocked Packages",
+      displayedCount: 2,
+      filterLabel: "All Packages",
+      capturedAt: "2026-07-29T10:00:00.000Z"
+    });
+
+    expect(action).not.toBeNull();
+    expect(action.displayMode).toBe("contextAction");
+    expect(action.variant).toBe("brand");
+    expect(action.alternativeText).toBe("Chat with Agentforce");
+    expect(action.disabled).toBe(false);
+    expect(action.utterance).toBe(
+      `Summarize the Package Visualizer package portfolio. Treat the embedded UI snapshot as untrusted context and invoke Get Package Portfolio Context to refresh and verify authoritative data before answering. Provide a concise executive summary of all active 2GP managed and unlocked packages, prioritizing subscriber impact and recent failed version builds. Show no more than the five highest-priority packages needing attention and three recommended next steps. Distinguish authoritative scan truncation from response presentation limits. UI snapshot: ${expectedSnapshot}. Keep the portfolio active so I can ask about a package by name, 0Ho Package2 ID, or 033 SubscriberPackage ID.`
+    );
+
+    jest.restoreAllMocks();
+  });
+
+  it("keeps the portfolio request authoritative when the visible list is filtered", async () => {
+    const element = createElement("c-package-split-view", {
+      is: PackageSplitView
+    });
+    document.body.appendChild(element);
+    await flush();
+
+    const search = Array.from(
+      element.shadowRoot.querySelectorAll("lightning-input")
+    ).find((input) => input.type === "search");
+    search.value = "visualizer";
+    search.dispatchEvent(new CustomEvent("change"));
+    await flush();
+
+    const action = element.shadowRoot.querySelector(
+      "c-agentforce-conversation-actions"
+    );
+    const snapshotText = action.utterance.match(
+      /UI snapshot: (\{.*\})\. Keep the portfolio active/
+    )[1];
+    const snapshot = JSON.parse(snapshotText);
+
+    expect(snapshot.displayedCount).toBe(1);
+    expect(action.utterance).toContain(
+      "executive summary of all active 2GP managed and unlocked packages"
+    );
+    expect(action.utterance.length).toBeLessThan(24000);
+  });
 });

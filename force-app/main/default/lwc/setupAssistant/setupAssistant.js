@@ -55,9 +55,14 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   isSavingCredentials = false;
   isTestingNamedCredential = false;
   isProvisioning = false;
+  isAgentforceConversationConfigured = false;
 
   connectedCallback() {
     this.loadIntegrationStatus();
+  }
+
+  handleAgentforceConfigurationChange(event) {
+    this.isAgentforceConversationConfigured = event.detail.configured === true;
   }
 
   loadIntegrationStatus() {
@@ -470,6 +475,14 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
           this.openOrgPage("/lightning/setup/EnhancedProfiles/home", tab);
         });
     })();
+  }
+
+  navigateToNewUsers() {
+    this.openOrgPage("/lightning/setup/ManageUsers/home");
+  }
+
+  navigateToNewPermissionSets() {
+    this.openOrgPage("/lightning/setup/PermSets/home");
   }
 
   navigateProvUsers1() {

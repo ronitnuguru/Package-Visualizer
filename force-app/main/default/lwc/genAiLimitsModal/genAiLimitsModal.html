@@ -1,32 +1,43 @@
 <template>
-    <lightning-modal-header class="modal-window" label={label}></lightning-modal-header>
-    <lightning-modal-body>
-        <div class="slds-card">
-            <template if:true={displaySpinner}>
-                <div class="slds-p-top_xx-large">
-                    <lightning-spinner
-                        alternative-text="Loading"
-                        size="medium"
-                        variant="brand"
-                    ></lightning-spinner>
-                </div>
-            </template>
-            <template lwc:if={aiResponse}>
-                <lightning-formatted-rich-text value={aiResponse}></lightning-formatted-rich-text>
-            </template>
-            <template lwc:elseif={error}>
-                <lightning-empty-state title="Component not available..." illustration-name="noresults:unknown">
-                    <p slot="description">Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance...</p>
-                    <lightning-button variant="brand" label="Install Managed Package" slot="cta" onclick={handleExtensionInstall}>
-                    </lightning-button>
-                </lightning-empty-state>
-            </template>
+  <lightning-modal-header
+    class="modal-window"
+    label={label}
+  ></lightning-modal-header>
+  <lightning-modal-body>
+    <div class="slds-card">
+      <template if:true={displaySpinner}>
+        <div class="slds-p-top_xx-large">
+          <lightning-spinner
+            alternative-text="Loading"
+            size="medium"
+            variant="brand"
+          ></lightning-spinner>
         </div>
-        <!--
+      </template>
+      <template lwc:if={aiResponse}>
+        <lightning-formatted-rich-text
+          value={aiResponse}
+        ></lightning-formatted-rich-text>
+      </template>
+      <template lwc:elseif={error}>
+        <c-agentforce-extension-install-prompt auto-load>
+          <lightning-empty-state
+            title="Response unavailable"
+            illustration-name="noresults:unknown"
+          >
+            <p slot="description">
+              The org-limits summary could not be generated. Review the error
+              and try again.
+            </p>
+          </lightning-empty-state>
+        </c-agentforce-extension-install-prompt>
+      </template>
+    </div>
+    <!--
         <lightning-modal-footer>
             <lightning-button label="Close" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
             <lightning-button variant="brand" icon-position="right" icon-name="utility:sparkles" label="Regenerate" onclick={generateAiResponse} class="slds-m-left_x-small" disabled={enableGenerate}></lightning-button>
           </lightning-modal-footer>
           -->
-    </lightning-modal-body>
+  </lightning-modal-body>
 </template>

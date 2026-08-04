@@ -1,75 +1,58 @@
 <template>
-    <lightning-card class="card-style">
-        <template if:true={displayExtensionIllustration}>
-            <div class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-around_medium" role="status">
-                <div class="slds-media__figure">
-                    <lightning-icon
-                        size="small"
-                        icon-name="utility:info"
-                        alternative-text="info"
-                        title="info"
-                        variant="inverse"
-                    ></lightning-icon>
-                </div>
-                <div class="slds-media__body">
-                    <div>
-                        Component Requirements
-                        <ol class="slds-list_ordered">
-                            <li>
-                                Enable Agentforce in <a href="/lightning/setup/EinsteinGPTSetup/home" target="_blank">Einstein Setup</a> and <a href="/lightning/setup/EinsteinCopilot/home" target="_blank">Agent Studio</a> 
-                            </li>
-                            <li>
-                                Install Agentforce Package Visualizer + ISV Tooling Extension. <a href="https://salesforce.quip.com/f3SWA340YbFH" target="_blank">Learn More</a>
-                            </li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-            <lightning-empty-state title="Component not available..." illustration-name="noresults:unknown">
-                <p slot="description">Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance...</p>
-                <lightning-button-group slot="cta">
-                    <lightning-button variant="neutral" label="Back" onclick={handleIllustrationClear}>
-                    </lightning-button>
-                    <lightning-button variant="brand" label="Install Managed Package" onclick={handleExtensionInstall}>
-                    </lightning-button>
-                </lightning-button-group>
+  <lightning-card class="card-style">
+    <template if:true={displayExtensionIllustration}>
+      <c-agentforce-extension-install-prompt auto-load>
+        <lightning-empty-state
+          title="Response unavailable"
+          illustration-name="noresults:unknown"
+        >
+          <p slot="description">
+            The AI response could not be generated. Review the error
+            notification and try again.
+          </p>
+        </lightning-empty-state>
+      </c-agentforce-extension-install-prompt>
+    </template>
+    <template if:false={displayExtensionIllustration}>
+      <h3 slot="title" class="slds-truncate">
+        <lightning-icon
+          icon-name={titleIcon}
+          alternative-text={titleIcon}
+          size="medium"
+          class="slds-m-right_small"
+        ></lightning-icon>
+        {titleHeader}
+      </h3>
+      <lightning-button-group slot="actions"> </lightning-button-group>
+      <div class="slds-card__body slds-card__body_inner">
+        <template if:true={displaySpinner}>
+          <div class="slds-p-top_xx-large">
+            <lightning-spinner
+              alternative-text="Loading"
+              size="medium"
+              variant="brand"
+            ></lightning-spinner>
+          </div>
+        </template>
+        <template lwc:if={aiResponse}>
+          <lightning-formatted-rich-text
+            value={aiResponse}
+          ></lightning-formatted-rich-text>
+        </template>
+        <template lwc:elseif={error}>
+          <c-agentforce-extension-install-prompt auto-load>
+            <lightning-empty-state
+              title="Response unavailable"
+              illustration-name="noresults:unknown"
+            >
+              <p slot="description">
+                The AI response could not be generated. Review the error
+                notification and try again.
+              </p>
             </lightning-empty-state>
+          </c-agentforce-extension-install-prompt>
         </template>
-        <template if:false={displayExtensionIllustration}>
-            <h3 slot="title" class="slds-truncate">
-                <lightning-icon 
-                    icon-name={titleIcon}
-                    alternative-text={titleIcon}
-                    size="medium"
-                    class="slds-m-right_small"
-                ></lightning-icon>
-                {titleHeader}
-            </h3>
-            <lightning-button-group slot="actions">
-            </lightning-button-group>
-            <div class="slds-card__body slds-card__body_inner">
-                <template if:true={displaySpinner}>
-                    <div class="slds-p-top_xx-large">
-                        <lightning-spinner
-                            alternative-text="Loading"
-                            size="medium"
-                            variant="brand"
-                        ></lightning-spinner>
-                    </div>
-                </template>
-                <template lwc:if={aiResponse}>
-                    <lightning-formatted-rich-text value={aiResponse}></lightning-formatted-rich-text>
-                </template>
-                <template lwc:elseif={error}>
-                    <lightning-empty-state title="Component not available..." illustration-name="noresults:unknown">
-                        <p slot="description">Looks like you may have not installed the Agentforce dependent extension managed package. Or you don't have the necessary permissions or configuration to perform Agentforce related functionalities. Please contact your admin for further assistance...</p>
-                        <lightning-button-group slot="cta">
-                            <lightning-button variant="brand" label="Install Managed Package" onclick={handleExtensionInstall}>
-                            </lightning-button>
-                        </lightning-button-group>
-                    </lightning-empty-state>
-                </template>
-            </div>
-        </template>
-    </lightning-card>
+      </div>
+    </template>
+  </lightning-card>
 </template>
