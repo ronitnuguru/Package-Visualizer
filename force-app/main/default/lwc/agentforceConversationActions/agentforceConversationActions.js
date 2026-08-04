@@ -190,10 +190,10 @@ export default class AgentforceConversationActions extends LightningElement {
     }
 
     this.isExecuting = true;
+    this.dispatchEvent(new CustomEvent("conversationopen"));
     const selectedBotId = this.resolvedBotId;
     open(selectedBotId)
       .then(() => {
-        this.dispatchEvent(new CustomEvent("conversationopen"));
         return execute(utterance, selectedBotId);
       })
       .catch(() => {

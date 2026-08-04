@@ -13,11 +13,11 @@
     </values>
     <values>
         <field>Target_Package_Version_Id__c</field>
-        <value xsi:type="xsd:string">04tRh000001bSUbIAM</value>
+        <value xsi:type="xsd:string">04tRh000001bYdFIAU</value>
     </values>
     <values>
         <field>Target_Version_Label__c</field>
-        <value xsi:type="xsd:string">1.7.0-1</value>
+        <value xsi:type="xsd:string">1.8.0-1</value>
     </values>
     <values>
         <field>Extension_Label__c</field>

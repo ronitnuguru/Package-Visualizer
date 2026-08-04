@@ -106,7 +106,7 @@ export default class AgentScriptCoachModal extends LightningModal {
   verifyingTargets = false;
   targetVerifications = {};
 
-  modelsValue = "sfdc_ai__DefaultBedrockAnthropicClaude5Sonnet";
+  modelsValue = "sfdc_ai__DefaultBedrockAnthropicClaude48Opus";
 
   connectedCallback() {
     this.report = this._decorateReport(

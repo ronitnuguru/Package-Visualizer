@@ -350,7 +350,7 @@ describe("c-agentforce-conversation-actions", () => {
     expect(button.disabled).toBe(false);
   });
 
-  it("shows a permission-focused toast when ACC rejects the request", async () => {
+  it("closes the parent and shows a permission-focused toast when ACC rejects", async () => {
     open.mockRejectedValue(new Error("Access denied"));
     const toastHandler = jest.fn();
     const conversationOpenHandler = jest.fn();
@@ -363,7 +363,7 @@ describe("c-agentforce-conversation-actions", () => {
     await flushPromises();
 
     expect(toastHandler).toHaveBeenCalledTimes(1);
-    expect(conversationOpenHandler).not.toHaveBeenCalled();
+    expect(conversationOpenHandler).toHaveBeenCalledTimes(1);
     expect(toastHandler.mock.calls[0][0].detail.message).toContain(
       "access to the configured Agentforce Employee Agent"
     );
