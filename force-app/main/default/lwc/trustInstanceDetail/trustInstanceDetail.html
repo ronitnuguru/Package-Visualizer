@@ -12,13 +12,17 @@
         ></lightning-icon>
         <a href={trustUrl} target="_blank">{instanceKey}</a>
       </h3>
-      <lightning-button-group slot="actions">
-        <lightning-button-icon
-          variant="brand"
+      <div slot="footer">
+        <lightning-button
+          label="Generate"
           icon-name="utility:sparkles"
           onclick={handleAgentforceDetails}
           disabled={displayAnalysis}
-        ></lightning-button-icon>
+          variant="brand"
+          icon-position="right"
+        ></lightning-button>
+      </div>
+      <lightning-button-group slot="actions">
         <lightning-button-icon
           variant="border-filled"
           icon-name="utility:real_time"

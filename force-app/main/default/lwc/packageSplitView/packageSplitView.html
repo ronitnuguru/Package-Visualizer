@@ -64,7 +64,6 @@
                       <div class="slds-no-flex slds-grid">
                         <template if:true={is2GP}>
                           <c-agentforce-conversation-actions
-                            class="slds-var-m-right_x-small"
                             display-mode="contextAction"
                             utterance={packagePortfolioUtterance}
                             disabled={packagePortfolioDisabled}
@@ -76,7 +75,7 @@
                           icon-name="utility:setup_assistant_guide"
                           variant="brand"
                           tooltip="Setup Assistant"
-                          class="slds-var-m-right_x-small"
+                          class="slds-var-m-horizontal_x-small"
                           onclick={handleSetupAssistantClick}
                         ></lightning-button-icon>
                         <lightning-button-icon

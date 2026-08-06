@@ -686,7 +686,7 @@
     <lightning-button
       label="Close"
       onclick={handleCancel}
-      class="slds-m-right_x-small"
+      class="slds-m-left_x-small"
     ></lightning-button>
     <template lwc:if={aiError}>
       <lightning-button
@@ -694,7 +694,7 @@
         variant="brand"
         onclick={handleRetry}
         disabled={isAiLoading}
-        class="slds-m-right_x-small"
+        class="slds-m-left_x-small"
       ></lightning-button>
     </template>
     <template lwc:if={canCopyMarkdown}>
@@ -703,7 +703,7 @@
         icon-name="utility:copy"
         icon-position="right"
         onclick={handleCopyMarkdown}
-        class="slds-m-right_x-small"
+        class="slds-m-left_x-small"
       ></lightning-button>
     </template>
     <c-agentforce-conversation-actions

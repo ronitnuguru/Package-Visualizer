@@ -11,7 +11,7 @@ export const SKILLS = [
   },
   {
     id: "skill-2",
-    name: "Agent Development Life Cycle",
+    name: "Agent Development Lifecycle",
     description:
       "Complete toolchain for the Agentforce Agent lifecycle. Author agents from natural language, scaffold backing Flows and Apex, deploy, test via preview and batch testing, and optimize using STDM session traces from Data Cloud. 3 consolidated skills: /developing-agentforce, /testing-agentforce, /observing-agentforce. 4 agents + hooks (Claude Code).",
     createdBy: "Salesforce AI Research",
