@@ -57,6 +57,7 @@ sfdx-project.json
 
 .husky/
 .vscode/
+.worktrees/
 
 # Local-only docs and non-packaged scaffolding (not part of the package build)
 salesforce-docs/
