@@ -4,12 +4,7 @@ import getActiveEmployeeAgents from "@salesforce/apex/AgentforceConversationConf
 import getAgentforceConfiguration from "@salesforce/apex/AgentforceConversationConfigController.getAgentforceConfiguration";
 import saveAgentforceConfiguration from "@salesforce/apex/AgentforceConversationConfigController.saveAgentforceConfiguration";
 import getExtensionStatus from "@salesforce/apex/AgentforceExtensionStatusController.getStatus";
-
-const UNAVAILABLE_EXTENSION_STATUS = {
-  state: "UNAVAILABLE",
-  message:
-    "Package Visualizer could not verify the Agentforce extension status. Try again later."
-};
+import { getExtensionStatusFailure } from "c/agentforceExtensionStatusUtils";
 
 export default class AgentforceConversationSetup extends LightningElement {
   agentOptions = [];
@@ -71,11 +66,11 @@ export default class AgentforceConversationSetup extends LightningElement {
     this.isExtensionStatusLoading = true;
     return getExtensionStatus()
       .then((status) => {
-        this.extensionStatus = status || UNAVAILABLE_EXTENSION_STATUS;
+        this.extensionStatus = status || getExtensionStatusFailure();
         this.initializeDisclosure(this.extensionStatus, initializeDisclosure);
       })
       .catch((error) => {
-        this.extensionStatus = UNAVAILABLE_EXTENSION_STATUS;
+        this.extensionStatus = getExtensionStatusFailure(error);
         this.initializeDisclosure(this.extensionStatus, initializeDisclosure);
         this.showToast(
           "Unable to load Agentforce extension",

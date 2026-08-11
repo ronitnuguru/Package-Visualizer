@@ -3,9 +3,15 @@ import { mockNavigate } from "lightning/navigation";
 import InAppGuidanceCard from "c/inAppGuidanceCard";
 import AgentScriptCoachModal from "c/agentScriptCoachModal";
 import getExtensionStatus from "@salesforce/apex/AgentforceExtensionStatusController.getStatus";
+import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
 
 jest.mock(
   "@salesforce/apex/AgentforceExtensionStatusController.getStatus",
+  () => ({ default: jest.fn() }),
+  { virtual: true }
+);
+jest.mock(
+  "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId",
   () => ({ default: jest.fn() }),
   { virtual: true }
 );
@@ -58,6 +64,7 @@ function findButton(element, label) {
 describe("c-in-app-guidance-card package installation", () => {
   beforeEach(() => {
     getExtensionStatus.mockResolvedValue({ ...EXTENSION_STATUS });
+    getNamespacePermSetId.mockResolvedValue("0PS000000000001AAA");
   });
 
   afterEach(() => {
@@ -131,8 +138,46 @@ describe("c-in-app-guidance-card package installation", () => {
         element.shadowRoot.querySelector('[data-id="extension-status-message"]')
           .textContent
       ).toBe(message);
+      expect(findButton(element, "Provision Permission Sets")).toBeUndefined();
     }
   );
+
+  it("shows a provisioning action when the extension status requires Package Visualizer Permission", async () => {
+    const element = createCard({
+      ...EXTENSION_STATUS,
+      state: "PERMISSION_REQUIRED",
+      message:
+        "Package Visualizer Permission is required to verify the Agentforce extension status."
+    });
+    await flushPromises();
+
+    expect(findButton(element, "Provision Permission Sets")).not.toBeNull();
+  });
+
+  it("opens the core permission set assignments from the provisioning action", async () => {
+    const originalWindowOpen = window.open;
+    const openTab = { closed: false, location: {} };
+    window.open = jest.fn(() => openTab);
+    const element = createCard({
+      ...EXTENSION_STATUS,
+      state: "PERMISSION_REQUIRED",
+      message:
+        "Package Visualizer Permission is required to verify the Agentforce extension status."
+    });
+    await flushPromises();
+
+    findButton(element, "Provision Permission Sets").click();
+    await flushPromises();
+
+    expect(getNamespacePermSetId).toHaveBeenCalledWith({
+      label: "Package_VisualizerPS",
+      namespace: "pkgviz"
+    });
+    expect(openTab.location.href).toBe(
+      `${window.location.origin}/lightning/setup/PermSets/0PS000000000001AAA/PermissionSetAssignment/home`
+    );
+    window.open = originalWindowOpen;
+  });
 
   it.each(["READY", "UPDATE_REQUIRED"])(
     "shows the registry-managed permission action when the extension state is %s",

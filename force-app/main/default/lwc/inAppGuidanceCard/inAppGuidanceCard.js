@@ -4,13 +4,8 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { AGENT_SCRIPTS } from "./agentScriptsData.js";
 import getExtensionStatus from "@salesforce/apex/AgentforceExtensionStatusController.getStatus";
 import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
+import { getExtensionStatusFailure } from "c/agentforceExtensionStatusUtils";
 import AgentScriptCoachModal from "c/agentScriptCoachModal";
-
-const UNAVAILABLE_EXTENSION_STATUS = {
-  state: "UNAVAILABLE",
-  message:
-    "Package Visualizer could not verify the Agentforce extension status. Try again later."
-};
 
 const AGENTEXCHANGE_LISTING_URL =
   "https://appexchange.salesforce.com/appxListingDetail?listingId=632af825-58e1-4e61-a2b6-8b008449ca03";
@@ -54,11 +49,11 @@ export default class InAppGuidanceCard extends NavigationMixin(
     }
     getExtensionStatus()
       .then((status) => {
-        this._extensionStatus = status || UNAVAILABLE_EXTENSION_STATUS;
+        this._extensionStatus = status || getExtensionStatusFailure();
         this.applyExtensionStatus(this._extensionStatus);
       })
-      .catch(() => {
-        this._extensionStatus = UNAVAILABLE_EXTENSION_STATUS;
+      .catch((error) => {
+        this._extensionStatus = getExtensionStatusFailure(error);
         this.applyExtensionStatus(this._extensionStatus);
       });
   }
@@ -84,11 +79,12 @@ export default class InAppGuidanceCard extends NavigationMixin(
         isInstalled: state === "READY",
         isUpgradeAvailable: state === "UPDATE_REQUIRED",
         isInstallAvailable: state === "NOT_INSTALLED",
+        showProvisionPermissionSets: state === "PERMISSION_REQUIRED",
         showPermSetButton:
           ["READY", "UPDATE_REQUIRED"].includes(state) &&
           Boolean(status?.permissionSetLabel),
         showStatusMessage: ["MISCONFIGURED", "UNAVAILABLE"].includes(state),
-        statusMessage: status?.message || UNAVAILABLE_EXTENSION_STATUS.message
+        statusMessage: status?.message || getExtensionStatusFailure().message
       }
     ];
     this.displaySpinner = false;
@@ -211,6 +207,24 @@ export default class InAppGuidanceCard extends NavigationMixin(
           );
         });
     })();
+  }
+
+  navigateToPkgVizMainPermSet() {
+    const tab = window.open("", "_blank");
+    getNamespacePermSetId({
+      label: "Package_VisualizerPS",
+      namespace: "pkgviz"
+    })
+      .then((result) => {
+        this.openOrgPage(
+          `/lightning/setup/PermSets/${result}/PermissionSetAssignment/home`,
+          tab
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+        this.openOrgPage("/lightning/setup/PermSets/home", tab);
+      });
   }
 
   // Opens an in-org page in a new browser tab. The new tab must be opened

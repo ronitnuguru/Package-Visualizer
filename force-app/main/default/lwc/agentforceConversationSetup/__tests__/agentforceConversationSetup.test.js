@@ -190,6 +190,30 @@ describe("c-agentforce-conversation-setup", () => {
     }
   );
 
+  it("passes a permission-required status to the disclosed showcase when extension access is denied", async () => {
+    getExtensionStatus.mockRejectedValue({
+      body: {
+        message:
+          "You do not have access to the Apex class named: pkgviz.AgentforceExtensionStatusController"
+      }
+    });
+
+    const element = createSetup();
+    await flushPromises();
+    element.shadowRoot.querySelector('[data-id="toggle-agentforce"]').click();
+    await flushPromises();
+
+    expect(
+      element.shadowRoot.querySelector("c-in-app-guidance-card").extensionStatus
+    ).toEqual(
+      expect.objectContaining({
+        state: "PERMISSION_REQUIRED",
+        message:
+          "Package Visualizer Permission is required to verify the Agentforce extension status."
+      })
+    );
+  });
+
   it("keeps Edit independent from disclosure and toggles only with the chevron", async () => {
     getExtensionStatus.mockResolvedValue({
       ...EXTENSION_STATUS,
@@ -260,9 +284,11 @@ describe("c-agentforce-conversation-setup", () => {
       "cancel-agent",
       "save-agent"
     ]);
-    expect(footerActions.every((action) => action.variant === undefined)).toBe(
-      true
-    );
+    expect(footerActions.map((action) => action.variant)).toEqual([
+      undefined,
+      undefined,
+      "brand"
+    ]);
 
     element.shadowRoot
       .querySelector('[data-id="agent-select"]')

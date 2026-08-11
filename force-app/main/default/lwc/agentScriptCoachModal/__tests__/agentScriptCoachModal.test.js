@@ -256,7 +256,7 @@ describe("c-agent-script-coach-modal progressive coaching", () => {
     expect(analyzeAgentScriptCoach).toHaveBeenCalledWith({
       scriptId: "test-agent",
       scriptHash: "immediate-hash",
-      modelName: "sfdc_ai__DefaultBedrockAnthropicClaude5Sonnet",
+      modelName: "sfdc_ai__DefaultBedrockAnthropicClaude48Opus",
       evidenceJson: JSON.stringify({
         ...evidence,
         scriptHash: "immediate-hash"

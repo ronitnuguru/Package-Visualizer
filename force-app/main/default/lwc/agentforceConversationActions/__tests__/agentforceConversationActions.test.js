@@ -75,7 +75,7 @@ describe("c-agentforce-conversation-actions", () => {
     jest.clearAllMocks();
   });
 
-  it("renders the default border-filled context icon", async () => {
+  it("renders the brand context icon", async () => {
     const element = createContextAction();
     await flushPromises();
 
@@ -84,7 +84,7 @@ describe("c-agentforce-conversation-actions", () => {
     );
 
     expect(button.iconName).toBe("utility:agent_astro");
-    expect(button.variant).toBe("border-filled");
+    expect(button.variant).toBe("brand");
     expect(button.alternativeText).toBe("Chat with Agentforce");
     expect(button.tooltip).toBe("Chat with Agentforce");
     expect(button.disabled).toBe(false);
@@ -112,7 +112,7 @@ describe("c-agentforce-conversation-actions", () => {
       element.shadowRoot.querySelector("lightning-button-group")
     ).toBeNull();
     expect(generate.parentElement).toBe(agent.parentElement);
-    expect(agent.classList).toContain("slds-var-p-right_x-small");
+    expect(agent.classList).toContain("slds-var-m-left_x-small");
   });
 
   it("dispatches the Models API action independently", async () => {
@@ -393,7 +393,7 @@ describe("c-agentforce-conversation-actions", () => {
     );
   });
 
-  it("renders responsive setup controls with equivalent accessible labels", () => {
+  it("renders responsive setup controls", () => {
     const element = createElement("c-agentforce-conversation-actions", {
       is: AgentforceConversationActions
     });
@@ -410,7 +410,8 @@ describe("c-agentforce-conversation-actions", () => {
 
     expect(fullButton.classList).toContain("slds-show_large");
     expect(compactButton.classList).toContain("slds-hide_large");
-    expect(compactButton.alternativeText).toBe("Test in Panel");
-    expect(compactButton.title).toBe("Test in Panel");
+    expect(fullButton.label).toBe("Test in Panel");
+    expect(compactButton.iconName).toBe("utility:messaging_conversation");
+    expect(compactButton.variant).toBe("brand-outline");
   });
 });
