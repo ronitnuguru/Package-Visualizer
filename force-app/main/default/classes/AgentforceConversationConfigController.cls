@@ -253,7 +253,7 @@ public with sharing class AgentforceConversationConfigController {
      */
     public virtual List<AgentforceConversationConfigWrapper.ActiveBotVersionRecord> getActiveBotVersions() {
       List<SObject> rows = Database.queryWithBinds(
-        'SELECT BotDefinitionId, Status FROM BotVersion WHERE Status = :activeStatus LIMIT 5000',
+        'SELECT BotDefinitionId, Status FROM BotVersion WHERE Status = :activeStatus LIMIT 2000',
         new Map<String, Object>{ 'activeStatus' => ACTIVE_STATUS },
         AccessLevel.USER_MODE
       );
@@ -289,7 +289,7 @@ public with sharing class AgentforceConversationConfigController {
       List<SObject> rows = Database.queryWithBinds(
         'SELECT Id, MasterLabel, DeveloperName, Type, AgentType FROM BotDefinition ' +
           'WHERE Id IN :botDefinitionIds AND Type = :internalCopilotType ' +
-          'AND AgentType = :employeeAgentType ORDER BY MasterLabel, DeveloperName LIMIT 5000',
+          'AND AgentType = :employeeAgentType ORDER BY MasterLabel, DeveloperName LIMIT 2000',
         new Map<String, Object>{
           'botDefinitionIds' => botDefinitionIds,
           'internalCopilotType' => INTERNAL_COPILOT_TYPE,

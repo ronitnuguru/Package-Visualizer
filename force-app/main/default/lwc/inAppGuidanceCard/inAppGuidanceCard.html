@@ -21,8 +21,6 @@
       <lightning-button-icon
         icon-name="utility:path_experiment"
         variant="border-filled"
-        alternative-text="Open Agentforce Labs"
-        title="Open Agentforce Labs"
         tooltip="Agentforce Labs"
         onclick={handleAgentforceLabs}
       ></lightning-button-icon>
@@ -101,8 +99,6 @@
                     <template lwc:if={resource.listingLink}>
                       <lightning-button-icon
                         tooltip="AgentExchange Listing"
-                        alternative-text="Open AgentExchange Listing"
-                        title="Open AgentExchange Listing"
                         variant="border-filled"
                         icon-name="utility:cart"
                         data-index={index}
@@ -112,8 +108,6 @@
                     <template lwc:if={resource.helpGuideLink}>
                       <lightning-button-icon
                         tooltip="Setup Guide"
-                        alternative-text="Open Setup Guide"
-                        title="Open Setup Guide"
                         variant="border-filled"
                         icon-name={resource.helpGuideIcon}
                         data-index={index}
