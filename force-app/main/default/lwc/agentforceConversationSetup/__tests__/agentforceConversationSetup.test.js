@@ -190,7 +190,7 @@ describe("c-agentforce-conversation-setup", () => {
     }
   );
 
-  it("passes a permission-required status to the disclosed showcase when extension access is denied", async () => {
+  it("starts expanded and passes permission-required status when extension access is denied", async () => {
     getExtensionStatus.mockRejectedValue({
       body: {
         message:
@@ -200,9 +200,17 @@ describe("c-agentforce-conversation-setup", () => {
 
     const element = createSetup();
     await flushPromises();
-    element.shadowRoot.querySelector('[data-id="toggle-agentforce"]').click();
-    await flushPromises();
 
+    expect(
+      element.shadowRoot.querySelector("c-in-app-guidance-card")
+    ).not.toBeNull();
+    expect(
+      element.shadowRoot.querySelector('[data-id="toggle-agentforce"]').iconName
+    ).toBe("utility:chevrondown");
+    expect(
+      element.shadowRoot.querySelector('[data-id="toggle-agentforce"]')
+        .ariaExpanded
+    ).toBe("true");
     expect(
       element.shadowRoot.querySelector("c-in-app-guidance-card").extensionStatus
     ).toEqual(

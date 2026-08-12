@@ -87,7 +87,9 @@ export default class AgentforceConversationSetup extends LightningElement {
     if (!shouldInitialize || this.hasInitializedDisclosure) {
       return;
     }
-    this.isContentExpanded = status?.state === "NOT_INSTALLED";
+    this.isContentExpanded = ["NOT_INSTALLED", "PERMISSION_REQUIRED"].includes(
+      status?.state
+    );
     this.hasInitializedDisclosure = true;
   }
 
