@@ -4,6 +4,7 @@ import InAppGuidanceCard from "c/inAppGuidanceCard";
 import AgentScriptCoachModal from "c/agentScriptCoachModal";
 import getExtensionStatus from "@salesforce/apex/AgentforceExtensionStatusController.getStatus";
 import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
+import assignPermissionSetToCurrentUser from "@salesforce/apex/PackageVisualizerCtrl.assignPermissionSetToCurrentUser";
 
 jest.mock(
   "@salesforce/apex/AgentforceExtensionStatusController.getStatus",
@@ -15,6 +16,14 @@ jest.mock(
   () => ({ default: jest.fn() }),
   { virtual: true }
 );
+jest.mock(
+  "@salesforce/apex/PackageVisualizerCtrl.assignPermissionSetToCurrentUser",
+  () => ({ default: jest.fn() }),
+  { virtual: true }
+);
+jest.mock("@salesforce/user/Id", () => ({ default: "005000000000001AAA" }), {
+  virtual: true
+});
 
 const mockOpenAgentScriptCoachModal = AgentScriptCoachModal.open;
 
@@ -65,6 +74,7 @@ describe("c-in-app-guidance-card package installation", () => {
   beforeEach(() => {
     getExtensionStatus.mockResolvedValue({ ...EXTENSION_STATUS });
     getNamespacePermSetId.mockResolvedValue("0PS000000000001AAA");
+    assignPermissionSetToCurrentUser.mockResolvedValue(true);
   });
 
   afterEach(() => {
@@ -138,7 +148,7 @@ describe("c-in-app-guidance-card package installation", () => {
         element.shadowRoot.querySelector('[data-id="extension-status-message"]')
           .textContent
       ).toBe(message);
-      expect(findButton(element, "Provision Permission Sets")).toBeUndefined();
+      expect(findButton(element, "Provision Permission Set")).toBeUndefined();
     }
   );
 
@@ -151,7 +161,7 @@ describe("c-in-app-guidance-card package installation", () => {
     });
     await flushPromises();
 
-    expect(findButton(element, "Provision Permission Sets")).not.toBeNull();
+    expect(findButton(element, "Provision Permission Set")).not.toBeNull();
   });
 
   it("opens the core permission set assignments from the provisioning action", async () => {
@@ -166,7 +176,7 @@ describe("c-in-app-guidance-card package installation", () => {
     });
     await flushPromises();
 
-    findButton(element, "Provision Permission Sets").click();
+    findButton(element, "Provision Permission Set").click();
     await flushPromises();
 
     expect(getNamespacePermSetId).toHaveBeenCalledWith({
@@ -192,6 +202,59 @@ describe("c-in-app-guidance-card package installation", () => {
       expect(permissionAction.iconName).toBe("action:manage_perm_sets");
     }
   );
+
+  it("assigns the resource permission set to the current user", async () => {
+    const element = createCard(EXTENSION_STATUS);
+    const toastHandler = jest.fn();
+    element.addEventListener("lightning__showtoast", toastHandler);
+    await flushPromises();
+
+    element.shadowRoot
+      .querySelector('[data-id="assign-resource-permission-set"]')
+      .click();
+    await flushPromises();
+
+    expect(getNamespacePermSetId).toHaveBeenCalledWith({
+      label: EXTENSION_STATUS.permissionSetLabel,
+      namespace: EXTENSION_STATUS.namespacePrefix
+    });
+    expect(assignPermissionSetToCurrentUser).toHaveBeenCalledWith({
+      permissionSetId: "0PS000000000001AAA",
+      userId: "005000000000001AAA"
+    });
+    expect(toastHandler.mock.calls[0][0].detail).toMatchObject({
+      title: "Permission Set Assigned",
+      variant: "success"
+    });
+  });
+
+  it("shows an error toast when a permission set cannot be assigned", async () => {
+    assignPermissionSetToCurrentUser.mockRejectedValue({
+      body: { message: "Assignment failed." }
+    });
+    const element = createCard({
+      ...EXTENSION_STATUS,
+      state: "PERMISSION_REQUIRED"
+    });
+    const toastHandler = jest.fn();
+    element.addEventListener("lightning__showtoast", toastHandler);
+    await flushPromises();
+
+    element.shadowRoot
+      .querySelector('[data-id="assign-core-permission-set"]')
+      .click();
+    await flushPromises();
+
+    expect(assignPermissionSetToCurrentUser).toHaveBeenCalledWith({
+      permissionSetId: "0PS000000000001AAA",
+      userId: "005000000000001AAA"
+    });
+    expect(toastHandler.mock.calls[0][0].detail).toMatchObject({
+      title: "Couldn't assign the permission set",
+      message: "Assignment failed.",
+      variant: "error"
+    });
+  });
 
   it("passes the generated deterministic Coach artifacts to the modal", async () => {
     const element = createCard(EXTENSION_STATUS);

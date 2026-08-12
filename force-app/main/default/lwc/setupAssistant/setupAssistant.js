@@ -11,12 +11,14 @@ import { publish, MessageContext } from "lightning/messageService";
 import { SETUP_GUIDE_MARKDOWN } from "./setupGuide";
 import getProfileId from "@salesforce/apex/PackageVisualizerCtrl.getProfileId";
 import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
+import assignPermissionSetToCurrentUser from "@salesforce/apex/PackageVisualizerCtrl.assignPermissionSetToCurrentUser";
 import getOrgDetails from "@salesforce/apex/PackageVisualizerCtrl.getOrgDetails";
 import isPboOrg from "@salesforce/apex/PackageVisualizerCtrl.isPboOrg";
 import getIntegrationStatus from "@salesforce/apex/PackageVisualizerCtrl.getIntegrationStatus";
 import configureNamedCredentialUrl from "@salesforce/apex/PackageVisualizerCtrl.configureNamedCredentialUrl";
 import populateClientCredentials from "@salesforce/apex/PackageVisualizerCtrl.populateClientCredentials";
 import verifyAndEnableNamedCredential from "@salesforce/apex/PackageVisualizerCtrl.verifyAndEnableNamedCredential";
+import currentUserId from "@salesforce/user/Id";
 
 export default class SetupAssistant extends NavigationMixin(LightningElement) {
   // Accepts either a single message string (e.g. the static small-screen notice)
@@ -438,6 +440,10 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     })();
   }
 
+  addPkgVizMainPermissionSet() {
+    this.assignNamespacePermissionSet("Package_VisualizerPS", "pkgviz");
+  }
+
   navigateToPkgVizPushUpgradePermSet() {
     const tab = window.open("", "_blank");
     (async () => {
@@ -456,6 +462,13 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
           this.navigateToPermissionSets(tab);
         });
     })();
+  }
+
+  addPkgVizPushUpgradePermissionSet() {
+    this.assignNamespacePermissionSet(
+      "Package_Visualizer_Push_Upgrade",
+      "pkgviz"
+    );
   }
 
   navigateLimitedAccessUserProfiile() {
@@ -528,6 +541,52 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
       ? `/lightning/setup/PermSets/${permSetId}/PermissionSetAssignment/home`
       : "/lightning/setup/PermSets/home";
     this.openOrgPage(url, existingTab);
+  }
+
+  addToolingPermissionSet() {
+    this.assignPermissionSet(
+      this.integrationStatus && this.integrationStatus.toolingPermissionSetId
+    );
+  }
+
+  assignNamespacePermissionSet(label, namespace) {
+    getNamespacePermSetId({ label, namespace })
+      .then((permissionSetId) => this.assignPermissionSet(permissionSetId))
+      .catch((error) => this.showPermissionAssignmentError(error));
+  }
+
+  assignPermissionSet(permissionSetId) {
+    if (!permissionSetId) {
+      this.showPermissionAssignmentError();
+      return;
+    }
+
+    assignPermissionSetToCurrentUser({
+      permissionSetId,
+      userId: currentUserId
+    })
+      .then(() => {
+        this.dispatchEvent(
+          new ShowToastEvent({
+            title: "Permission Set Assigned",
+            message: "This permission set is assigned to you.",
+            variant: "success"
+          })
+        );
+      })
+      .catch((error) => this.showPermissionAssignmentError(error));
+  }
+
+  showPermissionAssignmentError(error) {
+    this.dispatchEvent(
+      new ShowToastEvent({
+        title: "Couldn't assign the permission set",
+        message:
+          (error && error.body && error.body.message) ||
+          "Unable to assign this permission set. Please try again.",
+        variant: "error"
+      })
+    );
   }
 
   navigateToExternalClientApps() {

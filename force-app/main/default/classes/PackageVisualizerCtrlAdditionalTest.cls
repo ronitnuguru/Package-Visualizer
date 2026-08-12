@@ -5,6 +5,73 @@
  *******************************************************************************************/
 @isTest
 private class PackageVisualizerCtrlAdditionalTest {
+  /**
+   * Creates a permission set assignment for the running user and treats a repeated
+   * request as a successful no-op.
+   */
+  @isTest
+  static void shouldAssignPermissionSet_WhenCurrentUserRequestsIt() {
+    // Given
+    PermissionSet permissionSet = new PermissionSet(
+      Name = 'PkgViz_Self_Assignment_Test',
+      Label = 'Package Visualizer Self Assignment Test'
+    );
+    insert permissionSet;
+    Id currentUserId = UserInfo.getUserId();
+
+    // When
+    Test.startTest();
+    Boolean firstResult = PackageVisualizerCtrl.assignPermissionSetToCurrentUser(
+      permissionSet.Id,
+      currentUserId
+    );
+    Boolean secondResult = PackageVisualizerCtrl.assignPermissionSetToCurrentUser(
+      permissionSet.Id,
+      currentUserId
+    );
+    Test.stopTest();
+
+    // Then
+    List<PermissionSetAssignment> assignments = [
+      SELECT Id
+      FROM PermissionSetAssignment
+      WHERE AssigneeId = :currentUserId AND PermissionSetId = :permissionSet.Id
+    ];
+    Assert.isTrue(firstResult, 'The first assignment should succeed');
+    Assert.isTrue(secondResult, 'A repeated assignment should succeed');
+    Assert.areEqual(
+      1,
+      assignments.size(),
+      'Only one assignment should exist for the running user'
+    );
+  }
+
+  /**
+   * Rejects attempts to assign a permission set to an id other than the running user.
+   */
+  @isTest
+  static void shouldRejectAssignment_WhenUserIsNotCurrentUser() {
+    // Given
+    PermissionSet permissionSet = new PermissionSet(
+      Name = 'PkgViz_Invalid_Assignee_Test',
+      Label = 'Package Visualizer Invalid Assignee Test'
+    );
+    insert permissionSet;
+
+    // When/Then
+    Test.startTest();
+    try {
+      PackageVisualizerCtrl.assignPermissionSetToCurrentUser(
+        permissionSet.Id,
+        UserInfo.getOrganizationId()
+      );
+      Assert.fail('Expected a non-current user id to be rejected');
+    } catch (AuraHandledException e) {
+      Assert.isNotNull(e.getMessage(), 'A user-safe error should be returned');
+    }
+    Test.stopTest();
+  }
+
   /**************************************************************************************
    * @Description  getTargetRecordId — 'apex' branch resolves a real ApexClass by name
    * (this test class always exists), covering the apex branch, query, and return.

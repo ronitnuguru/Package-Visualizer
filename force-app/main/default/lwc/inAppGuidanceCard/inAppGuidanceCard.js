@@ -4,8 +4,10 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { AGENT_SCRIPTS } from "./agentScriptsData.js";
 import getExtensionStatus from "@salesforce/apex/AgentforceExtensionStatusController.getStatus";
 import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
+import assignPermissionSetToCurrentUser from "@salesforce/apex/PackageVisualizerCtrl.assignPermissionSetToCurrentUser";
 import { getExtensionStatusFailure } from "c/agentforceExtensionStatusUtils";
 import AgentScriptCoachModal from "c/agentScriptCoachModal";
+import currentUserId from "@salesforce/user/Id";
 
 const AGENTEXCHANGE_LISTING_URL =
   "https://appexchange.salesforce.com/appxListingDetail?listingId=632af825-58e1-4e61-a2b6-8b008449ca03";
@@ -209,6 +211,19 @@ export default class InAppGuidanceCard extends NavigationMixin(
     })();
   }
 
+  addResourcePermissionSet(event) {
+    const resourceIndex = event.currentTarget.dataset.index;
+    const selectedResource = this.resourcesData[resourceIndex];
+    if (!selectedResource || !selectedResource.permSetLabel) {
+      this.showPermissionAssignmentError();
+      return;
+    }
+    this.assignNamespacePermissionSet(
+      selectedResource.permSetLabel,
+      selectedResource.permSetNamespace
+    );
+  }
+
   navigateToPkgVizMainPermSet() {
     const tab = window.open("", "_blank");
     getNamespacePermSetId({
@@ -225,6 +240,50 @@ export default class InAppGuidanceCard extends NavigationMixin(
         console.error(error);
         this.openOrgPage("/lightning/setup/PermSets/home", tab);
       });
+  }
+
+  addPkgVizMainPermissionSet() {
+    this.assignNamespacePermissionSet("Package_VisualizerPS", "pkgviz");
+  }
+
+  assignNamespacePermissionSet(label, namespace) {
+    getNamespacePermSetId({ label, namespace })
+      .then((permissionSetId) => this.assignPermissionSet(permissionSetId))
+      .catch((error) => this.showPermissionAssignmentError(error));
+  }
+
+  assignPermissionSet(permissionSetId) {
+    if (!permissionSetId) {
+      this.showPermissionAssignmentError();
+      return;
+    }
+
+    assignPermissionSetToCurrentUser({
+      permissionSetId,
+      userId: currentUserId
+    })
+      .then(() => {
+        this.dispatchEvent(
+          new ShowToastEvent({
+            title: "Permission Set Assigned",
+            message: "This permission set is assigned to you.",
+            variant: "success"
+          })
+        );
+      })
+      .catch((error) => this.showPermissionAssignmentError(error));
+  }
+
+  showPermissionAssignmentError(error) {
+    this.dispatchEvent(
+      new ShowToastEvent({
+        title: "Couldn't assign the permission set",
+        message:
+          (error && error.body && error.body.message) ||
+          "Unable to assign this permission set. Please try again.",
+        variant: "error"
+      })
+    );
   }
 
   // Opens an in-org page in a new browser tab. The new tab must be opened

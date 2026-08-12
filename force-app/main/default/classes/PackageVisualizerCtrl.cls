@@ -962,6 +962,75 @@ public with sharing class PackageVisualizerCtrl {
     }
   }
 
+  /**
+   * Assigns a permission set to the running user.
+   *
+   * @param permissionSetId The permission set to assign.
+   * @param userId The current user id supplied by the client.
+   * @return True when the permission set is assigned or was already assigned.
+   * @throws AuraHandledException When the request is invalid or the assignment cannot be made.
+   */
+  @AuraEnabled
+  public static Boolean assignPermissionSetToCurrentUser(
+    Id permissionSetId,
+    Id userId
+  ) {
+    if (
+      permissionSetId == null ||
+      userId == null ||
+      userId != UserInfo.getUserId()
+    ) {
+      throw new AuraHandledException(
+        'You can only assign a permission set to yourself.'
+      );
+    }
+
+    try {
+      List<PermissionSet> permissionSets = [
+        SELECT Id
+        FROM PermissionSet
+        WHERE Id = :permissionSetId
+        WITH USER_MODE
+        LIMIT 1
+      ];
+      if (permissionSets.isEmpty()) {
+        throw new AuraHandledException(
+          'The permission set could not be found.'
+        );
+      }
+
+      List<PermissionSetAssignment> existingAssignments = [
+        SELECT Id
+        FROM PermissionSetAssignment
+        WHERE AssigneeId = :userId AND PermissionSetId = :permissionSetId
+        WITH USER_MODE
+        LIMIT 1
+      ];
+      if (!existingAssignments.isEmpty()) {
+        return true;
+      }
+
+      Database.insert(
+        new PermissionSetAssignment(
+          AssigneeId = userId,
+          PermissionSetId = permissionSetId
+        ),
+        AccessLevel.USER_MODE
+      );
+      return true;
+    } catch (AuraHandledException e) {
+      throw e;
+    } catch (DmlException e) {
+      throw new AuraHandledException(
+        'Unable to assign this permission set. Verify that you have permission to manage assignments.'
+      );
+    } catch (Exception e) {
+      throw new AuraHandledException(
+        'Unable to assign this permission set. Please try again.'
+      );
+    }
+  }
+
   @AuraEnabled
   public static Object invokeModelsGenAi(
     String className,

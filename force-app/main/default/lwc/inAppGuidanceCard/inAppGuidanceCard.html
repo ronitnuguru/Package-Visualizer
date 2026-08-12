@@ -116,10 +116,17 @@
                     </template>
                     <template lwc:if={resource.showPermSetButton}>
                       <lightning-button-icon
+                        data-id="assign-resource-permission-set"
+                        tooltip="Add Permission Set to Me"
+                        alternative-text="Add Permission Set to Me"
+                        variant="border-filled"
+                        icon-name="utility:adduser"
+                        data-index={index}
+                        onclick={addResourcePermissionSet}
+                      ></lightning-button-icon>
+                      <lightning-button-icon
                         data-id="permission-action"
                         tooltip="Provision Permission Set"
-                        alternative-text="Provision Permission Set"
-                        title="Provision Permission Set"
                         variant="border-filled"
                         icon-name="action:manage_perm_sets"
                         data-index={index}
@@ -166,14 +173,25 @@
                       ></lightning-button>
                     </template>
                     <template lwc:elseif={resource.showProvisionPermissionSets}>
-                      <lightning-button
-                        data-id="provision-permission-sets"
-                        label="Provision Permission Sets"
-                        variant="brand"
-                        icon-name="action:manage_perm_sets"
-                        icon-position="right"
-                        onclick={navigateToPkgVizMainPermSet}
-                      ></lightning-button>
+                      <lightning-button-group>
+                        <lightning-button-icon
+                          data-id="assign-core-permission-set"
+                          tooltip="Add Permission Set to Me"
+                          alternative-text="Add Permission Set to Me"
+                          variant="border-filled"
+                          icon-name="utility:adduser"
+                          onclick={addPkgVizMainPermissionSet}
+                        ></lightning-button-icon>
+                        <lightning-button
+                          data-id="provision-permission-sets"
+                          label="Provision Permission Set"
+                          variant="brand"
+                          icon-name="action:manage_perm_sets"
+                          tooltip="Provision Permission Set"
+                          icon-position="right"
+                          onclick={navigateToPkgVizMainPermSet}
+                        ></lightning-button>
+                      </lightning-button-group>
                     </template>
                     <template lwc:elseif={resource.showStatusMessage}>
                       <p data-id="extension-status-message" role="status">

@@ -265,12 +265,24 @@
                               </p>
                             </div>
                             <div class="slds-shrink-none slds-var-m-left_small">
-                              <lightning-button-icon
-                                icon-name="action:manage_perm_sets"
-                                variant="brand"
-                                onclick={navigateToPkgVizMainPermSet}
-                                disabled={isSetupEnabled}
-                              ></lightning-button-icon>
+                              <lightning-button-group>
+                                <lightning-button-icon
+                                  data-id="assign-main-permission-set"
+                                  icon-name="utility:adduser"
+                                  alternative-text="Add Permission Set to Me"
+                                  tooltip="Add Permission Set to Me"
+                                  variant="border-filled"
+                                  onclick={addPkgVizMainPermissionSet}
+                                  disabled={isSetupEnabled}
+                                ></lightning-button-icon>
+                                <lightning-button-icon
+                                  icon-name="action:manage_perm_sets"
+                                  tooltip="Provision Permission Set"
+                                  variant="brand"
+                                  onclick={navigateToPkgVizMainPermSet}
+                                  disabled={isSetupEnabled}
+                                ></lightning-button-icon>
+                              </lightning-button-group>
                             </div>
                           </div>
                         </li>
@@ -307,12 +319,24 @@
                               <div
                                 class="slds-shrink-none slds-var-m-left_small"
                               >
-                                <lightning-button-icon
-                                  icon-name="action:manage_perm_sets"
-                                  variant="brand"
-                                  onclick={navigateToPkgVizPushUpgradePermSet}
-                                  disabled={isSetupEnabled}
-                                ></lightning-button-icon>
+                                <lightning-button-group>
+                                  <lightning-button-icon
+                                    data-id="assign-push-upgrade-permission-set"
+                                    icon-name="utility:adduser"
+                                    alternative-text="Add Permission Set to Me"
+                                    tooltip="Add Permission Set to Me"
+                                    variant="border-filled"
+                                    onclick={addPkgVizPushUpgradePermissionSet}
+                                    disabled={isSetupEnabled}
+                                  ></lightning-button-icon>
+                                  <lightning-button-icon
+                                    icon-name="action:manage_perm_sets"
+                                    tooltip="Provision Permission Set"
+                                    variant="brand"
+                                    onclick={navigateToPkgVizPushUpgradePermSet}
+                                    disabled={isSetupEnabled}
+                                  ></lightning-button-icon>
+                                </lightning-button-group>
                               </div>
                             </div>
                           </li>
@@ -631,14 +655,24 @@
                               </p>
                             </div>
                             <div class="slds-shrink-none slds-var-m-left_small">
-                              <lightning-button-icon
-                                icon-name="action:manage_perm_sets"
-                                variant="brand"
-                                onclick={navigateToPermissionSets}
-                                disabled={isSetupEnabled}
-                                title="Open Permission Sets Setup"
-                                alternative-text="Open Permission Sets Setup"
-                              ></lightning-button-icon>
+                              <lightning-button-group>
+                                <lightning-button-icon
+                                  data-id="assign-tooling-permission-set"
+                                  icon-name="utility:adduser"
+                                  alternative-text="Add Permission Set to Me"
+                                  tooltip="Add Permission Set to Me"
+                                  variant="border-filled"
+                                  onclick={addToolingPermissionSet}
+                                  disabled={isSetupEnabled}
+                                ></lightning-button-icon>
+                                <lightning-button-icon
+                                  icon-name="action:manage_perm_sets"
+                                  tooltip="Provision Permission Set"
+                                  variant="brand"
+                                  onclick={navigateToPermissionSets}
+                                  disabled={isSetupEnabled}
+                                ></lightning-button-icon>
+                              </lightning-button-group>
                             </div>
                           </div>
                         </li>

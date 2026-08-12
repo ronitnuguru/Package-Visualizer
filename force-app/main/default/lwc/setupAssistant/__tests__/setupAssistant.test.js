@@ -1,16 +1,27 @@
 import { createElement } from "lwc";
 import SetupAssistant from "c/setupAssistant";
 import getIntegrationStatus from "@salesforce/apex/PackageVisualizerCtrl.getIntegrationStatus";
+import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
+import assignPermissionSetToCurrentUser from "@salesforce/apex/PackageVisualizerCtrl.assignPermissionSetToCurrentUser";
 
 jest.mock(
   "@salesforce/apex/PackageVisualizerCtrl.getIntegrationStatus",
   () => ({ default: jest.fn() }),
   { virtual: true }
 );
+jest.mock(
+  "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId",
+  () => ({ default: jest.fn() }),
+  { virtual: true }
+);
+jest.mock(
+  "@salesforce/apex/PackageVisualizerCtrl.assignPermissionSetToCurrentUser",
+  () => ({ default: jest.fn() }),
+  { virtual: true }
+);
 
 [
   "getProfileId",
-  "getNamespacePermSetId",
   "configureNamedCredentialUrl",
   "populateClientCredentials",
   "verifyAndEnableNamedCredential"
@@ -58,6 +69,9 @@ jest.mock(
   { virtual: true }
 );
 jest.mock("@salesforce/userPermission/ViewSetup", () => ({ default: true }), {
+  virtual: true
+});
+jest.mock("@salesforce/user/Id", () => ({ default: "005000000000001AAA" }), {
   virtual: true
 });
 
@@ -173,5 +187,65 @@ describe("c-setup-assistant Provision Access to Developers", () => {
     expect(openTab.location.href).toBe(
       `${window.location.origin}/lightning/setup/PermSets/home`
     );
+  });
+});
+
+describe("c-setup-assistant permission-set self-assignment", () => {
+  beforeEach(() => {
+    getIntegrationStatus.mockResolvedValue({
+      toolingPermissionSetId: "0PS000000000002AAA"
+    });
+    getNamespacePermSetId.mockResolvedValue("0PS000000000001AAA");
+    assignPermissionSetToCurrentUser.mockResolvedValue(true);
+  });
+
+  afterEach(() => {
+    while (document.body.firstChild) {
+      document.body.removeChild(document.body.firstChild);
+    }
+    jest.clearAllMocks();
+  });
+
+  it("assigns the core permission set to the current user", async () => {
+    const element = createElement("c-setup-assistant", {
+      is: SetupAssistant
+    });
+    const toastHandler = jest.fn();
+    element.addEventListener("lightning__showtoast", toastHandler);
+    document.body.appendChild(element);
+    await flushPromises();
+
+    element.shadowRoot
+      .querySelector('[data-id="assign-main-permission-set"]')
+      .click();
+    await flushPromises();
+
+    expect(getNamespacePermSetId).toHaveBeenCalledWith({
+      label: "Package_VisualizerPS",
+      namespace: "pkgviz"
+    });
+    expect(assignPermissionSetToCurrentUser).toHaveBeenCalledWith({
+      permissionSetId: "0PS000000000001AAA",
+      userId: "005000000000001AAA"
+    });
+    expect(toastHandler.mock.calls[0][0].detail.variant).toBe("success");
+  });
+
+  it("assigns the Tooling Access permission set from integration status", async () => {
+    const element = createElement("c-setup-assistant", {
+      is: SetupAssistant
+    });
+    document.body.appendChild(element);
+    await flushPromises();
+
+    element.shadowRoot
+      .querySelector('[data-id="assign-tooling-permission-set"]')
+      .click();
+    await flushPromises();
+
+    expect(assignPermissionSetToCurrentUser).toHaveBeenCalledWith({
+      permissionSetId: "0PS000000000002AAA",
+      userId: "005000000000001AAA"
+    });
   });
 });
