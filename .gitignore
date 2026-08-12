@@ -51,6 +51,7 @@ $RECYCLE.BIN/
 .superpowers/
 agent/
 skills-lock.json
+CLAUDE.md
 
 # Local project configuration
 sfdx-project.json
