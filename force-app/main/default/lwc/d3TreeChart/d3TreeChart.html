@@ -1,30 +1,149 @@
 <template>
-  <div class="chart-box">
-    <!-- Loading State -->
-    <template if:true={displaySpinner}>
-      <div class="loading-overlay">
-        <lightning-spinner
-          alternative-text="Loading visualization..."
+  <div
+    class="slds-border_top slds-border_right slds-border_bottom slds-border_left card-style"
+  >
+    <lightning-card class="pkgviz-ancestry" aria-label={explorerTitle}>
+      <h3
+        slot="title"
+        class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate"
+      >
+        <lightning-icon
+          icon-name="standard:prep_flow"
+          alternative-text="Package Ancestry"
           size="medium"
-          variant="brand"
-        ></lightning-spinner>
-      </div>
-    </template>
+          class="slds-var-m-right_x-small slds-shrink-none"
+        ></lightning-icon>
+        <span class="slds-truncate">Package Ancestry</span>
+      </h3>
 
-    <!-- Main Visualization -->
-    <template if:true={treeData}>
-      <div class="d3" lwc:dom="manual"></div>
-    </template>
-    
-    <!-- Enhanced Error State -->
-    <template if:false={displaySpinner}>
-      <template if:false={treeData}>
-        <div class="error-state">
-          <lightning-empty-state title="Visualization Unavailable"  illustration-name="error:connectionissue">
-            <p slot="description">{errorBody}</p>
-          </lightning-empty-state>
+      <div
+        slot="actions"
+        class="pkgviz-ancestry__actions slds-grid slds-grid_vertical-align-center slds-wrap"
+        role="group"
+        aria-label="Ancestry canvas controls"
+      >
+        <span
+          class="pkgviz-ancestry__zoom-value slds-var-m-right_x-small"
+          aria-label="Current zoom"
+          >{zoomPercentage}</span
+        >
+        <lightning-button-group class="">
+          <lightning-button-icon
+            icon-name="utility:zoomout"
+            tooltip="Zoom Out"
+            disabled={isZoomOutDisabled}
+            onclick={handleZoomOut}
+          ></lightning-button-icon>
+          <lightning-button-icon
+            icon-name="utility:zoomin"
+            tooltip="Zoom In"
+            disabled={isZoomInDisabled}
+            onclick={handleZoomIn}
+          ></lightning-button-icon>
+        </lightning-button-group>
+        <lightning-button-group class="slds-var-m-right_x-small">
+          <lightning-button-icon
+            icon-name="utility:expand"
+            tooltip="Expand"
+            onclick={handleResetZoom}
+          ></lightning-button-icon>
+          <lightning-button-icon
+            icon-name="utility:contract"
+            tooltip="Contract"
+            onclick={handleFit}
+          ></lightning-button-icon>
+        </lightning-button-group>
+        <lightning-button-icon
+          icon-name="utility:info"
+          tooltip="View Details"
+          variant="brand"
+          disabled={isViewDetailsDisabled}
+          onclick={handleViewDetails}
+        ></lightning-button-icon>
+      </div>
+      <template if:true={isLoading}>
+        <div class="pkgviz-ancestry__state">
+          <lightning-spinner
+            alternative-text="Loading ancestry"
+            size="medium"
+          ></lightning-spinner>
         </div>
       </template>
-    </template>
+
+      <template if:true={errorMessage}>
+        <div class="pkgviz-ancestry__state" role="alert">
+          <lightning-icon
+            icon-name="utility:error"
+            alternative-text="Error"
+            size="small"
+          ></lightning-icon>
+          <p class="slds-var-m-top_small">{errorMessage}</p>
+          <lightning-button
+            class="slds-var-m-top_small"
+            label="Retry"
+            onclick={handleRetry}
+          ></lightning-button>
+        </div>
+      </template>
+
+      <template if:false={isLoading}>
+        <template if:false={errorMessage}>
+          <template if:false={hasVersions}>
+            <div class="pkgviz-ancestry__state">
+              <lightning-icon
+                icon-name="utility:org_chart"
+                alternative-text="No released versions"
+                size="small"
+              ></lightning-icon>
+              <p class="slds-var-m-top_small">
+                No released versions are available to visualize.
+              </p>
+            </div>
+          </template>
+
+          <template if:true={hasVersions}>
+            <template if:true={hasIncompleteLineage}>
+              <div
+                class="pkgviz-ancestry__warning slds-grid slds-grid_vertical-align-center slds-p-around_small"
+                role="status"
+              >
+                <lightning-icon
+                  icon-name="utility:warning"
+                  alternative-text="Lineage warning"
+                  size="x-small"
+                ></lightning-icon>
+                <p class="slds-var-m-left_x-small">
+                  {incompleteLineageMessage}
+                </p>
+              </div>
+            </template>
+
+            <section
+              class="pkgviz-ancestry__canvas-region"
+              aria-label="Version lineage"
+            >
+              <div
+                class="pkgviz-ancestry-canvas"
+                lwc:dom="manual"
+                tabindex="0"
+                role="region"
+                aria-label="Scrollable package ancestry canvas"
+                aria-describedby="pkgviz-canvas-help"
+                onkeydown={handleCanvasNavigationKeydown}
+                onpointerdown={handleCanvasPointerDown}
+                onpointermove={handleCanvasPointerMove}
+                onpointerup={handleCanvasPointerUp}
+                onpointercancel={handleCanvasPointerCancel}
+                onwheel={handleCanvasWheel}
+              ></div>
+              <p id="pkgviz-canvas-help" class="slds-assistive-text">
+                Drag to pan, use the scrollbars or arrow keys to navigate, and
+                hold Control or Command while scrolling to zoom.
+              </p>
+            </section>
+          </template>
+        </template>
+      </template>
+    </lightning-card>
   </div>
 </template>

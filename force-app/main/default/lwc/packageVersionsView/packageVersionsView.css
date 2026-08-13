@@ -5,23 +5,24 @@
   direction: rtl;
 }
 
-.table-height{
+.table-height {
   max-height: 700px;
 }
 
-.d3-height{
+.d3-height {
   max-height: max-content;
 }
 
-.d3-box{
+.d3-box {
+  box-sizing: border-box;
   overflow-x: auto;
 }
 
-.footer-styling{
+.footer-styling {
   position: initial;
 }
 
 .decimal-style {
   font-weight: 900;
-  color: #706E6B;
+  color: #706e6b;
 }

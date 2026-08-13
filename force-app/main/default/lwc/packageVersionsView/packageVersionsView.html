@@ -194,34 +194,6 @@
                     class="slds-var-p-left_x-small"
                   ></lightning-button-icon-stateful>
                 </template>
-                <template if:true={treeState}>
-                  <lightning-button-menu
-                    icon-name="utility:settings"
-                    menu-alignment="auto"
-                    variant="border-filled"
-                    alternative-text="Chart Controls"
-                    class="slds-var-p-left_x-small"
-                  >
-                    <lightning-menu-subheader
-                      label="Chart Controls"
-                    ></lightning-menu-subheader>
-                    <lightning-menu-item
-                      value="expandAll"
-                      label="Expand All"
-                      id="expand"
-                      prefix-icon-name="utility:expand"
-                      onclick={handleExpandAll}
-                      class="expand-all"
-                    ></lightning-menu-item>
-                    <lightning-menu-item
-                      value="collapseAll"
-                      label="Collapse All"
-                      id="collapse-all"
-                      prefix-icon-name="utility:contract"
-                      onclick={handleCollapseAll}
-                    ></lightning-menu-item>
-                  </lightning-button-menu>
-                </template>
               </div>
             </div>
           </div>
@@ -411,7 +383,10 @@
               </div>
             </template>
             <template if:true={treeState}>
-              <div style={responsivePanelStyle} class="d3-box">
+              <div
+                style={responsivePanelStyle}
+                class="d3-box"
+              >
                 <template if:true={isReleasedData}>
                   <c-d3-tree-chart
                     name={name}
@@ -595,7 +570,10 @@
           <div
             class="table-style slds-var-m-top_small slds-var-p-horizontal_medium"
           >
-            <div style={responsivePanelStyle} class="d3-box">
+            <div
+              style={responsivePanelStyle}
+              class="d3-box slds-var-p-right_medium"
+            >
               <c-d3-tree-chart
                 name={name}
                 grid-data={isReleasedData}
@@ -604,8 +582,7 @@
                 onscrollleft={handleScrollToLeft}
                 onscrollright={handleScrollToRight}
                 oncurrentnode={handleD3CurrentNode}
-              >
-              </c-d3-tree-chart>
+              ></c-d3-tree-chart>
             </div>
           </div>
         </template>
