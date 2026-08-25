@@ -58,6 +58,7 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   isTestingNamedCredential = false;
   isProvisioning = false;
   isAgentforceConversationConfigured = false;
+  isCustomMcpServerConfigured = false;
 
   connectedCallback() {
     this.loadIntegrationStatus();
@@ -65,6 +66,10 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
 
   handleAgentforceConfigurationChange(event) {
     this.isAgentforceConversationConfigured = event.detail.configured === true;
+  }
+
+  handleCustomMcpServerConfigurationChange(event) {
+    this.isCustomMcpServerConfigured = event.detail.configured === true;
   }
 
   loadIntegrationStatus() {
@@ -811,6 +816,13 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   navigateToPboTrailhead() {
     window.open(
       `https://trailhead.salesforce.com/content/learn/modules/isvforce_basics/isvforce_basics_tools_resources`,
+      "_blank"
+    );
+  }
+
+  navigateToPboKnowYourOrgs() {
+    window.open(
+      `https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_before_know_orgs.htm`,
       "_blank"
     );
   }

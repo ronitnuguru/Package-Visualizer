@@ -1,7 +1,7 @@
 import { api, LightningElement } from "lwc";
 import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
-import { AGENT_SCRIPTS } from "./agentScriptsData.js";
+import { AGENT_SCRIPTS } from "c/agentScriptCatalog";
 import getExtensionStatus from "@salesforce/apex/AgentforceExtensionStatusController.getStatus";
 import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
 import assignPermissionSetToCurrentUser from "@salesforce/apex/PackageVisualizerCtrl.assignPermissionSetToCurrentUser";

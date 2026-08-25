@@ -1,0 +1,161 @@
+<template>
+  <div
+    data-id="custom-mcp-servers-wrapper"
+    class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-box slds-box_xx-small slds-var-m-top_small"
+  >
+    <lightning-card data-id="custom-mcp-servers-card">
+      <h3 slot="title" class="slds-truncate">
+        <lightning-icon
+          icon-name="standard:mcp_server"
+          alternative-text="Custom MCP Servers Setup"
+          size="medium"
+          class="slds-m-right_small"
+        ></lightning-icon>
+        Custom MCP Servers Setup
+      </h3>
+      <lightning-button-group slot="actions">
+        <template lwc:if={showEditAction}>
+          <lightning-button-icon
+            data-id="edit-mcp-server"
+            icon-name="utility:edit"
+            disabled={editDisabled}
+            onclick={handleEdit}
+          ></lightning-button-icon>
+        </template>
+        <lightning-button-icon
+          data-id="toggle-mcp-guidance"
+          icon-name={disclosureIcon}
+          alternative-text={disclosureAlternativeText}
+          tooltip={disclosureAlternativeText}
+          disabled={disclosureDisabled}
+          aria-expanded={disclosureAriaExpanded}
+          aria-controls="custom-mcp-client-guidance"
+          onclick={handleDisclosureToggle}
+        ></lightning-button-icon>
+      </lightning-button-group>
+      <div
+        data-id="custom-mcp-servers-card-body"
+        class="slds-card__body slds-card__body_inner slds-is-relative"
+      >
+        <template lwc:if={showSpinner}>
+          <lightning-spinner
+            alternative-text="Loading Custom MCP Server configuration"
+            size="medium"
+            variant="brand"
+          ></lightning-spinner>
+        </template>
+
+        <template lwc:if={isContentExpanded}>
+          <div class="slds-var-m-top_small">
+            <div
+              class="slds-border_top slds-border_right slds-border_bottom slds-border_left"
+            >
+              <c-headless-360-showcase
+                id="custom-mcp-client-guidance"
+                data-id="custom-mcp-client-guidance"
+              ></c-headless-360-showcase>
+            </div>
+          </div>
+        </template>
+
+        <div
+          data-id="custom-mcp-selection-card-wrapper"
+          class="slds-border_top slds-border_right slds-border_bottom slds-border_left slds-var-m-top_small"
+        >
+          <lightning-card data-id="custom-mcp-selection-card" hide-header>
+            <div class="slds-card__body slds-card__body_inner">
+              <div
+                class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-var-m-bottom_x-small"
+                role="status"
+              >
+                <div class="slds-media__figure">
+                  <lightning-icon
+                    icon-name="utility:info"
+                    alternative-text="Custom MCP Server configuration status"
+                    size="small"
+                    variant="inverse"
+                  ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <lightning-badge
+                    data-id="configuration-state"
+                    label={configuration.state}
+                    class="slds-theme_inverse"
+                  ></lightning-badge>
+                  <lightning-formatted-text
+                    data-id="configuration-message"
+                    class="slds-var-m-left_x-small"
+                    value={configuration.message}
+                  ></lightning-formatted-text>
+                </div>
+              </div>
+
+              <div class="slds-grid slds-gutters slds-grid_vertical-align-end">
+                <div class="slds-col slds-grow">
+                  <lightning-combobox
+                    data-id="mcp-server-select"
+                    name="customMcpServer"
+                    label="Custom MCP Server"
+                    value={selectedMcpServerDefinitionId}
+                    options={serverOptions}
+                    disabled={serverSelectionDisabled}
+                    onchange={handleServerChange}
+                  ></lightning-combobox>
+                </div>
+                <div class="slds-col slds-shrink-none">
+                  <lightning-button
+                    data-id="view-mcp-server-in-setup"
+                    label="View in Setup"
+                    icon-name="utility:setup"
+                    variant="brand-outline"
+                    disabled={viewInSetupDisabled}
+                    onclick={handleViewInSetup}
+                  ></lightning-button>
+                </div>
+              </div>
+              <template lwc:if={hasNoServers}>
+                <p
+                  data-id="empty-options-guidance"
+                  class="slds-var-m-top_x-small"
+                  role="status"
+                >
+                  No Custom MCP Servers are available. Create one in Salesforce
+                  Setup, then reload Setup Assistant.
+                </p>
+              </template>
+            </div>
+
+            <template lwc:if={isEditing}>
+              <div
+                slot="footer"
+                class="slds-grid slds-grid_align-center slds-grid_vertical-align-center"
+              >
+                <lightning-button-group data-id="mcp-footer-actions">
+                  <lightning-button
+                    data-id="clear-mcp-server"
+                    label="Clear"
+                    disabled={clearDisabled}
+                    onclick={handleClear}
+                  ></lightning-button>
+                  <lightning-button
+                    data-id="cancel-mcp-server"
+                    label="Cancel"
+                    disabled={isSaving}
+                    onclick={handleCancel}
+                  ></lightning-button>
+                  <lightning-button
+                    data-id="save-mcp-server"
+                    variant="brand"
+                    label="Save"
+                    disabled={saveDisabled}
+                    onclick={handleSave}
+                  ></lightning-button>
+                </lightning-button-group>
+              </div>
+            </template>
+          </lightning-card>
+        </div>
+      </div>
+    </lightning-card>
+  </div>
+</template>

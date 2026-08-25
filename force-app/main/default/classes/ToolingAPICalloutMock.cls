@@ -74,6 +74,11 @@ global with sharing class ToolingAPICalloutMock implements HttpCalloutMock {
         '{"size":1,"totalSize":1,"done":true,"queryLocator":null,"entityTypeName":"ApexClass","records":[{"attributes":{"type":"ApexClass","url":"/services/data/v61.0/tooling/sobjects/ApexClass/01p000000000000AAA"},"Id":"01p000000000000AAA"}]}'
       );
       res.setStatusCode(200);
+    } else if (req.getEndpoint().contains('FROM+McpServerDefinition')) {
+      //McpServerDefinition Success — subscriber-created Custom MCP Servers used
+      //by Setup Assistant. This query is intentionally separate from external
+      //MCP registrations represented by ExternalServiceRegistration.
+      setMcpServerDefinitionResponse(res);
     } else if (req.getEndpoint().contains('FROM+ExternalServiceRegistration')) {
       //ExternalServiceRegistration (MCP servers) Success — two records exercise
       //the getMcpServers parse loop: one valid DeepWiki schema and one whose
@@ -109,6 +114,16 @@ global with sharing class ToolingAPICalloutMock implements HttpCalloutMock {
       res.setStatus('Authorization Failed');
     }
     return res;
+  }
+
+  private static void setMcpServerDefinitionResponse(HttpResponse response) {
+    response.setBody(
+      '{"size":2,"totalSize":2,"done":true,"queryLocator":null,"entityTypeName":"McpServerDefinition","records":[' +
+        '{"attributes":{"type":"McpServerDefinition","url":"/services/data/v66.0/tooling/sobjects/McpServerDefinition/1g1000000000001AAA"},"Id":"1g1000000000001AAA","DeveloperName":"Alpha_Server"},' +
+        '{"attributes":{"type":"McpServerDefinition","url":"/services/data/v66.0/tooling/sobjects/McpServerDefinition/1g1000000000002AAA"},"Id":"1g1000000000002AAA","DeveloperName":"Zulu_Server"}' +
+        ']}'
+    );
+    response.setStatusCode(200);
   }
 
   public HTTPResponse cmsRespond(HTTPRequest req) {

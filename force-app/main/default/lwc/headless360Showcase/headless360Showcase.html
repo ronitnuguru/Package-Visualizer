@@ -1,0 +1,347 @@
+<template>
+  <lightning-card>
+    <h3 slot="title" class="slds-truncate">
+      <lightning-icon
+        icon-name="utility:salesforce1"
+        alternative-text="Headless 360 Showcase"
+        size="medium"
+        class="slds-m-right_small card_header_icon"
+      ></lightning-icon>
+      Headless 360 Showcase
+    </h3>
+    <lightning-button-group slot="actions">
+      <lightning-button-icon
+        data-id="headless-360-showcase-help"
+        icon-name="utility:help_doc_ext"
+        variant="border-filled"
+        onclick={navigateToHeadless360ShowcaseHelp}
+      ></lightning-button-icon>
+    </lightning-button-group>
+    <div class="slds-card__body slds-card__body_inner">
+      <lightning-tabset variant="scoped">
+        <lightning-tab label="Slack" icon-name="standard:slack">
+          <div
+            class="slds-progress slds-progress_vertical slds-progress_success"
+          >
+            <ol class="slds-progress__list slds-progress__list-bordered">
+              <li class="slds-progress__item" data-id="slack-connection-step">
+                <span
+                  class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                >
+                  <lightning-icon
+                    class="icon-style"
+                    icon-name="utility:info_alt"
+                    variant="info"
+                    size="x-small"
+                    alternative-text="Information"
+                  ></lightning-icon>
+                </span>
+                <div class="slds-progress__item_content">
+                  <div class="slds-grid slds-grid_align-spread">
+                    <div class="slds-col">
+                      <strong class="slds-text-title_caps">
+                        Connect Salesforce and Slack
+                      </strong>
+                      <p class="slds-var-m-top_xx-small">
+                        Connect your Slack workspace to this Salesforce org,
+                        then approve and activate the connection.
+                      </p>
+                    </div>
+                    <div class="slds-shrink-none slds-var-m-left_small">
+                      <lightning-button-group>
+                        <lightning-button-icon
+                          data-id="slack-workspaces-setup"
+                          icon-name="utility:setup"
+                          onclick={navigateToSlackSetup}
+                        ></lightning-button-icon>
+                        <lightning-button-icon
+                          data-id="slack-connection-help"
+                          icon-name="utility:help_doc_ext"
+                          variant="brand"
+                          onclick={navigateToSlackConnectionHelp}
+                        ></lightning-button-icon>
+                      </lightning-button-group>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <li class="slds-progress__item" data-id="custom-mcp-server-step">
+                <span
+                  class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                >
+                  <lightning-icon
+                    class="icon-style"
+                    icon-name="utility:info_alt"
+                    variant="info"
+                    size="x-small"
+                    alternative-text="Information"
+                  ></lightning-icon>
+                </span>
+                <div class="slds-progress__item_content">
+                  <div class="slds-grid slds-grid_align-spread">
+                    <div class="slds-col">
+                      <strong class="slds-text-title_caps">
+                        Create and Curate a Custom MCP Server
+                      </strong>
+                      <p class="slds-var-m-top_xx-small">
+                        Create a Custom Salesforce Hosted MCP Server and add a
+                        combination of server assets and tools that Slackbot can
+                        use.
+                      </p>
+                    </div>
+                    <div class="slds-shrink-none slds-var-m-left_small">
+                      <lightning-button-group>
+                        <lightning-button-icon
+                          data-id="custom-mcp-servers-setup"
+                          icon-name="utility:setup"
+                          onclick={navigateToCustomMcpServersSetup}
+                        ></lightning-button-icon>
+                        <lightning-button-icon
+                          data-id="custom-mcp-servers-help"
+                          icon-name="utility:help_doc_ext"
+                          variant="brand"
+                          onclick={navigateToCustomMcpServersHelp}
+                        ></lightning-button-icon>
+                      </lightning-button-group>
+                    </div>
+                  </div>
+                  <div class="slds-var-m-top_small">
+                    <lightning-tabset data-id="mcp-tool-tabs" variant="scoped">
+                      <lightning-tab label="Apex" icon-name="standard:apex">
+                        <div class="">
+                          <lightning-datatable
+                            data-id="apex-tools"
+                            key-field="apiName"
+                            data={apexTools}
+                            columns={apexToolColumns}
+                            hide-checkbox-column
+                          ></lightning-datatable>
+                        </div>
+                      </lightning-tab>
+                      <lightning-tab
+                        label="Agents"
+                        icon-name="standard:agent_astro"
+                      >
+                        <div class="">
+                          <template lwc:if={isLoadingAgentforceConfiguration}>
+                            <lightning-spinner
+                              size="medium"
+                            ></lightning-spinner>
+                          </template>
+                          <template lwc:elseif={hasConfiguredAgent}>
+                            <lightning-accordion
+                              data-id="configured-agent-script"
+                              active-section-name={activeAgentScriptSections}
+                              allow-multiple-sections-open
+                              onsectiontoggle={handleAgentScriptSectionToggle}
+                              class="slds-border_top slds-border_right slds-border_bottom slds-border_left c-headless360-agent-script-accordion"
+                            >
+                              <lightning-accordion-section
+                                name={agentScript.id}
+                                label={agentScript.label}
+                              >
+                                <div
+                                  class="slds-border_top slds-border_right slds-border_bottom slds-border_left c-headless360-agent-script-card"
+                                >
+                                  <lightning-card>
+                                    <h3
+                                      slot="title"
+                                      class="slds-truncate"
+                                      title={agentScript.label}
+                                    >
+                                      <lightning-icon
+                                        icon-name="standard:code_set"
+                                        alternative-text="AgentScript"
+                                        size="small"
+                                        class="slds-m-right_small"
+                                      ></lightning-icon>
+                                      {agentScript.label}
+                                    </h3>
+                                    <lightning-button-group slot="actions">
+                                      <lightning-button
+                                        data-id="generate-agent-script"
+                                        label="Generate"
+                                        variant="brand"
+                                        icon-name="utility:sparkles"
+                                        icon-position="right"
+                                        onclick={handleAgentScriptCoach}
+                                      ></lightning-button>
+                                      <lightning-button-icon
+                                        data-id="copy-agent-script"
+                                        icon-name="utility:copy"
+                                        variant="border-filled"
+                                        alternative-text="Copy AgentScript"
+                                        tooltip="Copy to Clipboard"
+                                        onclick={handleCopyAgentScript}
+                                      ></lightning-button-icon>
+                                      <lightning-button-icon
+                                        data-id="navigate-agentforce-studio"
+                                        icon-name="utility:agent_astro"
+                                        variant="border-filled"
+                                        alternative-text="Navigate to Agentforce Studio"
+                                        tooltip="Navigate to Agentforce Studio"
+                                        onclick={navigateToAgentforceStudio}
+                                      ></lightning-button-icon>
+                                    </lightning-button-group>
+                                    <div
+                                      class="slds-card__body slds-card__body_inner slds-p-around_none"
+                                    >
+                                      <pre
+                                        data-id="agent-script-preview"
+                                        class="c-headless360-agent-script-pre slds-scrollable_y"
+                                      ><code class="c-headless360-agent-script-code">{agentScript.body}</code></pre>
+                                    </div>
+                                  </lightning-card>
+                                </div>
+                              </lightning-accordion-section>
+                            </lightning-accordion>
+                          </template>
+                          <template lwc:else>
+                            <div
+                              data-id="agent-setup-guidance"
+                              class="slds-scoped-notification slds-media slds-media_center slds-theme_info"
+                              role="status"
+                            >
+                              <div class="slds-media__figure">
+                                <lightning-icon
+                                  icon-name="utility:info"
+                                  alternative-text="Information"
+                                  size="small"
+                                  variant="inverse"
+                                ></lightning-icon>
+                              </div>
+                              <div class="slds-media__body">
+                                <p>
+                                  No active Agentforce agent is configured. In
+                                  AgentExchange Showcase, open the AgentScripts
+                                  tab and create the Package Visualizer Agent,
+                                  then select it as the Active Employee Agent in
+                                  Agentforce Setup.
+                                </p>
+                              </div>
+                            </div>
+                          </template>
+                        </div>
+                      </lightning-tab>
+                      <lightning-tab
+                        label="Prompt Templates"
+                        icon-name="standard:prompt_builder"
+                      >
+                        <lightning-empty-state
+                          data-id="prompt-template-assets-unavailable"
+                          title="Server asset not available..."
+                          illustration-name="success:new"
+                          size="small"
+                        >
+                          <p slot="description">
+                            No packaged Prompt Templates are available to add to
+                            this Custom MCP Server.
+                          </p>
+                          <lightning-button
+                            data-id="prompt-template-assets-help"
+                            label="Learn More"
+                            slot="cta"
+                            onclick={navigateToPromptTemplateHelp}
+                          ></lightning-button>
+                        </lightning-empty-state>
+                      </lightning-tab>
+                      <lightning-tab label="Flows" icon-name="standard:flow">
+                        <lightning-empty-state
+                          data-id="flow-assets-unavailable"
+                          title="Server asset not available..."
+                          illustration-name="success:new"
+                          size="small"
+                        >
+                          <p slot="description">
+                            No packaged Flows are available to add to this
+                            Custom MCP Server.
+                          </p>
+                          <lightning-button
+                            data-id="flow-assets-help"
+                            label="Learn More"
+                            slot="cta"
+                            onclick={navigateToFlowHelp}
+                          ></lightning-button>
+                        </lightning-empty-state>
+                      </lightning-tab>
+                      <lightning-tab
+                        label="Salesforce Hosted MCP Servers"
+                        icon-name="standard:mcp_server"
+                      >
+                        <lightning-empty-state
+                          data-id="salesforce-hosted-mcp-server-assets-unavailable"
+                          title="Server asset not available..."
+                          illustration-name="success:new"
+                          size="small"
+                        >
+                          <p slot="description">
+                            No packaged Salesforce Hosted MCP Servers are
+                            available to add to this Custom MCP Server.
+                          </p>
+                          <lightning-button
+                            data-id="salesforce-hosted-mcp-server-assets-help"
+                            label="Learn More"
+                            slot="cta"
+                            onclick={navigateToStandardServerHelp}
+                          ></lightning-button>
+                        </lightning-empty-state>
+                      </lightning-tab>
+                    </lightning-tabset>
+                  </div>
+                </div>
+              </li>
+              <li class="slds-progress__item" data-id="slackbot-mcp-step">
+                <span
+                  class="slds-icon_container slds-icon-utility-success slds-progress__marker"
+                >
+                  <lightning-icon
+                    class="icon-style"
+                    icon-name="utility:info_alt"
+                    variant="info"
+                    size="x-small"
+                    alternative-text="Information"
+                  ></lightning-icon>
+                </span>
+                <div class="slds-progress__item_content">
+                  <div class="slds-grid slds-grid_align-spread">
+                    <div class="slds-col">
+                      <strong class="slds-text-title_caps">
+                        Connect the Custom MCP Server to Slackbot
+                      </strong>
+                      <p class="slds-var-m-top_xx-small">
+                        In Slack administration, add the Salesforce MCP Server,
+                        review its tools, and assign member or workspace access.
+                      </p>
+                    </div>
+                    <div class="slds-shrink-none slds-var-m-left_small">
+                      <lightning-button-icon
+                        data-id="slackbot-mcp-help"
+                        icon-name="utility:help_doc_ext"
+                        variant="brand"
+                        onclick={navigateToSlackbotMcpHelp}
+                      ></lightning-button-icon>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </lightning-tab>
+        <!--
+        <lightning-tab label="Claude" icon-name="standard:sparkles">
+          <p data-id="claude-setup-content">
+            Claude setup and configuration instructions will be added in a
+            future iteration.
+          </p>
+        </lightning-tab>
+        <lightning-tab label="ChatGPT" icon-name="standard:sparkles">
+          <p data-id="chatgpt-setup-content">
+            ChatGPT setup and configuration instructions will be added in a
+            future iteration.
+          </p>
+        </lightning-tab>
+        -->
+      </lightning-tabset>
+    </div>
+  </lightning-card>
+</template>

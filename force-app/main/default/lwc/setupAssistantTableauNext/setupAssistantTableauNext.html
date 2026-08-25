@@ -84,7 +84,41 @@
           data-id="developer-demo-orgs"
           label="Developer &amp; Demo Orgs"
           icon-name="standard:default"
-        ></lightning-tab>
+        >
+          <template lwc:if={orgId}>
+            <div
+              class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small"
+              role="status"
+            >
+              <div class="slds-media__figure">
+                <lightning-icon
+                  size="small"
+                  icon-name="utility:skill"
+                  variant="inverse"
+                ></lightning-icon>
+              </div>
+              <div class="slds-media__body">
+                <p>
+                  Log a case via&nbsp;
+                  <a target="_blank" href="https://partners.salesforce.com/"
+                    >Partner Community</a
+                  >
+                  &nbsp;to provision the following licenses and features for
+                  your org - <code>{orgId}</code>
+                </p>
+              </div>
+            </div>
+          </template>
+          <lightning-icon
+            icon-name="utility:settings"
+            size="x-small"
+            class="slds-m-right_xx-small"
+          ></lightning-icon>
+          Features:
+          <ul class="slds-list_dotted">
+            <li>Tableau Next</li>
+          </ul>
+        </lightning-tab>
       </lightning-tabset>
     </lightning-tab>
   </lightning-tabset>

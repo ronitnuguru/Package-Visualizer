@@ -46,13 +46,31 @@ describe("c-setup-assistant-tableau-next", () => {
     expect(builder.autoConfirmSettings).toBe(true);
   });
 
-  it("leaves the Developer and Demo Orgs tab empty", () => {
+  it("renders Tableau Next features on the Developer and Demo Orgs tab", () => {
     const developerDemoTab = element.shadowRoot.querySelector(
       '[data-id="developer-demo-orgs"]'
     );
 
     expect(developerDemoTab).not.toBeNull();
-    expect(developerDemoTab.textContent.trim()).toBe("");
+    expect(developerDemoTab.textContent).toContain("Features:");
+    expect(developerDemoTab.textContent).toContain("Tableau Next");
+    expect(developerDemoTab.textContent).not.toContain("Partner Community");
+  });
+
+  it("shows Partner Community provisioning guidance when orgId is set", async () => {
+    element.orgId = "00D5w000002t5HBEAY";
+    await Promise.resolve();
+
+    const developerDemoTab = element.shadowRoot.querySelector(
+      '[data-id="developer-demo-orgs"]'
+    );
+    const partnerLink = developerDemoTab.querySelector("a");
+
+    expect(developerDemoTab.textContent).toContain("Partner Community");
+    expect(developerDemoTab.textContent).toContain("00D5w000002t5HBEAY");
+    expect(developerDemoTab.textContent).toContain("Tableau Next");
+    expect(partnerLink.href).toBe("https://partners.salesforce.com/");
+    expect(partnerLink.target).toBe("_blank");
   });
 
   it("opens the Tableau Next scratch org workflow", () => {

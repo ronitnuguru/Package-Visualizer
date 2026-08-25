@@ -36,7 +36,9 @@ jest.mock(
 [
   "getActiveEmployeeAgents",
   "getAgentforceConfiguration",
-  "saveAgentforceConfiguration"
+  "saveAgentforceConfiguration",
+  "getCustomMcpServerSetupState",
+  "saveCustomMcpServerConfiguration"
 ].forEach((methodName) => {
   jest.mock(
     `@salesforce/apex/AgentforceConversationConfigController.${methodName}`,
@@ -133,6 +135,83 @@ describe("c-setup-assistant Agentforce Conversation marker", () => {
     expect(successMarker.querySelector("lightning-icon").iconName).toBe(
       "utility:success"
     );
+  });
+});
+
+describe("c-setup-assistant Headless360 Custom MCP Servers", () => {
+  beforeEach(() => {
+    getIntegrationStatus.mockResolvedValue({});
+  });
+
+  afterEach(() => {
+    while (document.body.firstChild) {
+      document.body.removeChild(document.body.firstChild);
+    }
+    jest.clearAllMocks();
+  });
+
+  it("moves the Custom MCP Servers marker between default and success", async () => {
+    const element = createElement("c-setup-assistant", {
+      is: SetupAssistant
+    });
+    element.packageTypes = "2GP and Unlocked Packages";
+    document.body.appendChild(element);
+    await flushPromises();
+
+    expect(
+      element.shadowRoot.querySelector(
+        '[data-id="headless360-custom-mcp-servers-marker-default"]'
+      )
+    ).not.toBeNull();
+    const customMcpSetup = element.shadowRoot.querySelector(
+      "c-setup-assistant-custom-mcp-servers"
+    );
+    expect(customMcpSetup).not.toBeNull();
+    expect(
+      element.shadowRoot.querySelector(
+        '[data-id="headless360-custom-mcp-servers-marker-success"]'
+      )
+    ).toBeNull();
+
+    customMcpSetup.dispatchEvent(
+      new CustomEvent("configurationchange", {
+        detail: { configured: true }
+      })
+    );
+    await flushPromises();
+
+    expect(
+      element.shadowRoot.querySelector(
+        '[data-id="headless360-custom-mcp-servers-marker-default"]'
+      )
+    ).toBeNull();
+    const successMarker = element.shadowRoot.querySelector(
+      '[data-id="headless360-custom-mcp-servers-marker-success"]'
+    );
+    expect(successMarker).not.toBeNull();
+    const successIcon = successMarker.querySelector("lightning-icon");
+    expect(successIcon.iconName).toBe("utility:success");
+    expect(successIcon.alternativeText).toBe(
+      "Headless 360 Custom MCP Servers Configured"
+    );
+
+    customMcpSetup.dispatchEvent(
+      new CustomEvent("configurationchange", {
+        detail: { configured: false }
+      })
+    );
+    await flushPromises();
+
+    expect(
+      element.shadowRoot.querySelector(
+        '[data-id="headless360-custom-mcp-servers-marker-default"]'
+      )
+    ).not.toBeNull();
+    expect(
+      element.shadowRoot.querySelector(
+        '[data-id="headless360-custom-mcp-servers-marker-success"]'
+      )
+    ).toBeNull();
   });
 });
 

@@ -9,9 +9,15 @@ public with sharing class AgentforceConversationConfigController {
   private static final String STATE_UNCONFIGURED = 'UNCONFIGURED';
   private static final String STATE_READY = 'READY';
   private static final String STATE_STALE = 'STALE';
+  private static final String STATE_UNAVAILABLE = 'UNAVAILABLE';
   private static final String UNCONFIGURED_MESSAGE = 'Select an active Agentforce Employee Agent to enable release intelligence.';
   private static final String STALE_MESSAGE = 'The configured agent is no longer active or compatible. Select another active Employee Agent in Setup Assistant.';
   private static final String INVALID_SELECTION_MESSAGE = 'Select an active Agentforce Employee Agent.';
+  private static final String MCP_UNCONFIGURED_MESSAGE = 'Select a Custom MCP Server to configure client setup.';
+  private static final String MCP_STALE_MESSAGE = 'The configured Custom MCP Server is no longer available. Select another Custom MCP Server in Setup Assistant.';
+  private static final String MCP_UNAVAILABLE_MESSAGE = 'Custom MCP Server discovery is unavailable. Confirm the Tooling API integration is configured.';
+  private static final String MCP_INVALID_SELECTION_MESSAGE = 'Select an available Custom MCP Server.';
+  private static final String MCP_SERVER_DEFINITION_QUERY = 'SELECT Id, DeveloperName FROM McpServerDefinition ORDER BY DeveloperName LIMIT 2000';
 
   @TestVisible
   private static AgentDataSource dataSource = new AgentDataSource();
@@ -99,6 +105,83 @@ public with sharing class AgentforceConversationConfigController {
   }
 
   /**
+   * Returns selectable Custom MCP Servers and the current org-wide selection.
+   *
+   * @return Aggregate options and configuration state.
+   */
+  @AuraEnabled(cacheable=true)
+  public static AgentforceConversationConfigWrapper.McpServerSetupState getCustomMcpServerSetupState() {
+    String savedDefinitionId = getSavedMcpServerDefinitionId();
+    List<AgentforceConversationConfigWrapper.McpServerOption> options;
+    try {
+      options = discoverCustomMcpServers();
+    } catch (Exception ignored) {
+      return new AgentforceConversationConfigWrapper.McpServerSetupState(
+        new List<AgentforceConversationConfigWrapper.McpServerOption>(),
+        unavailableMcpConfiguration(savedDefinitionId)
+      );
+    }
+
+    if (String.isBlank(savedDefinitionId)) {
+      return new AgentforceConversationConfigWrapper.McpServerSetupState(
+        options,
+        unconfiguredMcpConfiguration()
+      );
+    }
+
+    AgentforceConversationConfigWrapper.McpServerOption selectedServer = findMcpServer(
+      options,
+      savedDefinitionId
+    );
+    return new AgentforceConversationConfigWrapper.McpServerSetupState(
+      options,
+      selectedServer == null
+        ? staleMcpConfiguration(savedDefinitionId)
+        : readyMcpConfiguration(selectedServer)
+    );
+  }
+
+  /**
+   * Validates and saves the org-wide Custom MCP Server selection. Passing null
+   * clears the integration without querying the Tooling API.
+   *
+   * @param mcpServerDefinitionId McpServerDefinition ID to save, or null to clear.
+   * @return The resulting Custom MCP Server configuration.
+   * @throws AuraHandledException when the selection isn't available or can't be saved.
+   */
+  @AuraEnabled
+  public static AgentforceConversationConfigWrapper.McpServerConfiguration saveCustomMcpServerConfiguration(
+    String mcpServerDefinitionId
+  ) {
+    if (mcpServerDefinitionId == null) {
+      persistMcpServerDefinitionId(null);
+      return unconfiguredMcpConfiguration();
+    }
+    if (String.isBlank(mcpServerDefinitionId)) {
+      throw handledException(MCP_INVALID_SELECTION_MESSAGE);
+    }
+
+    List<AgentforceConversationConfigWrapper.McpServerOption> options;
+    try {
+      options = discoverCustomMcpServers();
+    } catch (Exception queryException) {
+      throw handledException(
+        'Unable to validate the selected Custom MCP Server. Confirm the Tooling API integration is configured and try again.'
+      );
+    }
+    AgentforceConversationConfigWrapper.McpServerOption selectedServer = findMcpServer(
+      options,
+      mcpServerDefinitionId
+    );
+    if (selectedServer == null) {
+      throw handledException(MCP_INVALID_SELECTION_MESSAGE);
+    }
+
+    persistMcpServerDefinitionId(mcpServerDefinitionId);
+    return readyMcpConfiguration(selectedServer);
+  }
+
+  /**
    * Validates a BotDefinition ID without throwing.
    *
    * @param botId Candidate ID.
@@ -169,9 +252,53 @@ public with sharing class AgentforceConversationConfigController {
     return null;
   }
 
+  private static List<AgentforceConversationConfigWrapper.McpServerOption> discoverCustomMcpServers() {
+    List<AgentforceConversationConfigWrapper.McpServerOption> options = new List<AgentforceConversationConfigWrapper.McpServerOption>();
+    Set<String> addedDefinitionIds = new Set<String>();
+    for (
+      AgentforceConversationConfigWrapper.McpServerDefinitionRecord definition : dataSource.getMcpServerDefinitions()
+    ) {
+      if (
+        String.isBlank(definition.id) ||
+        String.isBlank(definition.developerName) ||
+        addedDefinitionIds.contains(definition.id)
+      ) {
+        continue;
+      }
+      options.add(
+        new AgentforceConversationConfigWrapper.McpServerOption(
+          definition.id,
+          definition.developerName
+        )
+      );
+      addedDefinitionIds.add(definition.id);
+    }
+    options.sort();
+    return options;
+  }
+
+  private static AgentforceConversationConfigWrapper.McpServerOption findMcpServer(
+    List<AgentforceConversationConfigWrapper.McpServerOption> options,
+    String mcpServerDefinitionId
+  ) {
+    for (
+      AgentforceConversationConfigWrapper.McpServerOption optionValue : options
+    ) {
+      if (optionValue.id == mcpServerDefinitionId) {
+        return optionValue;
+      }
+    }
+    return null;
+  }
+
   private static String getSavedBotIdValue() {
     Integration_Settings__c settings = Integration_Settings__c.getOrgDefaults();
     return settings?.Agentforce_Bot_Id__c;
+  }
+
+  private static String getSavedMcpServerDefinitionId() {
+    Integration_Settings__c settings = Integration_Settings__c.getOrgDefaults();
+    return settings?.MCP_Server_Definition_Id__c;
   }
 
   // Package Visualizer's validated Apex boundary is the only supported writer.
@@ -195,6 +322,30 @@ public with sharing class AgentforceConversationConfigController {
     } catch (DmlException dmlException) {
       throw handledException(
         'Unable to save the Agentforce configuration. Confirm your Package Visualizer access and try again.'
+      );
+    }
+  }
+
+  // Package Visualizer's validated Apex boundary is the only supported writer.
+  // The setting is restored to Protected before packaging.
+  @SuppressWarnings('PMD.ApexCRUDViolation')
+  private static void persistMcpServerDefinitionId(
+    String mcpServerDefinitionId
+  ) {
+    Integration_Settings__c settings = Integration_Settings__c.getOrgDefaults();
+    if (settings == null) {
+      settings = new Integration_Settings__c();
+    }
+    if (settings.Id == null) {
+      settings.SetupOwnerId = UserInfo.getOrganizationId();
+    }
+    settings.MCP_Server_Definition_Id__c = mcpServerDefinitionId;
+
+    try {
+      upsert settings;
+    } catch (DmlException dmlException) {
+      throw handledException(
+        'Unable to save the Custom MCP Server configuration. Confirm your Package Visualizer access and try again.'
       );
     }
   }
@@ -230,6 +381,50 @@ public with sharing class AgentforceConversationConfigController {
       null,
       STATE_STALE,
       STALE_MESSAGE
+    );
+  }
+
+  private static AgentforceConversationConfigWrapper.McpServerConfiguration unconfiguredMcpConfiguration() {
+    return new AgentforceConversationConfigWrapper.McpServerConfiguration(
+      null,
+      null,
+      STATE_UNCONFIGURED,
+      MCP_UNCONFIGURED_MESSAGE
+    );
+  }
+
+  private static AgentforceConversationConfigWrapper.McpServerConfiguration readyMcpConfiguration(
+    AgentforceConversationConfigWrapper.McpServerOption optionValue
+  ) {
+    return new AgentforceConversationConfigWrapper.McpServerConfiguration(
+      optionValue.id,
+      optionValue.developerName,
+      STATE_READY,
+      'Package Visualizer is configured to use ' +
+        optionValue.developerName +
+        '.'
+    );
+  }
+
+  private static AgentforceConversationConfigWrapper.McpServerConfiguration staleMcpConfiguration(
+    String mcpServerDefinitionId
+  ) {
+    return new AgentforceConversationConfigWrapper.McpServerConfiguration(
+      mcpServerDefinitionId,
+      null,
+      STATE_STALE,
+      MCP_STALE_MESSAGE
+    );
+  }
+
+  private static AgentforceConversationConfigWrapper.McpServerConfiguration unavailableMcpConfiguration(
+    String mcpServerDefinitionId
+  ) {
+    return new AgentforceConversationConfigWrapper.McpServerConfiguration(
+      mcpServerDefinitionId,
+      null,
+      STATE_UNAVAILABLE,
+      MCP_UNAVAILABLE_MESSAGE
     );
   }
 
@@ -310,6 +505,35 @@ public with sharing class AgentforceConversationConfigController {
             String.valueOf(row.get('DeveloperName')),
             String.valueOf(row.get('Type')),
             String.valueOf(row.get('AgentType'))
+          )
+        );
+      }
+      return values;
+    }
+
+    /**
+     * Queries subscriber-created Custom MCP Server definitions through Tooling API.
+     *
+     * @return Custom MCP Server definition records.
+     */
+    public virtual List<AgentforceConversationConfigWrapper.McpServerDefinitionRecord> getMcpServerDefinitions() {
+      List<AgentforceConversationConfigWrapper.McpServerDefinitionRecord> values = new List<AgentforceConversationConfigWrapper.McpServerDefinitionRecord>();
+      for (
+        Object recordValue : Package2Interface.submitQuery(
+          MCP_SERVER_DEFINITION_QUERY,
+          30000
+        )
+      ) {
+        Map<String, Object> row = (Map<String, Object>) recordValue;
+        Object idValue = row.get('Id');
+        Object developerNameValue = row.get('DeveloperName');
+        if (idValue == null || developerNameValue == null) {
+          continue;
+        }
+        values.add(
+          new AgentforceConversationConfigWrapper.McpServerDefinitionRecord(
+            String.valueOf(idValue),
+            String.valueOf(developerNameValue)
           )
         );
       }

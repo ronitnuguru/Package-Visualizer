@@ -6,6 +6,8 @@ private class AgentforceConversationConfigCtrlTest {
   private static final Id FIRST_BOT_ID = (Id) '0Xx000000000001';
   private static final Id SECOND_BOT_ID = (Id) '0Xx000000000002';
   private static final Id THIRD_BOT_ID = (Id) '0Xx000000000003';
+  private static final String FIRST_MCP_SERVER_ID = '1g1000000000001AAA';
+  private static final String SECOND_MCP_SERVER_ID = '1g1000000000002AAA';
 
   private class StubQueryException extends Exception {
   }
@@ -13,7 +15,9 @@ private class AgentforceConversationConfigCtrlTest {
   private class StubAgentDataSource extends AgentforceConversationConfigController.AgentDataSource {
     private List<AgentforceConversationConfigWrapper.ActiveBotVersionRecord> botVersions = new List<AgentforceConversationConfigWrapper.ActiveBotVersionRecord>();
     private List<AgentforceConversationConfigWrapper.EmployeeAgentDefinitionRecord> botDefinitions = new List<AgentforceConversationConfigWrapper.EmployeeAgentDefinitionRecord>();
+    private List<AgentforceConversationConfigWrapper.McpServerDefinitionRecord> mcpServerDefinitions = new List<AgentforceConversationConfigWrapper.McpServerDefinitionRecord>();
     private Boolean shouldFail = false;
+    private Boolean shouldFailMcp = false;
 
     public override List<AgentforceConversationConfigWrapper.ActiveBotVersionRecord> getActiveBotVersions() {
       if (shouldFail) {
@@ -29,6 +33,13 @@ private class AgentforceConversationConfigCtrlTest {
         throw new StubQueryException('Agentforce unavailable');
       }
       return botDefinitions;
+    }
+
+    public override List<AgentforceConversationConfigWrapper.McpServerDefinitionRecord> getMcpServerDefinitions() {
+      if (shouldFailMcp) {
+        throw new StubQueryException('Custom MCP Servers unavailable');
+      }
+      return mcpServerDefinitions;
     }
   }
 
@@ -361,6 +372,213 @@ private class AgentforceConversationConfigCtrlTest {
     Assert.isFalse(isValid, 'Malformed BotDefinition IDs should be rejected');
   }
 
+  @isTest
+  static void shouldReturnSortedMcpServers_WhenDefinitionsExist() {
+    StubAgentDataSource source = new StubAgentDataSource();
+    source.mcpServerDefinitions.add(
+      mcpServerDefinition(SECOND_MCP_SERVER_ID, 'Zulu_Server')
+    );
+    source.mcpServerDefinitions.add(
+      mcpServerDefinition(FIRST_MCP_SERVER_ID, 'Alpha_Server')
+    );
+    AgentforceConversationConfigController.dataSource = source;
+
+    Test.startTest();
+    AgentforceConversationConfigWrapper.McpServerSetupState setupState = AgentforceConversationConfigController.getCustomMcpServerSetupState();
+    Test.stopTest();
+
+    Assert.areEqual(2, setupState.options.size(), 'Both servers should return');
+    Assert.areEqual(
+      'Alpha_Server',
+      setupState.options[0].developerName,
+      'Options should be ordered by developer name'
+    );
+    Assert.areEqual(
+      'Zulu_Server',
+      setupState.options[1].developerName,
+      'The second server should follow alphabetically'
+    );
+  }
+
+  @isTest
+  static void shouldMapMcpServerDefinitions_WhenToolingApiResponds() {
+    Test.setMock(HttpCalloutMock.class, new ToolingAPICalloutMock());
+    AgentforceConversationConfigController.dataSource = new AgentforceConversationConfigController.AgentDataSource();
+
+    Test.startTest();
+    AgentforceConversationConfigWrapper.McpServerSetupState setupState = AgentforceConversationConfigController.getCustomMcpServerSetupState();
+    Test.stopTest();
+
+    Assert.areEqual(
+      2,
+      setupState.options.size(),
+      'The Tooling API response should map every Custom MCP Server definition'
+    );
+    Assert.areEqual(
+      FIRST_MCP_SERVER_ID,
+      setupState.options[0].id,
+      'The first Tooling API definition ID should be preserved'
+    );
+    Assert.areEqual(
+      'Alpha_Server',
+      setupState.options[0].developerName,
+      'Tooling API options should be sorted by developer name'
+    );
+  }
+
+  @isTest
+  static void shouldReturnUnconfiguredMcpSetup_WhenNoDefinitionIsSaved() {
+    AgentforceConversationConfigController.dataSource = new StubAgentDataSource();
+
+    Test.startTest();
+    AgentforceConversationConfigWrapper.McpServerSetupState setupState = AgentforceConversationConfigController.getCustomMcpServerSetupState();
+    Test.stopTest();
+
+    Assert.areEqual(
+      'UNCONFIGURED',
+      setupState.configuration.state,
+      'Blank MCP configuration should be unconfigured'
+    );
+    Assert.isNull(
+      setupState.configuration.mcpServerDefinitionId,
+      'No MCP server ID should be returned'
+    );
+  }
+
+  @isTest
+  static void shouldReturnReadyMcpSetup_WhenSavedDefinitionIsAvailable() {
+    AgentforceConversationConfigController.dataSource = mcpSource(
+      FIRST_MCP_SERVER_ID,
+      'Package_Visualizer_MCP'
+    );
+    saveMcpSetting(FIRST_MCP_SERVER_ID);
+
+    Test.startTest();
+    AgentforceConversationConfigWrapper.McpServerSetupState setupState = AgentforceConversationConfigController.getCustomMcpServerSetupState();
+    Test.stopTest();
+
+    Assert.areEqual(
+      'READY',
+      setupState.configuration.state,
+      'A saved available definition should be ready'
+    );
+    Assert.areEqual(
+      'Package_Visualizer_MCP',
+      setupState.configuration.developerName,
+      'The configured developer name should be returned'
+    );
+  }
+
+  @isTest
+  static void shouldReturnStaleMcpSetup_WhenSavedDefinitionIsMissing() {
+    AgentforceConversationConfigController.dataSource = new StubAgentDataSource();
+    saveMcpSetting(FIRST_MCP_SERVER_ID);
+
+    Test.startTest();
+    AgentforceConversationConfigWrapper.McpServerSetupState setupState = AgentforceConversationConfigController.getCustomMcpServerSetupState();
+    Test.stopTest();
+
+    Assert.areEqual(
+      'STALE',
+      setupState.configuration.state,
+      'A removed saved definition should be stale'
+    );
+    Assert.areEqual(
+      FIRST_MCP_SERVER_ID,
+      Integration_Settings__c.getOrgDefaults().MCP_Server_Definition_Id__c,
+      'A stale read must preserve the saved definition ID'
+    );
+  }
+
+  @isTest
+  static void shouldReturnUnavailableMcpSetup_WhenToolingQueryFails() {
+    StubAgentDataSource source = new StubAgentDataSource();
+    source.shouldFailMcp = true;
+    AgentforceConversationConfigController.dataSource = source;
+
+    Test.startTest();
+    AgentforceConversationConfigWrapper.McpServerSetupState setupState = AgentforceConversationConfigController.getCustomMcpServerSetupState();
+    Test.stopTest();
+
+    Assert.areEqual(
+      'UNAVAILABLE',
+      setupState.configuration.state,
+      'Tooling API failures should be distinguishable from empty results'
+    );
+    Assert.areEqual(
+      0,
+      setupState.options.size(),
+      'Unavailable discovery should return no selectable options'
+    );
+  }
+
+  @isTest
+  static void shouldSaveMcpDefinition_WhenSelectionIsAvailable() {
+    AgentforceConversationConfigController.dataSource = mcpSource(
+      FIRST_MCP_SERVER_ID,
+      'Package_Visualizer_MCP'
+    );
+
+    Test.startTest();
+    AgentforceConversationConfigWrapper.McpServerConfiguration configuration = AgentforceConversationConfigController.saveCustomMcpServerConfiguration(
+      FIRST_MCP_SERVER_ID
+    );
+    Test.stopTest();
+
+    Assert.areEqual('READY', configuration.state, 'Saved MCP server is ready');
+    Assert.areEqual(
+      FIRST_MCP_SERVER_ID,
+      Integration_Settings__c.getOrgDefaults().MCP_Server_Definition_Id__c,
+      'The org default should store the selected MCP server definition'
+    );
+  }
+
+  @isTest
+  static void shouldRejectMcpDefinition_WhenSelectionIsMissing() {
+    AgentforceConversationConfigController.dataSource = mcpSource(
+      SECOND_MCP_SERVER_ID,
+      'Another_Server'
+    );
+
+    Test.startTest();
+    try {
+      AgentforceConversationConfigController.saveCustomMcpServerConfiguration(
+        FIRST_MCP_SERVER_ID
+      );
+      Assert.fail('An unavailable MCP server definition should be rejected');
+    } catch (AuraHandledException expected) {
+      Assert.isTrue(
+        expected.getMessage().contains('available Custom MCP Server'),
+        'The error should explain the selectable-server requirement'
+      );
+    }
+    Test.stopTest();
+  }
+
+  @isTest
+  static void shouldClearMcpDefinition_WithoutDiscovery() {
+    saveMcpSetting(FIRST_MCP_SERVER_ID);
+    StubAgentDataSource source = new StubAgentDataSource();
+    source.shouldFailMcp = true;
+    AgentforceConversationConfigController.dataSource = source;
+
+    Test.startTest();
+    AgentforceConversationConfigWrapper.McpServerConfiguration configuration = AgentforceConversationConfigController.saveCustomMcpServerConfiguration(
+      null
+    );
+    Test.stopTest();
+
+    Assert.areEqual(
+      'UNCONFIGURED',
+      configuration.state,
+      'Clearing should return unconfigured state'
+    );
+    Assert.isNull(
+      Integration_Settings__c.getOrgDefaults().MCP_Server_Definition_Id__c,
+      'The saved MCP server definition should be cleared'
+    );
+  }
+
   private static StubAgentDataSource activeSource(Id botId) {
     StubAgentDataSource source = new StubAgentDataSource();
     source.botVersions.add(botVersion(botId, 'Active'));
@@ -374,6 +592,27 @@ private class AgentforceConversationConfigCtrlTest {
       )
     );
     return source;
+  }
+
+  private static StubAgentDataSource mcpSource(
+    String mcpServerDefinitionId,
+    String developerName
+  ) {
+    StubAgentDataSource source = new StubAgentDataSource();
+    source.mcpServerDefinitions.add(
+      mcpServerDefinition(mcpServerDefinitionId, developerName)
+    );
+    return source;
+  }
+
+  private static AgentforceConversationConfigWrapper.McpServerDefinitionRecord mcpServerDefinition(
+    String mcpServerDefinitionId,
+    String developerName
+  ) {
+    return new AgentforceConversationConfigWrapper.McpServerDefinitionRecord(
+      mcpServerDefinitionId,
+      developerName
+    );
   }
 
   private static AgentforceConversationConfigWrapper.ActiveBotVersionRecord botVersion(
@@ -406,6 +645,13 @@ private class AgentforceConversationConfigCtrlTest {
     upsert new Integration_Settings__c(
       SetupOwnerId = UserInfo.getOrganizationId(),
       Agentforce_Bot_Id__c = String.valueOf(botId)
+    );
+  }
+
+  private static void saveMcpSetting(String mcpServerDefinitionId) {
+    upsert new Integration_Settings__c(
+      SetupOwnerId = UserInfo.getOrganizationId(),
+      MCP_Server_Definition_Id__c = mcpServerDefinitionId
     );
   }
 

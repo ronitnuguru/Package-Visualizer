@@ -106,7 +106,7 @@
               <lightning-menu-item
                 value="MenuItemNine"
                 label="1GP -> 2GP Package Migration (Generally Available)"
-                prefix-icon-name="utility:alert"
+                prefix-icon-name="utility:serialized_product_transaction"
                 data-target="packageMigration"
                 onclick={handleAnchorClick}
               >
@@ -225,12 +225,18 @@
                               <div
                                 class="slds-shrink-none slds-var-m-left_small"
                               >
-                                <lightning-button-icon
-                                  icon-name="utility:trailhead_ext"
-                                  variant="brand"
-                                  onclick={navigateToPboTrailhead}
-                                  disabled={isSetupEnabled}
-                                ></lightning-button-icon>
+                                <lightning-button-group>
+                                  <lightning-button-icon
+                                    icon-name="utility:trailhead_ext"
+                                    variant="border-filled"
+                                    onclick={navigateToPboTrailhead}
+                                  ></lightning-button-icon>
+                                  <lightning-button-icon
+                                    icon-name="utility:help_doc_ext"
+                                    variant="brand"
+                                    onclick={navigateToPboKnowYourOrgs}
+                                  ></lightning-button-icon>
+                                </lightning-button-group>
                               </div>
                             </div>
                           </li>
@@ -373,13 +379,50 @@
                               Agentforce Conversation Client
                             </strong>
                             <p class="slds-var-m-top_xx-small">
-                              Setup the active Employee Agent Package Visualizer
-                              uses for contextual release-intelligence requests.
+                              Setup an active Employee Agent Package Visualizer
+                              uses for contextual release-intelligence and packaging-related requests.
                             </p>
                             <c-agentforce-conversation-setup
                               onconfigurationchange={handleAgentforceConfigurationChange}
                             >
                             </c-agentforce-conversation-setup>
+                          </div>
+                        </li>
+                        <li class="slds-progress__item slds-show_medium">
+                          <template if:false={isCustomMcpServerConfigured}>
+                            <div
+                              data-id="headless360-custom-mcp-servers-marker-default"
+                              class="slds-progress__marker"
+                            >
+                              <span class="slds-assistive-text">Active</span>
+                            </div>
+                          </template>
+                          <template if:true={isCustomMcpServerConfigured}>
+                            <span
+                              data-id="headless360-custom-mcp-servers-marker-success"
+                              class="slds-progress__marker"
+                            >
+                              <lightning-icon
+                                icon-name="utility:success"
+                                alternative-text="Headless 360 Custom MCP Servers Configured"
+                                variant="success"
+                                size="x-small"
+                                class="icon-style"
+                              ></lightning-icon>
+                            </span>
+                          </template>
+                          <div class="slds-progress__item_content">
+                            <strong class="slds-text-title_caps">
+                              Headless 360 Custom MCP Servers
+                            </strong>
+                            <p class="slds-var-m-top_xx-small">
+                              Configure custom Salesforce MCP servers to expose
+                              trusted tools to MCP-compatible clients.
+                            </p>
+                            <c-setup-assistant-custom-mcp-servers
+                              onconfigurationchange={handleCustomMcpServerConfigurationChange}
+                            >
+                            </c-setup-assistant-custom-mcp-servers>
                           </div>
                         </li>
                         <!-- Step 1: Provision -->
@@ -419,8 +462,7 @@
                                 variant="brand"
                                 onclick={provisionToolingCredentials}
                                 disabled={provisionDisabled}
-                                title="Provision Tooling Credentials"
-                                alternative-text="Provision Tooling Credentials"
+                                tooltip="Provision Tooling Credentials"
                               ></lightning-button-icon>
                             </div>
                           </div>
@@ -463,8 +505,7 @@
                                 variant="brand"
                                 onclick={navigateToNamedCredentials}
                                 disabled={isSetupEnabled}
-                                title="Open Named Credentials Setup"
-                                alternative-text="Open Named Credentials Setup"
+                                tooltip="Open Named Credentials Setup"
                               ></lightning-button-icon>
                             </div>
                           </div>
@@ -514,7 +555,7 @@
                                           size="medium"
                                           class="slds-m-right_small"
                                         ></lightning-icon>
-                                        Create ECA
+                                        1. Create ECA
                                       </h3>
                                       <div class="slds-var-p-horizontal_medium">
                                         <p
@@ -579,7 +620,7 @@
                                           size="medium"
                                           class="slds-m-right_small"
                                         ></lightning-icon>
-                                        Edit ECA
+                                        2. Edit ECA
                                       </h3>
                                       <div class="slds-var-p-horizontal_medium">
                                         <p
@@ -2164,15 +2205,24 @@
                             label="Tableau Next"
                             icon-name="standard:tableau"
                           >
-                            <c-setup-assistant-tableau-next></c-setup-assistant-tableau-next>
+                            <c-setup-assistant-tableau-next
+                              org-id={orgId}
+                            ></c-setup-assistant-tableau-next>
                           </lightning-tab>
+                          <!--
+                          <lightning-tab
+                            label="Headless 360"
+                            icon-name="standard:customer_360"
+                          >
+                          </lightning-tab>
+                          -->
                         </lightning-tabset>
                       </div>
                     </div>
                     <div class="slds-media__figure slds-media__figure_reverse">
                       <lightning-button
                         variant="brand-outline"
-                        label="Developer Center"
+                        label="Developer Centers"
                         icon-name="utility:salesforce1"
                         icon-position="right"
                         onclick={navigateToDevloperCenters}
@@ -2196,7 +2246,7 @@
                       class="slds-setup-assistant__step-summary-title slds-text-heading_small"
                     >
                       <lightning-icon
-                        icon-name="custom:custom53"
+                        icon-name="standard:serialized_product_transaction"
                         size="medium"
                         class="slds-var-m-right_small"
                       ></lightning-icon>

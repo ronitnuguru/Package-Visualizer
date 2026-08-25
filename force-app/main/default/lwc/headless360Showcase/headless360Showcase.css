@@ -1,0 +1,27 @@
+.card_header_icon {
+  --slds-c-icon-color-foreground-default: #0d9dda;
+}
+
+.icon-style {
+  --slds-c-icon-color-background: white;
+}
+
+.c-headless360-agent-script-pre {
+  max-height: var(--slds-g-sizing-16, 30rem);
+  margin: 0;
+  padding: var(--slds-g-spacing-3, 0.75rem);
+  background-color: var(--slds-g-color-neutral-base-95, #f3f3f3);
+  border-radius: var(--slds-g-radius-border-1, 0.25rem);
+}
+
+.c-headless360-agent-script-code {
+  line-height: var(--slds-g-font-line-height-base, 1.5);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.c-headless360-agent-script-card,
+.c-headless360-agent-script-accordion {
+  border-radius: var(--slds-g-radius-border-1, 0.25rem);
+  box-shadow: var(--slds-g-shadow-2, 0 0 5px rgb(0 0 0 / 16%));
+}

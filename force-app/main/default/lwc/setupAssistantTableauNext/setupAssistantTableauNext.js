@@ -1,4 +1,4 @@
-import { LightningElement } from "lwc";
+import { LightningElement, api } from "lwc";
 
 const SCRATCH_ORG_WORKFLOW_URL =
   "https://developer.salesforce.com/docs/analytics/tableau-next-isv-dev/guide/tn-scratch-org-workflow.html";
@@ -6,6 +6,8 @@ const DEPLOY_ASSETS_URL =
   "https://developer.salesforce.com/docs/analytics/tableau-next-isv-dev/guide/tn-deploy-assets-using-cli.html";
 
 export default class SetupAssistantTableauNext extends LightningElement {
+  @api orgId;
+
   autoConfirmSettings = true;
 
   navigateToScratchOrgWorkflow() {

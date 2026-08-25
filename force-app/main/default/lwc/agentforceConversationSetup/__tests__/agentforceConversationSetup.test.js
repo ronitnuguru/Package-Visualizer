@@ -158,6 +158,13 @@ describe("c-agentforce-conversation-setup", () => {
     ).not.toBeNull();
     const showcase = element.shadowRoot.querySelector("c-in-app-guidance-card");
     expect(showcase).not.toBeNull();
+    const selectionCard = element.shadowRoot.querySelector(
+      '[data-id="agent-selection-row"]'
+    );
+    expect(
+      showcase.compareDocumentPosition(selectionCard) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
     expect(showcase.extensionStatus).toEqual(EXTENSION_STATUS);
     expect(showcase.hideInAppGuidance).toBe(true);
     expect(
@@ -284,6 +291,12 @@ describe("c-agentforce-conversation-setup", () => {
       '[data-id="footer-actions"]'
     );
     expect(footerGroup).not.toBeNull();
+    const selectionCard = element.shadowRoot
+      .querySelector('[data-id="agent-selection-row"]')
+      .closest("lightning-card");
+    expect(selectionCard).not.toBeNull();
+    expect(selectionCard.querySelector('[slot="title"]')).toBeNull();
+    expect(selectionCard.querySelector('[slot="footer"]')).not.toBeNull();
     const footerActions = Array.from(
       footerGroup.querySelectorAll("lightning-button")
     );
@@ -444,13 +457,14 @@ describe("c-agentforce-conversation-setup", () => {
     const actionColumn = selectionRow.querySelector(
       '[data-id="agent-action-column"]'
     );
-    expect(
-      selectionRow.querySelector('[data-id="agent-select"]')
-    ).not.toBeNull();
+    const agentSelect = selectionRow.querySelector(
+      '[data-id="agent-select"]'
+    );
+    expect(agentSelect).not.toBeNull();
     expect(
       selectionRow.querySelector("c-agentforce-conversation-actions")
     ).not.toBeNull();
-    expect(selectionRow.querySelector("lightning-helptext").content).toBe(
+    expect(agentSelect.fieldLevelHelp).toBe(
       "Intended users must also have Salesforce access to the selected Employee Agent. The test opens the native desktop Agentforce panel; confirm its response there."
     );
     expect(selectorColumn.classList).toContain("slds-size_10-of-12");

@@ -127,4 +127,118 @@ public with sharing class AgentforceConversationConfigWrapper {
       message = messageValue;
     }
   }
+
+  /**
+   * Runtime McpServerDefinition values read through the Tooling API.
+   */
+  public class McpServerDefinitionRecord {
+    public String id { get; private set; }
+    public String developerName { get; private set; }
+
+    /**
+     * Creates a Tooling API MCP server definition record.
+     *
+     * @param idValue McpServerDefinition record ID.
+     * @param developerNameValue McpServerDefinition developer name.
+     */
+    public McpServerDefinitionRecord(
+      String idValue,
+      String developerNameValue
+    ) {
+      id = idValue;
+      developerName = developerNameValue;
+    }
+  }
+
+  /**
+   * Selectable Custom MCP Server option.
+   */
+  public class McpServerOption implements Comparable {
+    @AuraEnabled
+    public String id { get; set; }
+    @AuraEnabled
+    public String developerName { get; set; }
+
+    /**
+     * Creates a selectable Custom MCP Server option.
+     *
+     * @param idValue McpServerDefinition record ID.
+     * @param developerNameValue McpServerDefinition developer name.
+     */
+    public McpServerOption(String idValue, String developerNameValue) {
+      id = idValue;
+      developerName = developerNameValue;
+    }
+
+    /**
+     * Orders Custom MCP Server options by developer name.
+     *
+     * @param value Another McpServerOption.
+     * @return A negative, zero, or positive sort value.
+     */
+    public Integer compareTo(Object value) {
+      McpServerOption other = (McpServerOption) value;
+      return String.valueOf(developerName)
+        .toLowerCase()
+        .compareTo(String.valueOf(other.developerName).toLowerCase());
+    }
+  }
+
+  /**
+   * Current org-wide Custom MCP Server configuration.
+   */
+  public class McpServerConfiguration {
+    @AuraEnabled
+    public String mcpServerDefinitionId { get; set; }
+    @AuraEnabled
+    public String developerName { get; set; }
+    @AuraEnabled
+    public String state { get; set; }
+    @AuraEnabled
+    public String message { get; set; }
+
+    /**
+     * Creates a Custom MCP Server configuration response.
+     *
+     * @param idValue Saved McpServerDefinition ID.
+     * @param developerNameValue Selected definition developer name.
+     * @param stateValue Configuration state.
+     * @param messageValue User-facing configuration guidance.
+     */
+    public McpServerConfiguration(
+      String idValue,
+      String developerNameValue,
+      String stateValue,
+      String messageValue
+    ) {
+      mcpServerDefinitionId = idValue;
+      developerName = developerNameValue;
+      state = stateValue;
+      message = messageValue;
+    }
+  }
+
+  /**
+   * Aggregate Custom MCP Server options and saved configuration.
+   */
+  public class McpServerSetupState {
+    @AuraEnabled
+    public List<McpServerOption> options { get; set; }
+    @AuraEnabled
+    public McpServerConfiguration configuration { get; set; }
+
+    /**
+     * Creates the aggregate Custom MCP Server setup response.
+     *
+     * @param optionValues Selectable Custom MCP Servers.
+     * @param configurationValue Current saved configuration.
+     */
+    public McpServerSetupState(
+      List<McpServerOption> optionValues,
+      McpServerConfiguration configurationValue
+    ) {
+      options = optionValues;
+      configuration = configurationValue;
+    }
+  }
 }
