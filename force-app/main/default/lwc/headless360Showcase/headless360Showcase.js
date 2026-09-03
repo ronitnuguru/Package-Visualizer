@@ -5,6 +5,8 @@ import AgentScriptCoachModal from "c/agentScriptCoachModal";
 import { AGENT_SCRIPTS } from "c/agentScriptCatalog";
 import { PACKAGE_VISUALIZER_APEX_TOOLS } from "./headless360ShowcaseAssets";
 
+const HEADLESS_360_HELP_URL =
+  "https://developer.salesforce.com/developer-centers/headless-360";
 const SLACK_CONNECTION_HELP_URL =
   "https://slack.com/help/articles/30754346665747-Connect-Salesforce-and-Slack";
 const CUSTOM_MCP_SERVER_HELP_URL =
@@ -77,7 +79,7 @@ export default class Headless360Showcase extends LightningElement {
   }
 
   navigateToHeadless360ShowcaseHelp() {
-    window.open(CUSTOM_MCP_SERVER_HELP_URL, "_blank");
+    window.open(HEADLESS_360_HELP_URL, "_blank");
   }
 
   navigateToSlackSetup() {

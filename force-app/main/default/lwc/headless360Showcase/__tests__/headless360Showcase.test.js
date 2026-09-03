@@ -9,6 +9,8 @@ jest.mock(
   { virtual: true }
 );
 
+const HEADLESS_360_HELP_URL =
+  "https://developer.salesforce.com/developer-centers/headless-360";
 const SLACK_CONNECTION_HELP_URL =
   "https://slack.com/help/articles/30754346665747-Connect-Salesforce-and-Slack";
 const CUSTOM_MCP_SERVER_HELP_URL =
@@ -397,7 +399,7 @@ describe("c-headless-360-showcase", () => {
       .querySelector('[data-id="headless-360-showcase-help"]')
       .click();
     expect(window.open).toHaveBeenLastCalledWith(
-      CUSTOM_MCP_SERVER_HELP_URL,
+      HEADLESS_360_HELP_URL,
       "_blank"
     );
 
