@@ -37,7 +37,7 @@ global class HxlSubscriberListResult {
     global String metadataPackageVersionId;
 
     @AuraEnabled
-    global String installedStatus;
+    global String orgStatus;
 
     @AuraEnabled
     global String orgType;

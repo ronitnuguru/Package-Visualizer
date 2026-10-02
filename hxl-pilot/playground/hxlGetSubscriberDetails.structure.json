@@ -198,7 +198,7 @@
                             {
                               "definition": "tile/text",
                               "attributes": {
-                                "text": "{!IF(ISBLANK($parentOrg), 'None', $parentOrg)}",
+                                "text": "{!IF($parentOrg == null, 'None', $parentOrg)}",
                                 "variant": "body"
                               }
                             }
@@ -266,7 +266,7 @@
                         {
                           "definition": "tile/column",
                           "meta": {
-                            "if": "{!NOT(ISBLANK($customUpgradeType))}"
+                            "if": "{!NOT($customUpgradeType == null)}"
                           },
                           "attributes": {
                             "gap": "xs"

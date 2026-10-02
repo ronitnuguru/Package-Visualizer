@@ -28,7 +28,7 @@
                     {
                       "definition": "tile/icon",
                       "attributes": {
-                        "name": "groups",
+                        "name": "users",
                         "size": "lg",
                         "alt": ""
                       }
@@ -103,7 +103,7 @@
                     "header": "Package Version ID"
                   },
                   {
-                    "key": "installedStatus",
+                    "key": "orgStatus",
                     "header": "Status",
                     "align": "center"
                   },

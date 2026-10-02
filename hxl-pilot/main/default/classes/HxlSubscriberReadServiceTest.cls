@@ -47,7 +47,6 @@ private class HxlSubscriberReadServiceTest {
       'InstanceName' => 'NA' + Math.mod(sequenceNumber, 100),
       'MetadataPackageId' => subscriberPackageId(1),
       'MetadataPackageVersionId' => subscriberPackageVersionId(1),
-      'InstalledStatus' => 'i',
       'ParentOrg' => null,
       'CustomUpgradeType' => 'Mixed',
       'HasRestrictionEnabled' => false,
@@ -454,6 +453,7 @@ private class HxlSubscriberReadServiceTest {
     HxlSubscriberListResult.Subscriber sub = result.subscribers[0];
     Assert.areEqual(orgKey(0), sub.orgKey, 'Should map orgKey');
     Assert.areEqual('Mapper Org 0', sub.orgName, 'Should map orgName');
+    Assert.areEqual('Active', sub.orgStatus, 'Should map orgStatus');
     Assert.isNotNull(sub.systemModstamp, 'Should map systemModstamp');
   }
 

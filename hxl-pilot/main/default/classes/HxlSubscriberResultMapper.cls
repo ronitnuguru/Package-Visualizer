@@ -72,7 +72,7 @@ public with sharing class HxlSubscriberResultMapper {
     subscriber.metadataPackageVersionId = (String) record.get(
       'MetadataPackageVersionId'
     );
-    subscriber.installedStatus = (String) record.get('InstalledStatus');
+    subscriber.orgStatus = (String) record.get('OrgStatus');
     subscriber.orgType = (String) record.get('OrgType');
     subscriber.instanceName = (String) record.get('InstanceName');
     subscriber.systemModstamp = (DateTime) record.get('SystemModstamp');

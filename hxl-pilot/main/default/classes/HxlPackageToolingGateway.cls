@@ -16,7 +16,7 @@ public with sharing class HxlPackageToolingGateway {
   private static final String ISO_DATETIME_PATTERN = 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'';
   private static final String VERSION_DETAIL_FIELDS = 'SELECT Id, Name, MajorVersion, MinorVersion, PatchVersion, BuildNumber, AncestorId, SubscriberPackageVersionId, Branch, Tag, Description, IsReleased, IsPasswordProtected, HasPassedCodeCoverageCheck, ValidatedAsync, ValidationSkipped, HasMetadataRemoved, BuildDurationInSeconds, Language, ReleaseVersion, CreatedBy.Name, CreatedDate, Package2Id';
   private static final Integer VERSION_DETAIL_LOOKUP_LIMIT = 2000;
-  private static final String SUBSCRIBER_LIST_FIELDS = 'SELECT Id, MetadataPackageId, MetadataPackageVersionId, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, InstalledStatus, SystemModstamp';
+  private static final String SUBSCRIBER_LIST_FIELDS = 'SELECT Id, MetadataPackageId, MetadataPackageVersionId, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, SystemModstamp';
   private static final String SUBSCRIBER_DETAIL_FIELDS = 'SELECT Id, MetadataPackageId, MetadataPackageVersionId, OrgKey, OrgName, OrgType, OrgStatus, InstanceName, ParentOrg, CustomUpgradeType, HasRestrictionEnabled, IsCustomUpgradeAllowed, SystemModstamp';
 
   /**

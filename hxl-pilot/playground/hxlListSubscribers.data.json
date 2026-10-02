@@ -11,7 +11,7 @@
       "orgKey": "00D0000000001EAU",
       "orgName": "Acme Corporation",
       "metadataPackageVersionId": "04t000000000001AAA",
-      "installedStatus": "i",
+      "orgStatus": "Active",
       "orgType": "Production",
       "instanceName": "NA01",
       "systemModstamp": "2026-10-01T15:30:00.000Z"
@@ -20,7 +20,7 @@
       "orgKey": "00D0000000002EAU",
       "orgName": "Global Enterprises",
       "metadataPackageVersionId": "04t000000000001AAA",
-      "installedStatus": "i",
+      "orgStatus": "Active",
       "orgType": "Production",
       "instanceName": "NA15",
       "systemModstamp": "2026-10-01T14:20:00.000Z"
@@ -29,7 +29,7 @@
       "orgKey": "00D0000000003EAU",
       "orgName": "Sandbox Test Org",
       "metadataPackageVersionId": "04t000000000002AAA",
-      "installedStatus": "i",
+      "orgStatus": "Demo",
       "orgType": "Sandbox",
       "instanceName": "CS42",
       "systemModstamp": "2026-10-01T13:10:00.000Z"
@@ -38,7 +38,7 @@
       "orgKey": "00D0000000004EAU",
       "orgName": "Demo Environment",
       "metadataPackageVersionId": "04t000000000001AAA",
-      "installedStatus": "i",
+      "orgStatus": "Demo",
       "orgType": "Demo",
       "instanceName": "NA30",
       "systemModstamp": "2026-10-01T12:00:00.000Z"
@@ -47,7 +47,7 @@
       "orgKey": "00D0000000005EAU",
       "orgName": "Partner Integration Org",
       "metadataPackageVersionId": "04t000000000003AAA",
-      "installedStatus": "i",
+      "orgStatus": "Active",
       "orgType": "Production",
       "instanceName": "NA05",
       "systemModstamp": "2026-10-01T11:45:00.000Z"
@@ -56,7 +56,7 @@
       "orgKey": "00D0000000006EAU",
       "orgName": "QA Testing Org",
       "metadataPackageVersionId": "04t000000000001AAA",
-      "installedStatus": "i",
+      "orgStatus": "Active",
       "orgType": "Sandbox",
       "instanceName": "CS10",
       "systemModstamp": "2026-10-01T10:30:00.000Z"
@@ -65,7 +65,7 @@
       "orgKey": "00D0000000007EAU",
       "orgName": "Customer Trial Org",
       "metadataPackageVersionId": "04t000000000002AAA",
-      "installedStatus": "i",
+      "orgStatus": "Trial",
       "orgType": "Trial",
       "instanceName": "NA25",
       "systemModstamp": "2026-10-01T09:15:00.000Z"
@@ -74,7 +74,7 @@
       "orgKey": "00D0000000008EAU",
       "orgName": "Staging Environment",
       "metadataPackageVersionId": "04t000000000001AAA",
-      "installedStatus": "i",
+      "orgStatus": "Active",
       "orgType": "Sandbox",
       "instanceName": "CS55",
       "systemModstamp": "2026-10-01T08:00:00.000Z"
@@ -83,7 +83,7 @@
       "orgKey": "00D0000000009EAU",
       "orgName": "Pilot Customer Org",
       "metadataPackageVersionId": "04t000000000003AAA",
-      "installedStatus": "i",
+      "orgStatus": "Trial",
       "orgType": "Production",
       "instanceName": "NA20",
       "systemModstamp": "2026-10-01T07:45:00.000Z"
@@ -92,7 +92,7 @@
       "orgKey": "00D000000000AEAU",
       "orgName": "Developer Sandbox",
       "metadataPackageVersionId": "04t000000000001AAA",
-      "installedStatus": "i",
+      "orgStatus": "Active",
       "orgType": "Sandbox",
       "instanceName": "CS30",
       "systemModstamp": "2026-10-01T06:30:00.000Z"
