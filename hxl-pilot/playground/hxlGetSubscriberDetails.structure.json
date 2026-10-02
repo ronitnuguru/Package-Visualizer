@@ -309,7 +309,7 @@
                             {
                               "definition": "action/sendMessage",
                               "attributes": {
-                                "content": "back-to-subscribers"
+                                "content": "View subscribers for package {!$metadataPackageId}"
                               }
                             }
                           ]

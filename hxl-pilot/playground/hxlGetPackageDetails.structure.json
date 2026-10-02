@@ -426,7 +426,7 @@
                             {
                               "definition": "action/sendMessage",
                               "attributes": {
-                                "content": "{!$subscriberPackageId}"
+                                "content": "View subscribers for package {!$subscriberPackageId}"
                               }
                             }
                           ]

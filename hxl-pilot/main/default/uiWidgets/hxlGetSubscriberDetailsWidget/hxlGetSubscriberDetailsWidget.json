@@ -1,0 +1,333 @@
+{
+  "type": "lightning__agentforceWidget",
+  "contentBody": {
+    "widgetBody": {
+      "definition": "tile/widget",
+      "children": [
+        {
+          "definition": "tile/column",
+          "attributes": {
+            "gap": "md"
+          },
+          "children": [
+            {
+              "definition": "tile/callout",
+              "meta": {
+                "if": "{!NOT($attrs.isSuccess)}"
+              },
+              "attributes": {
+                "title": "Unable to load subscriber details",
+                "description": "{!$attrs.errorMessage}",
+                "variant": "error"
+              }
+            },
+            {
+              "definition": "tile/container",
+              "meta": {
+                "if": "{!$attrs.isSuccess}"
+              },
+              "children": [
+                {
+                  "definition": "tile/column",
+                  "attributes": {
+                    "gap": "md"
+                  },
+                  "children": [
+                    {
+                      "definition": "tile/row",
+                      "attributes": {
+                        "gap": "sm",
+                        "align": "center",
+                        "justify": "between"
+                      },
+                      "children": [
+                        {
+                          "definition": "tile/row",
+                          "attributes": {
+                            "gap": "sm",
+                            "align": "center"
+                          },
+                          "children": [
+                            {
+                              "definition": "tile/icon",
+                              "attributes": {
+                                "name": "groups",
+                                "size": "lg",
+                                "color": "primary",
+                                "alt": ""
+                              }
+                            },
+                            {
+                              "definition": "tile/text",
+                              "attributes": {
+                                "text": "{!$attrs.orgName}",
+                                "variant": "h2"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "definition": "tile/link",
+                          "attributes": {
+                            "href": "{!$attrs.openInSalesforceUrl}",
+                            "text": "Open in Salesforce",
+                            "variant": "primary",
+                            "underline": "hover"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "definition": "tile/row",
+                      "attributes": {
+                        "gap": "lg",
+                        "align": "start",
+                        "isWrapped": true
+                      },
+                      "children": [
+                        {
+                          "definition": "tile/column",
+                          "attributes": {
+                            "gap": "md",
+                            "width": "stretch"
+                          },
+                          "children": [
+                            {
+                              "definition": "tile/column",
+                              "attributes": {
+                                "gap": "xs"
+                              },
+                              "children": [
+                                {
+                                  "definition": "tile/text",
+                                  "attributes": {
+                                    "text": "Organization Type",
+                                    "variant": "body",
+                                    "weight": "semibold"
+                                  }
+                                },
+                                {
+                                  "definition": "tile/text",
+                                  "attributes": {
+                                    "text": "{!$attrs.orgType}",
+                                    "variant": "body"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "definition": "tile/column",
+                              "attributes": {
+                                "gap": "xs"
+                              },
+                              "children": [
+                                {
+                                  "definition": "tile/text",
+                                  "attributes": {
+                                    "text": "Organization Status",
+                                    "variant": "body",
+                                    "weight": "semibold"
+                                  }
+                                },
+                                {
+                                  "definition": "tile/text",
+                                  "attributes": {
+                                    "text": "{!$attrs.orgStatus}",
+                                    "variant": "body"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "definition": "tile/column",
+                              "attributes": {
+                                "gap": "xs"
+                              },
+                              "children": [
+                                {
+                                  "definition": "tile/text",
+                                  "attributes": {
+                                    "text": "Instance Name",
+                                    "variant": "body",
+                                    "weight": "semibold"
+                                  }
+                                },
+                                {
+                                  "definition": "tile/text",
+                                  "attributes": {
+                                    "text": "{!$attrs.instanceName}",
+                                    "variant": "body"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "definition": "tile/column",
+                              "attributes": {
+                                "gap": "xs"
+                              },
+                              "children": [
+                                {
+                                  "definition": "tile/text",
+                                  "attributes": {
+                                    "text": "Organization Key",
+                                    "variant": "body",
+                                    "weight": "semibold"
+                                  }
+                                },
+                                {
+                                  "definition": "tile/text",
+                                  "attributes": {
+                                    "text": "{!$attrs.orgKey}",
+                                    "variant": "code"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "definition": "tile/column",
+                              "attributes": {
+                                "gap": "xs"
+                              },
+                              "children": [
+                                {
+                                  "definition": "tile/text",
+                                  "attributes": {
+                                    "text": "Parent Organization",
+                                    "variant": "body",
+                                    "weight": "semibold"
+                                  }
+                                },
+                                {
+                                  "definition": "tile/text",
+                                  "attributes": {
+                                    "text": "{!IF(ISBLANK($attrs.parentOrg), 'None', $attrs.parentOrg)}",
+                                    "variant": "body"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "definition": "tile/column",
+                          "attributes": {
+                            "gap": "md",
+                            "width": "stretch"
+                          },
+                          "children": [
+                            {
+                              "definition": "tile/row",
+                              "attributes": {
+                                "gap": "xs",
+                                "align": "center"
+                              },
+                              "children": [
+                                {
+                                  "definition": "tile/icon",
+                                  "attributes": {
+                                    "name": "{!IF($attrs.hasRestrictionEnabled, 'check-circle', 'x-circle')}",
+                                    "size": "sm",
+                                    "color": "{!IF($attrs.hasRestrictionEnabled, 'success', 'error')}",
+                                    "alt": ""
+                                  }
+                                },
+                                {
+                                  "definition": "tile/text",
+                                  "attributes": {
+                                    "text": "Restriction Enabled",
+                                    "variant": "body"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "definition": "tile/row",
+                              "attributes": {
+                                "gap": "xs",
+                                "align": "center"
+                              },
+                              "children": [
+                                {
+                                  "definition": "tile/icon",
+                                  "attributes": {
+                                    "name": "{!IF($attrs.isCustomUpgradeAllowed, 'check-circle', 'x-circle')}",
+                                    "size": "sm",
+                                    "color": "{!IF($attrs.isCustomUpgradeAllowed, 'success', 'error')}",
+                                    "alt": ""
+                                  }
+                                },
+                                {
+                                  "definition": "tile/text",
+                                  "attributes": {
+                                    "text": "Custom Upgrade Allowed",
+                                    "variant": "body"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "definition": "tile/column",
+                              "meta": {
+                                "if": "{!NOT(ISBLANK($attrs.customUpgradeType))}"
+                              },
+                              "attributes": {
+                                "gap": "xs"
+                              },
+                              "children": [
+                                {
+                                  "definition": "tile/text",
+                                  "attributes": {
+                                    "text": "Custom Upgrade Type",
+                                    "variant": "body",
+                                    "weight": "semibold"
+                                  }
+                                },
+                                {
+                                  "definition": "tile/text",
+                                  "attributes": {
+                                    "text": "{!$attrs.customUpgradeType}",
+                                    "variant": "body"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "definition": "tile/row",
+                      "attributes": {
+                        "gap": "sm"
+                      },
+                      "children": [
+                        {
+                          "definition": "tile/button",
+                          "attributes": {
+                            "label": "Back to Subscribers",
+                            "variant": "secondary",
+                            "actions": {
+                              "click": [
+                                {
+                                  "definition": "action/sendMessage",
+                                  "attributes": {
+                                    "content": "View subscribers for package {!$attrs.metadataPackageId}"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

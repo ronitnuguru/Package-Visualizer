@@ -624,7 +624,7 @@
                             {
                               "definition": "action/sendMessage",
                               "attributes": {
-                                "content": "{!$subscriberPackageVersionId}"
+                                "content": "View subscribers for package version {!$subscriberPackageVersionId}"
                               }
                             }
                           ]

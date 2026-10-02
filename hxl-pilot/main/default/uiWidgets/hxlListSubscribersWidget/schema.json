@@ -1,0 +1,51 @@
+{
+  "title": "Subscriber List",
+  "description": "Displays a bordered, paginated table of PackageSubscriber organizations.",
+  "type": "object",
+  "properties": {
+    "attributes": {
+      "lightning:type": "lightning__objectType",
+      "properties": {
+        "isSuccess": {
+          "title": "Success",
+          "lightning:type": "lightning__booleanType"
+        },
+        "errorMessage": {
+          "title": "Error Message",
+          "lightning:type": "lightning__textType"
+        },
+        "errorType": {
+          "title": "Error Type",
+          "lightning:type": "lightning__textType"
+        },
+        "state": {
+          "title": "State",
+          "lightning:type": "lightning__textType"
+        },
+        "message": {
+          "title": "Message",
+          "lightning:type": "lightning__textType"
+        },
+        "hasMore": {
+          "title": "Has More",
+          "lightning:type": "lightning__booleanType"
+        },
+        "nextCursor": {
+          "title": "Next Cursor",
+          "lightning:type": "lightning__textType"
+        },
+        "subscribers": {
+          "title": "Subscribers",
+          "lightning:type": "lightning__listType",
+          "items": {
+            "lightning:type": "@apexClassType/pkgviz__HxlSubscriberListResult$Subscriber"
+          }
+        },
+        "openInSalesforceUrl": {
+          "title": "Open In Salesforce URL",
+          "lightning:type": "lightning__textType"
+        }
+      }
+    }
+  }
+}

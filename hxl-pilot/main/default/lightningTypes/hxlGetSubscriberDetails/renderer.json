@@ -15,6 +15,7 @@
           "orgStatus": "{!$attrs.outputValues.result.orgStatus}",
           "instanceName": "{!$attrs.outputValues.result.instanceName}",
           "parentOrg": "{!$attrs.outputValues.result.parentOrg}",
+          "metadataPackageId": "{!$attrs.outputValues.result.metadataPackageId}",
           "customUpgradeType": "{!$attrs.outputValues.result.customUpgradeType}",
           "hasRestrictionEnabled": "{!$attrs.outputValues.result.hasRestrictionEnabled}",
           "isCustomUpgradeAllowed": "{!$attrs.outputValues.result.isCustomUpgradeAllowed}",

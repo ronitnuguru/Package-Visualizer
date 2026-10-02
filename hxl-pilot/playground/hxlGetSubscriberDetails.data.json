@@ -10,6 +10,7 @@
   "orgStatus": "Active",
   "instanceName": "NA01",
   "parentOrg": null,
+  "metadataPackageId": "033000000000001AAA",
   "customUpgradeType": "Mixed",
   "hasRestrictionEnabled": false,
   "isCustomUpgradeAllowed": true,
