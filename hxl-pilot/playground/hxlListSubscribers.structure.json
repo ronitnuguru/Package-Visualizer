@@ -1,0 +1,144 @@
+{
+  "definition": "tile/widget",
+  "children": [
+    {
+      "definition": "tile/container",
+      "children": [
+        {
+          "definition": "tile/column",
+          "attributes": {
+            "gap": "md"
+          },
+          "children": [
+            {
+              "definition": "tile/row",
+              "attributes": {
+                "gap": "sm",
+                "align": "center",
+                "justify": "between"
+              },
+              "children": [
+                {
+                  "definition": "tile/row",
+                  "attributes": {
+                    "gap": "sm",
+                    "align": "center"
+                  },
+                  "children": [
+                    {
+                      "definition": "tile/icon",
+                      "attributes": {
+                        "name": "groups",
+                        "size": "lg",
+                        "alt": ""
+                      }
+                    },
+                    {
+                      "definition": "tile/text",
+                      "attributes": {
+                        "text": "Subscribers",
+                        "variant": "h2"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "definition": "tile/row",
+                  "attributes": {
+                    "gap": "xs",
+                    "align": "center"
+                  },
+                  "children": [
+                    {
+                      "definition": "tile/link",
+                      "attributes": {
+                        "href": "{!$openInSalesforceUrl}",
+                        "text": "Open in Salesforce",
+                        "variant": "primary",
+                        "underline": "hover"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "definition": "tile/callout",
+              "meta": {
+                "if": "{!NOT($isSuccess)}"
+              },
+              "attributes": {
+                "title": "Unable to load subscribers",
+                "description": "{!$errorMessage}",
+                "variant": "error"
+              }
+            },
+            {
+              "definition": "tile/table",
+              "meta": {
+                "if": "{!$isSuccess}"
+              },
+              "attributes": {
+                "appearance": "bordered",
+                "caption": "Package subscriber organizations",
+                "size": "sm",
+                "isStickyHeader": true,
+                "columns": [
+                  {
+                    "key": "orgName",
+                    "header": "Organization Name",
+                    "actions": {
+                      "click": [
+                        {
+                          "definition": "action/sendMessage",
+                          "attributes": {
+                            "content": "{!$event.orgKey}"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "key": "metadataPackageVersionId",
+                    "header": "Package Version ID"
+                  },
+                  {
+                    "key": "installedStatus",
+                    "header": "Status",
+                    "align": "center"
+                  },
+                  {
+                    "key": "orgType",
+                    "header": "Type"
+                  },
+                  {
+                    "key": "instanceName",
+                    "header": "Instance"
+                  },
+                  {
+                    "key": "systemModstamp",
+                    "header": "Last Modified Date",
+                    "columnType": {
+                      "type": "date",
+                      "format": "datetime",
+                      "dateStyle": "medium",
+                      "timeStyle": "short"
+                    }
+                  }
+                ],
+                "rows": "{!$subscribers}",
+                "pagination": {
+                  "pageSize": 10
+                },
+                "sort": {
+                  "key": "systemModstamp",
+                  "direction": "desc"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
