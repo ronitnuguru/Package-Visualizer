@@ -22,15 +22,16 @@ Work in progress. This directory contains the typed Apex foundation for a Slackb
 - `HxlListSubscribersAction`: ten subscribers per page, filtered by 033 package ID or 04t version ID, ordered by SystemModstamp DESC, with continuation cursor.
 - `HxlGetSubscriberDetailsAction`: subscriber organization information by OrgKey with two-column layout (metadata + custom upgrade settings).
 - `HxlSubscriberReadService`: validates filters (033/04t), builds PackageSubscriber queries, calculates base64-encoded pagination cursors.
-- `HxlSubscriberResultMapper`: converts Tooling PackageSubscriber records to typed list and detail results.
-- `HxlPackageToolingGateway.readSubscriberPage` / `readSubscriberDetail`: new entity-specific query methods added alongside the existing Package2/Package2Version methods.
+- `HxlSubscriberResultMapper`: converts PackageSubscriber records to typed list and detail results.
+- `HxlPackageToolingGateway.readSubscriberPage` / `readSubscriberDetail`: new entity-specific query methods added alongside the existing Package2/Package2Version methods. Unlike those, PackageSubscriber is not exposed through the Tooling API (confirmed live), so these two query it directly via `Database.query` with keyset pagination (`SystemModstamp`, `Id`) rather than OFFSET, since OFFSET on this object is capped at 2000 rows and some packages already exceed that.
 - Typed result classes (`HxlSubscriberListResult`, `HxlSubscriberDetailResult`) expose data for Slackbot MCP renderers.
 - `HxlSubscriberReadServiceTest`: HTTP-mocked coverage for pagination, filter validation, orgKey lookup, permission/configuration failures, and upstream errors. **Not yet run against a live org** — see API version note below.
 - `hxlListSubscribersResponse` and `hxlListSubscribers`: the list action's typed MCP response and result-envelope Lightning Types.
 - `hxlGetSubscriberDetailsResponse` and `hxlGetSubscriberDetails`: the detail action's typed MCP response and result-envelope Lightning Types.
 - `hxlListSubscribersWidget`: a bordered, paginated subscriber table with Organization Name (clickable), Package Version ID, Status, Type, Instance, and Last Modified Date columns, sorted newest first.
 - `hxlGetSubscriberDetailsWidget`: a subscriber-detail card with icon + org name header, two-column layout (left: org type/status/instance/key/parent org, right: boolean indicators for restriction/custom-upgrade settings with a conditional custom upgrade type), and a return-to-list button.
-- "View Subscribers" buttons added to `hxlGetPackageDetails` and `hxlGetPackageVersionDetails` widgets, sending the 033 or 04t ID respectively.
+- "View Subscribers" buttons added to both the `playground/` fixtures and the deployed `uiWidgets/hxlGetPackageDetailsWidget` / `hxlGetPackageVersionDetailsWidget` bundles, sending an unambiguous natural-language message (not a bare ID, to avoid colliding with other handlers that key off the same 033/04t value).
+- `hxlListSubscribersWidget` and `hxlGetSubscriberDetailsWidget`: deployed `UiWidgetBundle`s under `main/default/uiWidgets/`, generated from the playground structures with `$attrs.` bindings so the Lightning Type renderers above have something real to point at.
 - `playground/hxlListSubscribers.data.json` and `playground/hxlGetSubscriberDetails.data.json`: local fixtures for exercising both widgets in the Playground.
 
 Every new Apex metadata file uses API **68.0**. Existing base components retain their current versions.
