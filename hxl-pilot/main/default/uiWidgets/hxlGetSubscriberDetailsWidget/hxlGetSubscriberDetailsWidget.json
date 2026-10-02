@@ -51,7 +51,7 @@
                             {
                               "definition": "tile/icon",
                               "attributes": {
-                                "name": "groups",
+                                "name": "user",
                                 "size": "lg",
                                 "color": "primary",
                                 "alt": ""
