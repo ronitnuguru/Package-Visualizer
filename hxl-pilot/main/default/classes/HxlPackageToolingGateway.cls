@@ -160,47 +160,69 @@ public with sharing class HxlPackageToolingGateway {
     );
   }
 
+  // PackageSubscriber is not exposed through the Tooling API (confirmed live:
+  // "INVALID_TYPE: sObject type 'PackageSubscriber' is not supported"), unlike
+  // Package2/Package2Version. These two methods query it directly instead of
+  // routing through Package2Interface.submitQuery's Tooling HTTP transport.
+  @TestVisible
+  private static List<SObject> subscriberTestRecords;
+
   /**
    * Reads one PackageSubscriber page filtered by package or version ID, newest first.
+   * Uses keyset pagination (SystemModstamp, Id) rather than OFFSET, since SOQL OFFSET
+   * is capped at 2000 rows on this object and some packages already exceed that.
    *
    * @param filterField MetadataPackageId or MetadataPackageVersionId
    * @param filterValue The validated 033 or 04t ID to filter on
-   * @param offset Number of records to skip for this page
+   * @param afterModstamp Last SystemModstamp returned by the prior page, or null for the first page
+   * @param afterId Last record Id returned by the prior page, or null
    * @param pageSize Maximum number of records, including the continuation record
-   * @return Raw Tooling API records for the requested subscriber page
+   * @return Raw PackageSubscriber records for the requested page
    */
-  public static List<Object> readSubscriberPage(
+  public static List<SObject> readSubscriberPage(
     String filterField,
     String filterValue,
-    Integer offset,
+    DateTime afterModstamp,
+    String afterId,
     Integer pageSize
   ) {
+    if (Test.isRunningTest() && subscriberTestRecords != null) {
+      return subscriberTestRecords;
+    }
     String query =
       SUBSCRIBER_LIST_FIELDS +
       ' FROM PackageSubscriber WHERE ' +
       filterField +
-      ' = \'' +
-      String.escapeSingleQuotes(filterValue) +
-      '\' ORDER BY SystemModstamp DESC LIMIT ' +
-      pageSize +
-      ' OFFSET ' +
-      offset;
-    return Package2Interface.submitQuery(query, TOOLING_TIMEOUT_MS);
+      ' = :filterValue';
+    if (afterModstamp != null && afterId != null) {
+      query += ' AND (SystemModstamp < :afterModstamp OR (SystemModstamp = :afterModstamp AND Id < :afterId))';
+    }
+    query += ' ORDER BY SystemModstamp DESC, Id DESC LIMIT :pageSize';
+    return Security.stripInaccessible(
+        AccessType.READABLE,
+        Database.query(query)
+      )
+      .getRecords();
   }
 
   /**
    * Reads one PackageSubscriber record by its OrgKey.
    *
    * @param orgKey The PackageSubscriber OrgKey to look up
-   * @return Raw Tooling API records matching the OrgKey (zero or one record)
+   * @return Raw PackageSubscriber records matching the OrgKey (zero or one record)
    */
-  public static List<Object> readSubscriberDetail(String orgKey) {
+  public static List<SObject> readSubscriberDetail(String orgKey) {
+    if (Test.isRunningTest() && subscriberTestRecords != null) {
+      return subscriberTestRecords;
+    }
     String query =
       SUBSCRIBER_DETAIL_FIELDS +
-      ' FROM PackageSubscriber WHERE OrgKey = \'' +
-      String.escapeSingleQuotes(orgKey) +
-      '\' LIMIT 1';
-    return Package2Interface.submitQuery(query, TOOLING_TIMEOUT_MS);
+      ' FROM PackageSubscriber WHERE OrgKey = :orgKey LIMIT 1';
+    return Security.stripInaccessible(
+        AccessType.READABLE,
+        Database.query(query)
+      )
+      .getRecords();
   }
 
   private static void addVersionNumberPredicate(

@@ -13,7 +13,6 @@ global with sharing class HxlListSubscribersAction {
     label='List Package Subscribers'
     description='Lists PackageSubscriber orgs filtered by 033 package ID or 04t version ID, ten per page. Pass only the continuation cursor returned by this action to get the next page.'
     category='Package Visualizer'
-    callout=true
   )
   global static List<Response> listSubscribers(List<Request> requests) {
     List<String> filters = new List<String>();

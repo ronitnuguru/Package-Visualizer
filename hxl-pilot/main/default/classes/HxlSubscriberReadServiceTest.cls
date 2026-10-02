@@ -1,4 +1,15 @@
-/** Isolated HTTP contract tests; no real subscribers, credentials, or org data required. */
+/**
+ * PackageSubscriber is a system object: its fields are not constructor-
+ * writeable or put()-able ("Field is not writeable" / "Field X is not
+ * editable", confirmed live) and the object cannot be inserted via DML.
+ * Tests build fixtures by round-tripping a field map through
+ * JSON.serialize/JSON.deserialize(..., PackageSubscriber.class), which
+ * bypasses the write-access check (confirmed live, including for Id and a
+ * native DateTime on SystemModstamp), and inject them through
+ * HxlPackageToolingGateway.subscriberTestRecords, which the gateway's two
+ * query methods return directly in test context instead of calling
+ * Database.query.
+ */
 @IsTest
 private class HxlSubscriberReadServiceTest {
   private static String orgKey(Integer sequenceNumber) {
@@ -17,12 +28,18 @@ private class HxlSubscriberReadServiceTest {
     );
   }
 
-  private static Map<String, Object> subscriberRecord(
+  private static String recordId(Integer sequenceNumber) {
+    return String.valueOf(
+      Id.valueOf('0Hb' + String.valueOf(sequenceNumber).leftPad(12, '0'))
+    );
+  }
+
+  private static PackageSubscriber subscriberRecord(
     Integer sequenceNumber,
     String orgName
   ) {
-    return new Map<String, Object>{
-      'Id' => String.valueOf(sequenceNumber),
+    Map<String, Object> fields = new Map<String, Object>{
+      'Id' => recordId(sequenceNumber),
       'OrgKey' => orgKey(sequenceNumber),
       'OrgName' => orgName,
       'OrgType' => 'Production',
@@ -35,64 +52,44 @@ private class HxlSubscriberReadServiceTest {
       'CustomUpgradeType' => 'Mixed',
       'HasRestrictionEnabled' => false,
       'IsCustomUpgradeAllowed' => true,
-      'SystemModstamp' => '2026-10-01T' +
-      String.valueOf(Math.mod(12 + sequenceNumber, 24)).leftPad(2, '0') +
-      ':00:00.000Z'
+      'SystemModstamp' => DateTime.newInstanceGmt(2026, 10, 1, 12, 0, 0)
+        .addHours(sequenceNumber)
     };
+    return (PackageSubscriber) JSON.deserialize(
+      JSON.serialize(fields),
+      PackageSubscriber.class
+    );
   }
 
-  private static void configure(HttpCalloutMock mock) {
+  /** Returns a copy of a fixture record with one field overridden, since
+   * PackageSubscriber fields cannot be reassigned after construction. */
+  private static PackageSubscriber withField(
+    PackageSubscriber record,
+    String fieldName,
+    Object value
+  ) {
+    Map<String, Object> fields = (Map<String, Object>) JSON.deserializeUntyped(
+      JSON.serialize(record)
+    );
+    fields.put(fieldName, value);
+    return (PackageSubscriber) JSON.deserialize(
+      JSON.serialize(fields),
+      PackageSubscriber.class
+    );
+  }
+
+  private static void configure(List<SObject> testRecords) {
     HxlSubscriberReadService.permissionOverride = true;
-    Package2Interface.setNamedCredentialEnabled(true);
-    Test.setMock(HttpCalloutMock.class, mock);
-  }
-
-  private class SubscriberQueryMock implements HttpCalloutMock {
-    private List<Object> records;
-    private Integer status;
-    private List<String> queries = new List<String>();
-    SubscriberQueryMock(List<Object> records, Integer status) {
-      this.records = records;
-      this.status = status;
-    }
-    public HttpResponse respond(HttpRequest request) {
-      String query = EncodingUtil.urlDecode(
-        request.getEndpoint().substringAfter('query?q='),
-        'UTF-8'
-      );
-      queries.add(query);
-      Assert.areEqual(
-        'GET',
-        request.getMethod(),
-        'Subscriber browsing must be read-only.'
-      );
-      Assert.isTrue(
-        request.getEndpoint().startsWith('callout:'),
-        'Use the existing named credential.'
-      );
-      Assert.isTrue(
-        query.contains(' FROM PackageSubscriber WHERE '),
-        'Query only subscriber data.'
-      );
-      HttpResponse response = new HttpResponse();
-      response.setStatusCode(status);
-      response.setBody(
-        status == 200
-          ? JSON.serialize(new Map<String, Object>{ 'records' => records })
-          : 'Private upstream credential diagnostics'
-      );
-      return response;
-    }
+    HxlPackageToolingGateway.subscriberTestRecords = testRecords;
   }
 
   @IsTest
   static void listsTenByPackageIdAndReturnsCursor() {
-    List<Object> records = new List<Object>();
-    for (Integer i = 0; i < 11; i++) {
+    List<SObject> records = new List<SObject>();
+    for (Integer i = 10; i >= 0; i--) {
       records.add(subscriberRecord(i, 'Test Org ' + i));
     }
-    SubscriberQueryMock mock = new SubscriberQueryMock(records, 200);
-    configure(mock);
+    configure(records);
     List<HxlSubscriberListResult> results = HxlSubscriberReadService.listSubscribers(
       new List<String>{ subscriberPackageId(1) },
       new List<String>{ null }
@@ -108,34 +105,21 @@ private class HxlSubscriberReadServiceTest {
     Assert.areEqual(
       true,
       result.hasMore,
-      'Should have more when query returns pageSize + 1'
+      'Should have more when gateway returns pageSize + 1'
     );
     Assert.isNotNull(
       result.nextCursor,
       'Should provide nextCursor when hasMore'
     );
-    Assert.isTrue(
-      mock.queries[0].contains('MetadataPackageId'),
-      'Should filter by package ID'
-    );
-    Assert.isTrue(
-      mock.queries[0].contains('ORDER BY SystemModstamp DESC'),
-      'Should sort newest first'
-    );
-    Assert.isTrue(
-      mock.queries[0].contains('OFFSET 0'),
-      'First page should use offset 0'
-    );
   }
 
   @IsTest
   static void listsFiveByVersionIdWithoutCursor() {
-    List<Object> records = new List<Object>();
+    List<SObject> records = new List<SObject>();
     for (Integer i = 0; i < 5; i++) {
       records.add(subscriberRecord(i, 'Test Org ' + i));
     }
-    SubscriberQueryMock mock = new SubscriberQueryMock(records, 200);
-    configure(mock);
+    configure(records);
     List<HxlSubscriberListResult> results = HxlSubscriberReadService.listSubscribers(
       new List<String>{ subscriberPackageVersionId(1) },
       new List<String>{ null }
@@ -156,31 +140,27 @@ private class HxlSubscriberReadServiceTest {
       result.nextCursor,
       'Should not provide nextCursor when no more pages'
     );
-    Assert.isTrue(
-      mock.queries[0].contains('MetadataPackageVersionId'),
-      'Should filter by version ID'
-    );
   }
 
   @IsTest
-  static void paginatesWithCursor() {
-    List<Object> page1 = new List<Object>();
-    for (Integer i = 0; i < 11; i++) {
+  static void paginatesWithKeysetCursor() {
+    List<SObject> page1 = new List<SObject>();
+    for (Integer i = 10; i >= 0; i--) {
       page1.add(subscriberRecord(i, 'Org ' + i));
     }
-    SubscriberQueryMock mock = new SubscriberQueryMock(page1, 200);
-    configure(mock);
+    configure(page1);
     List<HxlSubscriberListResult> results1 = HxlSubscriberReadService.listSubscribers(
       new List<String>{ subscriberPackageId(1) },
       new List<String>{ null }
     );
     String cursor = results1[0].nextCursor;
     Assert.isNotNull(cursor, 'First page should return cursor');
-    List<Object> page2 = new List<Object>();
-    for (Integer i = 10; i < 15; i++) {
+
+    List<SObject> page2 = new List<SObject>();
+    for (Integer i = 4; i >= 0; i--) {
       page2.add(subscriberRecord(i, 'Org ' + i));
     }
-    mock.records = page2;
+    HxlPackageToolingGateway.subscriberTestRecords = page2;
     List<HxlSubscriberListResult> results2 = HxlSubscriberReadService.listSubscribers(
       new List<String>{ subscriberPackageId(1) },
       new List<String>{ cursor }
@@ -192,15 +172,11 @@ private class HxlSubscriberReadServiceTest {
       result2.subscribers.size(),
       'Second page should show 5 subscribers'
     );
-    Assert.isTrue(
-      mock.queries[1].contains('OFFSET 10'),
-      'Second page should use offset 10'
-    );
   }
 
   @IsTest
   static void returnsInvalidFilterForNullFilter() {
-    configure(new SubscriberQueryMock(new List<Object>(), 200));
+    configure(new List<SObject>());
     List<HxlSubscriberListResult> results = HxlSubscriberReadService.listSubscribers(
       new List<String>{ null },
       new List<String>{ null }
@@ -214,7 +190,7 @@ private class HxlSubscriberReadServiceTest {
 
   @IsTest
   static void returnsInvalidFilterForWrongPrefix() {
-    configure(new SubscriberQueryMock(new List<Object>(), 200));
+    configure(new List<SObject>());
     List<HxlSubscriberListResult> results = HxlSubscriberReadService.listSubscribers(
       new List<String>{ '0Ho000000000000' },
       new List<String>{ null }
@@ -228,7 +204,7 @@ private class HxlSubscriberReadServiceTest {
 
   @IsTest
   static void returnsInvalidFilterForWrongLength() {
-    configure(new SubscriberQueryMock(new List<Object>(), 200));
+    configure(new List<SObject>());
     List<HxlSubscriberListResult> results = HxlSubscriberReadService.listSubscribers(
       new List<String>{ '033123' },
       new List<String>{ null }
@@ -242,7 +218,7 @@ private class HxlSubscriberReadServiceTest {
 
   @IsTest
   static void returnsEmptyForNoRecords() {
-    configure(new SubscriberQueryMock(new List<Object>(), 200));
+    configure(new List<SObject>());
     List<HxlSubscriberListResult> results = HxlSubscriberReadService.listSubscribers(
       new List<String>{ subscriberPackageId(999) },
       new List<String>{ null }
@@ -266,7 +242,7 @@ private class HxlSubscriberReadServiceTest {
 
   @IsTest
   static void returnsInvalidCursorForMalformedCursor() {
-    configure(new SubscriberQueryMock(new List<Object>(), 200));
+    configure(new List<SObject>());
     List<HxlSubscriberListResult> results = HxlSubscriberReadService.listSubscribers(
       new List<String>{ subscriberPackageId(1) },
       new List<String>{ 'not-valid-base64-json!!' }
@@ -279,13 +255,26 @@ private class HxlSubscriberReadServiceTest {
   }
 
   @IsTest
+  static void returnsInvalidCursorForWrongJsonShape() {
+    configure(new List<SObject>());
+    String badCursor = EncodingUtil.base64Encode(
+      Blob.valueOf(JSON.serialize(new Map<String, Object>{ 'foo' => 1 }))
+    );
+    List<HxlSubscriberListResult> results = HxlSubscriberReadService.listSubscribers(
+      new List<String>{ subscriberPackageId(1) },
+      new List<String>{ badCursor }
+    );
+    Assert.areEqual(
+      'INVALID_CURSOR',
+      results[0].state,
+      'Cursor missing lastModstamp/lastId should return INVALID_CURSOR'
+    );
+  }
+
+  @IsTest
   static void returnsNoAccessWhenPackageSubscriberUnavailable() {
     HxlSubscriberReadService.permissionOverride = false;
-    Package2Interface.setNamedCredentialEnabled(true);
-    Test.setMock(
-      HttpCalloutMock.class,
-      new SubscriberQueryMock(new List<Object>(), 200)
-    );
+    HxlPackageToolingGateway.subscriberTestRecords = new List<SObject>();
     List<HxlSubscriberListResult> results = HxlSubscriberReadService.listSubscribers(
       new List<String>{ subscriberPackageId(1) },
       new List<String>{ null }
@@ -298,9 +287,23 @@ private class HxlSubscriberReadServiceTest {
   }
 
   @IsTest
+  static void returnsNoAccessForDetailsWhenPackageSubscriberUnavailable() {
+    HxlSubscriberReadService.permissionOverride = false;
+    HxlPackageToolingGateway.subscriberTestRecords = new List<SObject>();
+    List<HxlSubscriberDetailResult> results = HxlSubscriberReadService.getSubscriberDetails(
+      new List<String>{ orgKey(1) }
+    );
+    Assert.areEqual(
+      'NO_ACCESS',
+      results[0].state,
+      'Unavailable PackageSubscriber access should return NO_ACCESS for details too'
+    );
+  }
+
+  @IsTest
   static void getsDetailsByOrgKey() {
-    Map<String, Object> record = subscriberRecord(1, 'Production Org');
-    configure(new SubscriberQueryMock(new List<Object>{ record }, 200));
+    PackageSubscriber record = subscriberRecord(1, 'Production Org');
+    configure(new List<SObject>{ record });
     List<HxlSubscriberDetailResult> results = HxlSubscriberReadService.getSubscriberDetails(
       new List<String>{ orgKey(1) }
     );
@@ -315,6 +318,11 @@ private class HxlSubscriberReadServiceTest {
       'Should map customUpgradeType'
     );
     Assert.areEqual(
+      subscriberPackageId(1),
+      result.metadataPackageId,
+      'Should map metadataPackageId for back-navigation'
+    );
+    Assert.areEqual(
       false,
       result.hasRestrictionEnabled,
       'Should map hasRestrictionEnabled'
@@ -324,6 +332,10 @@ private class HxlSubscriberReadServiceTest {
       result.isCustomUpgradeAllowed,
       'Should map isCustomUpgradeAllowed'
     );
+    Assert.isNotNull(
+      result.systemModstamp,
+      'Should map systemModstamp directly from the native Datetime field'
+    );
     Assert.isTrue(
       result.openInSalesforceUrl.contains(orgKey(1)),
       'URL should contain orgKey'
@@ -332,7 +344,7 @@ private class HxlSubscriberReadServiceTest {
 
   @IsTest
   static void returnsNotFoundForMissingOrgKey() {
-    configure(new SubscriberQueryMock(new List<Object>(), 200));
+    configure(new List<SObject>());
     List<HxlSubscriberDetailResult> results = HxlSubscriberReadService.getSubscriberDetails(
       new List<String>{ orgKey(999) }
     );
@@ -345,7 +357,7 @@ private class HxlSubscriberReadServiceTest {
 
   @IsTest
   static void returnsInvalidOrgKeyForBlankOrgKey() {
-    configure(new SubscriberQueryMock(new List<Object>(), 200));
+    configure(new List<SObject>());
     List<HxlSubscriberDetailResult> results = HxlSubscriberReadService.getSubscriberDetails(
       new List<String>{ '' }
     );
@@ -357,26 +369,12 @@ private class HxlSubscriberReadServiceTest {
   }
 
   @IsTest
-  static void returnsUpstreamErrorForHttp500() {
-    configure(new SubscriberQueryMock(new List<Object>(), 500));
-    List<HxlSubscriberListResult> results = HxlSubscriberReadService.listSubscribers(
-      new List<String>{ subscriberPackageId(1) },
-      new List<String>{ null }
-    );
-    Assert.areEqual(
-      'UPSTREAM_ERROR',
-      results[0].state,
-      'HTTP 500 should return UPSTREAM_ERROR'
-    );
-  }
-
-  @IsTest
   static void listsSubscribersViaAction() {
-    List<Object> records = new List<Object>();
+    List<SObject> records = new List<SObject>();
     for (Integer i = 0; i < 5; i++) {
       records.add(subscriberRecord(i, 'Action Org ' + i));
     }
-    configure(new SubscriberQueryMock(records, 200));
+    configure(records);
     HxlListSubscribersAction.Request request = new HxlListSubscribersAction.Request();
     request.packageFilter = subscriberPackageId(1);
     request.cursor = null;
@@ -407,8 +405,8 @@ private class HxlSubscriberReadServiceTest {
 
   @IsTest
   static void getsDetailsViaAction() {
-    Map<String, Object> record = subscriberRecord(1, 'Detail Org');
-    configure(new SubscriberQueryMock(new List<Object>{ record }, 200));
+    PackageSubscriber record = subscriberRecord(1, 'Detail Org');
+    configure(new List<SObject>{ record });
     HxlGetSubscriberDetailsAction.Request request = new HxlGetSubscriberDetailsAction.Request();
     request.orgKey = orgKey(1);
     List<HxlGetSubscriberDetailsAction.Response> responses = HxlGetSubscriberDetailsAction.getSubscriberDetails(
@@ -438,7 +436,7 @@ private class HxlSubscriberReadServiceTest {
 
   @IsTest
   static void mapsListResultWithCorrectFields() {
-    List<Object> records = new List<Object>();
+    List<SObject> records = new List<SObject>();
     for (Integer i = 0; i < 3; i++) {
       records.add(subscriberRecord(i, 'Mapper Org ' + i));
     }
@@ -462,7 +460,7 @@ private class HxlSubscriberReadServiceTest {
   @IsTest
   static void mapsEmptyListResult() {
     HxlSubscriberListResult result = HxlSubscriberResultMapper.toListResult(
-      new List<Object>(),
+      new List<SObject>(),
       10
     );
     Assert.areEqual('EMPTY', result.state, 'Zero records should map to EMPTY');
@@ -475,7 +473,7 @@ private class HxlSubscriberReadServiceTest {
 
   @IsTest
   static void mapsDetailResultWithAllFields() {
-    Map<String, Object> record = subscriberRecord(5, 'Full Detail Org');
+    PackageSubscriber record = subscriberRecord(5, 'Full Detail Org');
     HxlSubscriberDetailResult result = HxlSubscriberResultMapper.toDetailResult(
       record
     );
@@ -507,8 +505,11 @@ private class HxlSubscriberReadServiceTest {
 
   @IsTest
   static void handlesNullSystemModstampGracefully() {
-    Map<String, Object> record = subscriberRecord(1, 'Null Timestamp Org');
-    record.put('SystemModstamp', null);
+    PackageSubscriber record = withField(
+      subscriberRecord(1, 'Null Timestamp Org'),
+      'SystemModstamp',
+      null
+    );
     HxlSubscriberDetailResult result = HxlSubscriberResultMapper.toDetailResult(
       record
     );
@@ -520,9 +521,11 @@ private class HxlSubscriberReadServiceTest {
 
   @IsTest
   static void handlesNullParentOrgAndCustomUpgradeTypeGracefully() {
-    Map<String, Object> record = subscriberRecord(1, 'No Parent Org');
-    record.put('ParentOrg', null);
-    record.put('CustomUpgradeType', null);
+    PackageSubscriber record = withField(
+      withField(subscriberRecord(1, 'No Parent Org'), 'ParentOrg', null),
+      'CustomUpgradeType',
+      null
+    );
     HxlSubscriberDetailResult result = HxlSubscriberResultMapper.toDetailResult(
       record
     );
@@ -530,6 +533,30 @@ private class HxlSubscriberReadServiceTest {
     Assert.isNull(
       result.customUpgradeType,
       'Null customUpgradeType should map to null'
+    );
+  }
+
+  @IsTest
+  static void handlesNullBooleanFieldsGracefully() {
+    PackageSubscriber record = withField(
+      withField(
+        subscriberRecord(1, 'Null Booleans Org'),
+        'HasRestrictionEnabled',
+        null
+      ),
+      'IsCustomUpgradeAllowed',
+      null
+    );
+    HxlSubscriberDetailResult result = HxlSubscriberResultMapper.toDetailResult(
+      record
+    );
+    Assert.isNull(
+      result.hasRestrictionEnabled,
+      'Null HasRestrictionEnabled should map to null, not throw'
+    );
+    Assert.isNull(
+      result.isCustomUpgradeAllowed,
+      'Null IsCustomUpgradeAllowed should map to null, not throw'
     );
   }
 }

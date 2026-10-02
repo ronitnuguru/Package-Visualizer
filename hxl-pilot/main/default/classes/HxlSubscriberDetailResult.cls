@@ -28,6 +28,12 @@ global class HxlSubscriberDetailResult {
   global String parentOrg;
 
   @AuraEnabled
+  global String metadataPackageId;
+
+  @AuraEnabled
+  global String metadataPackageVersionId;
+
+  @AuraEnabled
   global String customUpgradeType;
 
   @AuraEnabled

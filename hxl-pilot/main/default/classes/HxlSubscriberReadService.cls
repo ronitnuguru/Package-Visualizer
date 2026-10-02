@@ -30,19 +30,19 @@ public with sharing class HxlSubscriberReadService {
     String unavailable = unavailableState();
     for (Integer i = 0; i < filters.size(); i++) {
       String filter = filters[i];
-      String cursor = cursors != null && i < cursors.size() ? cursors[i] : null;
+      String cursorValue = cursors != null &&
+        i < cursors.size()
+        ? cursors[i]
+        : null;
       HxlSubscriberListResult result;
       if (unavailable != null) {
-        result = listResultWithState(
-          unavailable,
-          unavailableMessage(unavailable)
-        );
+        result = listResultWithState(unavailable, unavailableMessage());
       } else if (!isValidFilter(filter)) {
         result = listResultWithState('INVALID_FILTER', INVALID_FILTER_MESSAGE);
       } else {
         try {
-          Integer offset = decodeCursor(cursor);
-          result = readSubscriberPage(filter, offset);
+          PageCursor cursor = decodeCursor(cursorValue);
+          result = readSubscriberPage(filter, cursor);
         } catch (InvalidInputException e) {
           result = listResultWithState(
             'INVALID_CURSOR',
@@ -78,10 +78,7 @@ public with sharing class HxlSubscriberReadService {
     for (String orgKey : orgKeys) {
       HxlSubscriberDetailResult result;
       if (unavailable != null) {
-        result = detailResultWithState(
-          unavailable,
-          unavailableMessage(unavailable)
-        );
+        result = detailResultWithState(unavailable, unavailableMessage());
       } else if (String.isBlank(orgKey)) {
         result = detailResultWithState(
           'INVALID_ORG_KEY',
@@ -120,20 +117,27 @@ public with sharing class HxlSubscriberReadService {
     return filter.startsWith('033') || filter.startsWith('04t');
   }
 
-  private static Integer decodeCursor(String cursor) {
-    if (String.isBlank(cursor)) {
-      return 0;
+  private static PageCursor decodeCursor(String cursorValue) {
+    if (String.isBlank(cursorValue)) {
+      return null;
     }
     try {
-      String decoded = EncodingUtil.base64Decode(cursor).toString();
+      String decoded = EncodingUtil.base64Decode(cursorValue).toString();
       Map<String, Object> cursorData = (Map<String, Object>) JSON.deserializeUntyped(
         decoded
       );
-      Object offsetValue = cursorData.get('offset');
-      if (offsetValue == null) {
+      Object modstampValue = cursorData.get('lastModstamp');
+      Object idValue = cursorData.get('lastId');
+      if (modstampValue == null || idValue == null) {
         throw new InvalidInputException();
       }
-      return (Integer) offsetValue;
+      PageCursor cursor = new PageCursor();
+      cursor.lastModstamp = (Datetime) JSON.deserialize(
+        JSON.serialize(modstampValue),
+        Datetime.class
+      );
+      cursor.lastId = (String) idValue;
+      return cursor;
     } catch (InvalidInputException e) {
       throw e;
     } catch (Exception e) {
@@ -141,22 +145,28 @@ public with sharing class HxlSubscriberReadService {
     }
   }
 
-  private static String encodeCursor(Integer offset) {
-    String json = JSON.serialize(new Map<String, Object>{ 'offset' => offset });
+  private static String encodeCursor(DateTime lastModstamp, String lastId) {
+    String json = JSON.serialize(
+      new Map<String, Object>{
+        'lastModstamp' => lastModstamp,
+        'lastId' => lastId
+      }
+    );
     return EncodingUtil.base64Encode(Blob.valueOf(json));
   }
 
   private static HxlSubscriberListResult readSubscriberPage(
     String filter,
-    Integer offset
+    PageCursor cursor
   ) {
     String filterField = filter.startsWith('033')
       ? 'MetadataPackageId'
       : 'MetadataPackageVersionId';
-    List<Object> records = HxlPackageToolingGateway.readSubscriberPage(
+    List<SObject> records = HxlPackageToolingGateway.readSubscriberPage(
       filterField,
       filter,
-      offset,
+      cursor?.lastModstamp,
+      cursor?.lastId,
       PAGE_SIZE + 1
     );
     HxlSubscriberListResult result = HxlSubscriberResultMapper.toListResult(
@@ -164,13 +174,17 @@ public with sharing class HxlSubscriberReadService {
       PAGE_SIZE
     );
     if (result.hasMore) {
-      result.nextCursor = encodeCursor(offset + PAGE_SIZE);
+      SObject lastShown = records[PAGE_SIZE - 1];
+      result.nextCursor = encodeCursor(
+        (DateTime) lastShown.get('SystemModstamp'),
+        (String) lastShown.get('Id')
+      );
     }
     return result;
   }
 
   private static HxlSubscriberDetailResult readSubscriberDetail(String orgKey) {
-    List<Object> records = HxlPackageToolingGateway.readSubscriberDetail(
+    List<SObject> records = HxlPackageToolingGateway.readSubscriberDetail(
       orgKey
     );
     if (records == null || records.isEmpty()) {
@@ -179,27 +193,18 @@ public with sharing class HxlSubscriberReadService {
         'No subscriber found with this organization key.'
       );
     }
-    return HxlSubscriberResultMapper.toDetailResult(
-      (Map<String, Object>) records[0]
-    );
+    return HxlSubscriberResultMapper.toDetailResult(records[0]);
   }
 
   private static String unavailableState() {
     Boolean permitted = permissionOverride == null
       ? Type.forName('PackageSubscriber') != null
       : permissionOverride;
-    if (!permitted) {
-      return 'NO_ACCESS';
-    }
-    return Package2Interface.isNamedCredentialEnabled()
-      ? null
-      : 'NOT_CONFIGURED';
+    return permitted ? null : 'NO_ACCESS';
   }
 
-  private static String unavailableMessage(String state) {
-    return state == 'NO_ACCESS'
-      ? 'PackageSubscriber access is not available in this org.'
-      : 'Complete the Package Visualizer Tooling connection setup before using these actions.';
+  private static String unavailableMessage() {
+    return 'PackageSubscriber access is not available in this org.';
   }
 
   private static HxlSubscriberListResult listResultWithState(
@@ -220,6 +225,12 @@ public with sharing class HxlSubscriberReadService {
     result.state = state;
     result.message = message;
     return result;
+  }
+
+  /** Keyset page cursor: the last record's SystemModstamp and Id from the prior page. */
+  private class PageCursor {
+    DateTime lastModstamp;
+    String lastId;
   }
 
   private class InvalidInputException extends Exception {

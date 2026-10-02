@@ -1,6 +1,7 @@
 /**
- * Maps PackageSubscriber Tooling records to typed HXL result contracts.
- * Mirrors HxlPackageResultMapper structure for consistent conversion patterns.
+ * Maps PackageSubscriber records to typed HXL result contracts.
+ * PackageSubscriber is read via direct SOQL, not the Tooling API, so records
+ * arrive as SObjects rather than deserialized JSON maps.
  */
 public with sharing class HxlSubscriberResultMapper {
   private static final String SUBSCRIBER_SETUP_PATH = '/lightning/setup/PackageSubscribers/home';
@@ -8,18 +9,18 @@ public with sharing class HxlSubscriberResultMapper {
   /**
    * Maps a bounded query result to a list-page result.
    *
-   * @param records Raw PackageSubscriber Tooling records
+   * @param records Raw PackageSubscriber records
    * @param pageSize Number of records to expose to the client
    * @return A ready or empty typed subscriber-list result
    */
   public static HxlSubscriberListResult toListResult(
-    List<Object> records,
+    List<SObject> records,
     Integer pageSize
   ) {
     HxlSubscriberListResult result = new HxlSubscriberListResult();
     Integer recordCount = records == null ? 0 : records.size();
     for (Integer i = 0; i < Math.min(pageSize, recordCount); i++) {
-      result.subscribers.add(toSummary((Map<String, Object>) records[i]));
+      result.subscribers.add(toSummary(records[i]));
     }
     result.hasMore = recordCount > pageSize;
     result.state = result.subscribers.isEmpty() ? 'EMPTY' : 'READY';
@@ -31,14 +32,12 @@ public with sharing class HxlSubscriberResultMapper {
   }
 
   /**
-   * Maps one PackageSubscriber Tooling record to a subscriber-detail result.
+   * Maps one PackageSubscriber record to a subscriber-detail result.
    *
-   * @param record Raw PackageSubscriber Tooling record
+   * @param record Raw PackageSubscriber record
    * @return A ready typed subscriber-detail result
    */
-  public static HxlSubscriberDetailResult toDetailResult(
-    Map<String, Object> record
-  ) {
+  public static HxlSubscriberDetailResult toDetailResult(SObject record) {
     HxlSubscriberDetailResult result = new HxlSubscriberDetailResult();
     result.state = 'READY';
     result.message = 'Subscriber organization information';
@@ -48,6 +47,10 @@ public with sharing class HxlSubscriberResultMapper {
     result.orgStatus = (String) record.get('OrgStatus');
     result.instanceName = (String) record.get('InstanceName');
     result.parentOrg = (String) record.get('ParentOrg');
+    result.metadataPackageId = (String) record.get('MetadataPackageId');
+    result.metadataPackageVersionId = (String) record.get(
+      'MetadataPackageVersionId'
+    );
     result.customUpgradeType = (String) record.get('CustomUpgradeType');
     result.hasRestrictionEnabled = (Boolean) record.get(
       'HasRestrictionEnabled'
@@ -55,16 +58,14 @@ public with sharing class HxlSubscriberResultMapper {
     result.isCustomUpgradeAllowed = (Boolean) record.get(
       'IsCustomUpgradeAllowed'
     );
-    result.systemModstamp = toDatetime(record.get('SystemModstamp'));
+    result.systemModstamp = (DateTime) record.get('SystemModstamp');
     result.openInSalesforceUrl = getOpenInSalesforceUrlWithOrgKey(
       result.orgKey
     );
     return result;
   }
 
-  private static HxlSubscriberListResult.Subscriber toSummary(
-    Map<String, Object> record
-  ) {
+  private static HxlSubscriberListResult.Subscriber toSummary(SObject record) {
     HxlSubscriberListResult.Subscriber subscriber = new HxlSubscriberListResult.Subscriber();
     subscriber.orgKey = (String) record.get('OrgKey');
     subscriber.orgName = (String) record.get('OrgName');
@@ -74,21 +75,8 @@ public with sharing class HxlSubscriberResultMapper {
     subscriber.installedStatus = (String) record.get('InstalledStatus');
     subscriber.orgType = (String) record.get('OrgType');
     subscriber.instanceName = (String) record.get('InstanceName');
-    subscriber.systemModstamp = toDatetime(record.get('SystemModstamp'));
+    subscriber.systemModstamp = (DateTime) record.get('SystemModstamp');
     return subscriber;
-  }
-
-  private static DateTime toDatetime(Object value) {
-    if (value == null) {
-      return null;
-    }
-    try {
-      return DateTime.valueOf(
-        String.valueOf(value).replace('T', ' ').replace('Z', '')
-      );
-    } catch (Exception e) {
-      return null;
-    }
   }
 
   public static String getOpenInSalesforceUrl() {

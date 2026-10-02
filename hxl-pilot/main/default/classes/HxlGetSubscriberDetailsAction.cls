@@ -13,7 +13,6 @@ global with sharing class HxlGetSubscriberDetailsAction {
     label='Get Package Subscriber Details'
     description='Returns subscriber organization information for a PackageSubscriber OrgKey. Does not return installation history or custom objects.'
     category='Package Visualizer'
-    callout=true
   )
   global static List<Response> getSubscriberDetails(List<Request> requests) {
     List<String> orgKeys = new List<String>();
