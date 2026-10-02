@@ -1,0 +1,18 @@
+{
+  "isSuccess": true,
+  "errorMessage": null,
+  "errorType": null,
+  "state": "READY",
+  "message": "Subscriber organization information",
+  "orgKey": "00D0000000001EAU",
+  "orgName": "Acme Corporation",
+  "orgType": "Production",
+  "orgStatus": "Active",
+  "instanceName": "NA01",
+  "parentOrg": null,
+  "customUpgradeType": "Mixed",
+  "hasRestrictionEnabled": false,
+  "isCustomUpgradeAllowed": true,
+  "systemModstamp": "2026-10-01T15:30:00.000Z",
+  "openInSalesforceUrl": "https://example.my.salesforce.com/lightning/setup/PackageSubscribers/view?address=00D0000000001EAU"
+}
