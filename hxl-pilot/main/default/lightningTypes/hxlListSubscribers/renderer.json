@@ -1,0 +1,20 @@
+{
+  "renderer": {
+    "componentOverrides": {
+      "$": {
+        "definition": "@widget/c/hxlListSubscribersWidget",
+        "attributes": {
+          "isSuccess": "{!$attrs.outputValues.isSuccess}",
+          "errorMessage": "{!$attrs.outputValues.errorMessage}",
+          "errorType": "{!$attrs.outputValues.errorType}",
+          "state": "{!$attrs.outputValues.result.state}",
+          "message": "{!$attrs.outputValues.result.message}",
+          "hasMore": "{!$attrs.outputValues.result.hasMore}",
+          "nextCursor": "{!$attrs.outputValues.result.nextCursor}",
+          "subscribers": "{!$attrs.outputValues.result.subscribers}",
+          "openInSalesforceUrl": "{!$attrs.outputValues.result.openInSalesforceUrl}"
+        }
+      }
+    }
+  }
+}

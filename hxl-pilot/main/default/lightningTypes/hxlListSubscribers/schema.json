@@ -1,0 +1,22 @@
+{
+  "title": "Hxl List Subscribers",
+  "description": "Invocable-action result envelope for the HxlListSubscribersAction MCP tool.",
+  "type": "object",
+  "lightning:type": "lightning__objectType",
+  "lightning:tags": ["mcp"],
+  "unevaluatedProperties": false,
+  "properties": {
+    "actionName": {
+      "title": "Action Name",
+      "lightning:type": "lightning__textType"
+    },
+    "isSuccess": {
+      "title": "Success",
+      "lightning:type": "lightning__booleanType"
+    },
+    "outputValues": {
+      "title": "Output Values",
+      "lightning:type": "c__hxlListSubscribersResponse"
+    }
+  }
+}

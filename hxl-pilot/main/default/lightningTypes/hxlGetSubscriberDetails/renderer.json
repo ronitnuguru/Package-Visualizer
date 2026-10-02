@@ -1,0 +1,26 @@
+{
+  "renderer": {
+    "componentOverrides": {
+      "$": {
+        "definition": "@widget/c/hxlGetSubscriberDetailsWidget",
+        "attributes": {
+          "isSuccess": "{!$attrs.outputValues.isSuccess}",
+          "errorMessage": "{!$attrs.outputValues.errorMessage}",
+          "errorType": "{!$attrs.outputValues.errorType}",
+          "state": "{!$attrs.outputValues.result.state}",
+          "message": "{!$attrs.outputValues.result.message}",
+          "orgKey": "{!$attrs.outputValues.result.orgKey}",
+          "orgName": "{!$attrs.outputValues.result.orgName}",
+          "orgType": "{!$attrs.outputValues.result.orgType}",
+          "orgStatus": "{!$attrs.outputValues.result.orgStatus}",
+          "instanceName": "{!$attrs.outputValues.result.instanceName}",
+          "parentOrg": "{!$attrs.outputValues.result.parentOrg}",
+          "customUpgradeType": "{!$attrs.outputValues.result.customUpgradeType}",
+          "hasRestrictionEnabled": "{!$attrs.outputValues.result.hasRestrictionEnabled}",
+          "isCustomUpgradeAllowed": "{!$attrs.outputValues.result.isCustomUpgradeAllowed}",
+          "openInSalesforceUrl": "{!$attrs.outputValues.result.openInSalesforceUrl}"
+        }
+      }
+    }
+  }
+}

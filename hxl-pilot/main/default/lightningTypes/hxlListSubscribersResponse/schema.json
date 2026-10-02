@@ -1,0 +1,26 @@
+{
+  "title": "Hxl List Subscribers Response",
+  "description": "Response fields returned by the HxlListSubscribersAction invocable action.",
+  "type": "object",
+  "lightning:type": "lightning__objectType",
+  "lightning:tags": ["mcp"],
+  "unevaluatedProperties": false,
+  "properties": {
+    "isSuccess": {
+      "title": "Success",
+      "lightning:type": "lightning__booleanType"
+    },
+    "errorMessage": {
+      "title": "Error Message",
+      "lightning:type": "lightning__textType"
+    },
+    "errorType": {
+      "title": "Error Type",
+      "lightning:type": "lightning__textType"
+    },
+    "result": {
+      "title": "Subscriber List",
+      "lightning:type": "@apexClassType/pkgviz__HxlSubscriberListResult"
+    }
+  }
+}
