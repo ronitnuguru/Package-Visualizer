@@ -1,47 +1,41 @@
 export const PACKAGE_VISUALIZER_APEX_TOOLS = [
   {
-    apiName: "pkgviz__AgentforcePackagePortfolioAction",
+    apiName: "pkgviz__HeadlessPlanPushAction",
     description:
-      "Returns authoritative, bounded health context for active 2GP managed and unlocked packages."
+      "Prepares an upgrade for up to 2,000 eligible subscriber orgs for your review and confirmation before submission."
   },
   {
-    apiName: "pkgviz__AgentforcePackageDetailAction",
+    apiName: "pkgviz__HeadlessExecutePushAction",
     description:
-      "Resolves a package and returns bounded authoritative package, version, build, and subscriber context."
+      "Dispatches the reviewed prepared upgrade after confirmation and revalidation."
   },
   {
-    apiName: "pkgviz__AgentforcePackageBuildDiagnosisAction",
+    apiName: "pkgviz__HeadlessPushStatusAction",
     description:
-      "Refreshes authoritative error context for a failed 08c package-version create request."
+      "Returns staging progress, upgrade outcomes, errors, and available reports."
   },
   {
-    apiName: "pkgviz__AgentforcePackageBuildComparisonAction",
+    apiName: "pkgviz__HeadlessCancelPushAction",
+    description: "Cancels a prepared or pending push upgrade request."
+  },
+  {
+    apiName: "pkgviz__HeadlessResolvePushTargetAction",
     description:
-      "Compares exact error signatures across recent failed build requests for the same Package2."
+      "Resolve a package name and numeric version, or exact version ID. Return ambiguity and readiness blockers without creating a request."
+  },
+  {
+    apiName: "pkgviz__HeadlessPreviewPushAction",
+    description:
+      "Read-only subscriber eligibility preview from pasted IDs, a Salesforce File, filters, or confirmed failures from an owned source manifest. Return selectionFingerprint for preparation. No requests, Files or jobs are created."
+  },
+  {
+    apiName: "pkgviz__HeadlessFindPushRunsAction",
+    description:
+      "Find the current Salesforce operator's manifest-backed runs. Select a manifestVersionId to retrieve validated references for resuming. Page using both beforeDate and beforeId. Never dispatches."
   },
   {
     apiName: "pkgviz__AgentforcePushRequestAnalysisAction",
     description:
-      "Returns authoritative job outcomes and failure patterns for a direct 0DV PackagePushRequest."
-  },
-  {
-    apiName: "pkgviz__AgentforcePushJobDiagnosisAction",
-    description:
-      "Refreshes and normalizes authoritative evidence for a failed PackagePushJob."
-  },
-  {
-    apiName: "pkgviz__AgentforcePushRequestComparisonAction",
-    description:
-      "Derives the owning PackagePushRequest from an active PackagePushJob and compares exact and normalized sibling failure patterns."
-  },
-  {
-    apiName: "pkgviz__AgentforceSubscriberSupportAction",
-    description:
-      "Returns read-only PackageSubscriber installation, upgrade, sandbox, and support context."
-  },
-  {
-    apiName: "pkgviz__AgentforcePackageVersionReadinessAction",
-    description:
-      "Returns authoritative release, coverage, dependency, subscriber-impact, and blocker context for a 04t package version."
+      "Read authoritative job outcomes and failure patterns for a selected PackagePushRequest. Diagnosis does not authorize a retry; preview and prepare a fresh reviewed recovery cohort."
   }
 ];

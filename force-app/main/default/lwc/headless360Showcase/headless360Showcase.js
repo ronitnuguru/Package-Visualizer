@@ -4,6 +4,7 @@ import getAgentforceConfiguration from "@salesforce/apex/AgentforceConversationC
 import AgentScriptCoachModal from "c/agentScriptCoachModal";
 import { AGENT_SCRIPTS } from "c/agentScriptCatalog";
 import { PACKAGE_VISUALIZER_APEX_TOOLS } from "./headless360ShowcaseAssets";
+import { MCP_SERVER_DEFINITION } from "./mcpServerDefinition";
 
 const HEADLESS_360_HELP_URL =
   "https://developer.salesforce.com/developer-centers/headless-360";
@@ -36,6 +37,80 @@ const APEX_TOOL_COLUMNS = [
 ];
 
 export default class Headless360Showcase extends LightningElement {
+  activeClientTab = "slack";
+
+  get isSlackTab() {
+    return this.activeClientTab === "slack";
+  }
+  get isClaudeTab() {
+    return this.activeClientTab === "claude";
+  }
+  get isChatgptTab() {
+    return this.activeClientTab === "chatgpt";
+  }
+  get isCursorTab() {
+    return this.activeClientTab === "cursor";
+  }
+  get hideSlack() {
+    return !this.isSlackTab;
+  }
+  get hideClaude() {
+    return !this.isClaudeTab;
+  }
+  get hideChatgpt() {
+    return !this.isChatgptTab;
+  }
+  get hideCursor() {
+    return !this.isCursorTab;
+  }
+  get slackTabIndex() {
+    return this.isSlackTab ? 0 : -1;
+  }
+  get claudeTabIndex() {
+    return this.isClaudeTab ? 0 : -1;
+  }
+  get chatgptTabIndex() {
+    return this.isChatgptTab ? 0 : -1;
+  }
+  get cursorTabIndex() {
+    return this.isCursorTab ? 0 : -1;
+  }
+  get slackTabClass() {
+    return this.tabClass(this.isSlackTab);
+  }
+  get claudeTabClass() {
+    return this.tabClass(this.isClaudeTab);
+  }
+  get chatgptTabClass() {
+    return this.tabClass(this.isChatgptTab);
+  }
+  get cursorTabClass() {
+    return this.tabClass(this.isCursorTab);
+  }
+
+  tabClass(selected) {
+    return `slds-tabs_scoped__item c-client-tab-item${
+      selected ? " slds-is-active c-client-tab-active" : ""
+    }`;
+  }
+
+  handleClientTabClick(event) {
+    this.activeClientTab = event.currentTarget.dataset.tab;
+  }
+
+  handleClientTabKeydown(event) {
+    const tabs = ["slack", "claude", "chatgpt", "cursor"];
+    let index = tabs.indexOf(this.activeClientTab);
+    if (event.key === "ArrowRight") index = (index + 1) % tabs.length;
+    else if (event.key === "ArrowLeft")
+      index = (index + tabs.length - 1) % tabs.length;
+    else if (event.key === "Home") index = 0;
+    else if (event.key === "End") index = tabs.length - 1;
+    else return;
+    event.preventDefault();
+    this.activeClientTab = tabs[index];
+    this.template.querySelector(`[data-tab="${tabs[index]}"]`).focus();
+  }
   agentforceConfiguration;
   agentScript = AGENT_SCRIPTS[0];
   activeAgentScriptSections = [this.agentScript.id];
@@ -94,8 +169,61 @@ export default class Headless360Showcase extends LightningElement {
     this.openOrgPage("/lightning/setup/McpServer/home");
   }
 
+  navigateToExternalClientApps() {
+    this.openOrgPage("/lightning/setup/ManageExternalClientApplication/home");
+  }
+
   navigateToCustomMcpServersHelp() {
     window.open(CUSTOM_MCP_SERVER_HELP_URL, "_blank");
+  }
+
+  navigateToExternalClientAppHelp() {
+    window.open(
+      "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/create-external-client-app.html",
+      "_blank"
+    );
+  }
+
+  navigateToEcaSecurityHelp() {
+    window.open(
+      "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/create-external-client-app.html#enhance-security-for-production",
+      "_blank"
+    );
+  }
+
+  handleDownloadMcpServerDefinition() {
+    const blob = new Blob([MCP_SERVER_DEFINITION], {
+      type: "application/octet-stream"
+    });
+    const url = URL.createObjectURL(blob);
+    const link = this.template.querySelector(
+      '[data-id="mcp-definition-download-link"]'
+    );
+    link.href = url;
+    link.click();
+    // eslint-disable-next-line @lwc/lwc/no-async-operation -- Allow the download to start before revoking its URL.
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
+
+  navigateToClaudeHelp() {
+    window.open(
+      "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/claude.html",
+      "_blank"
+    );
+  }
+
+  navigateToChatGPTHelp() {
+    window.open(
+      "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/chatgpt.html",
+      "_blank"
+    );
+  }
+
+  navigateToCursorHelp() {
+    window.open(
+      "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/cursor.html",
+      "_blank"
+    );
   }
 
   navigateToSlackbotMcpHelp() {

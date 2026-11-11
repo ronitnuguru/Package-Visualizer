@@ -155,6 +155,19 @@ global with sharing class PushUpgradesInterface {
   }
 
   /**
+   * Stages a single collection without dispatching the prepared request.
+   * @param packagePushRequestId Created PackagePushRequest to populate.
+   * @param orgKeys One to 200 distinct subscriber org IDs.
+   * @return JSON per-org job IDs, success flags, and sanitized errors.
+   */
+  global static String stagePushJobChunk(
+    String packagePushRequestId,
+    List<String> orgKeys
+  ) {
+    return PushUpgradeSubmissionService.stage(packagePushRequestId, orgKeys);
+  }
+
+  /**
    * Dispatches PackagePushJobs for every subscriber in the list. Subscribers
    * are sent in chunks of {@link #SUBSCRIBER_CHUNK_SIZE}: the first chunk runs
    * synchronously so the caller gets immediate feedback, and any remaining
@@ -341,27 +354,11 @@ global with sharing class PushUpgradesInterface {
     Integer subListSize,
     Integer subOffset
   ) {
-    List<ObjectWrappers.PackagePushJobWrapper> pushJobs = new List<ObjectWrappers.PackagePushJobWrapper>();
-    ObjectWrappers.ObjectAttributes objectType = new ObjectWrappers.ObjectAttributes();
-    objectType.type = 'PackagePushJob';
-    for (Integer i = subOffset; i < subListSize; i++) {
-      ObjectWrappers.PackagePushJobWrapper pushJob = new ObjectWrappers.PackagePushJobWrapper();
-      pushJob.PackagePushRequestId = packagePushRequestId;
-      pushJob.SubscriberOrganizationKey = subscriberList[i];
-      pushJob.attributes = objectType;
-      pushJobs.add(pushJob);
-    }
-
-    HttpRequest req = buildJsonRequest(
-      getBaseURL() + 'composite/sobjects',
-      'POST'
-    );
-    req.setBody(
-      '{"allOrNone" : false, "records" : ' + JSON.serialize(pushJobs) + ' }'
-    );
-    HttpResponse res = sendWithContext(
-      req,
-      'pushUpgradeCallout(offset=' + subOffset + ')'
+    HttpResponse res = PushUpgradeSubmissionService.submitCollection(
+      packagePushRequestId,
+      subscriberList,
+      subOffset,
+      subListSize
     );
 
     if (res.getStatusCode() != 200) {
@@ -419,6 +416,7 @@ global with sharing class PushUpgradesInterface {
     return count;
   }
 
+  @NamespaceAccessible
   public static String updatePushRequest(
     String packagePushRequestId,
     String status

@@ -94,6 +94,42 @@ describe("c-setup-assistant Agentforce Conversation marker", () => {
     jest.clearAllMocks();
   });
 
+  it("copies the current setup guidance without org credentials", async () => {
+    const originalClipboard = Object.getOwnPropertyDescriptor(
+      navigator,
+      "clipboard"
+    );
+    const writeText = jest.fn().mockResolvedValue();
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText }
+    });
+    try {
+      const element = createElement("c-setup-assistant", {
+        is: SetupAssistant
+      });
+      document.body.appendChild(element);
+      await flushPromises();
+      const button = Array.from(
+        element.shadowRoot.querySelectorAll("lightning-button")
+      ).find((item) => item.label === "Copy for LLM");
+      button.click();
+      expect(writeText).toHaveBeenCalledTimes(1);
+      const text = writeText.mock.calls[0][0];
+      expect(text).toContain("Component Setup and Customization");
+      expect(text).toContain("Tableau Next");
+      expect(text).toContain(
+        "https://github.com/forcedotcom/partner-ecosystem-agentic-kit"
+      );
+      expect(text).not.toContain("agentforce-adlc");
+      expect(text).not.toContain("AiAuthoringBundle   | No");
+    } finally {
+      if (originalClipboard)
+        Object.defineProperty(navigator, "clipboard", originalClipboard);
+      else delete navigator.clipboard;
+    }
+  });
+
   it("uses the default marker until the saved Agentforce configuration is ready", async () => {
     const element = createElement("c-setup-assistant", {
       is: SetupAssistant

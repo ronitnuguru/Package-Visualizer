@@ -6,6 +6,59 @@
   --slds-c-icon-color-background: white;
 }
 
+.client-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.openai-icon {
+  background: #000;
+  border-radius: 50%;
+  padding: 0.25rem;
+}
+
+.cursor-icon {
+  background: #181818;
+  border-radius: 50%;
+  padding: 0.25rem;
+}
+
+.client-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.client-tab[aria-selected="false"]:hover {
+  background: var(--slds-g-color-palette-blue-90, #d8e6fe);
+}
+
+.c-client-tab-nav {
+  border: var(--slds-g-sizing-border-1, 1px) solid
+    var(--slds-g-color-border-1, #c9c9c9);
+}
+
+.c-client-tab-active {
+  position: relative;
+  border-inline: var(--slds-g-sizing-border-1, 1px) solid
+    var(--slds-g-color-border-1, #c9c9c9);
+  background: var(--slds-g-color-surface-1, #fff);
+  margin-bottom: calc(-1 * var(--slds-g-sizing-border-1, 1px));
+  border-bottom: var(--slds-g-sizing-border-1, 1px) solid
+    var(--slds-g-color-surface-1, #fff);
+}
+
+.c-client-tab-active:first-child {
+  border-inline-start: 0;
+}
+
+.slds-tabs_scoped__content[hidden] {
+  display: none;
+}
+
 .c-headless360-agent-script-pre {
   max-height: var(--slds-g-sizing-16, 30rem);
   margin: 0;

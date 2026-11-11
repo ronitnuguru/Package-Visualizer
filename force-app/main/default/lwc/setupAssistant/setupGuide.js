@@ -13,8 +13,9 @@ managed packaging (2GP). It focuses on org setup, namespace setup, developer
 access, DX tooling, package lifecycle commands, security review preparation, and
 product extension considerations.
 
-This guide does not cover Package Visualizer internal configuration, Tooling API
-credential setup, or app-specific post-install setup.
+This guide summarizes the current Setup Assistant guidance, including Package
+Visualizer setup and the managed 2GP lifecycle. Some steps apply only to 2GP
+orgs. It does not include live org status, entered credentials, or secrets.
 
 ## What Is 2GP?
 
@@ -26,6 +27,24 @@ AppExchange. Compared with first-generation packaging (1GP), 2GP lets you:
 - Manage source and packaging from version control and the Salesforce CLI
   (\`sf\`).
 - Use Dev Hub, scratch orgs, and a source-driven development lifecycle.
+
+## Component Setup and Customization
+
+- Assign Package Visualizer's core permission set to users who need app access.
+  For 2GP push upgrades, also grant the applicable push upgrade permission.
+- Configure the Agentforce Conversation Client by selecting an active Employee
+  Agent for Package Visualizer's release and packaging conversations.
+- Configure custom Salesforce MCP servers for trusted client access when needed.
+- Provision the Tooling API Named Credential and External Credential for this
+  org, then set up an External Client App (ECA) for the Tooling integration.
+  Follow the Setup Assistant's ECA cards for the OAuth settings and client
+  credentials flow. Assign the Tooling API permission set to additional users
+  who need access, and save the client credentials through the secure setup UI.
+- Test and confirm the Tooling API connection. Configure the SalesforceTrust
+  remote site and trusted site settings if needed for the Trust APIs.
+
+Never paste consumer secrets, access tokens, or passwords into an AI prompt.
+Provisioning and test actions require the appropriate Salesforce permissions.
 
 ## 1. Partner Business Org (PBO)
 
@@ -115,7 +134,7 @@ and automation to help teams build, test, and ship faster.
   - Reference:
     [Agentforce Skills Docs](https://labs.agentforce.com/docs/skills).
   - Reference:
-    [agentforce-adlc](https://github.com/SalesforceAIResearch/agentforce-adlc).
+    [peak](https://github.com/forcedotcom/partner-ecosystem-agentic-kit).
   - Reference: [sf-skills](https://github.com/forcedotcom/sf-skills).
 - Set up your app project structure and edit the \`namespace\` parameter to the
   global namespace you registered.
@@ -230,24 +249,10 @@ Reference:
 
 ### Agentforce Packageable Components
 
-Use this table as a quick reference for Agentforce metadata support across 1GP,
-2GP, and Agentforce builders.
-
-Some Agentforce authoring artifacts are useful during development but are not
-currently packageable in 2GP.
-
-| Component        | Metadata Type       | 1GP | 2GP | Next Gen Builder | Legacy Builder |
-| ---------------- | ------------------- | --- | --- | ---------------- | -------------- |
-| AgentScript      | AiAuthoringBundle   | No  | No  | Yes              | No             |
-| Agent Actions    | GenAiFunction       | Yes | Yes | Yes              | Yes            |
-| Subagents        | GenAiPlugin         | Yes | Yes | No               | Yes            |
-| Prompt Templates | GenAiPromptTemplate | Yes | Yes | Yes              | Yes            |
-| Agent Templates  | BotTemplate         | Yes | Yes | No               | Yes            |
-| Agent Templates  | GenAiPlannerBundle  | Yes | Yes | No               | Yes            |
-| Lightning Types  | LightningTypeBundle | Yes | Yes | Yes              | Yes            |
-
-Reference:
-[Packageable Components](https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/packaging_packageable_components.htm).
+Metadata packaging support can change by release. Check the current
+[Metadata Coverage Report](https://developer.salesforce.com/docs/success/metadata-coverage-report/references/coverage-report/metadata-coverage-report.html)
+and [packageable Agentforce metadata guidance](https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/dev2gp_packageable_agentforce_md.htm)
+for the metadata type and packaging model before building a package version.
 
 Scratch org setup for Agentforce:
 
@@ -283,6 +288,14 @@ Scratch org setup for Data360:
   [Slack Developer Program](https://api.slack.com/developer-program).
 - Reference:
   [Slack Partner Sandboxes](https://docs.slack.dev/tools/partner-sandboxes/).
+
+### Tableau Next
+
+- Review the [Tableau Next scratch org workflow](https://developer.salesforce.com/docs/analytics/tableau-next-isv-dev/guide/tn-scratch-org-workflow.html)
+  for prerequisites, provisioning, and development.
+- Review [deploying Tableau Next assets with Salesforce CLI](https://developer.salesforce.com/docs/analytics/tableau-next-isv-dev/guide/tn-deploy-assets-using-cli.html)
+  for moving supported assets between orgs.
+- If provisioning is needed, contact Salesforce through Partner Community.
 
 ## 9. 1GP to 2GP Package Migration (Generally Available)
 

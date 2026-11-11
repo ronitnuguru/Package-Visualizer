@@ -618,8 +618,8 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   }
 
   // Copies the full 2GP/ISV setup guide (markdown) to the clipboard so the user
-  // can paste it into an AI assistant. Mirrors setupGuide.md; runtime source is
-  // the imported SETUP_GUIDE_MARKDOWN string.
+  // can paste it into an AI assistant. The runtime source is the imported
+  // SETUP_GUIDE_MARKDOWN string.
   copyAiSetupGuide() {
     const text = SETUP_GUIDE_MARKDOWN;
     if (navigator.clipboard && navigator.clipboard.writeText) {

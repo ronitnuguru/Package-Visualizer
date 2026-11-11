@@ -2,6 +2,7 @@ import { createElement } from "lwc";
 import Headless360Showcase from "c/headless360Showcase";
 import AgentScriptCoachModal from "c/agentScriptCoachModal";
 import getAgentforceConfiguration from "@salesforce/apex/AgentforceConversationConfigController.getAgentforceConfiguration";
+import { MCP_SERVER_DEFINITION } from "../mcpServerDefinition";
 
 jest.mock(
   "@salesforce/apex/AgentforceConversationConfigController.getAgentforceConfiguration",
@@ -17,12 +18,6 @@ const CUSTOM_MCP_SERVER_HELP_URL =
   "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/custom-servers.html";
 const SLACKBOT_MCP_HELP_URL =
   "https://slack.com/help/articles/52462858006675-Connect-Slackbot-to-Salesforce-with-MCP#add-an-mcp-server";
-const PROMPT_TEMPLATE_HELP_URL =
-  "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/prompt-builder.html";
-const FLOW_HELP_URL =
-  "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/flows.html";
-const STANDARD_SERVER_HELP_URL =
-  "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/servers-reference.html";
 const READY_AGENT_CONFIGURATION = {
   botId: "0Xx000000000001AAA",
   label: "Package Visualizer Agent",
@@ -57,24 +52,194 @@ describe("c-headless-360-showcase", () => {
     jest.clearAllMocks();
   });
 
-  it("renders the Salesforce-branded Headless 360 Showcase with client tabs", () => {
+  it("renders the Salesforce-branded Headless Toolkit Showcase with client tabs", () => {
     const element = createElement("c-headless-360-showcase", {
       is: Headless360Showcase
     });
     document.body.appendChild(element);
 
-    const card = element.shadowRoot.querySelector("lightning-card");
     const headerIcon = element.shadowRoot.querySelector(".card_header_icon");
-    const clientTabset = element.shadowRoot.querySelector("lightning-tabset");
-    const tabs = Array.from(clientTabset.children);
+    const tabs = Array.from(
+      element.shadowRoot.querySelectorAll('[role="tab"]')
+    );
 
-    expect(card.querySelector('[slot="title"]').textContent).toContain(
-      "Headless 360 Showcase"
+    expect(headerIcon.parentElement.textContent).toContain(
+      "Headless Toolkit Showcase"
     );
     expect(headerIcon.iconName).toBe("utility:salesforce1");
     expect(headerIcon.className).toContain("card_header_icon");
-    expect(tabs.map((tab) => tab.label)).toEqual(["Slack"]);
-    expect(tabs.map((tab) => tab.iconName)).toEqual(["standard:slack"]);
+    expect(tabs.map((tab) => tab.textContent.trim())).toEqual([
+      "Slack",
+      "Claude",
+      "ChatGPT",
+      "Cursor"
+    ]);
+    expect(tabs[0].querySelector("lightning-icon").iconName).toBe(
+      "standard:slack"
+    );
+    expect(tabs[1].querySelector("svg")).not.toBeNull();
+    expect(tabs[2].querySelector("svg")).not.toBeNull();
+  });
+
+  it("switches client tabs with the keyboard", async () => {
+    const element = createElement("c-headless-360-showcase", {
+      is: Headless360Showcase
+    });
+    document.body.appendChild(element);
+    const tabs = element.shadowRoot.querySelectorAll('[role="tab"]');
+    tabs[0].dispatchEvent(
+      new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true })
+    );
+    await Promise.resolve();
+    expect(tabs[1].getAttribute("aria-selected")).toBe("true");
+    expect(tabs[1].parentElement.classList.contains("slds-is-active")).toBe(
+      true
+    );
+    expect(tabs[0].parentElement.classList.contains("slds-is-active")).toBe(
+      false
+    );
+    expect(
+      element.shadowRoot.querySelector('[data-id="claude-setup-content"]')
+        .parentElement.hidden
+    ).toBe(false);
+  });
+
+  it("shows the Cursor panel when Cursor is selected", async () => {
+    const element = createElement("c-headless-360-showcase", {
+      is: Headless360Showcase
+    });
+    document.body.appendChild(element);
+    element.shadowRoot.querySelector('[data-tab="cursor"]').click();
+    await Promise.resolve();
+    const cursorPanel = element.shadowRoot.querySelector(
+      '[data-id="cursor-setup-content"]'
+    ).parentElement;
+    const chatgptPanel = element.shadowRoot.querySelector(
+      '[data-id="chatgpt-setup-content"]'
+    ).parentElement;
+    expect(cursorPanel.hidden).toBe(false);
+    expect(chatgptPanel.hidden).toBe(true);
+    expect(cursorPanel.textContent).toContain("Configure Cursor");
+  });
+
+  it("downloads the static MCP definition from all three client sections", () => {
+    const element = createElement("c-headless-360-showcase", {
+      is: Headless360Showcase
+    });
+    document.body.appendChild(element);
+    const definition = new DOMParser().parseFromString(
+      MCP_SERVER_DEFINITION,
+      "text/xml"
+    );
+    expect(definition.querySelector("parsererror")).toBeNull();
+    expect(definition.querySelector("masterLabel").textContent).toBe(
+      "Package Visualizer Custom MCP Server"
+    );
+    expect(definition.querySelectorAll("tools")).toHaveLength(8);
+    const originalCreateUrl = URL.createObjectURL;
+    const originalRevokeUrl = URL.revokeObjectURL;
+    const createUrl = (URL.createObjectURL = jest
+      .fn()
+      .mockReturnValue("blob:test"));
+    const revokeUrl = (URL.revokeObjectURL = jest.fn());
+    const link = element.shadowRoot.querySelector(
+      '[data-id="mcp-definition-download-link"]'
+    );
+    const click = jest.spyOn(link, "click").mockImplementation(() => {});
+    jest.useFakeTimers();
+    ["", "claude-", "chatgpt-", "cursor-"].forEach((prefix) => {
+      element.shadowRoot
+        .querySelector(`[data-id="${prefix}custom-mcp-servers-download"]`)
+        .click();
+    });
+    expect(createUrl).toHaveBeenCalledTimes(4);
+    expect(createUrl.mock.calls[0][0].type).toBe("application/octet-stream");
+    expect(link.download).toBe(
+      "PackageVisualizerCustomMcpServer.mcpServerDefinition-meta.xml"
+    );
+    expect(click).toHaveBeenCalledTimes(4);
+    jest.runAllTimers();
+    expect(revokeUrl).toHaveBeenCalledTimes(4);
+    jest.useRealTimers();
+    URL.createObjectURL = originalCreateUrl;
+    URL.revokeObjectURL = originalRevokeUrl;
+  });
+
+  it("shows org setup guidance and documentation for Claude and ChatGPT", () => {
+    const element = createElement("c-headless-360-showcase", {
+      is: Headless360Showcase
+    });
+    document.body.appendChild(element);
+    ["claude", "chatgpt", "cursor"].forEach((client) => {
+      const section = element.shadowRoot.querySelector(
+        `[data-id="${client}-setup-content"]`
+      );
+      expect(section.textContent).toContain(
+        "Create an External Client App (ECA)"
+      );
+      expect(section.textContent).not.toContain("Set up Your Org");
+      section.querySelector(`[data-id="${client}-eca-setup"]`).click();
+      expect(openedTab.location.href).toBe(
+        `${window.location.origin}/lightning/setup/ManageExternalClientApplication/home`
+      );
+      expect(section.textContent).toContain("mcp_api");
+      expect(section.textContent).toContain("refresh_token");
+      expect(section.textContent).toContain(
+        client === "claude"
+          ? "https://claude.ai/api/mcp/auth_callback"
+          : client === "cursor"
+          ? "http://localhost:8787/callback"
+          : "ChatGPT's Advanced settings"
+      );
+      const help = section.querySelector(
+        `[data-id="${client}-org-setup-help"]`
+      );
+      const security = section.querySelector(
+        `[data-id="${client}-eca-security-help"]`
+      );
+      expect(security.iconName).toBe("utility:policy");
+      expect(security.tooltip).toBe("Enhance Security for Production");
+      security.click();
+      expect(window.open).toHaveBeenLastCalledWith(
+        "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/create-external-client-app.html#enhance-security-for-production",
+        "_blank"
+      );
+      expect(help.variant).toBe("brand");
+      help.click();
+      expect(window.open).toHaveBeenLastCalledWith(
+        "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/create-external-client-app.html",
+        "_blank"
+      );
+      const configure = section.querySelector(
+        `[data-id="${client}-configure"]`
+      );
+      expect(configure.textContent).toContain(
+        client === "claude"
+          ? "Configure Claude"
+          : client === "cursor"
+          ? "Configure Cursor"
+          : "Configure ChatGPT"
+      );
+      configure.querySelector("lightning-button-icon").click();
+      expect(window.open).toHaveBeenLastCalledWith(
+        `https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/${client}.html`,
+        "_blank"
+      );
+      const server = section.querySelector(
+        `[data-id="${client}-custom-mcp-server"]`
+      );
+      expect(server.textContent).toContain(
+        "Create and Curate a Custom MCP Server"
+      );
+      expect(
+        server.querySelector(`[data-id="${client}-apex-tools"]`).data
+      ).toHaveLength(8);
+      const tabs = server.querySelectorAll("lightning-tab");
+      expect(Array.from(tabs, (tab) => tab.label)).toEqual([
+        "Apex",
+        "Salesforce Hosted MCP Servers"
+      ]);
+    });
   });
 
   it("renders the three Slack setup steps and asset category tabs", () => {
@@ -91,16 +256,17 @@ describe("c-headless-360-showcase", () => {
       "custom-mcp-server-step",
       "slackbot-mcp-step"
     ]);
+    const slackPanel = element.shadowRoot.querySelector(
+      '[aria-labelledby^="slack-tab"]'
+    );
     const infoMarkers = Array.from(
-      element.shadowRoot.querySelectorAll("lightning-icon")
+      slackPanel.querySelectorAll("lightning-icon")
     ).filter((icon) => icon.iconName === "utility:info_alt");
     expect(infoMarkers).toHaveLength(3);
     expect(
       infoMarkers.every((marker) => marker.classList.contains("icon-style"))
     ).toBe(true);
-    expect(
-      element.shadowRoot.querySelectorAll(".slds-icon_container")
-    ).toHaveLength(3);
+    expect(slackPanel.querySelectorAll(".slds-icon_container")).toHaveLength(3);
     expect(steps[0].textContent).toContain("Connect Salesforce and Slack");
     expect(steps[0].textContent).toContain(
       "Connect your Slack workspace to this Salesforce org, then approve and activate the connection."
@@ -126,13 +292,11 @@ describe("c-headless-360-showcase", () => {
     expect(toolTabs.map((tab) => tab.label)).toEqual([
       "Apex",
       "Agents",
-      "Prompt Templates",
-      "Flows",
       "Salesforce Hosted MCP Servers"
     ]);
   });
 
-  it("lists the nine packaged Apex actions in two informational columns", () => {
+  it("lists the eight push upgrade Apex actions in two informational columns", () => {
     const element = createElement("c-headless-360-showcase", {
       is: Headless360Showcase
     });
@@ -143,15 +307,14 @@ describe("c-headless-360-showcase", () => {
     );
 
     expect(apexTools.data.map((tool) => tool.apiName)).toEqual([
-      "pkgviz__AgentforcePackagePortfolioAction",
-      "pkgviz__AgentforcePackageDetailAction",
-      "pkgviz__AgentforcePackageBuildDiagnosisAction",
-      "pkgviz__AgentforcePackageBuildComparisonAction",
-      "pkgviz__AgentforcePushRequestAnalysisAction",
-      "pkgviz__AgentforcePushJobDiagnosisAction",
-      "pkgviz__AgentforcePushRequestComparisonAction",
-      "pkgviz__AgentforceSubscriberSupportAction",
-      "pkgviz__AgentforcePackageVersionReadinessAction"
+      "pkgviz__HeadlessPlanPushAction",
+      "pkgviz__HeadlessExecutePushAction",
+      "pkgviz__HeadlessPushStatusAction",
+      "pkgviz__HeadlessCancelPushAction",
+      "pkgviz__HeadlessResolvePushTargetAction",
+      "pkgviz__HeadlessPreviewPushAction",
+      "pkgviz__HeadlessFindPushRunsAction",
+      "pkgviz__AgentforcePushRequestAnalysisAction"
     ]);
     expect(apexTools.columns).toEqual([
       expect.objectContaining({ label: "Apex Action", fieldName: "apiName" }),
@@ -274,48 +437,6 @@ describe("c-headless-360-showcase", () => {
     ).toBeNull();
   });
 
-  it("provides Learn More empty states for un-packaged asset categories", () => {
-    const element = createElement("c-headless-360-showcase", {
-      is: Headless360Showcase
-    });
-    document.body.appendChild(element);
-
-    const promptTemplates = element.shadowRoot.querySelector(
-      '[data-id="prompt-template-assets-unavailable"]'
-    );
-    const flows = element.shadowRoot.querySelector(
-      '[data-id="flow-assets-unavailable"]'
-    );
-    const hostedServers = element.shadowRoot.querySelector(
-      '[data-id="salesforce-hosted-mcp-server-assets-unavailable"]'
-    );
-
-    expect(promptTemplates.tagName).toBe("LIGHTNING-EMPTY-STATE");
-    expect(promptTemplates.title).toBe("Server asset not available...");
-    expect(promptTemplates.textContent).toContain(
-      "No packaged Prompt Templates are available to add to this Custom MCP Server."
-    );
-    expect(flows.tagName).toBe("LIGHTNING-EMPTY-STATE");
-    expect(flows.title).toBe("Server asset not available...");
-    expect(flows.textContent).toContain(
-      "No packaged Flows are available to add to this Custom MCP Server."
-    );
-    expect(hostedServers.tagName).toBe("LIGHTNING-EMPTY-STATE");
-    expect(hostedServers.title).toBe("Server asset not available...");
-    expect(hostedServers.textContent).toContain(
-      "No packaged Salesforce Hosted MCP Servers are available to add to this Custom MCP Server."
-    );
-    [
-      "prompt-template-assets-help",
-      "flow-assets-help",
-      "salesforce-hosted-mcp-server-assets-help"
-    ].forEach((dataId) => {
-      expect(
-        element.shadowRoot.querySelector(`[data-id="${dataId}"]`).label
-      ).toBe("Learn More");
-    });
-  });
-
   it("provides accessible Setup and Help actions for each applicable step", () => {
     const element = createElement("c-headless-360-showcase", {
       is: Headless360Showcase
@@ -341,6 +462,7 @@ describe("c-headless-360-showcase", () => {
     expect(slackSetup.iconName).toBe("utility:setup");
     expect(slackSetup.alternativeText).toBe("Open Slack Setup");
     expect(slackSetup.title).toBe("Open Slack Setup");
+    expect(slackSetup.tooltip).toBe("Manage Slack Connection");
     expect(slackHelp.iconName).toBe("utility:help_doc_ext");
     expect(slackHelp.variant).toBe("brand");
     expect(slackHelp.alternativeText).toBe(
@@ -351,6 +473,7 @@ describe("c-headless-360-showcase", () => {
     );
     expect(mcpSetup.alternativeText).toBe("Open Custom MCP Servers Setup");
     expect(mcpSetup.title).toBe("Open Custom MCP Servers Setup");
+    expect(mcpSetup.tooltip).toBe("Manage Custom MCP Servers");
     expect(mcpHelp.alternativeText).toBe(
       "Open Custom MCP Servers documentation"
     );
@@ -422,25 +545,6 @@ describe("c-headless-360-showcase", () => {
     element.shadowRoot.querySelector('[data-id="slackbot-mcp-help"]').click();
     expect(window.open).toHaveBeenLastCalledWith(
       SLACKBOT_MCP_HELP_URL,
-      "_blank"
-    );
-
-    element.shadowRoot
-      .querySelector('[data-id="prompt-template-assets-help"]')
-      .click();
-    expect(window.open).toHaveBeenLastCalledWith(
-      PROMPT_TEMPLATE_HELP_URL,
-      "_blank"
-    );
-
-    element.shadowRoot.querySelector('[data-id="flow-assets-help"]').click();
-    expect(window.open).toHaveBeenLastCalledWith(FLOW_HELP_URL, "_blank");
-
-    element.shadowRoot
-      .querySelector('[data-id="salesforce-hosted-mcp-server-assets-help"]')
-      .click();
-    expect(window.open).toHaveBeenLastCalledWith(
-      STANDARD_SERVER_HELP_URL,
       "_blank"
     );
   });
