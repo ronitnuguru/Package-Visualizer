@@ -1,0 +1,134 @@
+<template>
+  <lightning-tabset variant="scoped">
+    <lightning-tab
+      label="Manageability Rules"
+      icon-name="standard:table"
+    >
+      <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left">
+        <lightning-card hide-header={hideJourneyHeader}>
+          <lightning-button-group lwc:if={embedFailed} slot="actions">
+            <lightning-button
+              lwc:if={showCreateTrustedUrl}
+              variant="brand"
+              label="Create Trusted URL"
+              onclick={handleCreateTrustedUrl}
+              disabled={createTrustedUrlDisabled}
+            ></lightning-button>
+            <lightning-button-icon
+              icon-name="utility:settings"
+              variant="border-filled"
+              alternative-text="Open Trusted URLs Setup"
+              tooltip="Open Trusted URLs Setup"
+              onclick={handleOpenTrustedUrls}
+            ></lightning-button-icon>
+            <lightning-button-icon
+              icon-name="utility:refresh"
+              variant="border-filled"
+              alternative-text="Refresh"
+              tooltip="Refresh"
+              onclick={handleRefresh}
+            ></lightning-button-icon>
+            <lightning-button-icon
+              icon-name="utility:new_window"
+              variant="border-filled"
+              alternative-text="Open in New Tab"
+              tooltip="Open in New Tab"
+              onclick={handleOpenJourney}
+            ></lightning-button-icon>
+          </lightning-button-group>
+          <div class="slds-card__body slds-card__body_inner slds-is-relative">
+            <div lwc:if={isLoading} class="journey-loading">
+              <lightning-spinner
+                alternative-text="Loading Headless Toolkit Journey"
+                size="medium"
+                variant="brand"
+              ></lightning-spinner>
+            </div>
+            <div
+              lwc:elseif={embedFailed}
+              class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small"
+              role="region"
+              aria-label="Component Requirements for Embedded UI"
+            >
+              <div class="slds-media__figure">
+                <lightning-icon icon-name="utility:info" variant="inverse" size="small"></lightning-icon>
+              </div>
+              <div class="slds-media__body">
+                <strong>Component Requirements for Embedded UI</strong>
+                <ul class="slds-list_dotted">
+                  <li>In Setup, create a Trusted URL for <span class="slds-hyphenate">{journeyOrigin}</span> with <strong>frame-src (iframe content)</strong> enabled.</li>
+                  <li>In Setup, go to My Domain and enable <strong>Use Salesforce Edge Network</strong>.</li>
+                </ul>
+                <p lwc:if={trustedUrlConfirmed} role="status" class="slds-m-top_x-small">Trusted URL is active. Select Refresh to load the journey. If it still doesn’t load, reload the page.</p>
+                <p lwc:if={trustedUrlError} role="alert" class="slds-m-top_x-small">{trustedUrlError}</p>
+              </div>
+            </div>
+            <p lwc:elseif={journeyUnavailable}>Headless Toolkit Journey is not available. Check app access in Setup.</p>
+            <lightning-ui-embedding
+              lwc:if={showEmbed}
+              lwc:ref="journeyEmbed"
+              class={embedClass}
+              src={journeyUrl}
+              title="Headless Toolkit Journey"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+            ></lightning-ui-embedding>
+          </div>
+        </lightning-card>
+      </div>
+    </lightning-tab>
+    <lightning-tab label="Developer Environments" icon-name="standard:apex">
+      <lightning-card hide-header>
+        <lightning-tabset variant="scoped">
+          <lightning-tab label="Scratch Orgs" icon-name="standard:default">
+            <div
+              class="slds-border_top slds-border_right slds-border_bottom slds-border_left"
+            >
+              <c-scratch-def-file-build-card
+                template-key="headlessToolkit"
+                auto-confirm-settings={autoConfirmSettings}
+              ></c-scratch-def-file-build-card>
+            </div>
+          </lightning-tab>
+          <lightning-tab
+            label="Developer &amp; Demo Orgs"
+            icon-name="standard:default"
+          >
+            <template lwc:if={orgId}>
+              <div
+                class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-m-bottom_small"
+                role="status"
+              >
+                <div class="slds-media__figure">
+                  <lightning-icon
+                    size="small"
+                    icon-name="utility:skill"
+                    variant="inverse"
+                  ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <p>
+                    Log a case via&nbsp;
+                    <a target="_blank" href="https://partners.salesforce.com/"
+                      >Partner Community</a
+                    >
+                    &nbsp;to provision the following licenses and features for
+                    your org - <code>{orgId}</code>
+                  </p>
+                </div>
+              </div>
+            </template>
+            <lightning-icon
+              icon-name="utility:settings"
+              size="x-small"
+              class="slds-m-right_xx-small"
+            ></lightning-icon>
+            Features:
+            <ul class="slds-list_dotted">
+              <li>Headless</li>
+            </ul>
+          </lightning-tab>
+        </lightning-tabset>
+      </lightning-card>
+    </lightning-tab>
+  </lightning-tabset>
+</template>

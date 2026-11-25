@@ -16,13 +16,6 @@
         onclick={navigateToHeadless360ShowcaseHelp}
       ></lightning-button-icon>
     </lightning-button-group>
-    <a
-      data-id="mcp-definition-download-link"
-      class="slds-hide"
-      download="PackageVisualizerCustomMcpServer.mcpServerDefinition-meta.xml"
-      tabindex="-1"
-      aria-hidden="true"
-    ></a>
     <div class="slds-card__body slds-card__body_inner">
       <div class="slds-tabs_scoped">
         <ul
@@ -42,6 +35,7 @@
               aria-selected={isSlackTab}
               tabindex={slackTabIndex}
               onclick={handleClientTabClick}
+              disabled={provisioningBusy}
             >
               <lightning-icon
                 icon-name="standard:slack"
@@ -62,6 +56,7 @@
               aria-selected={isClaudeTab}
               tabindex={claudeTabIndex}
               onclick={handleClientTabClick}
+              disabled={provisioningBusy}
             >
               <svg
                 class="client-icon"
@@ -87,6 +82,7 @@
               aria-selected={isChatgptTab}
               tabindex={chatgptTabIndex}
               onclick={handleClientTabClick}
+              disabled={provisioningBusy}
             >
               <svg
                 class="client-icon openai-icon"
@@ -113,6 +109,7 @@
               aria-selected={isCursorTab}
               tabindex={cursorTabIndex}
               onclick={handleClientTabClick}
+              disabled={provisioningBusy}
             >
               <svg
                 class="client-icon cursor-icon"
@@ -212,21 +209,6 @@
                     <div class="slds-shrink-none slds-var-m-left_small">
                       <lightning-button-group>
                         <lightning-button-icon
-                          data-id="custom-mcp-servers-setup"
-                          icon-name="utility:setup"
-                          alternative-text="Open Custom MCP Servers Setup"
-                          title="Open Custom MCP Servers Setup"
-                          onclick={navigateToCustomMcpServersSetup}
-                          tooltip="Manage Custom MCP Servers"
-                        ></lightning-button-icon>
-                        <lightning-button-icon
-                          data-id="custom-mcp-servers-download"
-                          icon-name="utility:download"
-                          alternative-text="Download MCP server definition"
-                          tooltip="Download Custom MCP Server Definition"
-                          onclick={handleDownloadMcpServerDefinition}
-                        ></lightning-button-icon>
-                        <lightning-button-icon
                           data-id="custom-mcp-servers-help"
                           icon-name="utility:help_doc_ext"
                           alternative-text="Open Custom MCP Servers documentation"
@@ -238,7 +220,8 @@
                     </div>
                   </div>
                   <div class="slds-var-m-top_small">
-                    <lightning-tabset data-id="mcp-tool-tabs" variant="scoped">
+                    <!-- Legacy self-service asset tabs retained for reference.
+<lightning-tabset data-id="mcp-tool-tabs" variant="scoped">
                       <lightning-tab label="Apex" icon-name="standard:apex">
                         <div class="">
                           <lightning-datatable
@@ -355,7 +338,7 @@
                           </template>
                         </div>
                       </lightning-tab>
-                      <!--
+                      [Previously hidden section]
                       <lightning-tab
                         label="Prompt Templates"
                         icon-name="standard:prompt_builder"
@@ -397,7 +380,7 @@
                           ></lightning-button>
                         </lightning-empty-state>
                       </lightning-tab>
-                      -->
+                      [End hidden section]
                       <lightning-tab
                         label="Salesforce Hosted MCP Servers"
                         icon-name="standard:mcp_server"
@@ -421,6 +404,17 @@
                         </lightning-empty-state>
                       </lightning-tab>
                     </lightning-tabset>
+                    -->
+                    <template lwc:if={isSlackTab}>
+                      <c-package-visualizer-mcp-provisioner
+                        initial-snapshot={provisioningSnapshot}
+                        initial-load={provisioningLoad}
+                        onprovisioningload={handleProvisioningLoad}
+                        onprovisioningsnapshot={handleProvisioningSnapshot}
+                        onprovisioningchange={handleProvisioningChange}
+                        onprovisioningbusychange={handleProvisioningBusyChange}
+                      ></c-package-visualizer-mcp-provisioner>
+                    </template>
                   </div>
                 </div>
               </li>
@@ -693,21 +687,6 @@
                     <div class="slds-shrink-none slds-var-m-left_small">
                       <lightning-button-group>
                         <lightning-button-icon
-                          data-id="claude-custom-mcp-servers-setup"
-                          icon-name="utility:setup"
-                          alternative-text="Open Custom MCP Servers Setup"
-                          title="Open Custom MCP Servers Setup"
-                          onclick={navigateToCustomMcpServersSetup}
-                          tooltip="Manage Custom MCP Servers"
-                        ></lightning-button-icon>
-                        <lightning-button-icon
-                          data-id="claude-custom-mcp-servers-download"
-                          icon-name="utility:download"
-                          alternative-text="Download MCP server definition"
-                          tooltip="Download Custom MCP Server Definition"
-                          onclick={handleDownloadMcpServerDefinition}
-                        ></lightning-button-icon>
-                        <lightning-button-icon
                           data-id="claude-custom-mcp-servers-help"
                           icon-name="utility:help_doc_ext"
                           alternative-text="Open Custom MCP Servers documentation"
@@ -719,7 +698,8 @@
                     </div>
                   </div>
                   <div class="slds-var-m-top_small">
-                    <lightning-tabset
+                    <!-- Legacy self-service asset tabs retained for reference.
+<lightning-tabset
                       data-id="claude-mcp-tool-tabs"
                       variant="scoped"
                     >
@@ -734,7 +714,7 @@
                           ></lightning-datatable>
                         </div>
                       </lightning-tab>
-                      <!--
+                      [Previously hidden section]
                       <lightning-tab
                         label="Prompt Templates"
                         icon-name="standard:prompt_builder"
@@ -776,7 +756,7 @@
                           ></lightning-button>
                         </lightning-empty-state>
                       </lightning-tab>
-                      -->
+                      [End hidden section]
                       <lightning-tab
                         label="Salesforce Hosted MCP Servers"
                         icon-name="standard:mcp_server"
@@ -800,6 +780,17 @@
                         </lightning-empty-state>
                       </lightning-tab>
                     </lightning-tabset>
+                    -->
+                    <template lwc:if={isClaudeTab}>
+                      <c-package-visualizer-mcp-provisioner
+                        initial-snapshot={provisioningSnapshot}
+                        initial-load={provisioningLoad}
+                        onprovisioningload={handleProvisioningLoad}
+                        onprovisioningsnapshot={handleProvisioningSnapshot}
+                        onprovisioningchange={handleProvisioningChange}
+                        onprovisioningbusychange={handleProvisioningBusyChange}
+                      ></c-package-visualizer-mcp-provisioner>
+                    </template>
                   </div>
                 </div>
               </li>
@@ -1035,21 +1026,6 @@
                     <div class="slds-shrink-none slds-var-m-left_small">
                       <lightning-button-group>
                         <lightning-button-icon
-                          data-id="chatgpt-custom-mcp-servers-setup"
-                          icon-name="utility:setup"
-                          alternative-text="Open Custom MCP Servers Setup"
-                          title="Open Custom MCP Servers Setup"
-                          onclick={navigateToCustomMcpServersSetup}
-                          tooltip="Manage Custom MCP Servers"
-                        ></lightning-button-icon>
-                        <lightning-button-icon
-                          data-id="chatgpt-custom-mcp-servers-download"
-                          icon-name="utility:download"
-                          alternative-text="Download MCP server definition"
-                          tooltip="Download Custom MCP Server Definition"
-                          onclick={handleDownloadMcpServerDefinition}
-                        ></lightning-button-icon>
-                        <lightning-button-icon
                           data-id="chatgpt-custom-mcp-servers-help"
                           icon-name="utility:help_doc_ext"
                           alternative-text="Open Custom MCP Servers documentation"
@@ -1061,7 +1037,8 @@
                     </div>
                   </div>
                   <div class="slds-var-m-top_small">
-                    <lightning-tabset
+                    <!-- Legacy self-service asset tabs retained for reference.
+<lightning-tabset
                       data-id="chatgpt-mcp-tool-tabs"
                       variant="scoped"
                     >
@@ -1076,7 +1053,7 @@
                           ></lightning-datatable>
                         </div>
                       </lightning-tab>
-                      <!--
+                      [Previously hidden section]
                       <lightning-tab
                         label="Prompt Templates"
                         icon-name="standard:prompt_builder"
@@ -1118,7 +1095,7 @@
                           ></lightning-button>
                         </lightning-empty-state>
                       </lightning-tab>
-                      -->
+                      [End hidden section]
                       <lightning-tab
                         label="Salesforce Hosted MCP Servers"
                         icon-name="standard:mcp_server"
@@ -1142,6 +1119,17 @@
                         </lightning-empty-state>
                       </lightning-tab>
                     </lightning-tabset>
+                    -->
+                    <template lwc:if={isChatgptTab}>
+                      <c-package-visualizer-mcp-provisioner
+                        initial-snapshot={provisioningSnapshot}
+                        initial-load={provisioningLoad}
+                        onprovisioningload={handleProvisioningLoad}
+                        onprovisioningsnapshot={handleProvisioningSnapshot}
+                        onprovisioningchange={handleProvisioningChange}
+                        onprovisioningbusychange={handleProvisioningBusyChange}
+                      ></c-package-visualizer-mcp-provisioner>
+                    </template>
                   </div>
                 </div>
               </li>
@@ -1380,21 +1368,6 @@
                     <div class="slds-shrink-none slds-var-m-left_small">
                       <lightning-button-group>
                         <lightning-button-icon
-                          data-id="cursor-custom-mcp-servers-setup"
-                          icon-name="utility:setup"
-                          alternative-text="Open Custom MCP Servers Setup"
-                          title="Open Custom MCP Servers Setup"
-                          onclick={navigateToCustomMcpServersSetup}
-                          tooltip="Manage Custom MCP Servers"
-                        ></lightning-button-icon>
-                        <lightning-button-icon
-                          data-id="cursor-custom-mcp-servers-download"
-                          icon-name="utility:download"
-                          alternative-text="Download MCP server definition"
-                          tooltip="Download Custom MCP Server Definition"
-                          onclick={handleDownloadMcpServerDefinition}
-                        ></lightning-button-icon>
-                        <lightning-button-icon
                           data-id="cursor-custom-mcp-servers-help"
                           icon-name="utility:help_doc_ext"
                           alternative-text="Open Custom MCP Servers documentation"
@@ -1406,7 +1379,8 @@
                     </div>
                   </div>
                   <div class="slds-var-m-top_small">
-                    <lightning-tabset
+                    <!-- Legacy self-service asset tabs retained for reference.
+<lightning-tabset
                       data-id="cursor-mcp-tool-tabs"
                       variant="scoped"
                     >
@@ -1421,7 +1395,7 @@
                           ></lightning-datatable>
                         </div>
                       </lightning-tab>
-                      <!--
+                      [Previously hidden section]
                       <lightning-tab
                         label="Prompt Templates"
                         icon-name="standard:prompt_builder"
@@ -1463,7 +1437,7 @@
                           ></lightning-button>
                         </lightning-empty-state>
                       </lightning-tab>
-                      -->
+                      [End hidden section]
                       <lightning-tab
                         label="Salesforce Hosted MCP Servers"
                         icon-name="standard:mcp_server"
@@ -1487,6 +1461,17 @@
                         </lightning-empty-state>
                       </lightning-tab>
                     </lightning-tabset>
+                    -->
+                    <template lwc:if={isCursorTab}>
+                      <c-package-visualizer-mcp-provisioner
+                        initial-snapshot={provisioningSnapshot}
+                        initial-load={provisioningLoad}
+                        onprovisioningload={handleProvisioningLoad}
+                        onprovisioningsnapshot={handleProvisioningSnapshot}
+                        onprovisioningchange={handleProvisioningChange}
+                        onprovisioningbusychange={handleProvisioningBusyChange}
+                      ></c-package-visualizer-mcp-provisioner>
+                    </template>
                   </div>
                 </div>
               </li>

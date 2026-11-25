@@ -1,5 +1,35 @@
 export default {
   fields: {
+    containsPsld: {
+      type: "boolean",
+      fieldName: "containsPsld",
+      label: "Contains PSLD",
+      sortable: true
+    },
+    hasVpi: {
+      type: "boolean",
+      fieldName: "hasVpi",
+      label: "Has VPI",
+      sortable: true
+    },
+    snapshotName: {
+      type: "text",
+      fieldName: "snapshotName",
+      label: "Snapshot Name",
+      sortable: true
+    },
+    totalNumberOfMetadataFiles: {
+      type: "number",
+      fieldName: "totalNumberOfMetadataFiles",
+      label: "Total Metadata Files",
+      sortable: true
+    },
+    totalSizeOfMetadataFiles: {
+      type: "number",
+      fieldName: "totalSizeOfMetadataFiles",
+      label: "Total Metadata Size",
+      sortable: true
+    },
     versionNumber: {
       type: "button",
       fieldName: "versionNumber",

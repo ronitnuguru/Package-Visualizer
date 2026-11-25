@@ -22,4 +22,16 @@ describe('c-scratch-def-file-build-card', () => {
         // const div = element.shadowRoot.querySelector('div');
         expect(1).toBe(1);
     });
+    it('includes the hosted MCP feature initially and after reset for Headless Toolkit', async () => {
+        const element = createElement('c-scratch-def-file-build-card', { is: ScratchDefFileBuildCard });
+        element.templateKey = 'headlessToolkit';
+        document.body.appendChild(element);
+        await Promise.resolve();
+        const featureNames = () => element.shadowRoot.querySelector('lightning-pill-container').items.map(item => item.name);
+        expect(featureNames()).toContain('SalesforceHostedMCP');
+        const reset = [...element.shadowRoot.querySelectorAll('lightning-button')].find(button => button.label === 'Reset');
+        reset.click();
+        await Promise.resolve();
+        expect(featureNames()).toContain('SalesforceHostedMCP');
+    });
 });

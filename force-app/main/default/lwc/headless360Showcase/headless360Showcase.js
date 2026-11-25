@@ -4,7 +4,6 @@ import getAgentforceConfiguration from "@salesforce/apex/AgentforceConversationC
 import AgentScriptCoachModal from "c/agentScriptCoachModal";
 import { AGENT_SCRIPTS } from "c/agentScriptCatalog";
 import { PACKAGE_VISUALIZER_APEX_TOOLS } from "./headless360ShowcaseAssets";
-import { MCP_SERVER_DEFINITION } from "./mcpServerDefinition";
 
 const HEADLESS_360_HELP_URL =
   "https://developer.salesforce.com/developer-centers/headless-360";
@@ -38,6 +37,44 @@ const APEX_TOOL_COLUMNS = [
 
 export default class Headless360Showcase extends LightningElement {
   activeClientTab = "slack";
+  provisioningBusy = false;
+  provisioningSnapshot;
+  provisioningLoad;
+
+  handleProvisioningLoad(event) {
+    this.provisioningSnapshot = undefined;
+    this.provisioningLoad = event.detail;
+    this.notifyProvisioningStatus(false);
+  }
+
+  handleProvisioningSnapshot(event) {
+    this.provisioningSnapshot = event.detail;
+    this.provisioningLoad = undefined;
+    const { state } = event.detail;
+    this.notifyProvisioningStatus(
+      Boolean(state?.loaded && state.serverId && !state.issues?.length)
+    );
+  }
+
+  notifyProvisioningStatus(ready) {
+    this.dispatchEvent(
+      new CustomEvent("provisioningstatuschange", { detail: { ready } })
+    );
+  }
+
+  handleProvisioningChange(event) {
+    this.dispatchEvent(
+      new CustomEvent("provisioningchange", { detail: event.detail })
+    );
+  }
+
+  handleProvisioningBusyChange(event) {
+    this.provisioningBusy = event.detail.busy;
+    if (this.provisioningBusy) this.notifyProvisioningStatus(false);
+    this.dispatchEvent(
+      new CustomEvent("provisioningbusychange", { detail: event.detail })
+    );
+  }
 
   get isSlackTab() {
     return this.activeClientTab === "slack";
@@ -95,10 +132,12 @@ export default class Headless360Showcase extends LightningElement {
   }
 
   handleClientTabClick(event) {
+    if (this.provisioningBusy) return;
     this.activeClientTab = event.currentTarget.dataset.tab;
   }
 
   handleClientTabKeydown(event) {
+    if (this.provisioningBusy) return;
     const tabs = ["slack", "claude", "chatgpt", "cursor"];
     let index = tabs.indexOf(this.activeClientTab);
     if (event.key === "ArrowRight") index = (index + 1) % tabs.length;
@@ -118,9 +157,8 @@ export default class Headless360Showcase extends LightningElement {
   apexTools = PACKAGE_VISUALIZER_APEX_TOOLS;
   isLoadingAgentforceConfiguration = true;
 
-  connectedCallback() {
-    this.loadAgentforceConfiguration();
-  }
+  // Legacy self-service tab bindings remain below for the archived markup.
+  // Agent discovery is no longer loaded for the provisioning experience.
 
   loadAgentforceConfiguration() {
     getAgentforceConfiguration()
@@ -165,10 +203,6 @@ export default class Headless360Showcase extends LightningElement {
     window.open(SLACK_CONNECTION_HELP_URL, "_blank");
   }
 
-  navigateToCustomMcpServersSetup() {
-    this.openOrgPage("/lightning/setup/McpServer/home");
-  }
-
   navigateToExternalClientApps() {
     this.openOrgPage("/lightning/setup/ManageExternalClientApplication/home");
   }
@@ -189,20 +223,6 @@ export default class Headless360Showcase extends LightningElement {
       "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/create-external-client-app.html#enhance-security-for-production",
       "_blank"
     );
-  }
-
-  handleDownloadMcpServerDefinition() {
-    const blob = new Blob([MCP_SERVER_DEFINITION], {
-      type: "application/octet-stream"
-    });
-    const url = URL.createObjectURL(blob);
-    const link = this.template.querySelector(
-      '[data-id="mcp-definition-download-link"]'
-    );
-    link.href = url;
-    link.click();
-    // eslint-disable-next-line @lwc/lwc/no-async-operation -- Allow the download to start before revoking its URL.
-    setTimeout(() => URL.revokeObjectURL(url), 0);
   }
 
   navigateToClaudeHelp() {

@@ -1,11 +1,17 @@
 import { createElement } from "lwc";
 import Headless360Showcase from "c/headless360Showcase";
-import AgentScriptCoachModal from "c/agentScriptCoachModal";
+import getProvisioningState from "@salesforce/apex/PackageVisualizerMcpController.getProvisioningState";
+import createServer from "@salesforce/apex/PackageVisualizerMcpController.createServer";
 import getAgentforceConfiguration from "@salesforce/apex/AgentforceConversationConfigController.getAgentforceConfiguration";
-import { MCP_SERVER_DEFINITION } from "../mcpServerDefinition";
 
 jest.mock(
   "@salesforce/apex/AgentforceConversationConfigController.getAgentforceConfiguration",
+  () => ({ default: jest.fn() }),
+  { virtual: true }
+);
+
+jest.mock(
+  "@salesforce/apex/PackageVisualizerMcpController.createServer",
   () => ({ default: jest.fn() }),
   { virtual: true }
 );
@@ -25,7 +31,15 @@ const READY_AGENT_CONFIGURATION = {
   state: "READY",
   message: "Package Visualizer is configured to use Package Visualizer Agent."
 };
-const mockOpenAgentScriptCoachModal = AgentScriptCoachModal.open;
+jest.mock(
+  "@salesforce/apex/PackageVisualizerMcpController.getProvisioningState",
+  () => ({
+    default: jest
+      .fn()
+      .mockResolvedValue({ loaded: false, canCreate: false, issues: [] })
+  }),
+  { virtual: true }
+);
 
 const flushPromises = async () => {
   await Promise.resolve();
@@ -122,49 +136,6 @@ describe("c-headless-360-showcase", () => {
     expect(cursorPanel.textContent).toContain("Configure Cursor");
   });
 
-  it("downloads the static MCP definition from all three client sections", () => {
-    const element = createElement("c-headless-360-showcase", {
-      is: Headless360Showcase
-    });
-    document.body.appendChild(element);
-    const definition = new DOMParser().parseFromString(
-      MCP_SERVER_DEFINITION,
-      "text/xml"
-    );
-    expect(definition.querySelector("parsererror")).toBeNull();
-    expect(definition.querySelector("masterLabel").textContent).toBe(
-      "Package Visualizer Custom MCP Server"
-    );
-    expect(definition.querySelectorAll("tools")).toHaveLength(8);
-    const originalCreateUrl = URL.createObjectURL;
-    const originalRevokeUrl = URL.revokeObjectURL;
-    const createUrl = (URL.createObjectURL = jest
-      .fn()
-      .mockReturnValue("blob:test"));
-    const revokeUrl = (URL.revokeObjectURL = jest.fn());
-    const link = element.shadowRoot.querySelector(
-      '[data-id="mcp-definition-download-link"]'
-    );
-    const click = jest.spyOn(link, "click").mockImplementation(() => {});
-    jest.useFakeTimers();
-    ["", "claude-", "chatgpt-", "cursor-"].forEach((prefix) => {
-      element.shadowRoot
-        .querySelector(`[data-id="${prefix}custom-mcp-servers-download"]`)
-        .click();
-    });
-    expect(createUrl).toHaveBeenCalledTimes(4);
-    expect(createUrl.mock.calls[0][0].type).toBe("application/octet-stream");
-    expect(link.download).toBe(
-      "PackageVisualizerCustomMcpServer.mcpServerDefinition-meta.xml"
-    );
-    expect(click).toHaveBeenCalledTimes(4);
-    jest.runAllTimers();
-    expect(revokeUrl).toHaveBeenCalledTimes(4);
-    jest.useRealTimers();
-    URL.createObjectURL = originalCreateUrl;
-    URL.revokeObjectURL = originalRevokeUrl;
-  });
-
   it("shows org setup guidance and documentation for Claude and ChatGPT", () => {
     const element = createElement("c-headless-360-showcase", {
       is: Headless360Showcase
@@ -231,14 +202,7 @@ describe("c-headless-360-showcase", () => {
       expect(server.textContent).toContain(
         "Create and Curate a Custom MCP Server"
       );
-      expect(
-        server.querySelector(`[data-id="${client}-apex-tools"]`).data
-      ).toHaveLength(8);
-      const tabs = server.querySelectorAll("lightning-tab");
-      expect(Array.from(tabs, (tab) => tab.label)).toEqual([
-        "Apex",
-        "Salesforce Hosted MCP Servers"
-      ]);
+      expect(server.querySelector("lightning-tabset")).toBeNull();
     });
   });
 
@@ -284,157 +248,86 @@ describe("c-headless-360-showcase", () => {
       "In Slack administration, add the Salesforce MCP Server, review its tools, and assign member or workspace access."
     );
 
-    const toolTabset = element.shadowRoot.querySelector(
-      '[data-id="mcp-tool-tabs"]'
-    );
-    const toolTabs = Array.from(toolTabset.querySelectorAll("lightning-tab"));
-    expect(toolTabset.variant).toBe("scoped");
-    expect(toolTabs.map((tab) => tab.label)).toEqual([
-      "Apex",
-      "Agents",
-      "Salesforce Hosted MCP Servers"
-    ]);
-  });
-
-  it("lists the eight push upgrade Apex actions in two informational columns", () => {
-    const element = createElement("c-headless-360-showcase", {
-      is: Headless360Showcase
-    });
-    document.body.appendChild(element);
-
-    const apexTools = element.shadowRoot.querySelector(
-      '[data-id="apex-tools"]'
-    );
-
-    expect(apexTools.data.map((tool) => tool.apiName)).toEqual([
-      "pkgviz__HeadlessPlanPushAction",
-      "pkgviz__HeadlessExecutePushAction",
-      "pkgviz__HeadlessPushStatusAction",
-      "pkgviz__HeadlessCancelPushAction",
-      "pkgviz__HeadlessResolvePushTargetAction",
-      "pkgviz__HeadlessPreviewPushAction",
-      "pkgviz__HeadlessFindPushRunsAction",
-      "pkgviz__AgentforcePushRequestAnalysisAction"
-    ]);
-    expect(apexTools.columns).toEqual([
-      expect.objectContaining({ label: "Apex Action", fieldName: "apiName" }),
-      expect.objectContaining({ label: "Purpose", fieldName: "description" })
-    ]);
-    expect(element.shadowRoot.textContent).not.toContain(
-      "Add the Apex Actions that suit this Custom MCP Server's purpose."
-    );
-  });
-
-  it("shows the selected AgentScript in the AgentExchange accordion pattern", async () => {
-    const element = createElement("c-headless-360-showcase", {
-      is: Headless360Showcase
-    });
-    document.body.appendChild(element);
-    await flushPromises();
-
-    const agentScript = element.shadowRoot.querySelector(
-      '[data-id="configured-agent-script"]'
-    );
-    expect(agentScript).not.toBeNull();
-    expect(agentScript.activeSectionName).toEqual(["package-visualizer-agent"]);
-    expect(agentScript.textContent).toContain(
-      "Package Visualizer Agent (Employee)"
-    );
+    expect(steps[1].querySelector("lightning-tabset")).toBeNull();
     expect(
-      element.shadowRoot.querySelector('[data-id="agent-script-preview"]')
-        .textContent
-    ).toContain("system:");
-    expect(
-      element.shadowRoot.querySelector('[data-id="generate-agent-script"]')
-        .label
-    ).toBe("Generate");
-    expect(
-      element.shadowRoot.querySelector('[data-id="agent-setup-guidance"]')
-    ).toBeNull();
+      steps[1].querySelector("c-package-visualizer-mcp-provisioner")
+    ).not.toBeNull();
   });
 
-  it("keeps the AgentScript accordion open initially and allows it to collapse", async () => {
+  it("mounts one provisioner in the selected client guide and forwards its changes", async () => {
+    const element = createElement("c-headless-360-showcase", {
+      is: Headless360Showcase
+    });
+    const changed = jest.fn();
+    element.addEventListener("provisioningchange", changed);
+    document.body.appendChild(element);
+    await flushPromises();
+    expect(getProvisioningState).toHaveBeenCalledTimes(1);
+    expect(getAgentforceConfiguration).not.toHaveBeenCalled();
+    for (const client of ["slack", "claude", "chatgpt", "cursor"]) {
+      element.shadowRoot.querySelector(`[data-tab="${client}"]`).click();
+      // Each tab must render before verifying its mounted child.
+      // eslint-disable-next-line no-await-in-loop
+      await flushPromises();
+      expect(
+        element.shadowRoot.querySelectorAll(
+          "c-package-visualizer-mcp-provisioner"
+        )
+      ).toHaveLength(1);
+      const panel = element.shadowRoot.querySelector(
+        client === "slack"
+          ? '[data-id="custom-mcp-server-step"]'
+          : `[data-id="${client}-custom-mcp-server"]`
+      );
+      const child = panel.querySelector("c-package-visualizer-mcp-provisioner");
+      expect(child).not.toBeNull();
+      child.dispatchEvent(
+        new CustomEvent("provisioningchange", {
+          detail: { serverId: "server", active: false }
+        })
+      );
+    }
+    expect(changed).toHaveBeenCalledTimes(4);
+    expect(changed.mock.calls[0][0].detail).toEqual({
+      serverId: "server",
+      active: false
+    });
+  });
+
+  it("keeps the active guide mounted while provisioning is in progress", async () => {
     const element = createElement("c-headless-360-showcase", {
       is: Headless360Showcase
     });
     document.body.appendChild(element);
     await flushPromises();
-
-    const agentScript = element.shadowRoot.querySelector(
-      '[data-id="configured-agent-script"]'
+    const child = element.shadowRoot.querySelector(
+      "c-package-visualizer-mcp-provisioner"
     );
-    expect(agentScript.activeSectionName).toEqual(["package-visualizer-agent"]);
-
-    agentScript.dispatchEvent(
-      new CustomEvent("sectiontoggle", { detail: { openSections: [] } })
+    child.dispatchEvent(
+      new CustomEvent("provisioningbusychange", { detail: { busy: true } })
     );
     await flushPromises();
-
-    expect(agentScript.activeSectionName).toEqual([]);
-  });
-
-  it("opens AgentScript generation with the shared AgentExchange script", async () => {
-    const element = createElement("c-headless-360-showcase", {
-      is: Headless360Showcase
-    });
-    document.body.appendChild(element);
-    await flushPromises();
-
+    expect(
+      [...element.shadowRoot.querySelectorAll('[role="tab"]')].every(
+        (tab) => tab.disabled
+      )
+    ).toBe(true);
     element.shadowRoot
-      .querySelector('[data-id="generate-agent-script"]')
-      .click();
-
-    expect(mockOpenAgentScriptCoachModal).toHaveBeenCalledWith(
-      expect.objectContaining({
-        scriptId: "package-visualizer-agent",
-        scriptBody: expect.stringContaining("system:"),
-        scriptHash: expect.any(String)
-      })
-    );
-  });
-
-  it("opens Agentforce Studio from the AgentScript action group", async () => {
-    const element = createElement("c-headless-360-showcase", {
-      is: Headless360Showcase
-    });
-    document.body.appendChild(element);
+      .querySelector('[data-tab="claude"]')
+      .dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true })
+      );
     await flushPromises();
-
-    const studioButton = element.shadowRoot.querySelector(
-      '[data-id="navigate-agentforce-studio"]'
-    );
-    expect(studioButton.iconName).toBe("utility:agent_astro");
-    expect(studioButton.tooltip).toBe("Navigate to Agentforce Studio");
-
-    studioButton.click();
-    expect(window.open).toHaveBeenLastCalledWith("", "_blank");
-    expect(openedTab.location.href).toBe(
-      `${window.location.origin}/lightning/n/standard-AgentforceStudio?c__nav=agents`
-    );
-  });
-
-  it("guides users to AgentScripts when no active agent is configured", async () => {
-    getAgentforceConfiguration.mockResolvedValue({
-      botId: null,
-      label: null,
-      developerName: null,
-      state: "UNCONFIGURED",
-      message: "Select an active Agentforce Employee Agent."
-    });
-    const element = createElement("c-headless-360-showcase", {
-      is: Headless360Showcase
-    });
-    document.body.appendChild(element);
-    await flushPromises();
-
-    const guidance = element.shadowRoot.querySelector(
-      '[data-id="agent-setup-guidance"]'
-    );
-    expect(guidance.textContent).toContain("AgentScripts");
-    expect(guidance.textContent).toContain("Active Employee Agent");
     expect(
-      element.shadowRoot.querySelector('[data-id="configured-agent-script"]')
-    ).toBeNull();
+      element.shadowRoot.querySelector("c-package-visualizer-mcp-provisioner")
+    ).toBe(child);
+    child.dispatchEvent(
+      new CustomEvent("provisioningbusychange", { detail: { busy: false } })
+    );
+    await flushPromises();
+    expect(
+      element.shadowRoot.querySelector('[data-tab="claude"]').disabled
+    ).toBe(false);
   });
 
   it("provides accessible Setup and Help actions for each applicable step", () => {
@@ -448,9 +341,6 @@ describe("c-headless-360-showcase", () => {
     );
     const slackHelp = element.shadowRoot.querySelector(
       '[data-id="slack-connection-help"]'
-    );
-    const mcpSetup = element.shadowRoot.querySelector(
-      '[data-id="custom-mcp-servers-setup"]'
     );
     const mcpHelp = element.shadowRoot.querySelector(
       '[data-id="custom-mcp-servers-help"]'
@@ -471,9 +361,6 @@ describe("c-headless-360-showcase", () => {
     expect(slackHelp.title).toBe(
       "Open Connect Salesforce and Slack documentation"
     );
-    expect(mcpSetup.alternativeText).toBe("Open Custom MCP Servers Setup");
-    expect(mcpSetup.title).toBe("Open Custom MCP Servers Setup");
-    expect(mcpSetup.tooltip).toBe("Manage Custom MCP Servers");
     expect(mcpHelp.alternativeText).toBe(
       "Open Custom MCP Servers documentation"
     );
@@ -499,16 +386,6 @@ describe("c-headless-360-showcase", () => {
     expect(window.open).toHaveBeenLastCalledWith("", "_blank");
     expect(openedTab.location.href).toBe(
       `${window.location.origin}/lightning/setup/SlackWorkspaces/home`
-    );
-
-    openedTab = { location: {} };
-    window.open.mockReturnValue(openedTab);
-    element.shadowRoot
-      .querySelector('[data-id="custom-mcp-servers-setup"]')
-      .click();
-    expect(window.open).toHaveBeenLastCalledWith("", "_blank");
-    expect(openedTab.location.href).toBe(
-      `${window.location.origin}/lightning/setup/McpServer/home`
     );
   });
 
@@ -548,4 +425,230 @@ describe("c-headless-360-showcase", () => {
       "_blank"
     );
   });
+});
+
+it("removes setup and download actions from all curation steps while retaining help", () => {
+  const element = createElement("c-headless-360-showcase", {
+    is: Headless360Showcase
+  });
+  document.body.appendChild(element);
+  for (const prefix of ["", "claude-", "chatgpt-", "cursor-"]) {
+    expect(
+      element.shadowRoot.querySelector(
+        `[data-id="${prefix}custom-mcp-servers-setup"]`
+      )
+    ).toBeNull();
+    expect(
+      element.shadowRoot.querySelector(
+        `[data-id="${prefix}custom-mcp-servers-download"]`
+      )
+    ).toBeNull();
+    expect(
+      element.shadowRoot.querySelector(
+        `[data-id="${prefix}custom-mcp-servers-help"]`
+      )
+    ).not.toBeNull();
+  }
+});
+
+const dashboardState = {
+  serverId: "server",
+  serverUrl: "https://example.com",
+  loaded: true,
+  canCreate: false,
+  active: false,
+  issues: [],
+  assets: []
+};
+const flushDashboard = async () => {
+  await Array.from({ length: 15 }).reduce(
+    (pending) => pending.then(() => Promise.resolve()),
+    Promise.resolve()
+  );
+};
+it("shares the initial in-flight request and caches the read-only view across tabs", async () => {
+  document.body.replaceChildren();
+  getProvisioningState.mockClear();
+  let resolve;
+  getProvisioningState.mockReturnValue(
+    new Promise((r) => {
+      resolve = r;
+    })
+  );
+  const e = createElement("c-headless-360-showcase", {
+    is: Headless360Showcase
+  });
+  document.body.appendChild(e);
+  await flushDashboard();
+  e.shadowRoot.querySelector('[data-tab="claude"]').click();
+  await flushDashboard();
+  expect(getProvisioningState).toHaveBeenCalledTimes(1);
+  resolve(dashboardState);
+  await flushDashboard();
+  e.shadowRoot.querySelector('[data-tab="cursor"]').click();
+  await flushDashboard();
+  const child = e.shadowRoot.querySelector(
+    "c-package-visualizer-mcp-provisioner"
+  );
+  expect(
+    child.shadowRoot.querySelector('[data-id="server-status"]').label
+  ).toBe("Inactive");
+  expect(getProvisioningState).toHaveBeenCalledTimes(1);
+});
+it("shares an explicit refresh across tabs and displays Setup changes", async () => {
+  document.body.replaceChildren();
+  getProvisioningState.mockClear().mockResolvedValue(dashboardState);
+  const e = createElement("c-headless-360-showcase", {
+    is: Headless360Showcase
+  });
+  document.body.appendChild(e);
+  await flushDashboard();
+  let resolve;
+  getProvisioningState.mockReturnValue(
+    new Promise((r) => {
+      resolve = r;
+    })
+  );
+  e.shadowRoot
+    .querySelector("c-package-visualizer-mcp-provisioner")
+    .shadowRoot.querySelector('[data-id="refresh"]')
+    .click();
+  await flushDashboard();
+  e.shadowRoot.querySelector('[data-tab="chatgpt"]').click();
+  await flushDashboard();
+  expect(getProvisioningState).toHaveBeenCalledTimes(2);
+  resolve({ ...dashboardState, active: true });
+  await flushDashboard();
+  expect(
+    e.shadowRoot
+      .querySelector("c-package-visualizer-mcp-provisioner")
+      .shadowRoot.querySelector('[data-id="server-status"]').label
+  ).toBe("Active");
+});
+it("shares newly created state with the next tab", async () => {
+  document.body.replaceChildren();
+  getProvisioningState.mockClear().mockResolvedValue({
+    loaded: true,
+    canCreate: true,
+    assets: [],
+    issues: []
+  });
+  createServer.mockResolvedValue(dashboardState);
+  const e = createElement("c-headless-360-showcase", {
+    is: Headless360Showcase
+  });
+  document.body.appendChild(e);
+  await flushDashboard();
+  e.shadowRoot
+    .querySelector("c-package-visualizer-mcp-provisioner")
+    .shadowRoot.querySelector('[data-id="create-server"]')
+    .click();
+  await flushDashboard();
+  e.shadowRoot.querySelector('[data-tab="claude"]').click();
+  await flushDashboard();
+  expect(
+    e.shadowRoot
+      .querySelector("c-package-visualizer-mcp-provisioner")
+      .shadowRoot.querySelector('[data-id="server-status"]').label
+  ).toBe("Inactive");
+  expect(getProvisioningState).toHaveBeenCalledTimes(1);
+});
+describe("server creation status", () => {
+  afterEach(() => {
+    document.body.replaceChildren();
+    jest.clearAllMocks();
+  });
+  it.each([
+    ["inactive existing server", dashboardState, undefined, true],
+    [
+      "active existing server",
+      { ...dashboardState, active: true },
+      undefined,
+      true
+    ],
+    ["absent server", { loaded: true, canCreate: true }, undefined, false],
+    [
+      "unverified response",
+      { ...dashboardState, loaded: false },
+      undefined,
+      false
+    ],
+    ["read failed", undefined, "Unable to refresh", false],
+    [
+      "verified recovery with warning",
+      dashboardState,
+      "Population failed",
+      true
+    ],
+    [
+      "prerequisite error",
+      { ...dashboardState, issues: ["Credential unavailable"] },
+      undefined,
+      false
+    ]
+  ])(
+    "reports provisioned status for %s",
+    async (_label, state, error, ready) => {
+      getProvisioningState.mockResolvedValue({ loaded: false });
+      const e = createElement("c-headless-360-showcase", {
+        is: Headless360Showcase
+      });
+      const listener = jest.fn();
+      e.addEventListener("provisioningstatuschange", listener);
+      document.body.appendChild(e);
+      await flushDashboard();
+      const child = e.shadowRoot.querySelector(
+        "c-package-visualizer-mcp-provisioner"
+      );
+      child.dispatchEvent(
+        new CustomEvent("provisioningsnapshot", { detail: { state, error } })
+      );
+      expect(listener).toHaveBeenLastCalledWith(
+        expect.objectContaining({ detail: { ready } })
+      );
+    }
+  );
+});
+
+it("marks a partially created server as created after recovery while retaining the warning", async () => {
+  document.body.replaceChildren();
+  getProvisioningState
+    .mockReset()
+    .mockResolvedValueOnce({
+      loaded: true,
+      canCreate: true,
+      issues: [],
+      assets: []
+    })
+    .mockResolvedValue(dashboardState);
+  createServer
+    .mockReset()
+    .mockRejectedValue({
+      body: { message: "Population failed; review in Setup." }
+    });
+  const e = createElement("c-headless-360-showcase", {
+    is: Headless360Showcase
+  });
+  const listener = jest.fn();
+  e.addEventListener("provisioningstatuschange", listener);
+  document.body.appendChild(e);
+  await flushDashboard();
+  const child = e.shadowRoot.querySelector(
+    "c-package-visualizer-mcp-provisioner"
+  );
+  child.shadowRoot.querySelector('[data-id="create-server"]').click();
+  await flushDashboard();
+  expect(child.shadowRoot.textContent).toContain(
+    "Population failed; review in Setup."
+  );
+  expect(
+    child.shadowRoot.querySelector('[data-id="server-status"]').label
+  ).toBe("Inactive");
+  expect(
+    child.shadowRoot.querySelector('[data-id="view-in-setup"]')
+  ).not.toBeNull();
+  expect(listener).toHaveBeenLastCalledWith(
+    expect.objectContaining({ detail: { ready: true } })
+  );
+  expect(createServer).toHaveBeenCalledTimes(1);
 });

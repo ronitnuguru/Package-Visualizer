@@ -137,6 +137,12 @@ export default class PackageVersionsView extends LightningElement {
   packageCreatedDate;
   packageCreatedBy;
   packageValidatedAsync;
+  packageContainsPsld;
+  packageHasVpi;
+  packageSnapshotName;
+  packageTotalNumberOfMetadataFiles;
+  packageTotalSizeOfMetadataFiles;
+
 
   installedStatus;
   instanceName;
@@ -236,6 +242,11 @@ export default class PackageVersionsView extends LightningElement {
       { label: "Validated Async", value: "validatedAsync" },
       { label: "Validation Skipped", value: "validationSkipped" },
       { label: "Has Metadata Removed", value: "hasMetadataRemoved" },
+      { label: "Contains PSLD", value: "containsPsld" },
+      { label: "Has VPI", value: "hasVpi" },
+      { label: "Snapshot Name", value: "snapshotName" },
+      { label: "Total Metadata Files", value: "totalNumberOfMetadataFiles" },
+      { label: "Total Metadata Size", value: "totalSizeOfMetadataFiles" },
       { label: "Created Date", value: "createdDate" },
       { label: "Created By", value: "owner" }
     ];
@@ -531,6 +542,12 @@ export default class PackageVersionsView extends LightningElement {
     this.packageCreatedDate = row.createdDate;
     this.packageCreatedBy = row.owner;
     this.packageValidatedAsync = row.validatedAsync;
+    this.packageContainsPsld = row.containsPsld;
+    this.packageHasVpi = row.hasVpi;
+    this.packageSnapshotName = row.snapshotName;
+    this.packageTotalNumberOfMetadataFiles = row.totalNumberOfMetadataFiles;
+    this.packageTotalSizeOfMetadataFiles = row.totalSizeOfMetadataFiles;
+
   }
 
   handleD3CurrentNode(event) {

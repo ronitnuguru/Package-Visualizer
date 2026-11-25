@@ -107,6 +107,16 @@ global with sharing class ObjectWrappers {
     global Boolean validatedAsync { get; set; }
     @AuraEnabled
     global string packageType { get; set; } //Package2.ContainerOptions (Managed/Unlocked)
+    @AuraEnabled
+    global Boolean containsPsld { get; set; }
+    @AuraEnabled
+    global Boolean hasVpi { get; set; }
+    @AuraEnabled
+    global String snapshotName { get; set; }
+    @AuraEnabled
+    global Integer totalNumberOfMetadataFiles { get; set; }
+    @AuraEnabled
+    global Long totalSizeOfMetadataFiles { get; set; }
   }
 
   global class PackageCreator {

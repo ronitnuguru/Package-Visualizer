@@ -9,7 +9,8 @@
  */
 
 const FEATURE_DOC_BASE =
-  "https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file_config_values.htm";
+  // Previous URL: "https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file_config_values.htm";
+  "https://developer.salesforce.com/docs/platform/sfdx-dev/guide/sfdx-dev-scratch-orgs-def-file-config-values.html";
 
 /**
  * Features pre-populated when the builder loads. Mirrors the seed used in
@@ -584,6 +585,11 @@ export const DEFAULT_FIELDS = {
  * (edition + features + settings) that the parent card applies in one click.
  */
 export const TEMPLATES = {
+  headlessToolkit: {
+    label: "Headless Toolkit",
+    features: ["SalesforceHostedMCP"],
+    settings: {}
+  },
   agentforce: {
     label: "Agentforce",
     edition: "Partner Developer",
@@ -797,7 +803,8 @@ export function buildFeaturePill(name) {
     name: trimmed,
     iconName: "standard:settings",
     alternativeText: "Feature",
-    href: `${FEATURE_DOC_BASE}#so_${anchor}`
+    // Previous anchor format: `${FEATURE_DOC_BASE}#so_${anchor}`
+    href: `${FEATURE_DOC_BASE}#${anchor}`
   };
 }
 

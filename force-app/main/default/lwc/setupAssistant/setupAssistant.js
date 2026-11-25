@@ -19,6 +19,14 @@ import configureNamedCredentialUrl from "@salesforce/apex/PackageVisualizerCtrl.
 import populateClientCredentials from "@salesforce/apex/PackageVisualizerCtrl.populateClientCredentials";
 import verifyAndEnableNamedCredential from "@salesforce/apex/PackageVisualizerCtrl.verifyAndEnableNamedCredential";
 import currentUserId from "@salesforce/user/Id";
+/* ECA dependencies moved to packageVisualizerEcaProvisioner.
+import getLocalEcaState from "@salesforce/apex/PackageVisualizerEcaController.getState";
+import createLocalEca from "@salesforce/apex/PackageVisualizerEcaController.createLocalEca";
+import { getRecord, getFieldValue } from "lightning/uiRecordApi";
+import USER_OBJECT from "@salesforce/schema/User";
+import USERNAME_FIELD from "@salesforce/schema/User.Username";
+import EMAIL_FIELD from "@salesforce/schema/User.Email";
+*/
 
 export default class SetupAssistant extends NavigationMixin(LightningElement) {
   // Accepts either a single message string (e.g. the static small-screen notice)
@@ -57,19 +65,132 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
   isSavingCredentials = false;
   isTestingNamedCredential = false;
   isProvisioning = false;
+  /* ECA state moved to packageVisualizerEcaProvisioner.
+  localEcaState;
+  localEcaError;
+  isLoadingLocalEca = false;
+  isCreatingLocalEca = false;
+  ecaRunAsUsername = "";
+  ecaRunAsUserId;
+  ecaUserError;
+  ecaUserObject = USER_OBJECT.objectApiName;
+  ecaUserFilter = {
+    criteria: [{ fieldPath: "IsActive", operator: "eq", value: true }]
+  };
+  ecaUserDisplayInfo = { primaryField: "Name", additionalFields: ["Username"] };
+  ecaUserMatchingInfo = {
+    primaryField: { fieldPath: "Name" },
+    additionalFields: [{ fieldPath: "Username" }]
+  };
+  ecaContactEmail = "";
+  */
+  isLocalEcaConfigured = false;
   isAgentforceConversationConfigured = false;
-  isCustomMcpServerConfigured = false;
+  isCustomMcpServerReady = false;
 
   connectedCallback() {
     this.loadIntegrationStatus();
+    // ECA loading is now owned by packageVisualizerEcaProvisioner.
+    // this.refreshLocalEca();
+  }
+
+  /* Inline ECA behavior moved to packageVisualizerEcaProvisioner.
+  get showCreateLocalEca() {
+    return (
+      this.localEcaState &&
+      !this.localEcaState.exists &&
+      !this.isLoadingLocalEca
+    );
+  }
+  get isLocalEcaConfigured() {
+    return this.localEcaState?.configured === true;
+  }
+  get createLocalEcaDisabled() {
+    return (
+      this.isSetupEnabled ||
+      this.isCreatingLocalEca ||
+      !this.ecaRunAsUsername.trim()
+    );
+  }
+  get localEcaBusy() {
+    return this.isLoadingLocalEca || this.isCreatingLocalEca;
+  }
+  handleEcaRunAsChange(event) {
+    // Previous text-input handler: this.ecaRunAsUsername = event.target.value;
+    this.ecaRunAsUserId = event.detail.recordId || undefined;
+    this.ecaRunAsUsername = "";
+    this.ecaUserError = undefined;
+  }
+  @wire(getRecord, {
+    recordId: "$ecaRunAsUserId",
+    fields: [USERNAME_FIELD],
+    optionalFields: [EMAIL_FIELD]
+  })
+  wiredEcaRunAsUser({ data, error }) {
+    if (data && data.id === this.ecaRunAsUserId) {
+      this.ecaRunAsUsername = getFieldValue(data, USERNAME_FIELD) || "";
+      this.ecaUserError = undefined;
+      if (!this.ecaContactEmail.trim())
+        this.ecaContactEmail = getFieldValue(data, EMAIL_FIELD) || "";
+    } else if (error && this.ecaRunAsUserId) {
+      this.handleEcaUserError();
+    }
+  }
+  handleEcaUserError() {
+    this.ecaRunAsUsername = "";
+    this.ecaUserError =
+      "Unable to load user details. Choose the Run As user again.";
+  }
+  handleEcaContactEmailChange(event) {
+    this.ecaContactEmail = event.target.value;
+  }
+  async refreshLocalEca() {
+    if (this.localEcaBusy) return;
+    this.isLoadingLocalEca = true;
+    this.localEcaError = undefined;
+    try {
+      this.localEcaState = await getLocalEcaState();
+    } catch (error) {
+      this.localEcaState = undefined;
+      this.localEcaError = this.reduceToolingError(error);
+    } finally {
+      this.isLoadingLocalEca = false;
+    }
+  }
+  async handleCreateLocalEca() {
+    if (!this.showCreateLocalEca || this.createLocalEcaDisabled) return;
+    const email = this.template.querySelector('[data-id="eca-contact-email"]');
+    if (email && !email.reportValidity()) return;
+    this.isCreatingLocalEca = true;
+    this.localEcaError = undefined;
+    try {
+      this.localEcaState = await createLocalEca({
+        runAsUsername: this.ecaRunAsUsername.trim(),
+        contactEmail: this.ecaContactEmail.trim()
+      });
+    } catch (error) {
+      this.localEcaError = this.reduceToolingError(error);
+      try {
+        this.localEcaState = await getLocalEcaState();
+      } catch {
+        this.localEcaState = undefined;
+      }
+    } finally {
+      this.isCreatingLocalEca = false;
+    }
+  }
+
+  */
+  handleEcaProvisioningChange(event) {
+    this.isLocalEcaConfigured = event.detail.configured === true;
   }
 
   handleAgentforceConfigurationChange(event) {
     this.isAgentforceConversationConfigured = event.detail.configured === true;
   }
 
-  handleCustomMcpServerConfigurationChange(event) {
-    this.isCustomMcpServerConfigured = event.detail.configured === true;
+  handleCustomMcpServerStatusChange(event) {
+    this.isCustomMcpServerReady = event.detail.ready === true;
   }
 
   loadIntegrationStatus() {
@@ -594,10 +715,20 @@ export default class SetupAssistant extends NavigationMixin(LightningElement) {
     );
   }
 
+  /* ECA navigation moved to packageVisualizerEcaProvisioner.
   navigateToExternalClientApps() {
-    this.openOrgPage("/lightning/setup/ManageExternalClientApplication/home");
+    // Previous destination: this.openOrgPage("/lightning/setup/ManageExternalClientApplication/home");
+    const appId = this.localEcaState?.appId;
+    this.openOrgPage(
+      this.localEcaState?.exists && appId
+        ? `/lightning/setup/ManageExternalClientApplication/${encodeURIComponent(
+            appId
+          )}/detail`
+        : "/lightning/setup/ManageExternalClientApplication/home"
+    );
   }
 
+  */
   navigateToRemoteSiteSettings() {
     this.openOrgPage("/lightning/setup/SecurityRemoteProxy/home");
   }

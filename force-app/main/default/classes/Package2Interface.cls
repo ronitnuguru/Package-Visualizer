@@ -641,7 +641,7 @@ global with sharing class Package2Interface { // NOPMD
     String versionOffset
   ) {
     List<ObjectWrappers.PackageVersionWrapper> packageVersions = new List<ObjectWrappers.PackageVersionWrapper>();
-    String queryString = 'SELECT Id, Branch, Description, IsPasswordProtected, IsReleased, MajorVersion, MinorVersion, PatchVersion, BuildNumber, Tag, Name, Package2Id, SubscriberPackageVersionId, AncestorId, ValidationSkipped, BuildDurationInSeconds, HasPassedCodeCoverageCheck, HasMetadataRemoved, ReleaseVersion, Language, CreatedBy.Name, CreatedDate, ValidatedAsync FROM Package2Version WHERE IsDeprecated = false ';
+    String queryString = 'SELECT Id, Branch, Description, IsPasswordProtected, IsReleased, MajorVersion, MinorVersion, PatchVersion, BuildNumber, Tag, Name, Package2Id, SubscriberPackageVersionId, AncestorId, ValidationSkipped, BuildDurationInSeconds, HasPassedCodeCoverageCheck, HasMetadataRemoved, ReleaseVersion, Language, CreatedBy.Name, CreatedDate, ValidatedAsync, ContainsPsld, HasVpi, SnapshotName, TotalNumberOfMetadataFiles, TotalSizeOfMetadataFiles FROM Package2Version WHERE IsDeprecated = false ';
     String whereClause = '';
     if (!filterWrapperList.isEmpty()) {
       whereClause = getWhereClause(filterWrapperList);

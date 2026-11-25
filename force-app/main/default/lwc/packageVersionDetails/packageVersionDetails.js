@@ -32,6 +32,12 @@ export default class PackageVersionDetails extends LightningElement {
   @api packageCreatedDate;
   @api packageCreatedBy;
   @api packageValidatedAsync;
+  @api packageContainsPsld;
+  @api packageHasVpi;
+  @api packageSnapshotName;
+  @api packageTotalNumberOfMetadataFiles;
+  @api packageTotalSizeOfMetadataFiles;
+
 
   sfdxPackageInstalls;
 
@@ -61,6 +67,30 @@ export default class PackageVersionDetails extends LightningElement {
 
     this.isPatchVersion =
       this.packageVersionNumber.split(".")[2].split("-")[0] > 0 ? true : false;
+  }
+
+  get hasTotalNumberOfMetadataFiles() {
+    return this.packageTotalNumberOfMetadataFiles != null;
+  }
+
+  get displayTotalNumberOfMetadataFiles() {
+    return new Intl.NumberFormat().format(this.packageTotalNumberOfMetadataFiles);
+  }
+
+  get hasTotalSizeOfMetadataFiles() {
+    return this.packageTotalSizeOfMetadataFiles != null;
+  }
+
+  get displayTotalSizeOfMetadataFiles() {
+    return new Intl.NumberFormat().format(this.packageTotalSizeOfMetadataFiles);
+  }
+
+  get hasContainsPsldValue() {
+    return this.packageContainsPsld != null;
+  }
+
+  get hasHasVpiValue() {
+    return this.packageHasVpi != null;
   }
 
   get isManaged() {

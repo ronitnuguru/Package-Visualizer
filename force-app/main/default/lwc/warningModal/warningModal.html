@@ -6,6 +6,7 @@
     aria-labelledby="modal-heading-01"
     aria-modal="true"
     aria-describedby="modal-content-id-1"
+    onkeydown={handleKeyDown}
   >
     <div class="slds-modal__container">
       <header class="slds-modal__header">
@@ -36,6 +37,7 @@
       </div>
       <footer class="slds-modal__footer">
         <button
+          data-id="cancel"
           class="slds-button slds-button_neutral"
           onclick={handleNeutralClick}
         >
@@ -49,11 +51,8 @@
             {learnMoreButtonLabel}
           </button>
         </template>
-        <template if:true={brandButtonLabel}> 
-          <button
-            class="slds-button slds-button_brand"
-            onclick={handleBrandClick}
-          >
+        <template if:true={brandButtonLabel}>
+          <button class={brandButtonClass} onclick={handleBrandClick}>
             {brandButtonLabel}
           </button>
         </template>

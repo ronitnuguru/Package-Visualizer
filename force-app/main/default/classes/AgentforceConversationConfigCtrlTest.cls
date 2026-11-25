@@ -384,7 +384,7 @@ private class AgentforceConversationConfigCtrlTest {
     AgentforceConversationConfigController.dataSource = source;
 
     Test.startTest();
-    AgentforceConversationConfigWrapper.McpServerSetupState setupState = AgentforceConversationConfigController.getCustomMcpServerSetupState();
+    AgentforceConversationConfigWrapper.McpServerSetupState setupState = AgentforceConversationConfigController.getFreshCustomMcpServerSetupState();
     Test.stopTest();
 
     Assert.areEqual(2, setupState.options.size(), 'Both servers should return');

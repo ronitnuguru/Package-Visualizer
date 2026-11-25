@@ -149,7 +149,8 @@ describe("c-agentforce-conversation-setup", () => {
     expect(
       element.shadowRoot.querySelector('[data-id="refresh-agentforce"]')
     ).toBeNull();
-    expect(actions.every((action) => action.variant === undefined)).toBe(true);
+    expect(actions[0].variant).toBeUndefined();
+    expect(actions[1].variant).toBe("brand");
     expect(
       element.shadowRoot.querySelector('[data-id="agentforce-setup-body"]')
     ).not.toBeNull();

@@ -1,0 +1,120 @@
+<template>
+  <div
+    class="slds-border_top slds-border_right slds-border_bottom slds-border_left"
+  >
+    <lightning-card data-id="eca-card">
+      <h3 slot="title" class="slds-grid slds-grid_vertical-align-center">
+        <lightning-icon
+          icon-name="standard:connected_apps"
+          size="medium"
+          class="slds-m-right_small slds-shrink-none card_header_icon"
+        >
+        </lightning-icon>
+        <span class="slds-truncate">ECA Setup</span>
+      </h3>
+      <lightning-button-group slot="actions" data-id="eca-actions">
+        <template lwc:if={showCreateLocalEca}>
+          <lightning-button
+            data-id="create-local-eca"
+            label="Create"
+            variant="brand"
+            onclick={handleCreateLocalEca}
+            disabled={createLocalEcaDisabled}
+          ></lightning-button>
+        </template>
+        <!-- Refresh action retained for reference; status loads when the card opens.
+        <lightning-button-icon
+          data-id="refresh-local-eca"
+          icon-name="utility:refresh"
+          alternative-text="Refresh ECA status"
+          tooltip="Refresh ECA status"
+          onclick={refresh}
+          disabled={localEcaBusy}
+        ></lightning-button-icon>
+        -->
+        <lightning-button-icon
+          data-id="local-eca-setup"
+          icon-name="utility:setup"
+          variant="brand"
+          alternative-text="External Client App Setup"
+          title="External Client App Setup"
+          tooltip="External Client App Setup"
+          onclick={navigateToExternalClientApps}
+          disabled={isSetupEnabled}
+        ></lightning-button-icon>
+      </lightning-button-group>
+      <div
+        class="slds-card__body slds-card__body_inner slds-is-relative provisioning-body"
+      >
+        <template lwc:if={localEcaBusy}>
+          <lightning-spinner
+            alternative-text="Loading local ECA"
+            variant="brand"
+            size="medium"
+          ></lightning-spinner>
+        </template>
+        <template lwc:if={localEcaError}>
+          <p role="alert" class="slds-text-color_error">{localEcaError}</p>
+        </template>
+        <template lwc:if={isLocalEcaConfigured}>
+          <div
+            class="slds-scoped-notification slds-media slds-media_center slds-theme_info slds-var-m-bottom_x-small"
+            role="status"
+            data-id="eca-configured-notification"
+          >
+            <div class="slds-media__figure">
+              <lightning-icon
+                icon-name="utility:info"
+                alternative-text="External Client App configured"
+                size="small"
+                variant="inverse"
+              ></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+              <lightning-badge
+                label="CONFIGURED"
+                class="slds-theme_inverse"
+              ></lightning-badge>
+              <lightning-formatted-text
+                class="slds-var-m-left_x-small"
+                value={localEcaState.message}
+              ></lightning-formatted-text>
+            </div>
+          </div>
+        </template>
+        <template lwc:elseif={localEcaState}>
+          <p role="status" class="slds-var-m-bottom_small">
+            {localEcaState.message}
+          </p>
+        </template>
+        <template lwc:if={showCreateLocalEca}>
+          <lightning-record-picker
+            data-id="eca-run-as"
+            label="Run As Username"
+            placeholder="Search users..."
+            object-api-name={ecaUserObject}
+            filter={ecaUserFilter}
+            display-info={ecaUserDisplayInfo}
+            matching-info={ecaUserMatchingInfo}
+            value={ecaRunAsUserId}
+            onchange={handleEcaRunAsChange}
+            onerror={handleEcaUserError}
+            disabled={isCreatingLocalEca}
+            required
+          ></lightning-record-picker>
+          <template lwc:if={ecaUserError}>
+            <p role="alert" class="slds-text-color_error">{ecaUserError}</p>
+          </template>
+          <lightning-input
+            data-id="eca-contact-email"
+            type="email"
+            label="Contact Email"
+            value={ecaContactEmail}
+            onchange={handleEcaContactEmailChange}
+            disabled={isCreatingLocalEca}
+          ></lightning-input>
+        </template>
+      </div>
+    </lightning-card>
+  </div>
+</template>

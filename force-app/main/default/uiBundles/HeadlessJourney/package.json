@@ -1,0 +1,57 @@
+{
+  "name": "base-react-app",
+  "private": true,
+  "version": "1.59.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "vite",
+    "dev:design": "vite --mode design",
+    "build": "tsc -b && vite build",
+    "build:e2e": "npm run build && node scripts/rewrite-e2e-assets.mjs",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@salesforce-ux/design-system-2": "2.264.2",
+    "@salesforce/platform-sdk": "^11.57.2",
+    "@tailwindcss/vite": "^4.1.17",
+    "lucide-react": "^0.562.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router": "^8.3.0",
+    "tailwindcss": "^4.1.17"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.49.0",
+    "@salesforce/graphiti": "^11.57.2",
+    "@salesforce/vite-plugin-ui-bundle": "^11.57.2",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "@vitest/ui": "^4.1.0",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "jsdom": "^25.0.1",
+    "serve": "^14.2.5",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vite": "^7.2.4",
+    "vitest": "^4.1.0"
+  },
+  "overrides": {
+    "lodash": "^4.18.1",
+    "undici": "^7.28.0"
+  }
+}

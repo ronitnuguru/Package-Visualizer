@@ -279,6 +279,18 @@
           disabled
         ></lightning-input>
       </template>
+      <template if:true={hasContainsPsldValue}>
+        <lightning-input type="checkbox" label="Contains PSLD" checked={packageContainsPsld} disabled></lightning-input>
+      </template>
+      <template if:false={hasContainsPsldValue}>
+        <lightning-input type="text" label="Contains PSLD" value="—" readonly></lightning-input>
+      </template>
+      <template if:true={hasHasVpiValue}>
+        <lightning-input type="checkbox" label="Has VPI" checked={packageHasVpi} disabled></lightning-input>
+      </template>
+      <template if:false={hasHasVpiValue}>
+        <lightning-input type="text" label="Has VPI" value="—" readonly></lightning-input>
+      </template>
       <template if:true={displaySecurityReview}>
         <lightning-input
           type="checkbox"
@@ -294,6 +306,33 @@
             type="text"
             label="Build Duration In Seconds"
             value={packageBuildDurationInSeconds}
+            class="slds-border_bottom"
+            readonly
+          ></lightning-input>
+        </template>
+        <template if:true={packageSnapshotName}>
+          <lightning-input
+            type="text"
+            label="Snapshot Name"
+            value={packageSnapshotName}
+            class="slds-border_bottom"
+            readonly
+          ></lightning-input>
+        </template>
+        <template if:true={hasTotalNumberOfMetadataFiles}>
+          <lightning-input
+            type="text"
+            label="Total Metadata Files"
+            value={displayTotalNumberOfMetadataFiles}
+            class="slds-border_bottom"
+            readonly
+          ></lightning-input>
+        </template>
+        <template if:true={hasTotalSizeOfMetadataFiles}>
+          <lightning-input
+            type="text"
+            label="Total Metadata Size"
+            value={displayTotalSizeOfMetadataFiles}
             class="slds-border_bottom"
             readonly
           ></lightning-input>

@@ -16,6 +16,8 @@ module.exports = {
       "<rootDir>/force-app/test/jest-mocks/lightning/refresh.js",
     "^lightning/accApi$":
       "<rootDir>/force-app/test/jest-mocks/lightning/accApi.js",
+    "^lightning/uiEmbedding$":
+      "<rootDir>/force-app/test/jest-mocks/lightning/uiEmbedding.js",
     "^@salesforce/community/basePath$":
       "<rootDir>/force-app/test/jest-mocks/@salesforce/community/basePath.js"
   },

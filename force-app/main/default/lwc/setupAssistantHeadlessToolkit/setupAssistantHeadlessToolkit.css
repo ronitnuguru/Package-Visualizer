@@ -1,0 +1,10 @@
+.journey-loading {
+  min-height: 4rem;
+}
+
+.journey-embed-loading {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  visibility: hidden;
+}

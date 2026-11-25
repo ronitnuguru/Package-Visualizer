@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <applicationVisibilities>
+        <application>HeadlessJourney</application>
+        <visible>true</visible>
+    </applicationVisibilities>
+    <classAccesses>
+        <apexClass>HeadlessJourneyLauncherController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <classAccesses>
         <apexClass>AgentforceConversationConfigController</apexClass>
         <enabled>true</enabled>
@@ -34,6 +42,14 @@
     </classAccesses>
     <classAccesses>
         <apexClass>PackageVisualizerCtrl</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>PackageVisualizerMcpController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>PackageVisualizerEcaController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -83,4 +99,8 @@
         <tab>Platform_Tools</tab>
         <visibility>Visible</visibility>
     </tabSettings>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>ApiEnabled</name>
+    </userPermissions>
 </PermissionSet>

@@ -1,0 +1,176 @@
+<template>
+  <div
+    class="slds-border_top slds-border_right slds-border_bottom slds-border_left"
+  >
+    <lightning-card data-id="provisioning-card">
+      <h3 slot="title" class="slds-grid slds-grid_vertical-align-center">
+        <lightning-icon
+          icon-name="standard:mcp_server"
+          size="medium"
+          class="slds-m-right_small slds-shrink-none card_header_icon"
+        ></lightning-icon>
+        <span class="slds-truncate">Package Visualizer Custom MCP Server</span>
+        <template lwc:if={hasServer}>
+          <lightning-badge
+            data-id="server-status"
+            label={status}
+            class="slds-theme_inverse slds-m-left_small slds-shrink-none"
+          ></lightning-badge>
+        </template>
+      </h3>
+      <template lwc:if={showActions}>
+        <lightning-button-group slot="actions" data-id="provisioning-actions">
+          <template lwc:if={showCreate}>
+            <lightning-button
+              data-id="create-server"
+              label="Create Server"
+              variant="brand"
+              disabled={createDisabled}
+              onclick={handleCreate}
+            ></lightning-button>
+          </template>
+          <template lwc:if={hasServer}>
+            <lightning-button-icon
+              data-id="view-in-setup"
+              icon-name="utility:setup"
+              variant="border-filled"
+              alternative-text="View in Setup"
+              tooltip="View in Setup"
+              onclick={handleViewInSetup}
+            ></lightning-button-icon>
+          </template>
+          <lightning-button-icon
+            data-id="refresh"
+            icon-name="utility:refresh"
+            variant="border-filled"
+            alternative-text="Refresh"
+            tooltip="Refresh"
+            onclick={refresh}
+          ></lightning-button-icon>
+        </lightning-button-group>
+      </template>
+      <div
+        class="slds-card__body slds-card__body_inner slds-is-relative provisioning-body"
+      >
+        <template lwc:if={busy}
+          ><lightning-spinner
+            alternative-text="Loading custom MCP server"
+            size="medium"
+            variant="brand"
+          ></lightning-spinner
+        ></template>
+        <template lwc:if={error}
+          ><p
+            role="alert"
+            class="slds-text-color_error slds-var-m-bottom_small"
+          >
+            {error}
+          </p></template
+        >
+        <template for:each={issues} for:item="issue"
+          ><p
+            key={issue}
+            role="status"
+            class="slds-text-color_error slds-var-m-bottom_small"
+          >
+            {issue}
+          </p></template
+        >
+        <template lwc:if={hasServer}>
+          <div data-id="server-url" class="slds-var-m-bottom_small">
+            <p class="slds-text-title_bold slds-var-m-bottom_xx-small">
+              Server URL
+            </p>
+            <div
+              class="slds-grid slds-grid_vertical-align-center slds-m-top_x-small slds-m-right_xx-small"
+            >
+              <pre
+                class="server-url-pre slds-col"
+              ><code class="server-url-code"><lightning-formatted-url value={state.serverUrl} label={state.serverUrl} target="_blank"></lightning-formatted-url></code></pre>
+              <lightning-button-icon
+                data-id="copy-server-url"
+                icon-name="utility:copy"
+                variant="border-filled"
+                class="slds-m-left_x-small"
+                tooltip="Copy to Clipboard"
+                onclick={handleCopyServerUrl}
+              ></lightning-button-icon>
+            </div>
+          </div>
+        </template>
+        <template lwc:if={showCreate}>
+          <p class="slds-var-m-bottom_small">
+            Create an inactive server with the eight Package Visualizer tools.
+            Review the tools and activate the server in Salesforce Setup.
+          </p>
+        </template>
+        <template lwc:if={showTools}>
+          <lightning-tabset data-id="asset-tabs" variant="scoped">
+            <template for:each={assetTabs} for:item="tab">
+              <lightning-tab
+                key={tab.value}
+                label={tab.label}
+                value={tab.value}
+                icon-name={tab.icon}
+              >
+                <template lwc:if={tab.hasAssets}>
+                  <ul
+                    class="slds-has-dividers_bottom-space"
+                    aria-label={tab.label}
+                  >
+                    <template for:each={tab.assets} for:item="asset">
+                      <li
+                        key={asset.key}
+                        data-id="asset-row"
+                        class="slds-item slds-var-p-vertical_small"
+                      >
+                        <div
+                          class="slds-grid slds-wrap slds-grid_vertical-align-center slds-grid_align-spread"
+                        >
+                          <div
+                            class="slds-grid slds-wrap slds-grid_vertical-align-center"
+                          >
+                            <span class="slds-text-heading_small"
+                              >{asset.label}</span
+                            >
+                          </div>
+                        </div>
+                        <p class="slds-var-m-top_x-small">
+                          {asset.description}
+                        </p>
+                        <template lwc:if={asset.hints.length}>
+                          <div
+                            data-id="tool-annotations"
+                            role="group"
+                            aria-label="Tool annotations"
+                            class="slds-grid slds-wrap slds-var-m-top_x-small"
+                          >
+                            <template for:each={asset.hints} for:item="hint">
+                              <lightning-badge
+                                key={hint.label}
+                                label={hint.label}
+                                class={hint.className}
+                              ></lightning-badge>
+                            </template>
+                          </div>
+                        </template>
+                      </li>
+                    </template>
+                  </ul>
+                </template>
+                <template lwc:else
+                  ><p
+                    class="slds-text-color_weak slds-var-p-vertical_medium"
+                    role="status"
+                  >
+                    {tab.empty}
+                  </p></template
+                >
+              </lightning-tab>
+            </template>
+          </lightning-tabset>
+        </template>
+      </div>
+    </lightning-card>
+  </div>
+</template>

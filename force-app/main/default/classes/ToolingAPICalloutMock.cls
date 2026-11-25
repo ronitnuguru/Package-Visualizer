@@ -32,10 +32,10 @@ global with sharing class ToolingAPICalloutMock implements HttpCalloutMock {
         '{"size":1,"totalSize":1,"done":true,"queryLocator":null,"entityTypeName":"Package2VersionCreateRequest","records":[{"attributes":{"type":"Package2VersionCreateRequest","url":"/services/data/v67.0/tooling/sobjects/Package2VersionCreateRequest/08c000000000000AAA"},"Id":"08c000000000000AAA","Status":"Success","Package2Id":"0Ho000000000000AAA","Package2VersionId":"05i000000000000AAA","Branch":"main","Tag":"v1.0","AsyncValidation":false,"CalculateCodeCoverage":true,"CalcTransitiveDependencies":false,"SkipValidation":false,"IsDevUsePkgZipRequested":false,"IsPasswordProtected":false,"IsConversionRequest":false,"Language":"en_US","CreatedBy":{"Name":"Test User"},"CreatedDate":"2024-01-01T00:00:00.000+0000","SystemModstamp":"2024-01-01T00:00:00.000+0000"}]}'
       );
       res.setStatusCode(200);
-    } else if (req.getEndpoint().contains('from+Package2Version')) {
+    } else if (req.getEndpoint().toLowerCase().contains('from+package2version')) {
       //Package2Version Success
       res.setBody(
-        '{"size":1,"totalSize":1,"done":true,"queryLocator":null,"entityTypeName":"Package2Version","records":[{"attributes":{"type":"Package2Version","url":"/services/data/v57.0/tooling/sobjects/Package2Version/05i000000000000AAA"},"Id":"05i000000000000AAA","Branch":null,"Description":null,"IsDeprecated":false,"IsPasswordProtected":false,"IsReleased":false,"MajorVersion":0,"MinorVersion":1,"PatchVersion":0,"BuildNumber":2,"Tag":null,"Name":"ver 0.1","Package2Id":"0Ho000000000000AAA","SubscriberPackageVersionId":"04t000000000000AAA","AncestorId":null,"ValidationSkipped":false}]}'
+        '{"size":1,"totalSize":1,"done":true,"queryLocator":null,"entityTypeName":"Package2Version","records":[{"attributes":{"type":"Package2Version","url":"/services/data/v57.0/tooling/sobjects/Package2Version/05i000000000000AAA"},"Id":"05i000000000000AAA","Branch":null,"Description":null,"IsDeprecated":false,"IsPasswordProtected":false,"IsReleased":false,"MajorVersion":0,"MinorVersion":1,"PatchVersion":0,"BuildNumber":2,"Tag":null,"Name":"ver 0.1","Package2Id":"0Ho000000000000AAA","SubscriberPackageVersionId":"04t000000000000AAA","AncestorId":null,"ValidationSkipped":false,"ContainsPsld":true,"HasVpi":false,"SnapshotName":"test-snapshot","TotalNumberOfMetadataFiles":0,"TotalSizeOfMetadataFiles":3000000000}]}'
       );
       res.setStatusCode(200);
     } else if (req.getEndpoint().contains('FROM+Package2')) {

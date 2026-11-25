@@ -347,85 +347,6 @@
                             </div>
                           </li>
                         </template>
-                        <li class="slds-progress__item slds-show_medium">
-                          <template
-                            if:false={isAgentforceConversationConfigured}
-                          >
-                            <div
-                              data-id="agentforce-conversation-marker-default"
-                              class="slds-progress__marker"
-                            >
-                              <span class="slds-assistive-text">Active</span>
-                            </div>
-                          </template>
-                          <template
-                            if:true={isAgentforceConversationConfigured}
-                          >
-                            <span
-                              data-id="agentforce-conversation-marker-success"
-                              class="slds-progress__marker"
-                            >
-                              <lightning-icon
-                                icon-name="utility:success"
-                                alternative-text="Agentforce Conversation Client Configured"
-                                variant="success"
-                                size="x-small"
-                                class="icon-style"
-                              ></lightning-icon>
-                            </span>
-                          </template>
-                          <div class="slds-progress__item_content">
-                            <strong class="slds-text-title_caps">
-                              Agentforce Conversation Client
-                            </strong>
-                            <p class="slds-var-m-top_xx-small">
-                              Setup an active Employee Agent Package Visualizer
-                              uses for contextual release-intelligence and
-                              packaging-related requests.
-                            </p>
-                            <c-agentforce-conversation-setup
-                              onconfigurationchange={handleAgentforceConfigurationChange}
-                            >
-                            </c-agentforce-conversation-setup>
-                          </div>
-                        </li>
-                        <li class="slds-progress__item slds-show_medium">
-                          <template if:false={isCustomMcpServerConfigured}>
-                            <div
-                              data-id="headless360-custom-mcp-servers-marker-default"
-                              class="slds-progress__marker"
-                            >
-                              <span class="slds-assistive-text">Active</span>
-                            </div>
-                          </template>
-                          <template if:true={isCustomMcpServerConfigured}>
-                            <span
-                              data-id="headless360-custom-mcp-servers-marker-success"
-                              class="slds-progress__marker"
-                            >
-                              <lightning-icon
-                                icon-name="utility:success"
-                                alternative-text="Headless 360 Custom MCP Servers Configured"
-                                variant="success"
-                                size="x-small"
-                                class="icon-style"
-                              ></lightning-icon>
-                            </span>
-                          </template>
-                          <div class="slds-progress__item_content">
-                            <strong class="slds-text-title_caps">
-                              Headless 360 Custom MCP Servers
-                            </strong>
-                            <p class="slds-var-m-top_xx-small">
-                              Configure custom Salesforce MCP servers to expose
-                              trusted tools to MCP-compatible clients.
-                            </p>
-                            <c-setup-assistant-custom-mcp-servers
-                              onconfigurationchange={handleCustomMcpServerConfigurationChange}
-                            >
-                            </c-setup-assistant-custom-mcp-servers>
-                          </div>
-                        </li>
                         <!-- Step 1: Provision -->
                         <li class="slds-progress__item">
                           <template if:false={isProvisioned}>
@@ -513,6 +434,7 @@
                         </li>
                         <!-- Step 3: Create External Client App -->
                         <li class="slds-progress__item slds-show_medium">
+                          <!-- Original completion marker retained; it tracked Named Credential routing.
                           <template if:false={isNamedCredentialEnabled}>
                             <div class="slds-progress__marker">
                               <span class="slds-assistive-text">Active</span>
@@ -528,6 +450,40 @@
                               ></lightning-icon>
                             </span>
                           </template>
+                          -->
+                          <template lwc:if={isLocalEcaConfigured}>
+                            <span
+                              data-id="local-eca-marker-success"
+                              class="slds-progress__marker"
+                              ><lightning-icon
+                                icon-name="utility:success"
+                                alternative-text="Local ECA configured"
+                                variant="success"
+                                size="x-small"
+                                class="icon-style"
+                              ></lightning-icon
+                            ></span>
+                          </template>
+                          <template lwc:else
+                            ><div class="slds-progress__marker">
+                              <span class="slds-assistive-text"
+                                >Local ECA not verified</span
+                              >
+                            </div></template
+                          >
+                          <div class="slds-progress__item_content">
+                            <strong class="slds-text-title_caps">
+                              Create an External Client App (ECA)
+                            </strong>
+                            <p class="slds-var-m-top_xx-small slds-var-m-bottom_small">
+                              Create an app that securely authenticates Package
+                              Visualizer's Tooling API requests to this org.
+                            </p>
+                            <c-package-visualizer-eca-provisioner
+                              onprovisioningchange={handleEcaProvisioningChange}
+                            ></c-package-visualizer-eca-provisioner>
+                          </div>
+                          <!-- Previous inline ECA UI retained for reference; active UI lives in packageVisualizerEcaProvisioner.
                           <div
                             class="slds-progress__item_content slds-grid slds-grid_align-spread"
                           >
@@ -535,6 +491,69 @@
                               <strong class="slds-text-title_caps">
                                 Create an External Client App (ECA)
                               </strong>
+                              <div
+                                class="slds-is-relative slds-var-m-top_small"
+                              >
+                                <template lwc:if={localEcaBusy}>
+                                  <lightning-spinner
+                                    alternative-text="Loading local ECA"
+                                    variant="brand"
+                                    size="medium"
+                                  ></lightning-spinner>
+                                </template>
+                                <template lwc:if={localEcaError}>
+                                  <p role="alert" class="slds-text-color_error">
+                                    {localEcaError}
+                                  </p>
+                                </template>
+                                <template lwc:if={localEcaState}>
+                                  <p>{localEcaState.message}</p>
+                                </template>
+                                <template lwc:if={showCreateLocalEca}>
+                                   Previous username text input retained for reference.
+                                  <lightning-input
+                                    data-id="eca-run-as"
+                                    type="text"
+                                    label="Run As Username"
+                                    value={ecaRunAsUsername}
+                                    onchange={handleEcaRunAsChange}
+                                    disabled={isCreatingLocalEca}
+                                    required
+                                  ></lightning-input>
+
+                                  <lightning-record-picker
+                                    data-id="eca-run-as"
+                                    label="Run As Username"
+                                    placeholder="Search users..."
+                                    object-api-name={ecaUserObject}
+                                    filter={ecaUserFilter}
+                                    display-info={ecaUserDisplayInfo}
+                                    matching-info={ecaUserMatchingInfo}
+                                    value={ecaRunAsUserId}
+                                    onchange={handleEcaRunAsChange}
+                                    onerror={handleEcaUserError}
+                                    disabled={isCreatingLocalEca}
+                                    required
+                                  ></lightning-record-picker>
+                                  <template lwc:if={ecaUserError}>
+                                    <p
+                                      role="alert"
+                                      class="slds-text-color_error"
+                                    >
+                                      {ecaUserError}
+                                    </p>
+                                  </template>
+                                  <lightning-input
+                                    data-id="eca-contact-email"
+                                    type="email"
+                                    label="Contact Email"
+                                    value={ecaContactEmail}
+                                    onchange={handleEcaContactEmailChange}
+                                    disabled={isCreatingLocalEca}
+                                  ></lightning-input>
+                                </template>
+                              </div>
+                               Original manual ECA creation and editing guidance retained for reference.
                               <p class="slds-var-m-top_xx-small">
                                 In Setup &rarr; External Client App Manager,
                                 create a new ECA with the settings below:
@@ -581,7 +600,8 @@
                                           <li>
                                             Callback URL:
                                             https://login.salesforce.com/services/oauth2/callback
-                                          </li>
+
+                        </li>
                                           <li>
                                             OAuth Scopes:
                                             <ul
@@ -659,66 +679,43 @@
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                            <div class="slds-shrink-none slds-var-m-left_small">
-                              <lightning-button-icon
-                                icon-name="utility:setup"
-                                variant="brand"
-                                onclick={navigateToExternalClientApps}
-                                disabled={isSetupEnabled}
-                              ></lightning-button-icon>
-                            </div>
-                          </div>
-                        </li>
-                        <!-- Step 4: Grant Permission Set Access (auto-assigned to the provisioning admin; manual for other users) -->
-                        <li class="slds-progress__item">
-                          <span class="slds-progress__marker">
-                            <lightning-icon
-                              icon-name="utility:success"
-                              variant="success"
-                              size="x-small"
-                              class="icon-style"
-                            ></lightning-icon>
-                          </span>
-                          <div
-                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
-                          >
-                            <div class="slds-col">
-                              <strong class="slds-text-title_caps">
-                                Grant Tooling API Permission Set Access
-                              </strong>
-                              <p class="slds-var-m-top_xx-small">
-                                The "Package Visualizer Tooling Access"
-                                permission set was automatically created and
-                                assigned to you when you provisioned
-                                credentials. For any additional users who need
-                                Tooling API access, assign them this permission
-                                set manually.
-                              </p>
+
                             </div>
                             <div class="slds-shrink-none slds-var-m-left_small">
                               <lightning-button-group>
+                                <template lwc:if={showCreateLocalEca}>
+                                  <lightning-button
+                                    data-id="create-local-eca"
+                                    label="Create"
+                                    variant="brand"
+                                    onclick={handleCreateLocalEca}
+                                    disabled={createLocalEcaDisabled}
+                                  ></lightning-button>
+                                </template>
                                 <lightning-button-icon
-                                  data-id="assign-tooling-permission-set"
-                                  icon-name="utility:adduser"
-                                  alternative-text="Add Permission Set to Me"
-                                  tooltip="Add Permission Set to Me"
-                                  variant="border-filled"
-                                  onclick={addToolingPermissionSet}
-                                  disabled={isSetupEnabled}
+                                  data-id="refresh-local-eca"
+                                  icon-name="utility:refresh"
+                                  alternative-text="Refresh ECA status"
+                                  tooltip="Refresh ECA status"
+                                  onclick={refreshLocalEca}
+                                  disabled={localEcaBusy}
                                 ></lightning-button-icon>
                                 <lightning-button-icon
-                                  icon-name="action:manage_perm_sets"
-                                  tooltip="Provision Permission Set"
+                                  data-id="local-eca-setup"
+                                  icon-name="utility:setup"
                                   variant="brand"
-                                  onclick={navigateToPermissionSets}
+                                  alternative-text="External Client App Setup"
+                                  title="External Client App Setup"
+                                  tooltip="External Client App Setup"
+                                  onclick={navigateToExternalClientApps}
                                   disabled={isSetupEnabled}
                                 ></lightning-button-icon>
                               </lightning-button-group>
                             </div>
                           </div>
+                          -->
                         </li>
-                        <!-- Step 5: Save ECA credentials -->
+                        <!-- Step 4: Save ECA credentials -->
                         <li class="slds-progress__item">
                           <template if:false={isToolingCredentialConfigured}>
                             <div class="slds-progress__marker">
@@ -849,6 +846,54 @@
                             </template>
                           </div>
                         </li>
+                        <!-- Step 5: Grant Permission Set Access (auto-assigned to the provisioning admin; manual for other users) -->
+                        <li class="slds-progress__item">
+                          <span class="slds-progress__marker">
+                            <lightning-icon
+                              icon-name="utility:success"
+                              variant="success"
+                              size="x-small"
+                              class="icon-style"
+                            ></lightning-icon>
+                          </span>
+                          <div
+                            class="slds-progress__item_content slds-grid slds-grid_align-spread"
+                          >
+                            <div class="slds-col">
+                              <strong class="slds-text-title_caps">
+                                Grant Tooling API Permission Set Access
+                              </strong>
+                              <p class="slds-var-m-top_xx-small">
+                                The "Package Visualizer Tooling Access"
+                                permission set was automatically created and
+                                assigned to you when you provisioned
+                                credentials. For any additional users who need
+                                Tooling API access, assign them this permission
+                                set manually.
+                              </p>
+                            </div>
+                            <div class="slds-shrink-none slds-var-m-left_small">
+                              <lightning-button-group>
+                                <lightning-button-icon
+                                  data-id="assign-tooling-permission-set"
+                                  icon-name="utility:adduser"
+                                  alternative-text="Add Permission Set to Me"
+                                  tooltip="Add Permission Set to Me"
+                                  variant="border-filled"
+                                  onclick={addToolingPermissionSet}
+                                  disabled={isSetupEnabled}
+                                ></lightning-button-icon>
+                                <lightning-button-icon
+                                  icon-name="action:manage_perm_sets"
+                                  tooltip="Provision Permission Set"
+                                  variant="brand"
+                                  onclick={navigateToPermissionSets}
+                                  disabled={isSetupEnabled}
+                                ></lightning-button-icon>
+                              </lightning-button-group>
+                            </div>
+                          </div>
+                        </li>
                         <!-- Step 6: Test & Confirm -->
                         <li class="slds-progress__item">
                           <template if:false={isNamedCredentialEnabled}>
@@ -887,6 +932,94 @@
                                 disabled={testAndEnableDisabled}
                               ></lightning-button-icon>
                             </div>
+                          </div>
+                        </li>
+                        <li class="slds-progress__item slds-show_medium">
+                          <template
+                            if:false={isAgentforceConversationConfigured}
+                          >
+                            <div
+                              data-id="agentforce-conversation-marker-default"
+                              class="slds-progress__marker"
+                            >
+                              <span class="slds-assistive-text">Active</span>
+                            </div>
+                          </template>
+                          <template
+                            if:true={isAgentforceConversationConfigured}
+                          >
+                            <span
+                              data-id="agentforce-conversation-marker-success"
+                              class="slds-progress__marker"
+                            >
+                              <lightning-icon
+                                icon-name="utility:success"
+                                alternative-text="Agentforce Conversation Client Configured"
+                                variant="success"
+                                size="x-small"
+                                class="icon-style"
+                              ></lightning-icon>
+                            </span>
+                          </template>
+                          <div class="slds-progress__item_content">
+                            <strong class="slds-text-title_caps">
+                              Agentforce Conversation Client
+                            </strong>
+                            <p class="slds-var-m-top_xx-small">
+                              Setup an active Employee Agent Package Visualizer
+                              uses for contextual release-intelligence and
+                              packaging-related requests.
+                            </p>
+                            <c-agentforce-conversation-setup
+                              onconfigurationchange={handleAgentforceConfigurationChange}
+                            >
+                            </c-agentforce-conversation-setup>
+                          </div>
+                        </li>
+                        <li class="slds-progress__item slds-show_medium">
+                          <template if:false={isCustomMcpServerReady}>
+                            <div
+                              data-id="headless360-custom-mcp-servers-marker-default"
+                              class="slds-progress__marker"
+                            >
+                              <span class="slds-assistive-text"
+                                >Custom MCP Server not verified created</span
+                              >
+                            </div>
+                          </template>
+                          <template if:true={isCustomMcpServerReady}>
+                            <span
+                              data-id="headless360-custom-mcp-servers-marker-success"
+                              class="slds-progress__marker"
+                            >
+                              <lightning-icon
+                                icon-name="utility:success"
+                                alternative-text="Package Visualizer Custom MCP Server created"
+                                variant="success"
+                                size="x-small"
+                                class="icon-style"
+                              ></lightning-icon>
+                            </span>
+                          </template>
+                          <div class="slds-progress__item_content">
+                            <strong class="slds-text-title_caps">
+                              Headless Toolkit
+                            </strong>
+                            <p class="slds-var-m-top_xx-small">
+                              Package Visualizer uses the
+                              <a
+                                href="https://developer.salesforce.com/docs/platform/api-catalog-connectapi/guide/create-custom-salesforce-mcp-servers.html"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >API Catalog Connect REST API</a>
+                              to create an inactive Custom Salesforce Hosted MCP Server
+                              in this org and add tools from its Agentforce extension.
+                              Review and activate the server in Salesforce Setup.
+                            </p>
+                            <c-setup-assistant-custom-mcp-servers
+                              onprovisioningstatuschange={handleCustomMcpServerStatusChange}
+                            >
+                            </c-setup-assistant-custom-mcp-servers>
                           </div>
                         </li>
                       </ol>
@@ -1158,7 +1291,7 @@
                           disabled={isSetupEnabled}
                         ></lightning-button>
                         <!--
-                        <lightning-button-icon 
+                        <lightning-button-icon
                           icon-name="utility:agent_astro"
                           tooltip="Ask Agentforce"
                           value="createRegisterNamespace"
@@ -1326,7 +1459,7 @@
                           disabled={isSetupEnabled}
                         ></lightning-button>
                         <!--
-                        <lightning-button-icon 
+                        <lightning-button-icon
                           icon-name="utility:agent_astro"
                           tooltip="Ask Agentforce"
                           value="provAccessDevs"
@@ -1632,7 +1765,7 @@
                           onclick={navigateToDXDevCenter}
                         ></lightning-button>
                         <!--
-                        <lightning-button-icon 
+                        <lightning-button-icon
                           icon-name="utility:agent_astro"
                           tooltip="Ask Agentforce"
                           value="dxSetup"
@@ -2038,7 +2171,7 @@
                             class="slds-progress__item_content slds-grid slds-grid_align-spread"
                           >
                             <div class="slds-col">
-                              Learn how to manage your AppExchange listings with
+                              Learn how to manage your AgentExchange listings with
                               the Partner Console and Listing Builder
                             </div>
                             <div class="slds-shrink-none slds-var-m-left_small">
@@ -2178,6 +2311,14 @@
                       </p>
                       <div class="slds-m-top_small slds-show_medium">
                         <lightning-tabset variant="scoped">
+                          <lightning-tab
+                            label="Headless Toolkit"
+                            icon-name="standard:robot"
+                          >
+                            <c-setup-assistant-headless-toolkit
+                              org-id={orgId}
+                            ></c-setup-assistant-headless-toolkit>
+                          </lightning-tab>
                           <lightning-tab
                             label="Agentforce"
                             icon-name="standard:agent_astro"

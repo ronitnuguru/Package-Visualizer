@@ -4,6 +4,11 @@ import getIntegrationStatus from "@salesforce/apex/PackageVisualizerCtrl.getInte
 import getNamespacePermSetId from "@salesforce/apex/PackageVisualizerCtrl.getNamespacePermSetId";
 import assignPermissionSetToCurrentUser from "@salesforce/apex/PackageVisualizerCtrl.assignPermissionSetToCurrentUser";
 
+jest.mock("c/packageVisualizerEcaProvisioner", () => {
+  const { LightningElement } = require("lwc");
+  return class extends LightningElement {};
+});
+
 jest.mock(
   "@salesforce/apex/PackageVisualizerCtrl.getIntegrationStatus",
   () => ({ default: jest.fn() }),
@@ -186,7 +191,7 @@ describe("c-setup-assistant Headless360 Custom MCP Servers", () => {
     jest.clearAllMocks();
   });
 
-  it("moves the Custom MCP Servers marker between default and success", async () => {
+  it("shows server-created status only after verified provisioning", async () => {
     const element = createElement("c-setup-assistant", {
       is: SetupAssistant
     });
@@ -203,6 +208,11 @@ describe("c-setup-assistant Headless360 Custom MCP Servers", () => {
       "c-setup-assistant-custom-mcp-servers"
     );
     expect(customMcpSetup).not.toBeNull();
+    const apiGuide = customMcpSetup.parentElement.querySelector("a");
+    expect(apiGuide.href).toBe(
+      "https://developer.salesforce.com/docs/platform/api-catalog-connectapi/guide/create-custom-salesforce-mcp-servers.html"
+    );
+    expect(apiGuide.parentElement.textContent).toContain("inactive Custom Salesforce Hosted MCP Server");
     expect(
       element.shadowRoot.querySelector(
         '[data-id="headless360-custom-mcp-servers-marker-success"]'
@@ -210,8 +220,8 @@ describe("c-setup-assistant Headless360 Custom MCP Servers", () => {
     ).toBeNull();
 
     customMcpSetup.dispatchEvent(
-      new CustomEvent("configurationchange", {
-        detail: { configured: true }
+      new CustomEvent("provisioningstatuschange", {
+        detail: { ready: true }
       })
     );
     await flushPromises();
@@ -228,12 +238,12 @@ describe("c-setup-assistant Headless360 Custom MCP Servers", () => {
     const successIcon = successMarker.querySelector("lightning-icon");
     expect(successIcon.iconName).toBe("utility:success");
     expect(successIcon.alternativeText).toBe(
-      "Headless 360 Custom MCP Servers Configured"
+      "Package Visualizer Custom MCP Server created"
     );
 
     customMcpSetup.dispatchEvent(
-      new CustomEvent("configurationchange", {
-        detail: { configured: false }
+      new CustomEvent("provisioningstatuschange", {
+        detail: { ready: false }
       })
     );
     await flushPromises();
@@ -362,5 +372,66 @@ describe("c-setup-assistant permission-set self-assignment", () => {
       permissionSetId: "0PS000000000002AAA",
       userId: "005000000000001AAA"
     });
+  });
+});
+
+describe("Setup Assistant ECA child integration", () => {
+  beforeEach(() => getIntegrationStatus.mockResolvedValue({}));
+  afterEach(() => {
+    document.body.replaceChildren();
+    jest.clearAllMocks();
+  });
+  it("embeds the reusable ECA card and updates the progress marker from child status", async () => {
+    const element = createElement("c-setup-assistant", { is: SetupAssistant });
+    document.body.appendChild(element);
+    await flushPromises();
+    const child = element.shadowRoot.querySelector(
+      "c-package-visualizer-eca-provisioner"
+    );
+    expect(child).not.toBeNull();
+    expect(
+      element.shadowRoot.querySelector('[data-id="eca-run-as"]')
+    ).toBeNull();
+    expect(
+      element.shadowRoot.querySelector('[data-id="local-eca-marker-success"]')
+    ).toBeNull();
+    child.dispatchEvent(
+      new CustomEvent("provisioningchange", { detail: { configured: true } })
+    );
+    await flushPromises();
+    expect(
+      element.shadowRoot.querySelector('[data-id="local-eca-marker-success"]')
+    ).not.toBeNull();
+    child.dispatchEvent(
+      new CustomEvent("provisioningchange", { detail: { configured: false } })
+    );
+    await flushPromises();
+    expect(
+      element.shadowRoot.querySelector('[data-id="local-eca-marker-success"]')
+    ).toBeNull();
+  });
+});
+
+describe("Headless Toolkit product tab", () => {
+  afterEach(() => {
+    document.body.replaceChildren();
+    jest.clearAllMocks();
+  });
+  it("appears immediately before Agentforce", async () => {
+    getIntegrationStatus.mockResolvedValue({});
+    const element = createElement("c-setup-assistant", { is: SetupAssistant });
+    element.packageTypes = "2GP and Unlocked Packages";
+    document.body.appendChild(element);
+    await flushPromises();
+    const tabs = [
+      ...element.shadowRoot.querySelectorAll(
+        '[data-id="extendSalesforce"] lightning-tab'
+      )
+    ];
+    expect(tabs.slice(0, 2).map((tab) => tab.label)).toEqual([
+      "Headless Toolkit",
+      "Agentforce"
+    ]);
+    expect(tabs[0].iconName).toBe("standard:robot");
   });
 });

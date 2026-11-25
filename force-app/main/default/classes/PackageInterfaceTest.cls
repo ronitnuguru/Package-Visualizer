@@ -65,6 +65,11 @@ private class PackageInterfaceTest {
       '10'
     );
     system.assertEquals(1, Package2VersionList.size());
+    Assert.areEqual(true, Package2VersionList[0].containsPsld);
+    Assert.areEqual(false, Package2VersionList[0].hasVpi);
+    Assert.areEqual('test-snapshot', Package2VersionList[0].snapshotName);
+    Assert.areEqual(0, Package2VersionList[0].totalNumberOfMetadataFiles);
+    Assert.areEqual(3000000000L, Package2VersionList[0].totalSizeOfMetadataFiles);
     TEST.stopTest();
   }
 

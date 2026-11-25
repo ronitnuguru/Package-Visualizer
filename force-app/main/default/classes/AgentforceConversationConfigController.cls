@@ -141,6 +141,12 @@ public with sharing class AgentforceConversationConfigController {
     );
   }
 
+  /** Read discovery without the client cache after API Catalog provisioning. */
+  @AuraEnabled
+  public static AgentforceConversationConfigWrapper.McpServerSetupState getFreshCustomMcpServerSetupState() {
+    return getCustomMcpServerSetupState();
+  }
+
   /**
    * Validates and saves the org-wide Custom MCP Server selection. Passing null
    * clears the integration without querying the Tooling API.

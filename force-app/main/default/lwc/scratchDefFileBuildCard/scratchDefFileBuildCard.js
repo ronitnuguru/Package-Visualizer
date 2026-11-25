@@ -359,6 +359,9 @@ export default class ScratchDefFileBuildCard extends NavigationMixin(
     this.hasSampleData = false;
     this.sourceOrgId = "";
     this.featuresList = DEFAULT_FEATURES.map((name) => buildFeaturePill(name));
+    if (this.templateKey === "headlessToolkit") {
+      this.addFeatures(TEMPLATES.headlessToolkit.features);
+    }
     this.featureValue = "";
     this.preferredLanguage = "en_US";
     this.country = this.defaultCountry;
